@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.io.PrintWriter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,13 +18,13 @@ public class Application {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 
 		LinkedBlockingQueue<RawData> queue = new LinkedBlockingQueue<>();
-		
+
 		ArrayList<Poller> pollers = new ArrayList<>();
 		pollers.add(new GmailPoller(queue, ""));
 		new Thread(pollers.get(0)).start();
 
 		ArrayList<DataProcessingThread> processorThreads = new ArrayList<>();
-		processorThreads.add(new DataProcessingThread(queue));
+		processorThreads.add(new DataProcessingThread(queue, new StanfordNLP()));
 
 		new Thread(processorThreads.get(0)).start();
 	}
