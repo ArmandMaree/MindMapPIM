@@ -16,4 +16,12 @@ public class GmailPoller implements Poller {
 	public void run() {
 		System.out.println("\n\nHello\n\n");
 	}
+
+	public RawData poll() {
+		return null;
+	}
+
+	public void addToQueue(RawData data) {
+
+	}
 }
