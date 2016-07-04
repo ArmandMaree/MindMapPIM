@@ -18,10 +18,16 @@ public class GmailPoller implements Poller {
 	}
 
 	public RawData poll() {
+		//Polling to see if a new email has arrived
 		return null;
 	}
 
 	public void addToQueue(RawData data) {
-		queue.put(data);
+		try {
+			queue.put(data);
+		}
+		catch (InterruptedException ex) {
+			System.out.println("Interrupted while waiting");		
+		}
 	}
 }
