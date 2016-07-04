@@ -9,13 +9,14 @@ import org.springframework.context.ApplicationContext;
 
 import poller.*;
 import processor.*;
+import data.*;
 
 @SpringBootApplication
 public class Application {
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 
-		ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+		ConcurrentLinkedQueue<RawData> queue = new ConcurrentLinkedQueue<>();
 		
 		ArrayList<Poller> pollers = new ArrayList<>();
 		pollers.add(new GmailPoller(queue, ""));

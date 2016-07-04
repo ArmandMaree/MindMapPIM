@@ -2,6 +2,8 @@ package poller;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import data.*;
+
 public class GmailPoller implements Poller {
 	private ConcurrentLinkedQueue queue;
 	private String userId;
