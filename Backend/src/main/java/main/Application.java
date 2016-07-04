@@ -7,6 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import poller.*;
+import processor.*;
+
 @SpringBootApplication
 public class Application {
 	public static void main(String[] args) {
@@ -15,13 +18,13 @@ public class Application {
 		ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
 		
 		ArrayList<Poller> pollers = new ArrayList<>();
-		pollers.add(new GmailPoller(queue));
+		pollers.add(new GmailPoller(queue, ""));
 		new Thread(pollers.get(0)).start();
 
-		ArrayList<DataProcessingThread> workerThreads = new ArrayList<>();
-		workerThreads.add(new DataProcessingThread(queue));
+		ArrayList<DataProcessingThread> processorThreads = new ArrayList<>();
+		processorThreads.add(new DataProcessingThread(queue));
 
-		new Thread(workerThreads.get(0)).start();
+		new Thread(processorThreads.get(0)).start();
 	}
 
 }

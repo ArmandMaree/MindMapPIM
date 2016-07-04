@@ -1,4 +1,4 @@
 package poller;
 
-public interface Poller {
+public interface Poller extends Runnable {
 }
