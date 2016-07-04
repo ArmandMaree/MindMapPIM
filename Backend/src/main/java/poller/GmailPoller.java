@@ -22,6 +22,6 @@ public class GmailPoller implements Poller {
 	}
 
 	public void addToQueue(RawData data) {
-
+		queue.add(data);
 	}
 }
