@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'DataProcessingCentre'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+version = '1.0'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	// Gmail API
+	compile 'com.google.api-client:google-api-client:1.22.0'
+	compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
+	compile 'com.google.apis:google-api-services-gmail:v1-rev45-1.22.0'
+
+	// JavaMail API
+	compile 'javax.mail:mail:1.4.1'
+	compile 'commons-codec:commons-codec:1.10'
+
+	// Jsoup
+	compile 'org.jsoup:jsoup:1.8.1'
+
+	// https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp
+	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0'
+	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0:models'
+}
