@@ -1,7 +1,7 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +16,7 @@ public class Application {
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 
-		ConcurrentLinkedQueue<RawData> queue = new ConcurrentLinkedQueue<>();
+		LinkedBlockingQueue<RawData> queue = new LinkedBlockingQueue<>();
 		
 		ArrayList<Poller> pollers = new ArrayList<>();
 		pollers.add(new GmailPoller(queue, ""));
