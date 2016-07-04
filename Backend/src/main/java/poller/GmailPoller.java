@@ -1,14 +1,14 @@
 package poller;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import data.*;
 
 public class GmailPoller implements Poller {
-	private ConcurrentLinkedQueue queue;
+	private LinkedBlockingQueue queue;
 	private String userId;
 	
-	public GmailPoller(ConcurrentLinkedQueue queue, String userId) {
+	public GmailPoller(LinkedBlockingQueue queue, String userId) {
 		this.queue = queue;
 		this.userId = userId;
 	}
@@ -22,6 +22,6 @@ public class GmailPoller implements Poller {
 	}
 
 	public void addToQueue(RawData data) {
-		queue.add(data);
+		queue.put(data);
 	}
 }
