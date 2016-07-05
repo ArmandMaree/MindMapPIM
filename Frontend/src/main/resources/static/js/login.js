@@ -48,55 +48,69 @@
         }   
             // $("#btnnext").hide();
 
+        function signOut() {
+          var auth2 = gapi.auth2.getAuthInstance();
+          auth2.signOut().then(function () {
+            console.log('User signed out.');
+          });
+        }
+        function onFailure(error) {
+          console.log(error);
+        }
+        function renderButton() {
+          gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'width': 200,
+            'height': 50,
+            'longtitle': true,
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+          });
+
+        function onSuccess(googleUser) {
+          console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+          // if( !$("#user").val()== "" && !$("#password").val()== "") {
+            $("#my-signin2").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
+            $("#web").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
+
+            $("#avatar").delay("slow").animate({
+                top: '70px',
+                opacity: '0.3'
+
+            });
+            $("#welcome").show();
+            $("#welcome").delay(1000).animate({
+                opacity: '1'
+
+            });
+            $('#avatar').fadeOut(0, function() {
+                $('#avatar').fadeIn(0);
+                $('#avatar').css("background","#eee url('/images/avatar3.png')");
+                 $('#avatar').css("background-size","cover");
+                  $('#avatar').css("opacity","1");
+            });
+            $("#continue").show();
+            $("#continue").delay(2000).animate({
+                opacity: '1'
+
+            });
+
+          // }
+        }
+        }
         jQuery(document).ready(function($){
             $("#submitID").hide();
             $("#welcome").hide();
             $("#continue").hide();
-            $('#web').on('click', function () {
-                // $("#submitID").delay("slow").trigger( "click" );
-             if( !$("#user").val()== "" && !$("#password").val()== "") {
-                user =  $("#user").val();
-                password =  $("#password").val();
-                $("#web").animate({
-                    top: '100px',
-                    opacity: '0.0'
-
-                });
-                $("#user").animate({
-                    top: '100px',
-                    opacity: '0.0'
-                });
-                $("#password").animate({
-                    top: '100px',
-                    opacity: '0.0'
-
-                });
-
-                $("#avatar").delay("slow").animate({
-                    top: '70px',
-                    opacity: '0.3'
-
-                });
-                $("#welcome").show();
-                $("#welcome").delay(1000).animate({
-                    opacity: '1'
-
-                });
-                $('#avatar').fadeOut(0, function() {
-                    $('#avatar').fadeIn(0);
-                    $('#avatar').css("background","#eee url('/images/avatar3.png')");
-                     $('#avatar').css("background-size","cover");
-                      $('#avatar').css("opacity","1");
-                });
-                $("#continue").show();
-                $("#continue").delay(2000).animate({
-                    opacity: '1'
-
-                });
-
-            }
-
-            });
+         
     
         });
 
