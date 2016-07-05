@@ -15,7 +15,10 @@
     <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
 </head>
 
-<body><a href="#" onclick="signOut();">Sign out</a>
+<body>
+   
+    <a href="#" onclick="signOut();">Sign out</a>
+    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogout" onlogin="onFacebookLogin"></div>
     <div class="container">
         <div class="login-container" id = "container">
             <div id="output"></div>
@@ -25,11 +28,11 @@
 
             <div class="form-box">
                 <form onsubmit="" action="" method="POST" id="formID">
-                    <!-- <input name="user" id="user" type="text" placeholder="name" Style = "position:relative" /> -->
-                    <!-- <input type="text" id="password" placeholder="age" /> -->
-                     <!-- <input type="submit" name="submit" value="Submit" id="submitID" /> -->
-                    <!-- <div id="web" class="button btn btn-info btn-block login">Login</div> -->
+
+                
                     <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
+
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                 </form>
 
