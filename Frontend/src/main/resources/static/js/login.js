@@ -18,22 +18,44 @@
 
 
         function loadXMLDoc(){
-                $('.login-container').animate({
-                    width:"750px",
-                    height:"750px"
+            $('.login-container').animate({
+                width:"750px",
+                height:"550px"
 
-                });
+            });
+
+            $("#continue").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
+
+            $("#avatar").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
+
+            $("#welcome").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
             var xmlhttp=new XMLHttpRequest();
             xmlhttp.onreadystatechange=function(){
                  if (xmlhttp.readyState==4 && xmlhttp.status==200){
                     document.getElementById("container").innerHTML=xmlhttp.responseText;
                     }
             }
-
-            xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
+            xmlhttp.open("GET","ajax/selectdata.html");
+            // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
             xmlhttp.send();
             var filename;
+            // $("#my-signin2").animate({
+            //     // top: '70px',
+            //     // opacity: '100.0'
 
+            // });
             count++;
             filename =  "Questions/Ques"+count +".js?rndstr=<%= getRandomStr() %>";
             $.getJSON(filename, function(result){
@@ -66,6 +88,7 @@
             'onsuccess': onSuccess,
             'onfailure': onFailure
           });
+
 
         function onSuccess(googleUser) {
           console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
