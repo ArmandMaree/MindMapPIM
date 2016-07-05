@@ -1,7 +1,6 @@
 // Facebook Code
- 
+ $("facebookLogout").hide();
  function statusChangeCallback(response) {
-  setInterval
     console.log('statusChangeCallback');
     console.log(response);
     // The response object is returned with a status field that lets the
@@ -28,15 +27,20 @@
     
     
   }
-
-  // This function is called when someone finishes with the Login
-  // Button.  See the onlogin handler attached to it in the sample
-  // code below.
-  function checkLoginState() {
+  function onFacebookLogin()
+  {
     FB.getLoginStatus(function(response) {
       statusChangeCallback(response);
     });
   }
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  // function checkLoginState() {
+  //   FB.getLoginStatus(function(response) {
+  //     statusChangeCallback(response);
+  //   });
+  // }
 
   window.fbAsyncInit = function() {
   FB.init({
@@ -98,8 +102,8 @@
     });
 
     $("#facebookLogin").animate({
-        // top: '100px',
-        // opacity: '0.0'
+        top: '100px',
+        opacity: '0.0'
 
     });
     $("#web").animate({
