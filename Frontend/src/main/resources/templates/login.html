@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="/css/login.css"/>
     <script src="/js/jquery-2.1.0.min.js"></script>
     <script src="/js/login.js"></script>
+    <link href="/bootstrap/css/bootstrap-social.css" rel="stylesheet" id="bootstrap-css"></link>
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
-    <script src="/bootstrap/js/bootstrap.min.js"></script><!-- 
-    // <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-    // <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script -->
-     <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
     <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
 </head>
 
@@ -31,9 +31,16 @@
 
                 
                     <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <br/>
                     <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
-
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
+                    <br/>
+                    <br/>
+                    <div id="tos">
+                        <p>
+                            By registering, you are agreeing to the <a data-toggle="modal" data-target="#myModal" id="privacy" style="cursor:pointer" onclick="loadPrivacy()">privacy policy</a> and <a data-toggle="modal" data-target="#myModal" id="terms" style="cursor:pointer" onclick="loadTos()">terms of service.</a>
+                        </p>
+                    </div>
                 </form>
 
                                  
@@ -43,5 +50,27 @@
             </div>   
     </div>
     </div>
+    
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modaltitle">Modal Header</h4>
+          </div>
+          <div class="modal-body" id="modelbod">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
 </body>
 </html>

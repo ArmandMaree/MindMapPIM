@@ -1,5 +1,5 @@
 body{
-    background: grey;
+    background : #eee url("/images/back.jpg");
 
   }
 html,body{
@@ -96,7 +96,6 @@ html,body{
     margin-top:15px;
     padding: 10px 20px;
 }
-
 .animated {
   -webkit-animation-duration: 1s;
   animation-duration: 1s;

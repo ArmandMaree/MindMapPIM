@@ -1,26 +1,67 @@
-
-        $(document).ready(function() {
-              $.ajaxSetup({ cache: true });
-              $.getScript('//connect.facebook.net/en_US/sdk.js', function(){
-                FB.init({
-                  appId: '1051696778242173',
-                  version: 'v2.5' // or v2.0, v2.1, v2.2, v2.3
-                });     
-                $('#loginbutton,#feedbutton').removeAttr('disabled');
-                FB.getLoginStatus(updateStatusCallback);
+        function googleretrieve(){
+          var auth2 = gapi.auth2.getAuthInstance();
+          // gapi.load('auth2', function() {
+          //   gapi.auth2.getAuthInstance();
+          //   auth2 = gapi.auth2.init({
+          //   client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
+          //   // Scopes to request in addition to 'profile' and 'email'
+          //   scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
+          //   });
+          // });
+          auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+        
+        }
+          function signInCallback(authResult) {
+            if (authResult['code']) {
+              // $("#token").html(authResult['code']);
+              console.log(authResult['code']);
+              // Hide the sign-in button now that the user is authorized, for example:
+              // $('#signinButton').attr('style', 'display: none');
+              $('#tickGoogle').show();
+              $('#nextButton').show();
+              // Send the code to the server
+              $.ajax({
+                type: 'POST',
+                url: 'http://example.com/storeauthcode',
+                contentType: 'application/octet-stream; charset=utf-8',
+                success: function(result) {
+                  // Handle or verify the server response.
+                },
+                processData: false,
+                data: authResult['code']
               });
-            });
+            } else {
+              // There was an error.
+            }
+          }
 
-        var rightans;
-        var count =0;
-        var answers = new Array(6);
-        var user;
-        var password;
-
-
+        function loadPrivacy(){
+          document.getElementById("modaltitle").innerHTML="Privacy Policy";
+          var xmlhttp=new XMLHttpRequest();
+          xmlhttp.onreadystatechange=function(){
+               if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+                  }
+          }
+          xmlhttp.open("GET","ajax/PrivacyPolicy.txt");
+          // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
+          xmlhttp.send();
+        }
+        function loadTos(){
+          document.getElementById("modaltitle").innerHTML="Terms of Service";
+          var xmlhttp=new XMLHttpRequest();
+          xmlhttp.onreadystatechange=function(){
+               if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+                  }
+          }
+          xmlhttp.open("GET","ajax/TermsofService.txt");
+          // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
+          xmlhttp.send();
+        }
         function loadXMLDoc(){
             $('.login-container').animate({
-                width:"750px",
+                width:"550px",
                 height:"550px"
 
             });
@@ -56,18 +97,19 @@
             //     // top: '70px',
             //     // opacity: '100.0'
 
+
+
+            // count++;
+            // filename =  "Questions/Ques"+count +".js?rndstr=<%= getRandomStr() %>";
+            // $.getJSON(filename, function(result){
+            //     document.getElementById("ques").innerHTML=result.Question;
+            //     document.getElementById("btnone").innerHTML=result.fans1;
+            //     document.getElementById("btntwo").innerHTML=result.fans2;
+            //     document.getElementById("btnthree").innerHTML=result.fans3;
+            //     document.getElementById("btnnext").style.display = "none";
+            //     rightans = result.answer;
+            //     // alert(rightans);
             // });
-            count++;
-            filename =  "Questions/Ques"+count +".js?rndstr=<%= getRandomStr() %>";
-            $.getJSON(filename, function(result){
-                document.getElementById("ques").innerHTML=result.Question;
-                document.getElementById("btnone").innerHTML=result.fans1;
-                document.getElementById("btntwo").innerHTML=result.fans2;
-                document.getElementById("btnthree").innerHTML=result.fans3;
-                document.getElementById("btnnext").style.display = "none";
-                rightans = result.answer;
-                // alert(rightans);
-            });
         }   
             // $("#btnnext").hide();
 
@@ -98,6 +140,16 @@
                 top: '100px',
                 opacity: '0.0'
 
+            });            
+            $("#facebookLogin").animate({
+                top: '100px',
+                opacity: '0.0'
+
+            });
+            $("#tos").animate({
+                top: '100px',
+                opacity: '0.0'
+
             });
             $("#web").animate({
                 top: '100px',
@@ -124,7 +176,6 @@
             $("#continue").show();
             $("#continue").delay(2000).animate({
                 opacity: '1'
-
             });
 
           // }
@@ -134,9 +185,7 @@
             $("#submitID").hide();
             $("#welcome").hide();
             $("#continue").hide();
-
-
-	});
+      	});
 
 // Facebook Code
  $("facebookLogout").hide();
@@ -257,6 +306,11 @@
         opacity: '0.3'
 
     });
+    $("#tos").animate({
+        top: '100px',
+        opacity: '0.0'
+
+    });
     $("#welcome").show();
     $("#welcome").delay(1000).animate({
         opacity: '1'
@@ -275,3 +329,18 @@
     });
 }
 //End of Facebook Code
+
+//Data selection ajax
+
+
+// function hideticks(){
+//   $("#tickGoogle").hide();
+//   $("#tickFacebook").hide();
+//   $("#tickTwitter").hide();
+//   $("#tickLinkedin").hide();
+  
+// }
+
+
+
+//End of Data selection ajax
