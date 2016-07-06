@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import data.*;
 
 public class DataProcessingThread implements Runnable {
-	private LinkedBlockingQueue<RawData> queue;
+	private RawDataQueue queue;
 	private boolean stop = false;
 	private final int TIMEOUT = 10;
 	private NaturalLanguageProcessor nlp;
 
-	public DataProcessingThread(LinkedBlockingQueue<RawData> queue, NaturalLanguageProcessor nlp) {
+	public DataProcessingThread(RawDataQueue queue, NaturalLanguageProcessor nlp) {
 		this.queue = queue;
 		this.nlp = nlp;
 	}

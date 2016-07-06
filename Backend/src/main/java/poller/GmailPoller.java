@@ -76,15 +76,15 @@ public class GmailPoller implements Poller {
 			System.exit(1);
 		}
 	}
-	
-	private LinkedBlockingQueue queue;
+
+	private RawDataQueue queue;
 	private String userAuthCode;
 
-	public GmailPoller(LinkedBlockingQueue queue, String userAuthCode) {
+	public GmailPoller(RawDataQueue queue, String userAuthCode) {
 		this.queue = queue;
 		this.userAuthCode = userAuthCode;
-		
-		
+
+
 		try {
 			// Build a new authorized API client service.
 			Gmail service = getGmailService();
@@ -116,7 +116,7 @@ public class GmailPoller implements Poller {
 	}
 
 	public void run() {
-		
+
 	}
 
 	public RawData poll() {
@@ -138,7 +138,7 @@ public class GmailPoller implements Poller {
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
-	public static Credential authorize() throws IOException {
+	public Credential authorize() throws IOException {
 		// Load client secrets.
 		InputStream in =
 			GmailPoller.class.getResourceAsStream("/client_secret.json");
@@ -164,7 +164,7 @@ public class GmailPoller implements Poller {
 	 * @return an authorized Gmail client service
 	 * @throws IOException
 	 */
-	public static Gmail getGmailService() throws IOException {
+	public Gmail getGmailService() throws IOException {
 		//Credential credential = authorize();
 
 		// (Receive authCode via HTTPS POST)
@@ -174,20 +174,20 @@ public class GmailPoller implements Poller {
 		// You can also find your Web application client ID and client secret from the
 		// console and specify them directly when you create the GoogleAuthorizationCodeTokenRequest
 		// object.
-		String CLIENT_SECRET_FILE = "/home/nathan/Desktop/University/COS301/git/MindMapPIM/Backend/client_secret.json";
+		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "http://codehaven.co.za";
-		String authCode = "4/Y9RYgiUpPLdcJsiFPvxsd_Owj2H9awYlL1lkeoCwkmw";
-		
+
 		// Exchange auth code for access token
+		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
 		GoogleClientSecrets clientSecrets =
-			GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new FileReader(CLIENT_SECRET_FILE));
+			GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
 			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
 				new NetHttpTransport(),
 			  	JacksonFactory.getDefaultInstance(),
 			  	"https://www.googleapis.com/oauth2/v4/token",
 			  	clientSecrets.getDetails().getClientId(),
 			  	clientSecrets.getDetails().getClientSecret(),
-			  	authCode,
+			  	userAuthCode,
 			  	REDIRECT_URI)  // Specify the same redirect URI that you use with your web
 			              // app. If you don't have a web version of your app, you can
 			              // specify an empty string.
@@ -195,7 +195,7 @@ public class GmailPoller implements Poller {
 
 		String accessToken = tokenResponse.getAccessToken();
 		//System.out.println("\n\nACCESS TOKEN: " + accessToken + "\n");
-		
+
 		// Use access token to call API
 		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
 
@@ -236,7 +236,7 @@ public class GmailPoller implements Poller {
 		}
 	}*/
 
-	public static List<Label> listLabels(Gmail service, String userId) throws IOException  {
+	public List<Label> listLabels(Gmail service, String userId) throws IOException  {
 		ListLabelsResponse listResponse = service.users().labels().list(userId).execute();
 		List<Label> labels = listResponse.getLabels();
 
@@ -252,7 +252,7 @@ public class GmailPoller implements Poller {
 		return labels;
 	}
 
-	public static List<Message> listMessagesMatchingQuery(Gmail service, String userId, long limit) throws IOException {
+	public List<Message> listMessagesMatchingQuery(Gmail service, String userId, long limit) throws IOException {
 		ListMessagesResponse response = service.users().messages().list(userId).setMaxResults(limit).execute();
 		List<Message> messages = new ArrayList<Message>();
 
@@ -273,7 +273,7 @@ public class GmailPoller implements Poller {
 		return messages;
 	}
 
-	public static Message getMessage(Gmail service, String userId, String messageId) throws IOException {
+	public Message getMessage(Gmail service, String userId, String messageId) throws IOException {
 		Message message = service.users().messages().get(userId, messageId).execute();
 		// System.out.println("Message snippet: " + message.getSnippet());
 		//System.out.println(message.toPrettyString());
@@ -281,7 +281,7 @@ public class GmailPoller implements Poller {
 		return message;
   	}
 
-  	public static MimeMessage getMimeMessage(Gmail service, String userId, String messageId) throws IOException, MessagingException {
+  	public MimeMessage getMimeMessage(Gmail service, String userId, String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
 		Properties props = new Properties();
@@ -297,7 +297,7 @@ public class GmailPoller implements Poller {
 		return email;
 	}
 
-	public static String getMessageBody(Gmail service, String userId, String messageId) throws IOException, MessagingException {
+	public String getMessageBody(Gmail service, String userId, String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		System.out.println("\nMessage Body:");
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
@@ -312,7 +312,7 @@ public class GmailPoller implements Poller {
 		}
 
 		boolean isHTML = false;
-		
+
 		if (email.getContent() instanceof String) {
 			String bodyS = (String)email.getContent();
 
@@ -373,7 +373,7 @@ public class GmailPoller implements Poller {
 						Document doc = Jsoup.parse(bodyS);
 						//System.out.println(doc.body().text());
 						body = doc.body().text();
-						
+
 						/*for (String elem : elementsToProcess) {
 							Elements elements = doc.select(elem);
 
