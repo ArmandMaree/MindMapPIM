@@ -20,6 +20,7 @@ public class DataProcessingThread implements Runnable {
 	public void run() {
 		// // test start
 		/*RawData rd = new RawData();
+		RawData rd = new RawData();
 		rd.pimSource = "Gmail";
 		rd.userId = "fakeUserId";
 		String[] contacts = {"koos@gmail.com", "piet@gmail.com"};
@@ -34,7 +35,7 @@ public class DataProcessingThread implements Runnable {
 			ie.printStackTrace();
 			System.exit(1);
 		}*/
-		// test end
+		// // test end
 
 		while (!stop) {
 			RawData rawData = null;
