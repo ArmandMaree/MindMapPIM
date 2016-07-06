@@ -1,0 +1,51 @@
+#title
+{
+	padding-bottom: 0;
+	height: 100%;
+	margin-bottom: 0;
+	margin-top: 0;
+	vertical-align: center;
+}
+/*.navbar-form.navbar-left
+{
+	padding-left: 30%;
+}*/
+.inmenu
+{
+	margin: 5%;
+}
+body
+{
+    color: #d3d3d3;
+    font: 12pt arial;
+    background-color: #222222;
+}
+
+#mynetwork {/*
+    width: 800px;*/
+    height:93.5vh;
+    border: 1px solid #444444;
+    background-color: #222222;
+}
+#myCanvas 
+{
+	background-color: rgba(158, 167, 184, 0.2); 
+}
+#nav
+{
+	margin-bottom: 0;
+}
+#sidepanel
+{
+	background-color: #808080;
+    height:93.5vh;
+}
+.glyphicon
+{
+	font-size: 18pt;
+}
+#sidepanelTitle
+{
+	margin-top: 3%;
+	text-align: center;
+}
