@@ -1,15 +1,68 @@
+<script src="https://apis.google.com/_/scs/apps-static/_/js/k=oz.gapi.en_GB.tOcyOaVMwAw.O/m=auth2/exm=client/rt=j/sv=1/d=1/ed=1/am=AQ/rs=AGLTcCNXugz5sXWIcJaGN98xRV7Uqb3dmQ/cb=gapi.loaded_1" async=""></script><script src="https://apis.google.com/_/scs/apps-static/_/js/k=oz.gapi.en_GB.tOcyOaVMwAw.O/m=client/rt=j/sv=1/d=1/ed=1/am=AQ/rs=AGLTcCNXugz5sXWIcJaGN98xRV7Uqb3dmQ/cb=gapi.loaded_0" async=""></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://apis.google.com/js/client:platform.js?onload=start" async="" defer="" gapi_processed="true"></script>
+
 <div class="container-fluid">
 	<!-- <div class="jumbotron"> -->
-	<h3 id="ques">Please select where you would like us to retrieve your information.<h3>
+		<h3 id="ques">Please select where you would like us to retrieve your information.<h3>
 	<!-- </div> -->
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<table style="width:100%">
+	  <tr>
+	    <td>
+			<a class="btn btn-block btn-social btn-lg  btn-google" id="googlesigninButton" onclick="googleretrieve()">
+		    	<span class="fa fa-google"></span> Retrieve From Google
+		  	</a>
+		  	<div style="height:5px"></div>
+	  	</td>
+	    <td>
+	    	<div id="tickGoogle" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"  hidden></span></div>
+	    </td> 
+	  </tr>
+	  <br/>
+	  <tr>
+	    <td>
+		  	<a class="btn btn-block btn-social btn-lg  btn-facebook">
+		    	<span class="fa fa-facebook"></span> Retrieve From Facebook
+		  	</a>
+		  	<div style="height:5px"></div>
+	  	</td>
+	    <td>
+	    	<div id="tickFacebook" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
+	    </td> 
+	  </tr>
+	  <tr>
+	    <td>
+		  	<a class="btn btn-block btn-social btn-lg  btn-twitter">
+		    	<span class="fa fa-twitter"></span> Retrieve From Twitter
+		  	</a>
+		  	<div style="height:5px"></div>
+	  	</td>
+	    <td>
+	    	<div id="tickTwitter" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
+	    </td> 
+	  </tr>
+	  <tr>
+	    <td>
+		  	<a class="btn btn-block btn-social btn-lg  btn-linkedin">
+		    	<span class="fa fa-linkedin"></span> Retrieve From Linkedin
+		  	</a>
+		  	<div style="height:5px"></div>
+	  	</td>
+	    <td>
+	    	<div id="tickLinkedin" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
+	    </td> 
 
-	</div id= "buttoncont">
-<!-- 		<button id ='btnone' class='button btn btn-default btn-block login' style='height:80px;padding:10px' onclick="pushbutton(1)">all thrown objects</button>
-		<button id ='btntwo' class='button btn btn-default btn-block login' style='height:80px;padding:10px' onclick="pushbutton(2)">no thrown objects</button>
-		<button id ='btnthree' class='button btn btn-default btn-block login' style='height:80px;padding:10px' onclick="pushbutton(3)">any thrown object that has not been caught by an earlier catch block</button>
-		<button id ='btnnext' class='button btn btn-info btn-block login' style='height:80px;padding:10px' onclick="pushnext()">Next</button> -->
-    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
-	</div>
+	  </tr>
 
+	</table>
+
+	<br/>
+	<br/>
+	
+	<div id="nextButton" hidden><button type="button" class="btn btn-block btn-success" onclick="window.location.assign('/mainpage')">Done</button></div>
 
 </div>
+<iframe name="oauth2relay298397952" id="oauth2relay298397952" src="https://accounts.google.com/o/oauth2/postmessageRelay?parent=http%3A%2F%2Flocalhost:8080&amp;jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.en_GB.tOcyOaVMwAw.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCNXugz5sXWIcJaGN98xRV7Uqb3dmQ#rpctoken=628530161&amp;forcesecure=1" tabindex="-1" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><iframe style="position: absolute; width: 1px; height: 1px; left: -9999px;" id="ssIFrame_google" sandbox="allow-scripts allow-same-origin" src="https://accounts.google.com/o/oauth2/iframe#origin=http%3A%2F%2Flocalhost:8080&amp;rpcToken=830513809.8463601"></iframe>

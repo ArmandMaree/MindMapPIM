@@ -15,21 +15,16 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/result").setViewName("result");
+        registry.addViewController("/mainpage").setViewName("mainpage");
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public String showForm(Login greetingForm) {
+    public String showLogin(Login loginForm) {
         return "login";
     }
 
-    @RequestMapping(value="/", method=RequestMethod.POST)
-    public String checkPersonInfo(@Valid Login loginForm, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return "login";
-        }
-
-        return "redirect:/result";
+    @RequestMapping(value="/mainpage", method=RequestMethod.GET)
+    public String showMain() {
+        return "mainpage";
     }
 }
