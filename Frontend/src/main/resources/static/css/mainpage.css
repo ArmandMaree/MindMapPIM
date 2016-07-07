@@ -1,18 +1,18 @@
 #title
 {
-	padding-bottom: 0;
-	height: 100%;
-	margin-bottom: 0;
-	margin-top: 0;
-	vertical-align: center;
+    padding-bottom: 0;
+    height: 100%;
+    margin-bottom: 0;
+    margin-top: 0;
+    vertical-align: center;
 }
 /*.navbar-form.navbar-left
 {
-	padding-left: 30%;
+    padding-left: 30%;
 }*/
 .inmenu
 {
-	margin: 5%;
+    margin: 5%;
 }
 body
 {
@@ -32,11 +32,11 @@ body
 }
 #myCanvas 
 {
-	background-color: rgba(158, 167, 184, 0.2); 
+    background-color: rgba(158, 167, 184, 0.2); 
 }
 #nav
 {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 #sidepanel{
     padding: 0.5em;
@@ -46,18 +46,18 @@ body
     left: auto !important;
     right: 0px !important;
     width: 1000px;
+    vertical-align: middle !important;
 }
 .glyphicon
 {
-    font-size: 10pt;
+    font-size: 10pt !important;
 }
-#sidepanelTitle
-{
-    padding:10px;
+#sidepanelTitle{
+    padding:5px;
     background-color: rgba(255, 255, 255, 0.3); 
     color:white;
-	margin-top: 3%;
-	text-align: center;
+    margin-top: 3%;
+    text-align: center;
     font-size: 10pt;
 }
 #accordion{
@@ -65,11 +65,11 @@ body
 }
 .panel-default{
     color: white !important;
-    background-color: rgba(255, 255, 255, 0.15) !important; 
+    background-color:#2d415c !important; 
 }
 .panel-heading {
     color: white !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    background-color: rgba(255, 255, 255, 0.3) !important;
 }
 a > h4{
     color: white !important;

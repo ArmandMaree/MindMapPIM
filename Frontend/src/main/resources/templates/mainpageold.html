@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <meta http-equiv="Content-Type" content="text/html;a charset=UTF-8"></meta>
+	<head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
         <title>PIM</title>
-        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
         <link rel="stylesheet" href="/css/mainpage.css"/>
+        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
         <link href="/css/vis.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
         <script src="/js/jquery-2.1.0.min.js"></script>
@@ -14,16 +14,8 @@
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-            <script>
-            $(function() {
-              $( "#sidepanel" ).resizable({ handles: 'w' });
-            });
-            var handles = $( ".selector" ).resizable( "option", "handles" );
-            //setter
-            $( ".selector" ).resizable( "option", "handles", 'w' );
-          </script>
-  </head>
-  <body>
+	</head>
+	<body>
         <nav id="nav" class="navbar navbar-default">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -37,7 +29,7 @@
               <a class="navbar-brand" href="#">
                 <img alt="Brand" style="width:20px;height:20px" src="/images/avatar.png"/>
               </a>
-              <h3 class="navbar-text">PIM</h3>
+              <h2 class="navbar-text">PIM</h2>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -71,13 +63,14 @@
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>
-         <div id="mynetwork"> <!-- ui-widget-content -->
+
+        <div id="mynetwork" class="col-xs-12 col-sm-8 col-md-8"> <!-- ui-widget-content -->
             <div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
                 <canvas  style="position: relative; touch-action: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);background-color: rgba(0, 0, 0, 0);"></canvas>
             </div>
         </div>
-        <div id="sidepanel" style="width:300px;margin: 0;">
-            <div id= "sidepanelTitle" class="panel" ><h3>Title</h3></div>
+        <div id="sidepanel" class="col-xs-12 col-sm-4 col-md-4" >
+            <div id= "sidepanelTitle" class="panel" ><h1>Title</h1></div>
             <ol class="breadcrumb">
               <li><a href="#">Home</a></li>
               <li><a href="#">Library</a></li>
@@ -87,7 +80,9 @@
             <div class="panel-group" id="accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"><h4 class="panel-title">Gmail</h4></a>
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Gmail</a>
+                        </h4>
                     </div>
                     <div id="collapse1" class="panel-collapse collapse">
                         <div class="panel-body">Content Here</div>
@@ -96,7 +91,9 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"><h4 class="panel-title">Facebook</h4></a>
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Facebook</a>
+                        </h4>
                     </div>
                     <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
@@ -110,7 +107,9 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"><h4 class="panel-title">LinkedIn</h4></a>
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">LinkedIn</a>
+                        </h4>
                     </div>
                     <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
@@ -124,7 +123,9 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"><h4 class="panel-title">Twitter</h4></a>
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Twitter</a>
+                        </h4>
                     </div>
                     <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
@@ -138,5 +139,5 @@
             
             </div>
         </div>
-  </body>
+	</body>
 </html>
