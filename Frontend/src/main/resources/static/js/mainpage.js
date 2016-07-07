@@ -4,7 +4,7 @@ $(document).ready(function($){
     var len = undefined;
     var nodes = [{id: 0, label: "ME", group: 0},
             {id: 1, label: "1", group: 0},
-            {id: 2, label: "Horse Riding", group: 0},
+            {id: 2, label: "2", group: 0},
             {id: 3, label: "3", group: 1},
             {id: 4, label: "4", group: 1},
             {id: 5, label: "5", group: 1},
