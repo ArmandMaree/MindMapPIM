@@ -18,7 +18,7 @@ body
 {
     color: #34a8d2;
     font: 10pt arial;
-    background-color: white;
+    background-color:  #2d415c;
 }
 
 #mynetwork {
@@ -39,7 +39,8 @@ body
 	margin-bottom: 0;
 }
 #sidepanel{
-    background-color: #2d415c;
+    padding: 0.5em;
+    background-color: #2d415c !important;
     height:93.5vh;
     position: fixed !important;
     left: auto !important;
