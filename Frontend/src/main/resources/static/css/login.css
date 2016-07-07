@@ -58,7 +58,7 @@ html,body{
 }
 
 .avatar{
-    background: #eee url("/images/avatar.png");
+    background: #eee url("/images/bubblelogo.png");
     width: 100px;height: 100px;
     margin: 10px auto 30px;
     border-radius: 100%;
