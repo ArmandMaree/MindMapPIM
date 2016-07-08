@@ -16,6 +16,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/mainpage").setViewName("mainpage");
+        registry.addViewController("/setting").setViewName("setting");
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)
@@ -26,5 +27,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @RequestMapping(value="/mainpage", method=RequestMethod.GET)
     public String showMain() {
         return "mainpage";
+    }
+
+    @RequestMapping(value="/settings", method=RequestMethod.GET)
+    public String showSettings() {
+        return "settings";
     }
 }

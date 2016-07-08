@@ -132,3 +132,11 @@ $(document).ready(function($){
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });
     });
+function logout(){
+    window.location.assign('/')
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log('User signed out.');
+    });
+
+}

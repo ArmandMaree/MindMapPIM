@@ -17,6 +17,9 @@
         <script type="text/javascript" src="/js/vis.js"></script><style type="text/css"></style>
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        
+        <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
+        <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
 
 
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
@@ -65,13 +68,13 @@
                     <li><a href="#"><span class="glyphicon glyphicon-remove-circle"></span> Clear graph</a></li>
                     
                     <li role="separator" class="divider"></li>
-                    <li><a href="#"><span class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
+                    <li><a href="/settings"><span class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
                     <!-- <li><a href="#">Separated link</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="#">One more separated link</a></li> -->
                   </ul>
                 </li>
-                <li><a href="#" title="Logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
+                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span></a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->

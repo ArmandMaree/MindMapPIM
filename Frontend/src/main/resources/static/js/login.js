@@ -1,13 +1,5 @@
         function googleretrieve(){
           var auth2 = gapi.auth2.getAuthInstance();
-          // gapi.load('auth2', function() {
-          //   gapi.auth2.getAuthInstance();
-          //   auth2 = gapi.auth2.init({
-          //   client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-          //   // Scopes to request in addition to 'profile' and 'email'
-          //   scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
-          //   });
-          // });
           auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
         
         }
