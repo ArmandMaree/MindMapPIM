@@ -1,3 +1,4 @@
+
         function googleretrieve(){
           var auth2 = gapi.auth2.getAuthInstance();
           auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
@@ -178,12 +179,16 @@
             $("#welcome").hide();
             $("#continue").hide();
       	});
-
+var facebookbuttonshown =false;
 // Facebook Code
  $("facebookLogout").hide();
  function statusChangeCallback(response) {
     console.log('statusChangeCallback');
     console.log(response);
+    facebookbuttonshown =true;
+    renderButton();
+    $('#my-signin2').show();
+
     // The response object is returned with a status field that lets the
     // app know the current login status of the person.
     // Full docs on the response object can be found in the documentation
