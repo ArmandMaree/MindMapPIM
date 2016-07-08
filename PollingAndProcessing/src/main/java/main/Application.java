@@ -33,6 +33,9 @@ public class Application {
 
 		for (DataProcessingThread dpt : dataProcessingThreads) {
 			dpt = new DataProcessingThread(queue, nlp);
+			new Thread(dpt).start();
 		}
+
+		System.out.println("Started " + dataProcessingThreads.length + " data processing threads.");
 	}
 }

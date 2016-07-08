@@ -19,22 +19,21 @@ public class DataProcessingThread implements Runnable {
 
 	public void run() {
 		// // test start
-		/*RawData rd = new RawData();
-		RawData rd = new RawData();
-		rd.pimSource = "Gmail";
-		rd.userId = "fakeUserId";
-		String[] contacts = {"koos@gmail.com", "piet@gmail.com"};
-		rd.involvedContacts = contacts;
-		String[] dataArr = {"Hey Acuben", "Here's that photo I promised you!", "Welcome to New York City!"};
-		rd.data = dataArr;
-		rd.pimItemId = "fakeItemId";
-		try {
-			queue.put(rd);
-		}
-		catch (InterruptedException ie) {
-			ie.printStackTrace();
-			System.exit(1);
-		}*/
+		// RawData rd = new RawData();
+		// rd.pimSource = "Gmail";
+		// rd.userId = "fakeUserId";
+		// String[] contacts = {"koos@gmail.com", "piet@gmail.com"};
+		// rd.involvedContacts = contacts;
+		// String[] dataArr = {"Hey Acuben", "Here's that photo I promised you!", "Stevie Wonder lives in New York City."};
+		// rd.data = dataArr;
+		// rd.pimItemId = "fakeItemId";
+		// try {
+		// 	queue.put(rd);
+		// }
+		// catch (InterruptedException ie) {
+		// 	ie.printStackTrace();
+		// 	System.exit(1);
+		// }
 		// // test end
 
 		while (!stop) {

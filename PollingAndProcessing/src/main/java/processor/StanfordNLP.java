@@ -40,7 +40,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	public ArrayList<String> getTopics(String text) {
 		List<CoreMap> sentences = parse(text);
 		ArrayList<String> topics = getPOS("VB", sentences); // get verbs
-		topics.addAll(getPOS("NN*", sentences)); // get nouns
+		topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
 
 		return topics;
 	}
@@ -88,5 +88,71 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		}
 
 		return words;
+	}
+
+	private ArrayList<CoreLabel> getCore(String match, List<CoreMap> sentences) {
+		ArrayList<CoreLabel> words = new ArrayList<>();
+
+		for(CoreMap sentence: sentences) {
+			for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+				String pos = token.get(PartOfSpeechAnnotation.class);
+
+				if (match.endsWith("*") && pos.startsWith(match.substring(0, match.length() - 1)))
+					words.add(token);
+				else if (pos.equals(match))
+					words.add(token);
+			}
+		}
+
+		return words;
+	}
+
+	private ArrayList<String> getGroups(List<CoreMap> sentences) {
+		ArrayList<CoreLabel> preGroup = getCore("NN*", sentences);
+		ArrayList<String> groups = new ArrayList<>();
+		ArrayList<CoreLabel> buffer = new ArrayList<>();
+
+		for (CoreLabel token: preGroup) {
+			String ner = token.get(NamedEntityTagAnnotation.class);
+
+			if (ner.equals("O")) {
+				if (!buffer.isEmpty())
+					groups.add(bufferToString(buffer));
+
+				buffer = new ArrayList<>();
+				groups.add(token.get(LemmaAnnotation.class));
+			}
+			else {
+				if (buffer.isEmpty())
+					buffer.add(token);
+				else if (ner.equals(buffer.get(0).get(NamedEntityTagAnnotation.class)))
+					buffer.add(token);
+				else {
+					groups.add(bufferToString(buffer));
+					buffer = new ArrayList<>();
+					buffer.add(token);
+				}
+			}
+		}
+
+		if (!buffer.isEmpty())
+			groups.add(bufferToString(buffer));
+
+		return groups;
+	}
+
+	private String bufferToString(ArrayList<CoreLabel> buffer) {
+		String bufferGroup = "";
+
+		if (!buffer.isEmpty()) {
+			for (CoreLabel word : buffer) {
+				if (bufferGroup.equals(""))
+					bufferGroup = word.get(LemmaAnnotation.class);
+				else
+					bufferGroup += " " + word.get(LemmaAnnotation.class);
+			}
+		}
+
+		return bufferGroup;
 	}
 }
