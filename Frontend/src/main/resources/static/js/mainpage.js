@@ -95,3 +95,40 @@ $(document).ready(function($){
     // $("#sidepanel").css('height', para);
 
 });
+
+    var menu;
+    $(document.body).ready(function () {
+        menu = new ax5.ui.menu({
+            position: "absolute", // default position is "fixed"
+            theme: "primary",
+            icons: {
+                'arrow': '<i class="fa fa-caret-right"></i>'
+            },
+            items: [
+                {
+                    icon: '<i class="fa fa-comment"></i>',
+                    label: "Menu A",
+                    items: [
+                        {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
+                        {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
+                        {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
+                    ]
+                },
+                {
+                    icon: '<i class="fa fa-comments"></i>',
+                    label: "Menu B",
+                    items: [
+                        {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
+                        {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
+                        {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
+                    ]
+                }
+            ]
+        });
+ 
+        $("#mynetwork").bind("contextmenu", function (e) {
+            menu.popup(e);
+            ax5.util.stopEvent(e);
+            // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
+        });
+    });
