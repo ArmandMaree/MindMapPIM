@@ -42,30 +42,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 import data.*;
 
 public class GmailPoller implements Poller {
-	/** Application name. */
 	private static final String APPLICATION_NAME = "Gmail API";
-
-	/** Directory to store user credentials for this application. */
-	private static final java.io.File DATA_STORE_DIR = new java.io.File(
-		System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
-
-	/** Global instance of the {@link FileDataStoreFactory}. */
+	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
 	private static FileDataStoreFactory DATA_STORE_FACTORY;
-
-	/** Global instance of the JSON factory. */
-	private static final JsonFactory JSON_FACTORY =
-		JacksonFactory.getDefaultInstance();
-
-	/** Global instance of the HTTP transport. */
+	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	private static HttpTransport HTTP_TRANSPORT;
+	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
 
-	/** Global instance of the scopes required by this quickstart.
-	 *
-	 * If modifying these scopes, delete your previously saved credentials
-	 * at ~/.credentials/gmail-java-quickstart.json
-	 */
-	private static final List<String> SCOPES =
-		Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
+	private RawDataQueue rawQueue;
+	private String userAuthCode;
+	private Gmail service;
+	private final String userId = "me";
+	private String lastEmail = "";
+	private boolean stop = false;
 
 	static {
 		try {
@@ -77,86 +66,99 @@ public class GmailPoller implements Poller {
 		}
 	}
 
-	private RawDataQueue queue;
-	private String userAuthCode;
-
-	public GmailPoller(RawDataQueue queue, String userAuthCode) {
-		this.queue = queue;
+	public GmailPoller(RawDataQueue rawQueue, String userAuthCode) {
+		this.rawQueue = rawQueue;
 		this.userAuthCode = userAuthCode;
 
-
 		try {
-			// Build a new authorized API client service.
-			Gmail service = getGmailService();
-
-			// Print the labels in the user's account.
-			String user = "me";
-			listLabels(service, user);
-
-			// Print messages in user's account
-			List<Message> messages = listMessagesMatchingQuery(service, user, 1);
-
-			//Print last message
-			getMessage(service, user, messages.get(0).getId());
-
-			// Get MimeEmail
-			getMimeMessage(service, user, messages.get(0).getId());
-
-			// Print Email body
-			getMessageBody(service, user, messages.get(0).getId());
+			service = getGmailService(); // Build a new authorized API client service.
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
-			System.exit(1);
-		}
-		catch (MessagingException me) {
-			me.printStackTrace();
-			System.exit(1);
 		}
 	}
 
 	public void run() {
+		while (!stop) {
+			System.out.println("Polling.....");
+			poll();
 
+			try {
+				java.lang.Thread.sleep(10000);
+			}
+			catch (InterruptedException ignore) {}
+		}
 	}
 
-	public RawData poll() {
-		//Polling to see if a new email has arrived
-		return null;
+	public void poll() {
+		try {
+			GmailBatchMessages gbm = listNewMessages(null);
+			String lastEmailDate = null;
+			String firstId = "";
+
+			while (gbm != null) {
+				if (firstId.equals(gbm.messages.get(0).getId()))
+					break;
+
+				for (Message message : gbm.messages) {
+					if (firstId.equals(message.getId()))
+						break;
+
+					if (lastEmailDate == null) {
+						try {
+							long millis = getTimeStamp(message.getId());
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTimeInMillis(millis);
+
+							int mYear = calendar.get(Calendar.YEAR);
+							int mMonth = calendar.get(Calendar.MONTH);
+							int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+							int mHour = calendar.get(Calendar.HOUR_OF_DAY);
+							int mMinute = calendar.get(Calendar.MINUTE);
+
+							lastEmailDate = mYear + "/" + mMonth + "/" + mDay + " " + mHour + ":" + mMinute;
+						}
+						catch (IOException ioe) {
+							ioe.printStackTrace();
+							continue;
+						}
+
+						firstId = message.getId();
+					}
+
+
+					RawData rawData = getRawData(message.getId());
+
+					if (rawData != null)
+						addToQueue(rawData);
+				}
+
+				gbm = listNewMessages(gbm.nextPageToken);
+			}
+
+			if (lastEmailDate != null)
+				lastEmail = lastEmailDate;
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		catch (MessagingException me) {
+			me.printStackTrace();
+		}
+	}
+
+	public long getTimeStamp(String messageId) throws IOException {
+		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
+		return message.getInternalDate();
 	}
 
 	public void addToQueue(RawData data) {
 		try {
-			queue.put(data);
+			rawQueue.put(data);
 		}
 		catch (InterruptedException ex) {
 			System.out.println("Interrupted while waiting");
 		}
-	}
-
-	/**
-	 * Creates an authorized Credential object.
-	 * @return an authorized Credential object.
-	 * @throws IOException
-	 */
-	public Credential authorize() throws IOException {
-		// Load client secrets.
-		InputStream in =
-			GmailPoller.class.getResourceAsStream("/client_secret.json");
-		GoogleClientSecrets clientSecrets =
-			GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow =
-				new GoogleAuthorizationCodeFlow.Builder(
-						HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-				.setDataStoreFactory(DATA_STORE_FACTORY)
-				.setAccessType("offline")
-				.build();
-		Credential credential = new AuthorizationCodeInstalledApp(
-			flow, new LocalServerReceiver()).authorize("user");
-		System.out.println(
-				"Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-		return credential;
 	}
 
 	/**
@@ -165,156 +167,109 @@ public class GmailPoller implements Poller {
 	 * @throws IOException
 	 */
 	public Gmail getGmailService() throws IOException {
-		//Credential credential = authorize();
-
-		// (Receive authCode via HTTPS POST)
-
-		// Set path to the Web application client_secret_*.json file you downloaded from the
-		// Google Developers Console: https://console.developers.google.com/apis/credentials?project=_
-		// You can also find your Web application client ID and client secret from the
-		// console and specify them directly when you create the GoogleAuthorizationCodeTokenRequest
-		// object.
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "http://codehaven.co.za";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
-		GoogleClientSecrets clientSecrets =
-			GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
-			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-				new NetHttpTransport(),
-			  	JacksonFactory.getDefaultInstance(),
-			  	"https://www.googleapis.com/oauth2/v4/token",
-			  	clientSecrets.getDetails().getClientId(),
-			  	clientSecrets.getDetails().getClientSecret(),
-			  	userAuthCode,
-			  	REDIRECT_URI)  // Specify the same redirect URI that you use with your web
-			              // app. If you don't have a web version of your app, you can
-			              // specify an empty string.
-			  	.execute();
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
+		GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), "https://www.googleapis.com/oauth2/v4/token", clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret(), userAuthCode, REDIRECT_URI).execute();
 
 		String accessToken = tokenResponse.getAccessToken();
-		//System.out.println("\n\nACCESS TOKEN: " + accessToken + "\n");
 
 		// Use access token to call API
 		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
 
-
-		return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-				.setApplicationName(APPLICATION_NAME)
-				.build();
+		return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
 	}
 
-	/*public static void main(String[] args) throws IOException {
-		try {
-			// Build a new authorized API client service.
-			Gmail service = getGmailService();
+	public GmailBatchMessages listNewMessages(String nextPageToken) throws IOException {
+		//ListMessagesResponse response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
+		String query = "";
+		ListMessagesResponse response = null;
+		String pageToken = null;
 
-			// Print the labels in the user's account.
-			String user = "me";
-			listLabels(service, user);
+		if (!lastEmail.equals("")) {
+			query = "after:" + lastEmail;
 
-			// Print messages in user's account
-			List<Message> messages = listMessagesMatchingQuery(service, user, 1);
-
-			//Print last message
-			getMessage(service, user, messages.get(0).getId());
-
-			// Get MimeEmail
-			getMimeMessage(service, user, messages.get(0).getId());
-
-			// Print Email body
-			getMessageBody(service, user, messages.get(0).getId());
+			if (nextPageToken == null)
+				response = service.users().messages().list(userId).setQ(query).execute();
+			else
+				response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
 		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-			System.exit(1);
-		}
-		catch (MessagingException me) {
-			me.printStackTrace();
-			System.exit(1);
-		}
-	}*/
-
-	public List<Label> listLabels(Gmail service, String userId) throws IOException  {
-		ListLabelsResponse listResponse = service.users().labels().list(userId).execute();
-		List<Label> labels = listResponse.getLabels();
-
-		if (labels.size() == 0) {
-			System.out.println("No labels found.");
-		} else {
-			System.out.println("Labels:");
-			for (Label label : labels) {
-				System.out.printf("- %s\n", label.getName());
-			}
+		else {
+			if (nextPageToken == null)
+				response = service.users().messages().list(userId).execute();
+			else
+				response = service.users().messages().list(userId).setPageToken(nextPageToken).execute();
 		}
 
-		return labels;
-	}
-
-	public List<Message> listMessagesMatchingQuery(Gmail service, String userId, long limit) throws IOException {
-		ListMessagesResponse response = service.users().messages().list(userId).setMaxResults(limit).execute();
 		List<Message> messages = new ArrayList<Message>();
 
 		if (response.getMessages() != null) {
 			messages.addAll(response.getMessages());
+			System.out.println("Emails found: " + messages.size());
+
+			if (response.getNextPageToken() != null)
+				pageToken = response.getNextPageToken();
+			else
+				pageToken = null;
 		}
 
-		if (messages.size() == 0) {
-			System.out.println("\nNo messages found.");
-		} else {
-			System.out.println("\nMessage id:");
+		GmailBatchMessages gbm ;
 
-			for (Message message : messages) {
-				System.out.println(message.getId());
-			}
+		if (messages.size() == 0)
+			gbm = null;
+		else {
+			gbm = new GmailBatchMessages();
+			gbm.messages = messages;
+			gbm.nextPageToken = pageToken;
 		}
 
-		return messages;
+		return gbm;
 	}
 
-	public Message getMessage(Gmail service, String userId, String messageId) throws IOException {
-		Message message = service.users().messages().get(userId, messageId).execute();
-		// System.out.println("Message snippet: " + message.getSnippet());
-		//System.out.println(message.toPrettyString());
-
-		return message;
-  	}
-
-  	public MimeMessage getMimeMessage(Gmail service, String userId, String messageId) throws IOException, MessagingException {
+  	public MimeMessage getMimeMessage(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
+		// System.out.println(message.toPrettyString()); // print raw message
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
-
-		System.out.println("\nMessage Date:");
-		System.out.println(email.getHeader("Date")[0]);
-
-		System.out.println("\nMessage Subject:");
-		System.out.println(email.getHeader("Subject")[0]);
 
 		return email;
 	}
 
-	public String getMessageBody(Gmail service, String userId, String messageId) throws IOException, MessagingException {
-		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
-		System.out.println("\nMessage Body:");
+	public MimeMessage getMimeMessage(Message message) throws IOException, MessagingException {
+		// System.out.println(message.toPrettyString()); // print raw message
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+		return email;
+	}
+
+	public RawData getRawData(String messageId) throws IOException, MessagingException {
+		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
+		MimeMessage email = getMimeMessage(message);
 		String body = "";
 		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
+		ArrayList<String> rawDataElements = new ArrayList<>();
 
-		if (email.getContent() == null) {
-			return body;
-		}
+		if (!email.getHeader("Subject")[0].equals(""))
+			rawDataElements.add(email.getHeader("Subject")[0]);
+
+		if (email.getContent() == null)
+			return null;
 
 		boolean isHTML = false;
 
 		if (email.getContent() instanceof String) {
 			String bodyS = (String)email.getContent();
+
+			if (bodyS == null || bodyS.length() == 0)
+				return null;
 
 			if (bodyS.charAt(0) == '<') {
 				for (int i = bodyS.length() - 1; i > -1; i--) {
@@ -358,6 +313,9 @@ public class GmailPoller implements Poller {
 				if (bodyPart.getContent() instanceof String) {
 					String bodyS = (String)bodyPart.getContent();
 
+					if (bodyS == null || bodyS.length() == 0)
+						continue;
+
 					if (bodyS.charAt(0) == '<') {
 						for (int j = bodyS.length() - 1; j > -1; j--) {
 							if (bodyS.charAt(j) == '>') {
@@ -392,12 +350,27 @@ public class GmailPoller implements Poller {
 					else
 						body += bodyS.replaceAll("[\\t\\n\\r]"," ");
 				}
-				else System.out.println("UNKNOWN MIME (NOT STRING)\n");
 			}
 		}
-		else System.out.println("UNKNOWN MIME (NOT MIMEMULTIPART)\n");
 
-		System.out.println(body);
-		return body;
+		rawDataElements.add(body);
+		RawData rawData = new RawData();
+		rawData.pimSource = "Gmail";
+		rawData.userId = "";
+		rawData.pimItemId = message.getId();
+		rawData.data = rawDataElements.toArray(new String[0]);
+
+		return rawData;
+		// return null;
+	}
+
+	public void printEmail(Message message) {
+		try {
+			System.out.println(message.toPrettyString());
+		}
+		catch (IOException ioe) {
+			System.out.println("COULD NOT PRINT EMAIL");
+			ioe.printStackTrace();
+		}
 	}
 }

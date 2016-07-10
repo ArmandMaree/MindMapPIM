@@ -7,13 +7,15 @@ import java.util.ArrayList;
 import data.*;
 
 public class DataProcessingThread implements Runnable {
-	private RawDataQueue queue;
+	private RawDataQueue rawQueue;
+	private ProcessedDataQueue processedQueue;
 	private boolean stop = false;
 	private final int TIMEOUT = 10;
 	private NaturalLanguageProcessor nlp;
 
-	public DataProcessingThread(RawDataQueue queue, NaturalLanguageProcessor nlp) {
-		this.queue = queue;
+	public DataProcessingThread(RawDataQueue rawQueue, ProcessedDataQueue processedQueue, NaturalLanguageProcessor nlp) {
+		this.rawQueue = rawQueue;
+		this.processedQueue = processedQueue;
 		this.nlp = nlp;
 	}
 
@@ -28,7 +30,7 @@ public class DataProcessingThread implements Runnable {
 		// rd.data = dataArr;
 		// rd.pimItemId = "fakeItemId";
 		// try {
-		// 	queue.put(rd);
+		// 	rawQueue.put(rd);
 		// }
 		// catch (InterruptedException ie) {
 		// 	ie.printStackTrace();
@@ -40,26 +42,32 @@ public class DataProcessingThread implements Runnable {
 			RawData rawData = null;
 
 			try {
-				if ((rawData = queue.poll(TIMEOUT, TimeUnit.SECONDS)) == null)
+				if ((rawData = rawQueue.poll(TIMEOUT, TimeUnit.SECONDS)) == null)
 					continue;
 			}
 			catch (InterruptedException ie) {
 				continue;
 			}
 
-			System.out.println("ProcessorDequeued->" + rawData);
 			ArrayList<String> topics = new ArrayList<>();
 
-			for (String part : rawData.data)
-				topics.addAll(nlp.getTopics(part));
+			if (nlp != null)
+				for (String part : rawData.data)
+					topics.addAll(nlp.getTopics(part));
 
 			ProcessedData processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
-			System.out.println("ProcessorDone->" + processedData);
+			// System.out.println("ProcessorDone->" + processedData);
+			// pushToQueue(processedData);
 		}
 	}
 
-	public void pushToQueue() {
-
+	public void pushToQueue(ProcessedData processedData) {
+		try {
+			processedQueue.put(processedData);
+		}
+		catch (InterruptedException iee) {
+			iee.printStackTrace();
+		}
 	}
 
 	public void stop() {

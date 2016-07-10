@@ -21,18 +21,24 @@ import data.*;
 @ComponentScan("webservices")
 public class Application {
 	@Bean
-	public RawDataQueue queue() {
+	public RawDataQueue rawQueue() {
 		return new RawDataQueue();
+	}
+
+	@Bean
+	public ProcessedDataQueue ProcessedQueue() {
+		return new ProcessedDataQueue();
 	}
 
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
-		RawDataQueue queue = (RawDataQueue)ctx.getBean(RawDataQueue.class);
+		RawDataQueue rawQueue = (RawDataQueue)ctx.getBean(RawDataQueue.class);
+		ProcessedDataQueue processedQueue = (ProcessedDataQueue)ctx.getBean(ProcessedDataQueue.class);
 		NaturalLanguageProcessor nlp = new StanfordNLP();
 		DataProcessingThread[] dataProcessingThreads = new DataProcessingThread[10];
 
 		for (DataProcessingThread dpt : dataProcessingThreads) {
-			dpt = new DataProcessingThread(queue, nlp);
+			dpt = new DataProcessingThread(rawQueue, processedQueue, nlp);
 			new Thread(dpt).start();
 		}
 
