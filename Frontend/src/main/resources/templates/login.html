@@ -32,7 +32,9 @@
                 
                     <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
                     <br/>
-                    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
+                    <a class="btn btn-block btn-social btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
+                        <span class="fa fa-facebook"></span> <span style='font-size:12pt'>Sign in with Facebook</span>
+                    </a>
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>
                     <br/>

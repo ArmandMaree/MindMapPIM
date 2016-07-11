@@ -186,8 +186,7 @@
             $("#welcome").hide();
             $("#continue").hide();
       	});
-
-// Facebook Code
+////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
  $("facebookLogout").hide();
  function statusChangeCallback(response) {
     console.log('statusChangeCallback');
@@ -199,7 +198,9 @@
 
         if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        console.log("Connected to facebook");
+         var accessToken = response.authResponse.accessToken;
+        console.log(response.authResponse);
+        console.log("Connected to facebook, accessToken:"+ response.authResponse);
         testAPI();
       } else if (response.status === 'not_authorized') {
         // The person is logged into Facebook, but not your app.
@@ -218,9 +219,28 @@
   }
   function onFacebookLogin()
   {
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
+    console.log("onFacebookLogin");
+    FB.login(function(response) {
+      if (response.authResponse) {
+        // _wdfb_notifyAndRedirect();
+        console.log("Auth response:");
+        console.log(response.authResponse); //returns an object
+        showtick();
+      }
+      FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+      });
     });
+  }
+  function showtick()
+  {
+    console.log("Facebook selected!");
+    $("#tickFacebook").show();
+    if($('#nextButton').show() == true)
+    {
+      console.log("show is true");
+    }
+    $('#nextButton').show();
   }
   // This function is called when someone finishes with the Login
   // Button.  See the onlogin handler attached to it in the sample
@@ -328,7 +348,7 @@
 
     });
 }
-//End of Facebook Code
+////////////////////////////////////////////////////////////////////////////////////////////////End of Facebook Code
 
 //Data selection ajax
 
