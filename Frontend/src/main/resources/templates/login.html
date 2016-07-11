@@ -26,14 +26,15 @@
 
             <div id="welcome" Style= "position:relative;font-size:30px;opacity:0;top:50px">Welcome</div>
 
-            <!-- <div class='uil-ripple-css' style='transform:scale(0.48);'><div></div><div></div></div> -->
             <div class="form-box">
                 <form onsubmit="" action="" method="POST" id="formID">
 
                 
                     <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn" hidden='true'></div>
                     <br/>
-                    <div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
+                    <a class="btn btn-block btn-social btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
+                        <span class="fa fa-facebook"></span> <span style='font-size:12pt'>Sign in with Facebook</span>
+                    </a>
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>
                     <br/>
