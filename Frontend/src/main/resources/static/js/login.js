@@ -1,13 +1,6 @@
+
         function googleretrieve(){
           var auth2 = gapi.auth2.getAuthInstance();
-          // gapi.load('auth2', function() {
-          //   gapi.auth2.getAuthInstance();
-          //   auth2 = gapi.auth2.init({
-          //   client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-          //   // Scopes to request in addition to 'profile' and 'email'
-          //   scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
-          //   });
-          // });
           auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
         
         }
@@ -186,12 +179,16 @@
             $("#welcome").hide();
             $("#continue").hide();
       	});
-
+var facebookbuttonshown =false;
 // Facebook Code
  $("facebookLogout").hide();
  function statusChangeCallback(response) {
     console.log('statusChangeCallback');
     console.log(response);
+    facebookbuttonshown =true;
+    renderButton();
+    $('#my-signin2').show();
+
     // The response object is returned with a status field that lets the
     // app know the current login status of the person.
     // Full docs on the response object can be found in the documentation

@@ -11,7 +11,7 @@
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
-    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
+    <script src="https://apis.google.com/js/platform.js?"></script>
     <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
 </head>
 
@@ -26,13 +26,14 @@
 
             <div id="welcome" Style= "position:relative;font-size:30px;opacity:0;top:50px">Welcome</div>
 
+            <!-- <div class='uil-ripple-css' style='transform:scale(0.48);'><div></div><div></div></div> -->
             <div class="form-box">
                 <form onsubmit="" action="" method="POST" id="formID">
 
                 
-                    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn" hidden='true'></div>
                     <br/>
-                    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
+                    <div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true" id="facebookLogin" onlogin="onFacebookLogin"></div>
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>
                     <br/>
@@ -61,9 +62,11 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title" id="modaltitle">Modal Header</h4>
           </div>
+          <pre>
           <div class="modal-body" id="modelbod">
 
           </div>
+          </pre>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>

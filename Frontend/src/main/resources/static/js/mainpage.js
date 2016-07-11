@@ -4,7 +4,7 @@ $(document).ready(function($){
     var len = undefined;
     var nodes = [{id: 0, label: "ME", group: 0},
             {id: 1, label: "1", group: 0},
-            {id: 2, label: "Horse Riding", group: 0},
+            {id: 2, label: "2", group: 0},
             {id: 3, label: "3", group: 1},
             {id: 4, label: "4", group: 1},
             {id: 5, label: "5", group: 1},
@@ -95,3 +95,48 @@ $(document).ready(function($){
     // $("#sidepanel").css('height', para);
 
 });
+
+    var menu;
+    $(document.body).ready(function () {
+        menu = new ax5.ui.menu({
+            position: "absolute", // default position is "fixed"
+            theme: "primary",
+            icons: {
+                'arrow': '<i class="fa fa-caret-right"></i>'
+            },
+            items: [
+                {
+                    icon: '<i class="fa fa-comment"></i>',
+                    label: "Menu A",
+                    items: [
+                        {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
+                        {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
+                        {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
+                    ]
+                },
+                {
+                    icon: '<i class="fa fa-comments"></i>',
+                    label: "Menu B",
+                    items: [
+                        {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
+                        {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
+                        {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
+                    ]
+                }
+            ]
+        });
+ 
+        $("#mynetwork").bind("contextmenu", function (e) {
+            menu.popup(e);
+            ax5.util.stopEvent(e);
+            // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
+        });
+    });
+function logout(){
+    window.location.assign('/')
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log('User signed out.');
+    });
+
+}
