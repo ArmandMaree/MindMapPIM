@@ -11,7 +11,7 @@
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
-    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
+    <script src="https://apis.google.com/js/platform.js?"></script>
     <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
 </head>
 
@@ -30,7 +30,7 @@
                 <form onsubmit="" action="" method="POST" id="formID">
 
                 
-                    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn" hidden='true'></div>
                     <br/>
                     <a class="btn btn-block btn-social btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
                         <span class="fa fa-facebook"></span> <span style='font-size:12pt'>Sign in with Facebook</span>
@@ -63,9 +63,11 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title" id="modaltitle">Modal Header</h4>
           </div>
+          <pre>
           <div class="modal-body" id="modelbod">
 
           </div>
+          </pre>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
