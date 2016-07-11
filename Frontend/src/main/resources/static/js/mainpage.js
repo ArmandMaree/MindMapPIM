@@ -72,9 +72,11 @@ $(document).ready(function($){
       };
       
         var options = {
+        	clickToUse: true,
             nodes: {
-                shape: 'circle',
+                shape: 'ellipse',
                 size: 50,
+                // style: 'shadow',
                 font: {
                     size: 32,
                     color: 'black'
@@ -87,12 +89,13 @@ $(document).ready(function($){
         };
       var network = new vis.Network(container, data, options);
 
-    // $(function() {
-    //     $( "#mynetwork" ).resizable();
-    // });
-    // var actSize = 100 - $("nav").height();
-    // var para = actSize +'vh';
-    // $("#sidepanel").css('height', para);
+      network.on("click", function(){
+      	console.log("works on right click");
+      	// $(this).bind("contextmenu", function (e) {
+       //      menu.popup(e);
+       //      ax5.util.stopEvent(e);
+      	// });
+      });
 
 });
 
@@ -126,11 +129,11 @@ $(document).ready(function($){
             ]
         });
  
-        $("#mynetwork").bind("contextmenu", function (e) {
-            menu.popup(e);
-            ax5.util.stopEvent(e);
-            // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
-        });
+        // $("#mynetwork").bind("contextmenu", function (e) {
+        //     menu.popup(e);
+        //     ax5.util.stopEvent(e);
+        //     // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
+        // });
     });
 	(function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
