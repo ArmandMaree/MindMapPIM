@@ -17,6 +17,12 @@ import poller.*;
 import processor.*;
 import data.*;
 
+/**
+* Main application that starts up the service.
+*
+* @author  Armand Maree
+* @since   2016-07-11
+*/
 @SpringBootApplication
 @ComponentScan("webservices")
 public class Application {

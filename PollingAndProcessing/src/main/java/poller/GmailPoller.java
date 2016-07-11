@@ -44,6 +44,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import data.*;
 
+/**
+* Uses the Gmail API to retrieve new emails and add them to a queue that lets them be processed.
+*
+* @author  Armand Maree
+* @since   2016-07-11
+*/
 public class GmailPoller implements Poller {
 	private static final String APPLICATION_NAME = "Gmail API";
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
@@ -71,6 +77,11 @@ public class GmailPoller implements Poller {
 		}
 	}
 
+	/**
+	* Constructor that initializes some fields and starts up a Gmail service.
+	* @param rawQueue This queue contains the raw text extracted from various pollers that need to get processed.
+	* @param userAuthCode Authentication code received from the login service.
+	*/
 	public GmailPoller(RawDataQueue rawQueue, String userAuthCode) {
 		this.rawQueue = rawQueue;
 		this.userAuthCode = userAuthCode;
@@ -83,6 +94,9 @@ public class GmailPoller implements Poller {
 		}
 	}
 
+	/**
+	* Runs the poller on a loop.
+	*/
 	public void run() {
 		while (!stop) {
 			poll();
@@ -94,6 +108,9 @@ public class GmailPoller implements Poller {
 		}
 	}
 
+	/**
+	* Gets a list of emails and checks to see if the have been processed. If they have not yet been, then it extracts the raw text and creates a RawData object that is pushed to the RawDataQueue.
+	*/
 	public void poll() {
 		try {
 			GmailBatchMessages gbm = listNewMessages(null);
@@ -139,6 +156,13 @@ public class GmailPoller implements Poller {
 		}
 	}
 
+	/**
+	* Gets the date and time of a message and parses it into a simper form.
+	* @param messageId The ID of the message that's date should be returned.
+	* @return The date of the email in the form of yyyy/MM/dd, e.g.: 2016/07/30
+	* @throws java.io.IOException
+	* @throws javax.mail.MessagingException
+	*/
 	public String getTimeStamp(String messageId) throws IOException, MessagingException {
 		MimeMessage email = getMimeMessage(messageId);
 		String date = email.getHeader("Date")[0];
@@ -163,6 +187,13 @@ public class GmailPoller implements Poller {
 		return newDate;
 	}
 
+	/**
+	* Gets the date and time of a message and gets the milliseconds since Epoch.
+	* @param messageId The ID of the message that's date should be returned.
+	* @return Milliseconds elapsed since Epoch.
+	* @throws java.io.IOException
+	* @throws javax.mail.MessagingException
+	*/
 	public long getMilliSeconds(String messageId) throws IOException, MessagingException {
 		MimeMessage email = getMimeMessage(messageId);
 		String date = email.getHeader("Date")[0];
@@ -186,9 +217,13 @@ public class GmailPoller implements Poller {
 		return newDate;
 	}
 
-	public void addToQueue(RawData data) {
+	/**
+	* Takes a RawData object and add it to a RawDataQueue.
+	* @param rawData The rawData object that should be added to the queue.
+	*/
+	public void addToQueue(RawData rawData) {
 		try {
-			rawQueue.put(data);
+			rawQueue.put(rawData);
 		}
 		catch (InterruptedException ex) {
 			System.out.println("Interrupted while waiting");
@@ -197,8 +232,8 @@ public class GmailPoller implements Poller {
 
 	/**
 	 * Build and return an authorized Gmail client service.
-	 * @return an authorized Gmail client service
-	 * @throws IOException
+	 * @return An authorized Gmail client service
+	* @throws java.io.IOException
 	 */
 	public Gmail getGmailService() throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
@@ -217,6 +252,12 @@ public class GmailPoller implements Poller {
 		return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
 	}
 
+	/**
+	* List all the emails after a specific date on a specific page.
+	* @param nextPageToken the token of the page that should be looked at.
+	* @return Batch message object containing all the messages found and a token to the next page.
+	* @throws java.io.IOException
+	*/
 	public GmailBatchMessages listNewMessages(String nextPageToken) throws IOException {
 		//ListMessagesResponse response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
 		String query = "";
@@ -262,6 +303,13 @@ public class GmailPoller implements Poller {
 		return gbm;
 	}
 
+	/**
+	* Get a mime version of the email as described by the JavaMail API.
+	* @param messageId The ID of the message that should be retrieved.
+	* @return MimeMessage of the message that corresponds to the given id.
+	* @throws java.io.IOException
+	* @throws javax.mail.MessagingException
+	*/
   	public MimeMessage getMimeMessage(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		// System.out.println(message.toPrettyString()); // print raw message
@@ -273,6 +321,13 @@ public class GmailPoller implements Poller {
 		return email;
 	}
 
+	/**
+	* Get a mime version of a message that has already been retrieved as described by the JavaMail API.
+	* @param message The message that needs to be retrieved.
+	* @return MimeMessage that corresponds to the given message.
+	* @throws java.io.IOException
+	* @throws javax.mail.MessagingException
+	*/
 	public MimeMessage getMimeMessage(Message message) throws IOException, MessagingException {
 		// System.out.println(message.toPrettyString()); // print raw message
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
@@ -283,6 +338,13 @@ public class GmailPoller implements Poller {
 		return email;
 	}
 
+	/**
+	* Extract the text from and email and parse it as an RawData object.
+	* @param messageId The ID of the message that should be retrieved.
+	* @return Object that contains the details of the email or null if no data is found.
+	* @throws java.io.IOException
+	* @throws javax.mail.MessagingException
+	*/
 	public RawData getRawData(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		MimeMessage email = getMimeMessage(message);
@@ -394,9 +456,12 @@ public class GmailPoller implements Poller {
 		rawData.data = rawDataElements.toArray(new String[0]);
 
 		return rawData;
-		// return null;
 	}
 
+	/**
+	* Prints the email to the screen. Used for debugging.
+	* @param message The email that needs to be printed.
+	*/
 	public void printEmail(Message message) {
 		try {
 			System.out.println(message.toPrettyString());

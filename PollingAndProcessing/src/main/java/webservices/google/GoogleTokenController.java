@@ -14,6 +14,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import data.*;
 import poller.*;
 
+/**
+* RESTController waiting for an Google authentication code on /google/token
+*
+* @author  Armand Maree
+* @since   2016-07-11
+*/
 @RestController
 @Configurable
 public class GoogleTokenController {
