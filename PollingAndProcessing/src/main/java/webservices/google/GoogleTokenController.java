@@ -24,7 +24,7 @@ public class GoogleTokenController {
 	@RequestMapping(value = "/google/token", method = RequestMethod.POST, headers = {"Content-type=application/json"})
 	@ResponseBody
 	public String googleToken(@RequestBody AuthCode authCode) {
-		System.out.println("AuthCode: " + authCode.getAuthCode());
+		// System.out.println("AuthCode: " + authCode.getAuthCode());
 		Poller poller = new GmailPoller(queue, authCode.getAuthCode());
 		new Thread(poller).start();
 		return "OK";

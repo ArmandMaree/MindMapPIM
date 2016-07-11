@@ -39,8 +39,9 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 
 	public ArrayList<String> getTopics(String text) {
 		List<CoreMap> sentences = parse(text);
-		ArrayList<String> topics = getPOS("VB", sentences); // get verbs
-		topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
+		// ArrayList<String> topics = getPOS("VB", sentences); // get verbs
+		// topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
+		ArrayList<String> topics = getGroups(sentences); // get nouns grouped by NamedEntityTagAnnotation
 
 		return topics;
 	}

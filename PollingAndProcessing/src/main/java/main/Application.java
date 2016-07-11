@@ -34,8 +34,8 @@ public class Application {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 		RawDataQueue rawQueue = (RawDataQueue)ctx.getBean(RawDataQueue.class);
 		ProcessedDataQueue processedQueue = (ProcessedDataQueue)ctx.getBean(ProcessedDataQueue.class);
-		NaturalLanguageProcessor nlp = new StanfordNLP();
-		// NaturalLanguageProcessor nlp = null;
+		// NaturalLanguageProcessor nlp = new StanfordNLP();
+		NaturalLanguageProcessor nlp = null;
 		DataProcessingThread[] dataProcessingThreads = new DataProcessingThread[10];
 
 		for (DataProcessingThread dpt : dataProcessingThreads) {

@@ -23,6 +23,9 @@ import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -53,8 +56,10 @@ public class GmailPoller implements Poller {
 	private String userAuthCode;
 	private Gmail service;
 	private final String userId = "me";
-	private String lastEmail = "";
+	private String lastEmailTimeStampDate = "";
+	private long lastEmailMilli = 0;
 	private boolean stop = false;
+	private String firstId = "";
 
 	static {
 		try {
@@ -80,7 +85,6 @@ public class GmailPoller implements Poller {
 
 	public void run() {
 		while (!stop) {
-			System.out.println("Polling.....");
 			poll();
 
 			try {
@@ -94,7 +98,7 @@ public class GmailPoller implements Poller {
 		try {
 			GmailBatchMessages gbm = listNewMessages(null);
 			String lastEmailDate = null;
-			String firstId = "";
+			long tmpMilli = 0;
 
 			while (gbm != null) {
 				if (firstId.equals(gbm.messages.get(0).getId()))
@@ -104,28 +108,14 @@ public class GmailPoller implements Poller {
 					if (firstId.equals(message.getId()))
 						break;
 
+					if (getMilliSeconds(message.getId()) <= lastEmailMilli)
+						continue;
+
 					if (lastEmailDate == null) {
-						try {
-							long millis = getTimeStamp(message.getId());
-							Calendar calendar = Calendar.getInstance();
-							calendar.setTimeInMillis(millis);
-
-							int mYear = calendar.get(Calendar.YEAR);
-							int mMonth = calendar.get(Calendar.MONTH);
-							int mDay = calendar.get(Calendar.DAY_OF_MONTH);
-							int mHour = calendar.get(Calendar.HOUR_OF_DAY);
-							int mMinute = calendar.get(Calendar.MINUTE);
-
-							lastEmailDate = mYear + "/" + mMonth + "/" + mDay + " " + mHour + ":" + mMinute;
-						}
-						catch (IOException ioe) {
-							ioe.printStackTrace();
-							continue;
-						}
-
+						lastEmailDate = getTimeStamp(message.getId());
+						tmpMilli = getMilliSeconds(message.getId());
 						firstId = message.getId();
 					}
-
 
 					RawData rawData = getRawData(message.getId());
 
@@ -136,8 +126,10 @@ public class GmailPoller implements Poller {
 				gbm = listNewMessages(gbm.nextPageToken);
 			}
 
-			if (lastEmailDate != null)
-				lastEmail = lastEmailDate;
+			if (lastEmailDate != null) {
+				lastEmailTimeStampDate = lastEmailDate;
+				lastEmailMilli = tmpMilli;
+			}
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -147,9 +139,51 @@ public class GmailPoller implements Poller {
 		}
 	}
 
-	public long getTimeStamp(String messageId) throws IOException {
-		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
-		return message.getInternalDate();
+	public String getTimeStamp(String messageId) throws IOException, MessagingException {
+		MimeMessage email = getMimeMessage(messageId);
+		String date = email.getHeader("Date")[0];
+
+		if (date.indexOf("(") != -1)
+			date = date.substring(0, date.indexOf("(") - 1);
+
+		date = date.substring(5, date.length() - 6);
+
+		DateFormat inputFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss"); 
+		DateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
+		Date startDate;
+		String newDate = null;
+		
+		try {
+			startDate = inputFormat.parse(date);
+			newDate = outputFormat.format(startDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return newDate;
+	}
+
+	public long getMilliSeconds(String messageId) throws IOException, MessagingException {
+		MimeMessage email = getMimeMessage(messageId);
+		String date = email.getHeader("Date")[0];
+
+		if (date.indexOf("(") != -1)
+			date = date.substring(0, date.indexOf("(") - 1);
+
+		date = date.substring(5, date.length() - 6);
+
+		DateFormat inputFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		Date startDate;
+		long newDate = 0;
+		
+		try {
+			startDate = inputFormat.parse(date);
+			newDate = startDate.getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return newDate;
 	}
 
 	public void addToQueue(RawData data) {
@@ -189,8 +223,8 @@ public class GmailPoller implements Poller {
 		ListMessagesResponse response = null;
 		String pageToken = null;
 
-		if (!lastEmail.equals("")) {
-			query = "after:" + lastEmail;
+		if (!lastEmailTimeStampDate.equals("")) {
+			query = "after:" + lastEmailTimeStampDate;
 
 			if (nextPageToken == null)
 				response = service.users().messages().list(userId).setQ(query).execute();
@@ -208,7 +242,6 @@ public class GmailPoller implements Poller {
 
 		if (response.getMessages() != null) {
 			messages.addAll(response.getMessages());
-			System.out.println("Emails found: " + messages.size());
 
 			if (response.getNextPageToken() != null)
 				pageToken = response.getNextPageToken();
