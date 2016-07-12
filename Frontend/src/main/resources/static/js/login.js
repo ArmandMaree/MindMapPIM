@@ -427,7 +427,7 @@ var onFailure = function(error) {
   function onSuccessFacebook() {
  
   // if( !$("#user").val()== "" && !$("#password").val()== "") {
-    $("#my-signin2").animate({
+    $("#googleLogin").animate({
         top: '100px',
         opacity: '0.0'
 
