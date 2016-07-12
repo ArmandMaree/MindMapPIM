@@ -11,14 +11,13 @@
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
-    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
-    <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
+    <script src="https://apis.google.com/js/api:client.js"></script>
 </head>
 
-<body>
+<body onload="startApp()">
    
-    <a href="#" onclick="signOut();">Sign out</a>
-    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogout" onlogin="onFacebookLogin"></div>
+   <!--  <a href="#" onclick="signOut();">Sign out</a>
+    <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogout" onlogin="onFacebookLogin"></div> -->
     <div class="container">
         <div class="login-container" id = "container">
             <div id="output"></div>
@@ -30,10 +29,13 @@
                 <form onsubmit="" action="" method="POST" id="formID">
 
                 
-                    <div type="submit" id="my-signin2" name="submit" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    
                     <br/>
-                    <a class="btn btn-block btn-social btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
-                        <span class="fa fa-facebook"></span> <span style='font-size:12pt'>Sign in with Facebook</span>
+                    <a class="btn btn-social-icon btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
+                        <span class="fa fa-facebook"></span>
+                    </a>
+                    <a class="btn btn-social-icon btn-lg  btn-google" id="googleLogin">
+                        <span class="fa fa-google"></span>
                     </a>
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>

@@ -135,6 +135,47 @@ $(document).ready(function($){
         //     // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         // });
     });
+
+
+var auth2; // The Sign-In object.
+var googleUser; // The current user.
+
+var startApp = function() {
+  gapi.load('auth2', initSigninV2);
+};
+
+var initSigninV2 = function() {
+  auth2 = gapi.auth2.init({
+      client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
+      scope: 'profile'
+  });
+  auth2.isSignedIn.listen(signinChanged);
+  if (auth2.isSignedIn.get() == true) {
+    auth2.signIn();
+  }
+  refreshValues();
+};
+
+var signinChanged = function (val) {
+  console.log('Signin state changed to ', val);
+  if(val === true){
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+    }); 
+  }
+};
+
+var refreshValues = function() {
+  if (auth2){
+    console.log('Refreshing values...');
+
+    googleUser = auth2.currentUser.get();
+
+    console.log(JSON.stringify(googleUser, undefined, 2));
+    console.log(auth2.isSignedIn.get());
+  }
+}
+
 	(function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;
@@ -183,16 +224,15 @@ $(document).ready(function($){
 function logout()
 {
 
-    
+    startApp();
     //Facebook logout
     FB.getLoginStatus(function(response) {
         if (response && response.status === 'connected') {
             FB.logout(function(response) {
-                window.location.assign('/');
             });
         }
     });
-
+	window.location.assign('/');
 
 }
 // $(document).ready(function(){
