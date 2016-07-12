@@ -3,19 +3,17 @@
 
 <div class="container-fluid">
 	<!-- <div class="jumbotron"> -->
-		<h3 id="ques">Please select where you would like us to retrieve your information.<h3>
+		<h4 id="ques">Please select where you would like us to retrieve your information.<h4>
 	<!-- </div> -->
-	<br/>
-	<br/>
 	<br/>
 	<br/>
 	<table style="width:100%">
 	  <tr>
 	    <td>
 			<a class="btn btn-block btn-social btn-lg  btn-google" id="googlesigninButton" onclick="googleretrieve()">
-		    	<span class="fa fa-google"></span> Retrieve From Google
+		    	<span class="fa fa-google"></span> <span style="font-size:11pt">Google</span>
 		  	</a>
-		  	<div style="height:5px"></div>
+		  	<div style="height:15px"></div>
 	  	</td>
 	    <td>
 	    	<div id="tickGoogle" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"  hidden></span></div>
@@ -25,9 +23,9 @@
 	  <tr>
 	    <td>
 		  	<a class="btn btn-block btn-social btn-lg  btn-facebook" onclick="onFacebookLogin()">
-		    	<span class="fa fa-facebook"></span> Retrieve From Facebook
+		    	<span class="fa fa-facebook"></span> <span style="font-size:11pt">Facebook</span>
 		  	</a>
-		  	<div style="height:5px"></div>
+		  	<div style="height:15px"></div>
 	  	</td>
 	    <td>
 	    	<div id="tickFacebook" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
@@ -36,9 +34,9 @@
 	  <tr>
 	    <td>
 		  	<a class="btn btn-block btn-social btn-lg  btn-twitter">
-		    	<span class="fa fa-twitter"></span> Retrieve From Twitter
+		    	<span class="fa fa-twitter"></span> <span style="font-size:11pt">Twitter</span>
 		  	</a>
-		  	<div style="height:5px"></div>
+		  	<div style="height:15px"></div>
 	  	</td>
 	    <td>
 	    	<div id="tickTwitter" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
@@ -47,9 +45,9 @@
 	  <tr>
 	    <td>
 		  	<a class="btn btn-block btn-social btn-lg  btn-linkedin">
-		    	<span class="fa fa-linkedin"></span> Retrieve From Linkedin
+		    	<span class="fa fa-linkedin"></span> <span style="font-size:11pt">Linkedin</span>
 		  	</a>
-		  	<div style="height:5px"></div>
+		  	<div style="height:15px"></div>
 	  	</td>
 	    <td>
 	    	<div id="tickLinkedin" hidden><span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:#22c322"></span></div>
@@ -60,9 +58,11 @@
 	</table>
 
 	<br/>
-	<br/>
+	<!-- <br/> -->
 	
 	<div id="nextButton" hidden><button type="button" class="btn btn-block btn-success" onclick="window.location.assign('/mainpage')">Done</button></div>
+	<br/>
+	<br/>
 
 </div>
 <iframe name="oauth2relay298397952" id="oauth2relay298397952" src="https://accounts.google.com/o/oauth2/postmessageRelay?parent=http%3A%2F%2Flocalhost:8080&amp;jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.en_GB.tOcyOaVMwAw.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCNXugz5sXWIcJaGN98xRV7Uqb3dmQ#rpctoken=628530161&amp;forcesecure=1" tabindex="-1" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><iframe style="position: absolute; width: 1px; height: 1px; left: -9999px;" id="ssIFrame_google" sandbox="allow-scripts allow-same-origin" src="https://accounts.google.com/o/oauth2/iframe#origin=http%3A%2F%2Flocalhost:8080&amp;rpcToken=830513809.8463601"></iframe>
