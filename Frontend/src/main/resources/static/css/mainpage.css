@@ -6,10 +6,11 @@
     margin-top: 0;
     vertical-align: center;
 }
-/*.navbar-form.navbar-left
+.navbar-text
 {
-    padding-left: 30%;
-}*/
+    font-size: 18pt !important;
+    padding-left: 0 !important;
+}
 .inmenu
 {
     margin: 5%;
@@ -27,53 +28,75 @@ body
     width: 100%;
     height:93.5vh;
     /*border: 1px solid #444444;*/
-    background-color: white;
+    background-color: #eee5e9 !important;  /*platinum: #eee5e9*/
     /*z-index: -1000;*/
 }
 #myCanvas 
 {
-    background-color: rgba(158, 167, 184, 0.2); 
+    /*background-color: #b4c1d4 !important; */
 }
 #nav
 {
     margin-bottom: 0;
+    background-color: #0b3954 !important;
 }
 #sidepanel{
     padding: 0.5em;
-    background-color: #2d415c !important;
+    background-color: #0b3954!important;
     height:93.5vh;
     position: fixed !important;
     left: auto !important;
     right: 0px !important;
     width: 1000px;
     vertical-align: middle !important;
+    color: black !important;
 }
 .glyphicon
 {
-    font-size: 10pt !important;
+    font-size: 16pt ;
 }
+#dropMenu > li
+{
+  font-size: 12pt;
+}
+/*#dropMenu > span
+{
+  font-size: 10pt;
+}*/
 #sidepanelTitle{
     padding:5px;
     background-color: rgba(255, 255, 255, 0.3); 
-    color:white;
+    color:#eee5e9;
     margin-top: 3%;
     text-align: center;
     font-size: 10pt;
 }
 #accordion{
-    background-color: rgba(255, 255, 255, 0.3); 
+     /*background-color: rgba(255, 255, 255, 0.3); */
 }
 .panel-default{
     color: white !important;
-    background-color:#2d415c !important; 
+    background-color:rgba(255, 255, 255, 0.15) !important; 
+    font-size: 12pt;/*
+    cursor: auto !important;*/
+}
+.panel-body
+{
+  cursor: default !important;
+  font-size: 13pt;
 }
 .panel-heading {
-    color: white !important;
-    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: #eee5e9 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    font-size: 18pt;
+    cursor: pointer !important;
+    text-align: center;
 }
-a > h4{
-    color: white !important;
-    text-align: center !important;
+h2{
+    color: #eee5e9 !important;
+    font-size: 15pt !important;
+    /*text-align: center !important;*/
+    padding-left: 3%;
     vertical-align: center;
 }
 .breadcrumb{
@@ -82,9 +105,11 @@ a > h4{
 }
 .breadcrumb > li{
     color: white !important;
+    font-size: 12pt;
 }
 .breadcrumb > li >a{
     color: white !important;
+    font-size: 12pt;
 }
 /*navbar code*/
 .navbar-default {

@@ -2,36 +2,36 @@ $(document).ready(function($){
 
     var color = 'gray';
     var len = undefined;
-    var nodes = [{id: 0, label: "ME", group: 0},
-            {id: 1, label: "1", group: 0},
-            {id: 2, label: "2", group: 0},
-            {id: 3, label: "3", group: 1},
-            {id: 4, label: "4", group: 1},
-            {id: 5, label: "5", group: 1},
-            {id: 6, label: "6", group: 2},
-            {id: 7, label: "7", group: 2},
-            {id: 8, label: "8", group: 2},
-            {id: 9, label: "9", group: 3},
-            {id: 10, label: "10", group: 3},
-            {id: 11, label: "11", group: 3},
-            {id: 12, label: "12", group: 4},
-            {id: 13, label: "13", group: 4},
-            {id: 14, label: "14", group: 4},
-            {id: 15, label: "15", group: 5},
-            {id: 16, label: "16", group: 5},
-            {id: 17, label: "17", group: 5},
-            {id: 18, label: "18", group: 6},
-            {id: 19, label: "19", group: 6},
-            {id: 20, label: "20", group: 6},
-            {id: 21, label: "21", group: 7},
-            {id: 22, label: "22", group: 7},
-            {id: 23, label: "23", group: 7},
-            {id: 24, label: "24", group: 8},
-            {id: 25, label: "25", group: 8},
-            {id: 26, label: "26", group: 8},
-            {id: 27, label: "27", group: 9},
-            {id: 28, label: "28", group: 9},
-            {id: 29, label: "29", group: 9}
+    var nodes = [{id: 0, label: "ME"},
+            {id: 1, label: "1"},
+            {id: 2, label: "2"},
+            {id: 3, label: "3"},
+            {id: 4, label: "4"},
+            {id: 5, label: "5"},
+            {id: 6, label: "6"},
+            {id: 7, label: "7"},
+            {id: 8, label: "8"},
+            {id: 9, label: "9"},
+            {id: 10, label: "10"},
+            {id: 11, label: "11"},
+            {id: 12, label: "12"},
+            {id: 13, label: "13"},
+            {id: 14, label: "14"},
+            {id: 15, label: "15"},
+            {id: 16, label: "16"},
+            {id: 17, label: "17"},
+            {id: 18, label: "18"},
+            {id: 19, label: "19"},
+            {id: 20, label: "20"},
+            {id: 21, label: "21"},
+            {id: 22, label: "22"},
+            {id: 23, label: "23"},
+            {id: 24, label: "24"},
+            {id: 25, label: "25"},
+            {id: 26, label: "26"},
+            {id: 27, label: "27"},
+            {id: 28, label: "28"},
+            {id: 29, label: "29"}
         ];
         var edges = [{from: 1, to: 0},
             {from: 2, to: 0},
@@ -72,12 +72,14 @@ $(document).ready(function($){
       };
       
         var options = {
+        	clickToUse: true,
             nodes: {
-                shape: 'circle',
+                shape: 'ellipse',
                 size: 50,
+                // style: 'shadow',
                 font: {
                     size: 32,
-                    color: '#ffffff'
+                    color: 'black'
                 },
                 borderWidth: 1
             },
@@ -87,12 +89,13 @@ $(document).ready(function($){
         };
       var network = new vis.Network(container, data, options);
 
-    // $(function() {
-    //     $( "#mynetwork" ).resizable();
-    // });
-    // var actSize = 100 - $("nav").height();
-    // var para = actSize +'vh';
-    // $("#sidepanel").css('height', para);
+      network.on("click", function(){
+      	console.log("works on right click");
+      	// $(this).bind("contextmenu", function (e) {
+       //      menu.popup(e);
+       //      ax5.util.stopEvent(e);
+      	// });
+      });
 
 });
 
@@ -126,17 +129,72 @@ $(document).ready(function($){
             ]
         });
  
-        $("#mynetwork").bind("contextmenu", function (e) {
-            menu.popup(e);
-            ax5.util.stopEvent(e);
-            // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
-        });
+        // $("#mynetwork").bind("contextmenu", function (e) {
+        //     menu.popup(e);
+        //     ax5.util.stopEvent(e);
+        //     // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
+        // });
     });
-function logout(){
-    window.location.assign('/')
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-        console.log('User signed out.');
+	(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+	window.fbAsyncInit = function() {
+	  FB.init({
+	    appId      : '1051696778242173',
+	    cookie     : true,  // enable cookies to allow the server to access 
+	                        // the session
+	    xfbml      : true,  // parse social plugins on this page
+	    version    : 'v2.5' // use graph api version 2.5
+	  });
+	}
+//  function statusChangeCallback(response) {
+//     console.log('statusChangeCallback');
+//     console.log(response);
+//     // The response object is returned with a status field that lets the
+//     // app know the current login status of the person.
+//     // Full docs on the response object can be found in the documentation
+//     // for FB.getLoginStatus().
+
+//         if (response.status === 'connected') {
+//         // Logged into your app and Facebook.
+//          var accessToken = response.authResponse.accessToken;
+//         console.log(response.authResponse);
+//         console.log("Connected to facebook, accessToken:"+ response.authResponse);
+//         testAPI();
+//       } else if (response.status === 'not_authorized') {
+//         // The person is logged into Facebook, but not your app.
+//         // document.getElementById('status').innerHTML = 'Please log ' +
+//         //   'into this app.';
+//           console.log("status = not_authorized");
+//       } else {
+//         // The person is not logged into Facebook, so we're not sure if
+//         // they are logged into this app or not.
+//         // document.getElementById('status').innerHTML = 'Please log ' +
+//         //   'into Facebook.';
+//            console.log("status = something else");
+//       }
+
+    
+// }
+function logout()
+{
+
+    
+    //Facebook logout
+    FB.getLoginStatus(function(response) {
+        if (response && response.status === 'connected') {
+            FB.logout(function(response) {
+                window.location.assign('/');
+            });
+        }
     });
 
+
 }
+// $(document).ready(function(){
+
+// });
