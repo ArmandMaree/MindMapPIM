@@ -165,7 +165,7 @@ var signinChanged = function (val) {
   }
 };
 
-var refreshValues = function() {
+function refreshValues() {
   if (auth2){
     console.log('Refreshing values...');
 
@@ -226,13 +226,24 @@ function logout()
 
     startApp();
     //Facebook logout
+    var flag =false;
     FB.getLoginStatus(function(response) {
         if (response && response.status === 'connected') {
+            flag = true;
             FB.logout(function(response) {
             });
         }
+
     });
-	window.location.assign('/');
+
+        // console.log("facebook:"+ flag)
+        // console.log("google:"+!auth2.isSignedIn.get())
+        // if (flag && !auth2.isSignedIn.get()) {
+        setTimeout(function(){ window.location.assign('/'); }, 3000);
+        	
+        // }
+        
+
 
 }
 // $(document).ready(function(){
