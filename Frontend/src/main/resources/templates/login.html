@@ -27,8 +27,11 @@
 
             <div class="form-box">
                 <form onsubmit="" action="" method="POST" id="formID">
-
-                
+                    <div id="tos2">
+                        <p>
+                            Please sign in with one of these services.
+                        </p>
+                    </div>
                     
                     <br/>
                     <a class="btn btn-social-icon btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
@@ -42,14 +45,14 @@
                     <br/>
                     <div id="tos">
                         <p>
-                            By registering, you are agreeing to the <a data-toggle="modal" data-target="#myModal" id="privacy" style="cursor:pointer" onclick="loadPrivacy()">privacy policy</a> and <a data-toggle="modal" data-target="#myModal" id="terms" style="cursor:pointer" onclick="loadTos()">terms of service.</a>
+                            By signing in, you are agreeing to the <a data-toggle="modal" data-target="#myModal" id="privacy" style="cursor:pointer" onclick="loadPrivacy()">privacy policy</a> and <a data-toggle="modal" data-target="#myModal" id="terms" style="cursor:pointer" onclick="loadTos()">terms of service.</a>
                         </p>
                     </div>
                 </form>
 
                                  
                 <!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
-                <div id="status"></div>
+                <!-- <div id="status"></div> -->
 
             </div>   
     </div>
