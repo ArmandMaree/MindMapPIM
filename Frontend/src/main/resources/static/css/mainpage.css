@@ -90,6 +90,7 @@ body
     background-color: rgba(255, 255, 255, 0.15) !important;
     font-size: 18pt;
     cursor: pointer !important;
+    text-align: center;
 }
 h2{
     color: #eee5e9 !important;
