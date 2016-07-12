@@ -1,37 +1,40 @@
 $(document).ready(function($){
-
+	document.oncontextmenu = function() {return false;};
+	// $("canvas").click(function(event){
+ //    	event.preventDefault();
+	// });
     var color = 'gray';
     var len = undefined;
-    var nodes = [{id: 0, label: "ME"},
-            {id: 1, label: "1"},
-            {id: 2, label: "2"},
-            {id: 3, label: "3"},
-            {id: 4, label: "4"},
-            {id: 5, label: "5"},
-            {id: 6, label: "6"},
-            {id: 7, label: "7"},
-            {id: 8, label: "8"},
-            {id: 9, label: "9"},
-            {id: 10, label: "10"},
-            {id: 11, label: "11"},
-            {id: 12, label: "12"},
-            {id: 13, label: "13"},
-            {id: 14, label: "14"},
-            {id: 15, label: "15"},
-            {id: 16, label: "16"},
-            {id: 17, label: "17"},
-            {id: 18, label: "18"},
-            {id: 19, label: "19"},
-            {id: 20, label: "20"},
-            {id: 21, label: "21"},
-            {id: 22, label: "22"},
-            {id: 23, label: "23"},
-            {id: 24, label: "24"},
-            {id: 25, label: "25"},
-            {id: 26, label: "26"},
-            {id: 27, label: "27"},
-            {id: 28, label: "28"},
-            {id: 29, label: "29"}
+    var nodes = [{id: 0, label: "ME", group: 0},
+            {id: 1, label: "1", group: 0},
+        {id: 2, label: "2", group: 0},
+        {id: 3, label: "3", group: 1},
+        {id: 4, label: "4", group: 1},
+        {id: 5, label: "5", group: 1},
+        {id: 6, label: "6", group: 2},
+        {id: 7, label: "7", group: 2},
+        {id: 8, label: "8", group: 2},
+        {id: 9, label: "9", group: 3},
+        {id: 10, label: "10", group: 3},
+        {id: 11, label: "11", group: 3},
+        {id: 12, label: "12", group: 4},
+        {id: 13, label: "13", group: 4},
+        {id: 14, label: "14", group: 4},
+        {id: 15, label: "15", group: 5},
+        {id: 16, label: "16", group: 5},
+        {id: 17, label: "17", group: 5},
+        {id: 18, label: "18", group: 6},
+        {id: 19, label: "19", group: 6},
+        {id: 20, label: "20", group: 6},
+        {id: 21, label: "21", group: 7},
+        {id: 22, label: "22", group: 7},
+        {id: 23, label: "23", group: 7},
+        {id: 24, label: "24", group: 8},
+        {id: 25, label: "25", group: 8},
+        {id: 26, label: "26", group: 8},
+        {id: 27, label: "27", group: 9},
+        {id: 28, label: "28", group: 9},
+        {id: 29, label: "29", group: 9}
         ];
         var edges = [{from: 1, to: 0},
             {from: 2, to: 0},
@@ -76,10 +79,10 @@ $(document).ready(function($){
             nodes: {
                 shape: 'ellipse',
                 size: 50,
-                // style: 'shadow',
+                 color: '#7FBEEB ', //rgb(102,167,188)',
                 font: {
                     size: 32,
-                    color: 'black'
+                    color: 'white'
                 },
                 borderWidth: 1
             },
@@ -87,15 +90,26 @@ $(document).ready(function($){
                 width: 1
             }
         };
-      var network = new vis.Network(container, data, options);
+        var network = new vis.Network(container, data, options);
 
-      network.on("click", function(){
-      	console.log("works on right click");
-      	// $(this).bind("contextmenu", function (e) {
-       //      menu.popup(e);
-       //      ax5.util.stopEvent(e);
-      	// });
-      });
+	      network.on("oncontext", function(){
+	      	var e = window.event;
+		    var posX = e.clientX;
+		    var posY = e.clientY - $("nav").height();
+	      	console.log("X: "+ posX);
+	      	console.log("Y: "+ posY);
+			var node = network.getSelectedNodes();
+			console.log(node);
+	      	console.log("works on right click");
+	      	// $(this).bind("contextmenu", function (e) {
+	      	if(node.length != 0)
+	      	{
+	            menu.popup(e);
+	            ax5.util.stopEvent(e);
+	      	}
+	      	// });
+	      });
+	  
 
 });
 
@@ -103,28 +117,28 @@ $(document).ready(function($){
     $(document.body).ready(function () {
         menu = new ax5.ui.menu({
             position: "absolute", // default position is "fixed"
-            theme: "primary",
+            theme: "info",
             icons: {
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
             items: [
                 {
                     icon: '<i class="fa fa-comment"></i>',
-                    label: "Menu A",
-                    items: [
-                        {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
-                        {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
-                        {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
-                    ]
+                    label: "Expand Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
+                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
+                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
+                    // ]
                 },
                 {
                     icon: '<i class="fa fa-comments"></i>',
-                    label: "Menu B",
-                    items: [
-                        {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
-                        {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
-                        {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
-                    ]
+                    label: "Hide Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
+                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
+                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
+                    // ]
                 }
             ]
         });
