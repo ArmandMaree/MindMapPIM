@@ -1,0 +1,29 @@
+body
+{
+	background-color: #FFFFFF ;
+}
+#settings
+{
+	border:solid;
+	border-color:#A3CEF1;
+	border-width:2px;
+	/*height:80vh;*/
+	margin-top: 2%; 
+	/*background-color: #FFFCEA ;*/
+}
+.nav-tabs > li
+{
+	font-size: 12pt;
+}
+input[type='checkbox']
+{
+	font-size: 14pt;
+}
+.checkbox
+{
+	margin-left: 5%;
+}
+#inject
+{
+	/*height:95vh;*/
+}
