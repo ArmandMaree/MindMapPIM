@@ -1,5 +1,7 @@
 body{
-    background : #eee url("/images/back.jpg");
+    background : #eee url("/images/back8.jpg");
+    background-repeat: no-repeat;
+    background-size:cover;
 
   }
 html,body{
