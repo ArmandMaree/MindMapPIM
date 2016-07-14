@@ -17,6 +17,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/mainpage").setViewName("mainpage");
         registry.addViewController("/setting").setViewName("setting");
+        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/").setViewName("login");
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)

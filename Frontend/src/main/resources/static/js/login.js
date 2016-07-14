@@ -23,11 +23,12 @@ var initSigninV2 = function() {
  * @param {function} successFunc - attach a callback function if request succeded
  * @param {function} failFunc - attach a callback function if request fails
  */
-  auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure);
+  auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
   auth2.isSignedIn.listen(signinChanged);
   if (auth2.isSignedIn.get() == true) {
     auth2.signIn();
   }
+
   refreshValues();
 };
 /**
@@ -83,6 +84,7 @@ var signinChanged = function (val) {
       $("#continue").delay(2000).animate({
           opacity: '1'
       });
+      document.cookie = "login=1";
   }
 };
 /**
@@ -104,6 +106,7 @@ var refreshValues = function() {
  */
 var onSuccess = function(user) {
     console.log('Signed in as ' + user.getBasicProfile().getName());
+    document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
  * Google callback function when a request has failed.
@@ -322,6 +325,7 @@ function testAPI() {
     // document.getElementById('status').innerHTML =
     //   'Thanks for logging in, ' + response.name + '!';
     document.getElementById('welcome').innerHTML += ", " + response.name;
+    document.cookie = "login=1";
     onSuccessFacebook();
 
   });
@@ -353,6 +357,11 @@ function onSuccessFacebook() {
   $("#tos").animate({
       top: '100px',
       opacity: '0.0'
+
+  });
+  $("#tos2").animate({
+    top: '100px',
+    opacity: '0.0'
 
   });
   $("#welcome").show();

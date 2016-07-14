@@ -1,3 +1,19 @@
+var name = "login=";
+var ca = document.cookie.split(';');
+for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') {
+        c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+        var x = c.substring(name.length,c.length);
+    }
+}
+
+    if(x!="1"){
+        window.location.assign('/');
+    }
+
 $(document).ready(function($){
 	document.oncontextmenu = function() {return false;};
 	// $("canvas").click(function(event){
@@ -75,9 +91,16 @@ $(document).ready(function($){
       };
       
         var options = {
-        	clickToUse: true,
+            interaction:{
+                hover: true,
+                hoverConnectedEdges: true,
+            },
+            physics: {
+              stabilization: false
+            },
+        	clickToUse: false,
             nodes: {
-                shape: 'ellipse',
+                shape: 'circle',
                 size: 50,
                  color: '#7FBEEB ', //rgb(102,167,188)',
                 font: {
@@ -91,27 +114,46 @@ $(document).ready(function($){
             }
         };
         var network = new vis.Network(container, data, options);
+        network.on("click", function(){
+            var e = window.event;
+            var posX = e.clientX;
+            var posY = e.clientY - $("nav").height();
+            console.log("X: "+ posX);
+            console.log("Y: "+ posY);
+            network.getNodeAt({"x": posX, "y": posY});
+            var node = network.getSelectedNodes();
+            console.log(node);
+            console.log()
+        });
 
-	      network.on("oncontext", function(){
-	      	var e = window.event;
-		    var posX = e.clientX;
-		    var posY = e.clientY - $("nav").height();
-	      	console.log("X: "+ posX);
-	      	console.log("Y: "+ posY);
-			var node = network.getSelectedNodes();
-			console.log(node);
-	      	console.log("works on right click");
-	      	// $(this).bind("contextmenu", function (e) {
-	      	if(node.length != 0)
-	      	{
-	            menu.popup(e);
-	            ax5.util.stopEvent(e);
-	      	}
-	      	// });
-	      });
+
+        network.on("oncontext", function(){
+            var e = window.event;
+            var posX = e.clientX;
+            var posY = e.clientY - $("nav").height();
+            console.log("X: "+ posX);
+            console.log("Y: "+ posY);
+            console.log(network.getNodeAt({"x": posX, "y": posY}));
+
+            var node = network.getSelectedNodes();
+            console.log(node);
+            	console.log("works on right click");
+            	// $(this).bind("contextmenu", function (e) {
+            	if(node.length != 0)
+            	{
+                    menu.popup(e);
+                    ax5.util.stopEvent(e);
+            	}
+            	// });
+        });
 	  
 
 });
+
+// $(document).click(function(event) {
+//     var text = $(event.target).text();
+//     console.log($(event.target));
+// });
 
     var menu;
     $(document.body).ready(function () {
@@ -253,7 +295,7 @@ function logout()
         // console.log("facebook:"+ flag)
         // console.log("google:"+!auth2.isSignedIn.get())
         // if (flag && !auth2.isSignedIn.get()) {
-        setTimeout(function(){ window.location.assign('/'); }, 3000);
+        setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";;window.location.assign('/'); }, 3000);
         	
         // }
         
