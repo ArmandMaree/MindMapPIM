@@ -85,11 +85,11 @@
 	            	<div class="col-xs-12 col-sm-12 col-md-12">
 			        	<h3>Account Settings</h3><br />
 	              	</div>
-	              	<form>
-	              		<div class="col-xs-12 col-sm-3 col-md-3">
-	              			<h5>Add/Remove data sources:</h5>
+	              	<!-- <form> -->
+	              		<div class="col-xs-12 col-sm-12 col-md-12">
+	              			<h5><b>Add/Remove data sources:</b></h5>
 	              		</div>
-	              		<div class="col-xs-12 col-sm-9 col-md-9">
+	              		<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
 	              			<div class="checkbox">
 							    <input type="checkbox" value="Gmail"/><label>Gmail</label> <br />
 							</div>
@@ -104,13 +104,77 @@
 							</div>
 							    <!-- <input type="checkbox"/><label>Google</label> -->
 						</div>
-					  	<!-- <button type="submit" class="btn btn-default">Submit</button> -->
-	              	</form>
+						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
+					  		<button type="submit" id="saveAccount" class="btn btn-success">Save Changes</button>
+	              		</div>
+
+	              		<div class="col-xs-12 col-sm-12 col-md-12">
+	              			<h5><b>Delete Account:</b></h5>
+	              			<br />
+	              			<p>Deleting your account will result in you no longer being able to make use of the service our product provides. All your data and user preference settings will be removed from our database. In order to make use of our product again you will have to Sign up again.</p>
+	              		</div>
+	              		
+						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
+					  		<button type="submit" id="deleteAccount" class="btn btn-danger">Delete Account</button>
+					  		<br />
+	              		</div>
+	              
 	            </div>
 	            <div id="theme">
 	            	<div class="col-xs-12 col-sm-12 col-md-12">
 			        	<h3>Theme</h3><br />
 	              	</div>
+	              	<div class="col-xs-12 col-sm-12 col-md-12">
+	              			<h5 class="col-xs-12 col-sm-5 col-md-3"><b>Navigation Bar colour:</b></h5>
+	              			<!-- <br /> -->
+	              			<div class="col-xs-offset-3 col-xs-8 col-sm-offset-0 col-md-offset-0 dropdown">
+							  <button  class="btn btn-default dropdown-toggle" type="button" id="navColour" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:white">
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" aria-labelledby="navColour">
+							    <li data-value="#6096BA"><div style="background-color:#6096BA;"></div></li>
+							    <li data-value="#A3CEF1"><div style="background-color:#A3CEF1;"></div></li>
+							    <li data-value="#007acc"><div style="background-color:#007acc;"></div></li>
+							    <li data-value="#002e4d"><div style="background-color:#002e4d;"></div></li>
+							  </ul>
+							</div>
+	              		</div>
+	              		<div class="col-xs-12 col-sm-12 col-md-12">
+	              			<h5 class="col-xs-12 col-sm-5 col-md-3"><b>Bubble Space background colour:</b></h5>
+	              			<!-- <br /> -->
+	              			<div class="col-xs-offset-3 col-xs-8 col-sm-offset-0 col-md-offset-0 dropdown">
+							  <button  class="btn btn-default dropdown-toggle" type="button" id="bubbleSpaceColour" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:silver">
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" aria-labelledby="bubbleSpaceColour">
+							    <li data-value="#6096BA"><div style="background-color:#6096BA;"></div></li>
+							    <li data-value="#A3CEF1"><div style="background-color:#A3CEF1;"></div></li>
+							    <li data-value="#007acc"><div style="background-color:#007acc;"></div></li>
+							    <li data-value="#002e4d"><div style="background-color:#002e4d;"></div></li>
+							  </ul>
+							</div>
+	              		</div>
+	              		<div class="col-xs-12 col-sm-12 col-md-12">
+	              			<h5 class="col-xs-12 col-sm-5 col-md-3"><b>Side Panel colour:</b></h5>
+	              			<!-- <br /> -->
+	              			<div class="col-xs-offset-3 col-xs-8 col-sm-offset-0 col-md-offset-0 dropdown">
+							  <button  class="btn btn-default dropdown-toggle" type="button" id="sidePanelColour" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color:silver">
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" aria-labelledby="sidePanelColour">
+							    <li data-value="#6096BA"><div style="background-color:#6096BA;"></div></li>
+							    <li data-value="#A3CEF1"><div style="background-color:#A3CEF1;"></div></li>
+							    <li data-value="#007acc"><div style="background-color:#007acc;"></div></li>
+							    <li data-value="#002e4d"><div style="background-color:#002e4d;"></div></li>
+							  </ul>
+							</div>
+	              		</div>
+						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
+							<br />
+					  		<button type="submit" id="saveTheme" class="btn btn-success">Save Changes</button>
+					  		<br />
+	              		</div>
+
 	            </div>
 	            <div id="userPreferences">
 	            	<div class="col-xs-12 col-sm-12 col-md-12">

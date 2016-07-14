@@ -5,40 +5,34 @@ $(document).ready(function(){
 		$("li[role='presentation']").removeClass("active");
 		$(this).addClass("active");
 		
-
-		$("a").on("click", function(){
+	});
+	$("a").on("click", function(){
 			var title = $(this).text();
 			console.log(title);
 			if(title == "Account")
 			{
 				$("#theme").hide();
 				$("#userPreferences").hide();
-				$("#account").show();
+				$("#accountSettings").show();
 			}
 			else if(title == "Theme")
 			{
-				$("#account").hide();
+				console.log("Got Here");
+				$("#accountSettings").hide();
 				$("#userPreferences").hide();
 				$("#theme").show();
 			} 
 			else if(title == "User Preferences")
 			{
 				$("#theme").hide();
-				$("#account").hide();
+				$("#accountSettings").hide();
 				$("#userPreferences").show();
 			}
 		});
-	
 
-
-
-
-
-
-
-
-
-	});
+	$("#navColour").css("backgroundColor","#0f4d71");
+	$("#bubbleSpaceColour").css("backgroundColor","#FFFFEA");
+	$("#sidePanelColour").css("backgroundColor","white");
 
 
 
