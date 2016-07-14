@@ -17,9 +17,9 @@
 }
 body
 {
-    color: #34a8d2;
+    color: #34a8d2!important;
     font: 10pt arial;
-    background-color:  #2d415c;
+    background-color:  #2d415c!important;
 }
 
 #mynetwork {
@@ -28,7 +28,7 @@ body
     width: 100%;
     height:93.5vh;
     /*border: 1px solid #444444;*/
-    background-color: #FFFCEA !important;  /*platinum: #eee5e9*/
+    background-color: #ffffff !important;  /*platinum: #eee5e9*/
     /*z-index: -1000;*/
 }
 #myCanvas 
@@ -44,7 +44,7 @@ body
 #sidepanel{
     padding: 0.5em;
     /*opacity: 0.9;*/
-    background-color: #0f4d71 !important;
+    background-color: rgba(256,256,256,1) !important;
     height:93.5vh;
     position: fixed !important;
     left: auto !important;
@@ -52,10 +52,15 @@ body
     width: 1000px;
     vertical-align: middle !important;
     color: black !important;
+    border: solid;
+    border-right: 0px !important;
+    border-top: 0px !important;
+    border-bottom: 0px !important;
+    border-width: 2px !important;
 }
 .glyphicon
 {
-    font-size: 16pt ;
+    font-size: 14pt ;
 }
 #dropMenu > li
 {
@@ -67,29 +72,29 @@ body
 }*/
 #sidepanelTitle{
     padding:5px;
-    background-color:  rgba(255, 255, 255, 0.6); 
+    background-color:  rgba(15,77,113,0.8); 
     color:white;
     margin-top: 3%;
     text-align: center;
     font-size: 10pt;
 }
 #accordion{
-     /*background-color: rgba(255, 255, 255, 0.3); */
+     /*background-color: rgba(15, 77, 113, 0.8) !important; */
 }
 .panel-default{
     color: white !important;
-    background-color: rgba(255, 255, 255, 0.15) !important; 
+    background-color: rgba(15, 77, 113, 0.4) !important; 
     font-size: 12pt;/*
     cursor: auto !important;*/
 }
 .panel-body
 {
   cursor: default !important;
-  font-size: 13pt;
+  font-size: 12pt;
 }
 .panel-heading {
     color: white !important;
-    background-color: rgba(255, 255, 255, 0.60) !important;
+   background-color: rgba(15, 77, 113, 0.4) !important; 
     font-size: 18pt;
     cursor: pointer !important;
     text-align: center;
@@ -103,7 +108,7 @@ h2{
 }
 .breadcrumb{
     color: white !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    background-color: rgba(15, 77, 113, 0.8) !important; 
 }
 .breadcrumb > li{
     color: white !important;
