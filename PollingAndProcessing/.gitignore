@@ -1,5 +1,0 @@
-// ignore build folder
-build/
-.gradle/
-
-src/main/java/*.html
