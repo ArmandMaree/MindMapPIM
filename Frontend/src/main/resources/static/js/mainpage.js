@@ -134,7 +134,7 @@ $(document).ready(function($){
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             console.log(network.getNodeAt({"x": posX, "y": posY}));
-
+            network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
             var node = network.getSelectedNodes();
             console.log(node);
             	console.log("works on right click");
