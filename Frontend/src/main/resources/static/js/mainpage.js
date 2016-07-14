@@ -21,8 +21,40 @@ $(document).ready(function($){
 	// });
     var color = 'gray';
     var len = undefined;
-    var nodes = [{id: 0, label: "ME", group: 0},
-            {id: 1, label: "1", group: 0},
+    var nodes = [
+        // {id: 0, label: "ME", group: 0,color:{background:"#D3D3D3"}},
+        // {id: 1, label: "1", group: 0,color:{background:"#D3D3D3"}},
+        // {id: 2, label: "2", group: 0,color:{background:"#D3D3D3"}},
+        // {id: 3, label: "3", group: 1,color:{background:"#D3D3D3"}},
+        // {id: 4, label: "4", group: 1,color:{background:"#D3D3D3"}},
+        // {id: 5, label: "5", group: 1,color:{background:"#D3D3D3"}},
+        // {id: 6, label: "6", group: 2,color:{background:"#D3D3D3"}},
+        // {id: 7, label: "7", group: 2,color:{background:"#D3D3D3"}},
+        // {id: 8, label: "8", group: 2,color:{background:"#D3D3D3"}},
+        // {id: 9, label: "9", group: 3,color:{background:"#D3D3D3"}},
+        // {id: 10, label: "10", group: 3,color:{background:"#D3D3D3"}},
+        // {id: 11, label: "11", group: 3,color:{background:"#D3D3D3"}},
+        // {id: 12, label: "12", group: 4,color:{background:"#D3D3D3"}},
+        // {id: 13, label: "13", group: 4,color:{background:"#D3D3D3"}},
+        // {id: 14, label: "14", group: 4,color:{background:"#D3D3D3"}},
+        // {id: 15, label: "15", group: 5,color:{background:"#D3D3D3"}},
+        // {id: 16, label: "16", group: 5,color:{background:"#D3D3D3"}},
+        // {id: 17, label: "17", group: 5,color:{background:"#D3D3D3"}},
+        // {id: 18, label: "18", group: 6,color:{background:"#D3D3D3"}},
+        // {id: 19, label: "19", group: 6,color:{background:"#D3D3D3"}},
+        // {id: 20, label: "20", group: 6,color:{background:"#D3D3D3"}},
+        // {id: 21, label: "21", group: 7,color:{background:"#D3D3D3"}},
+        // {id: 22, label: "22", group: 7,color:{background:"#D3D3D3"}},
+        // {id: 23, label: "23", group: 7,color:{background:"#D3D3D3"}},
+        // {id: 24, label: "24", group: 8,color:{background:"#D3D3D3"}},
+        // {id: 25, label: "25", group: 8,color:{background:"#D3D3D3"}},
+        // {id: 26, label: "26", group: 8,color:{background:"#D3D3D3"}},
+        // {id: 27, label: "27", group: 9,color:{background:"#D3D3D3"}},
+        // {id: 28, label: "28", group: 9,color:{background:"#D3D3D3"}},
+        // {id: 29, label: "29", group: 9,color:{background:"#D3D3D3"}}
+        // ];
+        {id: 0, label: "ME", group: 0},
+        {id: 1, label: "1", group: 0},
         {id: 2, label: "2", group: 0},
         {id: 3, label: "3", group: 1},
         {id: 4, label: "4", group: 1},
@@ -102,10 +134,10 @@ $(document).ready(function($){
             nodes: {
                 shape: 'circle',
                 size: 50,
-                 color: '#7FBEEB ', //rgb(102,167,188)',
+                color: '#7FBEEB ', //rgb(102,167,188)',
                 font: {
                     size: 32,
-                    color: 'white'
+                    color: 'black'
                 },
                 borderWidth: 1
             },
@@ -113,17 +145,30 @@ $(document).ready(function($){
                 width: 1
             }
         };
+                
         var network = new vis.Network(container, data, options);
         network.on("click", function(){
+            // for(var j=0;j<nodes.length;j++){
+            // }
+
             var e = window.event;
             var posX = e.clientX;
             var posY = e.clientY - $("nav").height();
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             network.getNodeAt({"x": posX, "y": posY});
-            var node = network.getSelectedNodes();
-            console.log(node);
-            console.log()
+            
+            var alledges = network.getSelectedEdges();
+            var allnodes = []
+            for(var i=0;i<alledges.length;i++){
+                var node = network.getConnectedNodes(alledges[i]);
+                console.log(node);
+                for(var j=0;j<node.length;j++){
+                    allnodes.push(node[j]);
+                }
+            }
+            network.selectNodes(allnodes);
+            console.log(nodes.length)
         });
 
 

@@ -44,7 +44,7 @@ body
 #sidepanel{
     padding: 0.5em;
     /*opacity: 0.9;*/
-    background-color: rgba(256,256,256,1) !important;
+    background-color: rgba(256,256,256,0.8) !important;
     height:93.5vh;
     position: fixed !important;
     left: auto !important;
