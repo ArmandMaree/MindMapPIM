@@ -19,6 +19,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         registry.addViewController("/setting").setViewName("setting");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/").setViewName("login");
+        registry.addViewController("/help").setViewName("help");
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)
@@ -34,5 +35,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @RequestMapping(value="/settings", method=RequestMethod.GET)
     public String showSettings() {
         return "settings";
+    }
+
+    @RequestMapping(value="/help", method=RequestMethod.GET)
+    public String showHelp() {
+        return "help";
     }
 }
