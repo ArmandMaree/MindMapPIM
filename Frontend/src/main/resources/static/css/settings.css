@@ -9,6 +9,7 @@ body
 	border-width:2px;
 	/*height:80vh;*/
 	margin-top: 2%; 
+	padding-bottom: 2%;
 	/*background-color: #FFFCEA ;*/
 }
 .nav-tabs > li
@@ -51,4 +52,8 @@ li > div:hover
 	border-style: solid;
 	border-color: silver;
 	border-width: 0.5px;
+}
+#spinner2
+{
+	/*margin-bottom: 5%;*/
 }

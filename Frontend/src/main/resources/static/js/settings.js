@@ -34,6 +34,19 @@ $(document).ready(function(){
 	$("#bubbleSpaceColour").css("backgroundColor","#FFFFEA");
 	$("#sidePanelColour").css("backgroundColor","white");
 
+  
+    $('#spinner').spinner({
+        min: 2,
+        max: 5,
+        step: 1
+    });
+    $('#spinner2').spinner({
+        min: 2,
+        max: 40,
+        step: 1
+    });
+
+
 
 
 
