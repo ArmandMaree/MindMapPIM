@@ -228,7 +228,6 @@ public class GmailPoller implements Poller {
 	public void addToQueue(RawData rawData) {
 		try {
 			rabbitTemplate.convertAndSend(queueName, rawData);
-			System.out.println("Added to queue");
 		}
 		catch (AmqpException ampqe) {
 			ampqe.printStackTrace();
@@ -353,6 +352,7 @@ public class GmailPoller implements Poller {
 	public RawData getRawData(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		MimeMessage email = getMimeMessage(message);
+		// printEmail(service.users().messages().get(userId, messageId).setFormat("full").execute());
 		String body = "";
 		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
 		ArrayList<String> rawDataElements = new ArrayList<>();
@@ -454,7 +454,10 @@ public class GmailPoller implements Poller {
 		}
 
 		rawDataElements.add(body);
-		RawData rawData = new RawData("Gmail", "", null, message.getId(), rawDataElements.toArray(new String[0]));
+		String userId = email.getHeader("Delivered-To")[0];
+		ArrayList<String> involvedContacts = new ArrayList<>();
+		involvedContacts.add(email.getHeader("Delivered-To")[0]);
+		RawData rawData = new RawData("Gmail", userId, involvedContacts.toArray(new String[0]), message.getId(), rawDataElements.toArray(new String[0]), getMilliSeconds(message.getId()));
 
 		return rawData;
 	}
@@ -471,5 +474,9 @@ public class GmailPoller implements Poller {
 			System.out.println("COULD NOT PRINT EMAIL");
 			ioe.printStackTrace();
 		}
+	}
+
+	public void printEmail(MimeMessage message) {
+		System.out.println(message);
 	}
 }

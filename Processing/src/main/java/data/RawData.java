@@ -35,6 +35,11 @@ public class RawData implements Serializable {
 	private String[] data = null;
 
 	/**
+	* Time the item was received.
+	*/
+	private long time = 0;
+
+	/**
 	* Default empty RawData constructor
 	*/
 	public RawData() {
@@ -49,13 +54,14 @@ public class RawData implements Serializable {
 	* @param pimItemId String ID of the item the data was extracted from w.r.t. the PIM.
 	* @param data Array of text that was extracted.
 	*/
-	public RawData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] data) {
+	public RawData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] data, long time) {
 		super();
 		this.pimSource = pimSource;
 		this.userId = userId;
 		this.involvedContacts = involvedContacts;
 		this.pimItemId = pimItemId;
 		this.data = data;
+		this.time = time;
 	}
 
 	/**
@@ -136,6 +142,22 @@ public class RawData implements Serializable {
 	*/
 	public void setData(String[] data) {
 		this.data = data;
+	}
+
+	/**
+	* Set the time item was received.
+	* @param time The new time.
+	*/
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	/**
+	* Returbs the value of time.
+	* @return The time the item was received.
+	*/
+	public long getTime() {
+		return time;
 	}
 
 	/**

@@ -30,6 +30,9 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-actuator")
 	testCompile("junit:junit")
 
+	// MongoDB
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+
 	// Stanford CoreNLP and Parser
 	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0'
 	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0:models'
