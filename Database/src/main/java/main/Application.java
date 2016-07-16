@@ -1,9 +1,5 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,21 +22,23 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import processor.*;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import repositories.user.*;
+import repositories.pimprocesseddata.*;
+import listeners.*;
 import data.*;
 
-/**
-* Main application that starts up the service.
-*
-* @author  Armand Maree
-* @since   2016-07-14
-*/
 @SpringBootApplication
+@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
-	final static String queueName = "raw-data";
+	final static String queueName = "processed-data";
 
 	@Autowired
-	NaturalLanguageProcessor nlpG;
+	private UserRepository userRepository;
+
+	@Autowired
+	private PimProcessedDataRepository processedDataRepository;
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -70,33 +68,25 @@ public class Application implements CommandLineRunner {
 	}
 
     @Bean
-    DataProcessor dataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
-        return new DataProcessor(nlp, rabbitTemplate);
+    ProcessedDataListener processedDataListener(PimProcessedDataRepository processedDataRepository, UserRepository userRepository) {
+        return new ProcessedDataListener(processedDataRepository, userRepository);
     }
 
 	@Bean
-	MessageListenerAdapter listenerAdapter(DataProcessor dataProcessor) {
-		return new MessageListenerAdapter(dataProcessor, "receiveRawData");
-	}
-
-	@Bean
-	NaturalLanguageProcessor naturalLanguageProcessor() {
-		return new StanfordNLP();
-		// return null;
+	MessageListenerAdapter listenerAdapter(ProcessedDataListener processedDataListener) {
+		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
 	}
 
 	public static void main(String[] args) {
-		ApplicationContext ctx = SpringApplication.run(Application.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 	@Override
-    public void run(String... args) throws Exception {
-		// System.out.println("Waiting five seconds...");
-        // Thread.sleep(5000);
-        // System.out.println("Sending message...");
-		// String[] data = {"cheesecake", "horse", "beach"};
-		// RawData rawData = new RawData(null, null, null, null, data);
-        // rabbitTemplate.convertAndSend(queueName, rawData);
-        // dataProcessor(nlpG).getLatch().await(10000, TimeUnit.MILLISECONDS);
+	public void run(String... args) throws Exception {
+		userRepository.deleteAll();
+		processedDataRepository.deleteAll();
+
+		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		userRepository.save(acuben);
 	}
 }

@@ -1,0 +1,16 @@
+package repositories.user;
+
+import java.util.List;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+/**
+* MongoDB repository for user information.
+*
+* @author  Armand Maree
+* @since   2016-07-16
+*/
+public interface UserRepository extends MongoRepository<User, String> {
+    public User findByFirstName(String firstName);
+    public List<User> findByLastName(String lastName);
+	public User findByGmailId(String gmailId);
+}

@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 import data.*;
 
 /**
@@ -18,13 +20,16 @@ public class DataProcessor {
 	private final int TIMEOUT = 10;
 	private NaturalLanguageProcessor nlp;
 	private CountDownLatch latch = new CountDownLatch(1);
+	private RabbitTemplate rabbitTemplate;
 
 	/**
 	* Constructor that initializes some fields.
 	* @param nlp An instance of a NaturalLanguageProcessor. If null then the RawDataQueue will just be dequeued as new data is inserted.
+	* @param rabbitTemplate A template to a RabbitMQ instance to send messages to.
 	*/
-	public DataProcessor(NaturalLanguageProcessor nlp) {
+	public DataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
 		this.nlp = nlp;
+		this.rabbitTemplate = rabbitTemplate;
 	}
 
 	/**
@@ -41,8 +46,7 @@ public class DataProcessor {
 			topics = nlp.purge(topics);
 
 			ProcessedData processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
-			System.out.println("ProcessorDone->" + processedData);
-			// pushToQueue(processedData);
+			pushToQueue(processedData);
 		}
 	}
 
@@ -51,7 +55,7 @@ public class DataProcessor {
 	* @param processedData The data that has been processed that needs to be sent to the queue for persistence.
 	*/
 	public void pushToQueue(ProcessedData processedData) {
-
+        rabbitTemplate.convertAndSend("processed-data", processedData);
 	}
 
 	/**
