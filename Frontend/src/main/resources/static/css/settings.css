@@ -1,0 +1,59 @@
+body
+{
+	background-color: #FFFFFF ;
+}
+#settings
+{
+	border:solid;
+	border-color:#A3CEF1;
+	border-width:2px;
+	/*height:80vh;*/
+	margin-top: 2%; 
+	padding-bottom: 2%;
+	/*background-color: #FFFCEA ;*/
+}
+.nav-tabs > li
+{
+	font-size: 10pt;
+}
+input[type='checkbox']
+{
+	font-size: 14pt;
+}
+.checkbox
+{
+	margin-left: 5%;
+}
+#inject
+{
+	/*height:95vh;*/
+}
+button
+{
+	margin-bottom: 10% !important;
+}
+.dropdown
+{
+	float: left !important;
+}
+.btn.btn-default.dropdown-toggle
+{
+	margin-bottom: 1% !important;
+	width: 100px !important;
+}
+li > div
+{
+	/*width: 100px !important;*/
+	height: 20px;
+	cursor: pointer;
+}
+li > div:hover
+{
+	border-style: solid;
+	border-color: silver;
+	border-width: 0.5px;
+}
+#spinner2
+{
+	/*margin-bottom: 5%;*/
+}
