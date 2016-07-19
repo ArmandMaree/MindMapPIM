@@ -180,8 +180,13 @@ public class RawData implements Serializable {
 
 		s += "\t]\n" +
 			"\tpimItemId: " + pimItemId + "\n" +
-			"\tdataCount: " + ((data == null) ? 0 : data.length) + "\n" +
-			"}";
+			"\tdata: [\n";
+
+		for (String d : data) {
+			s += "\t\t" + d + "\n";
+		}
+
+		s += "\t]\n}";
 
 		return s;
 	}

@@ -129,16 +129,19 @@ public class GmailPoller implements Poller {
 					if (firstId.equals(message.getId()))
 						break;
 
-					if (getMilliSeconds(message.getId()) <= lastEmailMilli)
+					Message msg = getMessage(message.getId());
+					MimeMessage mimeMessage = getMimeMessage(msg);
+
+					if (getMilliSeconds(mimeMessage) <= lastEmailMilli)
 						continue;
 
 					if (lastEmailDate == null) {
-						lastEmailDate = getTimeStamp(message.getId());
-						tmpMilli = getMilliSeconds(message.getId());
+						lastEmailDate = getTimeStamp(mimeMessage);
+						tmpMilli = getMilliSeconds(mimeMessage);
 						firstId = message.getId();
 					}
 
-					RawData rawData = getRawData(message.getId());
+					RawData rawData = getRawData(message.getId(), mimeMessage);
 
 					if (rawData != null)
 						addToQueue(rawData);
@@ -167,8 +170,7 @@ public class GmailPoller implements Poller {
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
-	public String getTimeStamp(String messageId) throws IOException, MessagingException {
-		MimeMessage email = getMimeMessage(messageId);
+	public String getTimeStamp(MimeMessage email) throws IOException, MessagingException {
 		String date = email.getHeader("Date")[0];
 
 		if (date.indexOf("(") != -1)
@@ -198,8 +200,7 @@ public class GmailPoller implements Poller {
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
-	public long getMilliSeconds(String messageId) throws IOException, MessagingException {
-		MimeMessage email = getMimeMessage(messageId);
+	public long getMilliSeconds(MimeMessage email) throws IOException, MessagingException {
 		String date = email.getHeader("Date")[0];
 
 		if (date.indexOf("(") != -1)
@@ -230,15 +231,15 @@ public class GmailPoller implements Poller {
 			rabbitTemplate.convertAndSend(queueName, rawData);
 		}
 		catch (AmqpException ampqe) {
-			ampqe.printStackTrace();
+			System.out.println("Could not connect to RabbitMQ.");
 		}
 	}
 
 	/**
-	 * Build and return an authorized Gmail client service.
-	 * @return An authorized Gmail client service
+	* Build and return an authorized Gmail client service.
+	* @return An authorized Gmail client service
  	* @throws java.io.IOException IOException occurs.
-	 */
+	*/
 	public Gmail getGmailService() throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "http://codehaven.co.za";
@@ -308,21 +309,17 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* Get a mime version of the email as described by the JavaMail API.
+	* Retrieve an email.
 	* @param messageId The ID of the message that should be retrieved.
 	* @return MimeMessage of the message that corresponds to the given id.
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
-  	public MimeMessage getMimeMessage(String messageId) throws IOException, MessagingException {
+  	public Message getMessage(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 		// System.out.println(message.toPrettyString()); // print raw message
-		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
-		Properties props = new Properties();
-		Session session = Session.getDefaultInstance(props, null);
-		MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
 
-		return email;
+		return message;
 	}
 
 	/**
@@ -349,9 +346,7 @@ public class GmailPoller implements Poller {
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
-	public RawData getRawData(String messageId) throws IOException, MessagingException {
-		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
-		MimeMessage email = getMimeMessage(message);
+	public RawData getRawData(String msgId, MimeMessage email) throws IOException, MessagingException {
 		// printEmail(service.users().messages().get(userId, messageId).setFormat("full").execute());
 		String body = "";
 		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
@@ -360,106 +355,102 @@ public class GmailPoller implements Poller {
 		if (!email.getHeader("Subject")[0].equals(""))
 			rawDataElements.add(email.getHeader("Subject")[0]);
 
-		if (email.getContent() == null)
+		if (email.getContent() == null) {
 			return null;
+		}
 
 		boolean isHTML = false;
 
 		if (email.getContent() instanceof String) {
-			String bodyS = (String)email.getContent();
-
-			if (bodyS == null || bodyS.length() == 0)
-				return null;
-
-			if (bodyS.charAt(0) == '<') {
-				for (int i = bodyS.length() - 1; i > -1; i--) {
-					if (bodyS.charAt(i) == '>') {
-						isHTML = true;
-						break;
-					}
-					else if ((int)bodyS.charAt(i) != 10 && (int)bodyS.charAt(i) != 13 && (int)bodyS.charAt(i) != 9 && (int)bodyS.charAt(i) != 32)
-						break;
-				}
-			}
-
-			if (isHTML) {
-				Document doc = Jsoup.parse(bodyS);
-
-				for (String elem : elementsToProcess) {
-					Elements elements = doc.select(elem);
-
-					for (Element element : elements) {
-						if (element.text().replaceAll("[\\t\\n\\r]"," ").length() != 0) {
-							body += element.text().replaceAll("[\\t\\n\\r]"," ");
-
-							if (body.charAt(body.length() - 1) != '.')
-								body += element.text().replaceAll("[\\t\\n\\r]"," ") + ".\n";
-							else
-								body += element.text().replaceAll("[\\t\\n\\r]"," ") + "\n";
-						}
-					}
-				}
-			}
-			else
-				body += bodyS.replaceAll("[\\t\\n\\r]"," ");
+			body += extractText((String)email.getContent());
 		}
 		else if (email.getContent() instanceof MimeMultipart) {
 			MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
-			Stack<MimeBodyPart> mimeStack = new Stack<>();
+			Stack<MimeMultipart> mimeStack = new Stack<>();
+			mimeStack.push(emailMultiPart);
 
-			for (int i = emailMultiPart.getCount() - 1; i >= 0; i--) {
-				MimeBodyPart bodyPart = (MimeBodyPart)emailMultiPart.getBodyPart(i);
+			while (!mimeStack.isEmpty()) {
+				MimeMultipart mimeMultiPart = mimeStack.pop();
+				if (mimeMultiPart == null)
+					continue;
 
-				if (bodyPart.getContent() instanceof String) {
-					String bodyS = (String)bodyPart.getContent();
+				for (int i = 0; i < mimeMultiPart.getCount(); i++) {
+					MimeBodyPart mimeBodyPart = (MimeBodyPart)mimeMultiPart.getBodyPart(i);
 
-					if (bodyS == null || bodyS.length() == 0)
+					if (mimeBodyPart.getContent() == null) {
 						continue;
-
-					if (bodyS.charAt(0) == '<') {
-						for (int j = bodyS.length() - 1; j > -1; j--) {
-							if (bodyS.charAt(j) == '>') {
-								isHTML = true;
-								break;
-							}
-							else if ((int)bodyS.charAt(j) != 10 && (int)bodyS.charAt(j) != 13 && (int)bodyS.charAt(j) != 9 && (int)bodyS.charAt(j) != 32)
-								break;
-						}
 					}
-
-					if (isHTML) {
-						Document doc = Jsoup.parse(bodyS);
-						//System.out.println(doc.body().text());
-						body = doc.body().text();
-
-						/*for (String elem : elementsToProcess) {
-							Elements elements = doc.select(elem);
-
-							for (Element element : elements) {
-								if (element.text().replaceAll("[\\t\\n\\r]"," ").length() != 0) {
-									body += element.text().replaceAll("[\\t\\n\\r]"," ");
-
-									if (body.charAt(body.length() - 1) != '.')
-										body += element.text().replaceAll("[\\t\\n\\r]"," ") + ".\n";
-									else
-										body += element.text().replaceAll("[\\t\\n\\r]"," ") + "\n";
-								}
-							}
-						}*/
+					if (mimeBodyPart.getContent() instanceof MimeMultipart) {
+						MimeMultipart mmp = (MimeMultipart)mimeBodyPart.getContent();
+						mimeStack.push(mmp);
 					}
-					else
-						body += bodyS.replaceAll("[\\t\\n\\r]"," ");
+					else if (mimeBodyPart.getContent() instanceof String) {
+						String tmpBody = extractText((String)mimeBodyPart.getContent()) + "\n";
+
+						if (!body.contains(tmpBody))
+							body += tmpBody;
+					}
+					// else
+					// 	System.out.println("UNKNOWN MIME TYPE 1: " + mimeBodyPart.getContent());
 				}
 			}
 		}
+		// else
+		// 	System.out.println("UNKNOWN MIME TYPE 2: " + email.getContent());
 
 		rawDataElements.add(body);
 		String userId = email.getHeader("Delivered-To")[0];
 		ArrayList<String> involvedContacts = new ArrayList<>();
 		involvedContacts.add(email.getHeader("Delivered-To")[0]);
-		RawData rawData = new RawData("Gmail", userId, involvedContacts.toArray(new String[0]), message.getId(), rawDataElements.toArray(new String[0]), getMilliSeconds(message.getId()));
+		RawData rawData = new RawData("Gmail", userId, involvedContacts.toArray(new String[0]), msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
 
 		return rawData;
+	}
+
+	/**
+	* Extracts text from a string even if it contains HTML.
+	* @param bodyS The string that has to be parsed.
+	*/
+	private static String extractText(String bodyS) {
+		boolean isHTML = false;
+		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
+		String body = "";
+
+		if (bodyS.charAt(0) == '<') { // if starts and ends with angle bracket then it is HTML
+			for (int i = bodyS.length() - 1; i > -1; i--) {
+				if (bodyS.charAt(i) == '>') {
+					isHTML = true;
+					break;
+				}
+				else if ((int)bodyS.charAt(i) != 10 && (int)bodyS.charAt(i) != 13 && (int)bodyS.charAt(i) != 9 && (int)bodyS.charAt(i) != 32)
+					break;
+			}
+		}
+
+		if (isHTML) { // if it is HTML then use Jsoup to parse
+			Document doc = Jsoup.parse(bodyS);
+
+			for (String elem : elementsToProcess) {
+				Elements elements = doc.select(elem);
+
+				for (Element element : elements) {
+					String replaced = element.text().replaceAll("[\\t\\n\\r]"," ");
+
+					if (replaced.length() != 0 && !body.contains(replaced))
+						body += replaced + "\n";
+				}
+			}
+		}
+		else {
+			String replaced = bodyS.replaceAll("[\\t\\n\\r]"," ");
+
+			if (replaced.length() != 0 && !body.contains(replaced))
+				body += replaced + "\n";
+		}
+
+		body = body.replaceAll("[\\t\\n\\r]"," ");
+		body = body.replaceAll("[\\s]+", " ");
+		return body;
 	}
 
 	/**
