@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import java.lang.Thread;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.net.*;
 
 
 @Controller
@@ -21,11 +27,35 @@ public class LoginController extends WebMvcConfigurerAdapter {
         registry.addViewController("/").setViewName("login");
         registry.addViewController("/help").setViewName("help");
     }
-
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public String showLogin(Login loginForm) {
+    public String showLogin() {
         return "login";
     }
+
+    @MessageMapping("/hello")
+    public void accessTokenSend(AccessToken message) throws Exception {
+        System.out.println("Access Token: " + message.getAuthCode());
+        try{
+            URL url = new URL("http://localhost:50001/google/token");
+            URLConnection con = url.openConnection();
+            HttpURLConnection http = (HttpURLConnection)con;
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+            byte[] out = message.getAuthCode().getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+
+            http.setFixedLengthStreamingMode(length);
+            http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            http.connect();
+            try(OutputStream os = http.getOutputStream()) {
+                os.write(out);
+            }
+            System.out.println(http.getInputStream());
+        }catch(Exception e){
+
+        }
+    }
+    
 
     @RequestMapping(value="/mainpage", method=RequestMethod.GET)
     public String showMain() {

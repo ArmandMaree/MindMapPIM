@@ -125,7 +125,7 @@ function googleretrieve(){
 
 }
 /**
- * Google callback function that returns the access token.
+ * Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.
  * @param {string} authResult - the result of calling the google api and signing in
  */
   function signInCallback(authResult) {
@@ -135,6 +135,22 @@ function googleretrieve(){
       $('#nextButton').show();
       // Send the code to the server
       console.log(JSON.stringify({ authCode: authResult['code'] }));
+
+
+      var socket = new SockJS('/hello');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function(frame) {
+          console.log('Connected: ' + frame);
+      });
+      setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify({ authCode: authResult['code'] }));}, 3000);
+      console.log(document.createTextNode(message));
+      
+      if (stompClient != null) {
+        stompClient.disconnect();
+      }
+      setConnected(false);
+      console.log("Disconnected");
+
       // $.ajax({
       //   type: "POST",
       //   url: "http://localhost:50001/google/token",
