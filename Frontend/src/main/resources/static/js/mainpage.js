@@ -322,31 +322,31 @@ function refreshValues() {
 
     
 // }
-function logout()
-{
+// function logout()
+// {
 
-    startApp();
-    //Facebook logout
-    var flag =false;
-    FB.getLoginStatus(function(response) {
-        if (response && response.status === 'connected') {
-            flag = true;
-            FB.logout(function(response) {
-            });
-        }
+//     startApp();
+//     //Facebook logout
+//     var flag =false;
+//     FB.getLoginStatus(function(response) {
+//         if (response && response.status === 'connected') {
+//             flag = true;
+//             FB.logout(function(response) {
+//             });
+//         }
 
-    });
+//     });
 
-        // console.log("facebook:"+ flag)
-        // console.log("google:"+!auth2.isSignedIn.get())
-        // if (flag && !auth2.isSignedIn.get()) {
-        setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";;window.location.assign('/'); }, 3000);
+//         console.log("facebook:"+ !flag)
+//         console.log("google:"+!auth2.isSignedIn.get())
+//         // if (flag && !auth2.isSignedIn.get()) {
+//         setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";window.location.assign('/'); }, 3000);
         	
-        // }
+//         // }
         
 
 
-}
+// }
 // $(document).ready(function(){
 
 // });
