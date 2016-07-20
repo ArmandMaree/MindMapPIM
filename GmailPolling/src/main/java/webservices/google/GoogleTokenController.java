@@ -29,10 +29,9 @@ public class GoogleTokenController {
 	RabbitTemplate rabbitTemplate;
 
 	@CrossOrigin
-	@RequestMapping(value = "/google/token", method = RequestMethod.POST, headers = {"Content-type=application/json"})
+	@RequestMapping(value = "/gmail/token", method = RequestMethod.POST, headers = {"Content-type=application/json"})
 	@ResponseBody
 	public String googleToken(@RequestBody AuthCode authCode) {
-		System.out.println("AuthCode: " + authCode.getAuthCode() + "   " + rabbitTemplate);
 		Poller poller = new GmailPoller(rabbitTemplate, authCode.getAuthCode());
 		new Thread(poller).start();
 		return "OK";
