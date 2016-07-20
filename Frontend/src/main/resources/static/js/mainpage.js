@@ -14,15 +14,21 @@ for(var i = 0; i <ca.length; i++) {
     if(x!="1"){
         window.location.assign('/');
     }
-
+function toJSON(obj) {
+    return JSON.stringify(obj, null, 4);
+}
+var nodes, edges, network;
 $(document).ready(function($){
-	document.oncontextmenu = function() {return false;};
-	// $("canvas").click(function(event){
- //    	event.preventDefault();
-	// });
+    document.oncontextmenu = function() {return false;};
+    // $("canvas").click(function(event){
+ //     event.preventDefault();
+    // });
     var color = 'gray';
     var len = undefined;
-    var nodes = [
+    // nodes.on('*', function () {
+    //     document.getElementById('nodes').innerHTML = JSON.stringify(nodes.get(), null, 4);
+    // });
+    nodes = [
         // {id: 0, label: "ME", group: 0,color:{background:"#D3D3D3"}},
         // {id: 1, label: "1", group: 0,color:{background:"#D3D3D3"}},
         // {id: 2, label: "2", group: 0,color:{background:"#D3D3D3"}},
@@ -119,8 +125,8 @@ $(document).ready(function($){
       // create a network
       var container = document.getElementById('mynetwork');
       var data = {
-        nodes: nodes,
-        edges: edges
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges)
       };
       
         var options = {
@@ -131,7 +137,7 @@ $(document).ready(function($){
             physics: {
               stabilization: false
             },
-        	clickToUse: false,
+            clickToUse: false,
             nodes: {
                 shape: 'circle',
                 size: 50,
@@ -146,8 +152,68 @@ $(document).ready(function($){
                 width: 1
             }
         };
-                
         var network = new vis.Network(container, data, options);
+
+        menu = new ax5.ui.menu({
+            position: "absolute", // default position is "fixed"
+            theme: "info",
+            icons: {
+                'arrow': '<i class="fa fa-caret-right"></i>'
+            },
+            items: [
+                {
+                    icon: '<i class="fa fa-comment"></i>',
+                    label: "Expand Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
+                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
+                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
+                    // ]
+                },
+                {
+                    icon: '<i class="fa fa-comments"></i>',
+                    label: "Remove Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
+                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
+                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
+                    // ]
+                }
+            ],
+            onClick: function(){
+                if(this.label=="Expand Bubble"){
+                    console.log(this.label);
+                    var branchinglimit = 4;
+                    for(var i=0 ;i<branchinglimit;i++){
+                        try {
+                            data.nodes.add({
+                                id: nodes.length,
+                                label: nodes.length
+                            });
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
+                        console.log()
+                        try {
+                            data.edges.add({
+                                id: edges.length++,
+                                from: selectedID,
+                                to: nodes.length++
+                            });
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
+                    }
+                }
+
+                if(this.label=="Remove Bubble"){
+                    console.log(this.label);
+                }
+            }
+        });
+                
         network.on("click", function(){
             // for(var j=0;j<nodes.length;j++){
             // }
@@ -180,21 +246,24 @@ $(document).ready(function($){
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             console.log(network.getNodeAt({"x": posX, "y": posY}));
+            selectedID = network.getNodeAt({"x": posX, "y": posY});
             network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
             var node = network.getSelectedNodes();
             console.log(node);
-            	console.log("works on right click");
-            	// $(this).bind("contextmenu", function (e) {
-            	if(node.length != 0)
-            	{
+                console.log("works on right click");
+                // $(this).bind("contextmenu", function (e) {
+                if(node.length != 0)
+                {
                     menu.popup(e);
                     ax5.util.stopEvent(e);
-            	}
-            	// });
+                }
+                // });
         });
-	  
+      
 
 });
+
+
 
 // $(document).click(function(event) {
 //     var text = $(event.target).text();
@@ -202,152 +271,4 @@ $(document).ready(function($){
 // });
 
     var menu;
-    $(document.body).ready(function () {
-        menu = new ax5.ui.menu({
-            position: "absolute", // default position is "fixed"
-            theme: "info",
-            icons: {
-                'arrow': '<i class="fa fa-caret-right"></i>'
-            },
-            items: [
-                {
-                    icon: '<i class="fa fa-comment"></i>',
-                    label: "Expand Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
-                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
-                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
-                    // ]
-                },
-                {
-                    icon: '<i class="fa fa-comments"></i>',
-                    label: "Hide Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
-                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
-                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
-                    // ]
-                }
-            ]
-        });
- 
-        // $("#mynetwork").bind("contextmenu", function (e) {
-        //     menu.popup(e);
-        //     ax5.util.stopEvent(e);
-        //     // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
-        // });
-    });
-
-
-var auth2; // The Sign-In object.
-var googleUser; // The current user.
-
-var startApp = function() {
-  gapi.load('auth2', initSigninV2);
-};
-
-var initSigninV2 = function() {
-  auth2 = gapi.auth2.init({
-      client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-      scope: 'profile'
-  });
-  auth2.isSignedIn.listen(signinChanged);
-  if (auth2.isSignedIn.get() == true) {
-    auth2.signIn();
-  }
-  refreshValues();
-};
-
-var signinChanged = function (val) {
-  console.log('Signin state changed to ', val);
-  if(val === true){
-      auth2.signOut().then(function () {
-        console.log('User signed out.');
-    }); 
-  }
-};
-
-function refreshValues() {
-  if (auth2){
-    console.log('Refreshing values...');
-
-    googleUser = auth2.currentUser.get();
-
-    console.log(JSON.stringify(googleUser, undefined, 2));
-    console.log(auth2.isSignedIn.get());
-  }
-}
-
-	(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-	window.fbAsyncInit = function() {
-	  FB.init({
-	    appId      : '1051696778242173',
-	    cookie     : true,  // enable cookies to allow the server to access 
-	                        // the session
-	    xfbml      : true,  // parse social plugins on this page
-	    version    : 'v2.5' // use graph api version 2.5
-	  });
-	}
-//  function statusChangeCallback(response) {
-//     console.log('statusChangeCallback');
-//     console.log(response);
-//     // The response object is returned with a status field that lets the
-//     // app know the current login status of the person.
-//     // Full docs on the response object can be found in the documentation
-//     // for FB.getLoginStatus().
-
-//         if (response.status === 'connected') {
-//         // Logged into your app and Facebook.
-//          var accessToken = response.authResponse.accessToken;
-//         console.log(response.authResponse);
-//         console.log("Connected to facebook, accessToken:"+ response.authResponse);
-//         testAPI();
-//       } else if (response.status === 'not_authorized') {
-//         // The person is logged into Facebook, but not your app.
-//         // document.getElementById('status').innerHTML = 'Please log ' +
-//         //   'into this app.';
-//           console.log("status = not_authorized");
-//       } else {
-//         // The person is not logged into Facebook, so we're not sure if
-//         // they are logged into this app or not.
-//         // document.getElementById('status').innerHTML = 'Please log ' +
-//         //   'into Facebook.';
-//            console.log("status = something else");
-//       }
-
-    
-// }
-// function logout()
-// {
-
-//     startApp();
-//     //Facebook logout
-//     var flag =false;
-//     FB.getLoginStatus(function(response) {
-//         if (response && response.status === 'connected') {
-//             flag = true;
-//             FB.logout(function(response) {
-//             });
-//         }
-
-//     });
-
-//         console.log("facebook:"+ !flag)
-//         console.log("google:"+!auth2.isSignedIn.get())
-//         // if (flag && !auth2.isSignedIn.get()) {
-//         setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";window.location.assign('/'); }, 3000);
-        	
-//         // }
-        
-
-
-// }
-// $(document).ready(function(){
-
-// });
+    var selectedID;
