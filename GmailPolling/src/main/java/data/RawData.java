@@ -10,6 +10,11 @@ import java.io.Serializable;
 */
 public class RawData implements Serializable {
 	/**
+	* Enables toString to print all the strings in the data array.
+	*/
+	private boolean verbosePrint = false;
+
+	/**
 	* Indicates the type of PIM that the information was extracted from.
 	*/
 	private String pimSource = "";
@@ -62,6 +67,22 @@ public class RawData implements Serializable {
 		this.pimItemId = pimItemId;
 		this.data = data;
 		this.time = time;
+	}
+
+	/**
+	* Returns value of verbosePrint
+	* @return Value of verbosePrint.
+	*/
+	public String getVerbosePrint() {
+		return verbosePrint;
+	}
+
+	/**
+	* Sets new value of verbosePrint
+	* @param verbosePrint true=prints data, false=print count of data
+	*/
+	public void setVerbosePrint(boolean verbosePrint) {
+		this.verbosePrint = verbosePrint;
 	}
 
 	/**
@@ -178,15 +199,23 @@ public class RawData implements Serializable {
 		else
 			s += "\t\tnone\n";
 
-		s += "\t]\n" +
-			"\tpimItemId: " + pimItemId + "\n" +
-			"\tdata: [\n";
+		if (verbosePrint) {
+			s += "\t]\n" +
+				"\tpimItemId: " + pimItemId + "\n" +
+				"\tdata: [\n";
 
-		for (String d : data) {
-			s += "\t\t" + d + "\n";
+			for (String d : data) {
+				s += "\t\t" + d + "\n";
+			}
+
+			s += "\t]\n}";
 		}
-
-		s += "\t]\n}";
+		else {
+			s += "\t]\n" +
+				"\tpimItemId: " + pimItemId + "\n" +
+				"\tdataCount: " + ((data == null) ? 0 : data.length) + "\n" +
+				"}";
+		}
 
 		return s;
 	}
