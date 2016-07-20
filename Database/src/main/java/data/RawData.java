@@ -73,7 +73,7 @@ public class RawData implements Serializable {
 	* Returns value of verbosePrint
 	* @return Value of verbosePrint.
 	*/
-	public String getVerbosePrint() {
+	public boolean getVerbosePrint() {
 		return verbosePrint;
 	}
 
