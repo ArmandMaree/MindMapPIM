@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
-* Unit test methods for the GreetingService and GreetingServiceBean.
-* 
+* Unit test methods for ProcessedData.
+*
 * @author Armand Maree
 * @since 2016-07-20
 */
@@ -31,7 +31,7 @@ public class ProcessedDataTester extends AbstractTester {
 			String[] data = {"Horse photo", "Hey Acuben, here is the photo you wanted."};
 			long time = System.currentTimeMillis();
 			rawData = new RawData(pimSource, userId, involvedContacts, pimItemId, data, time);
-			setUpDone = true;		
+			setUpDone = true;
 		}
 	}
 
