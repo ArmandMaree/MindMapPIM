@@ -27,8 +27,8 @@ targetCompatibility = 1.8
 
 dependencies {
 	// Spring stuff
-	testCompile("junit:junit")
-	
+	testCompile("org.springframework.boot:spring-boot-starter-test")
+
 	// MongoDB
 	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
 

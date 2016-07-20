@@ -57,6 +57,23 @@ public class ProcessedData implements Serializable {
 	}
 
 	/**
+	* Default ProcessedData constructor
+	* @param pimSource PIM where the data was retrieved from.
+	* @param userId Id of the user.
+	* @param involvedContacts IDs of the contacts involved.
+	* @param pimItemId ID of the item that the information was extracted from.
+	* @param topics Array of topics extracted.
+	*/
+	public ProcessedData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] topics, long time) {
+		this.pimSource = pimSource;
+		this.userId = userId;
+		this.involvedContacts = involvedContacts;
+		this.pimItemId = pimItemId;
+		this.topics = topics;
+		this.time = time;
+	}
+
+	/**
 	* Returns value of pimSource
 	* @return String name of the PIM the data is from.
 	*/
@@ -184,30 +201,5 @@ public class ProcessedData implements Serializable {
 		s += "\t]\n}";
 
 		return s;
-	}
-
-	/**
-	* Default empty ProcessedData constructor
-	*/
-	public ProcessedData() {
-		super();
-	}
-
-	/**
-	* Default ProcessedData constructor
-	* @param pimSource PIM where the data was retrieved from.
-	* @param userId Id of the user.
-	* @param involvedContacts IDs of the contacts involved.
-	* @param pimItemId ID of the item that the information was extracted from.
-	* @param topics Array of topics extracted.
-	*/
-	public ProcessedData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] topics, long time) {
-		super();
-		this.pimSource = pimSource;
-		this.userId = userId;
-		this.involvedContacts = involvedContacts;
-		this.pimItemId = pimItemId;
-		this.topics = topics;
-		this.time = time;
 	}
 }

@@ -18,6 +18,7 @@ public class ProcessedDataTester extends AbstractTester {
 	private RawData rawData;
 	private ProcessedData processedData;
 	private boolean setUpDone = false;
+
 	private String[] topics = {"horse", "photo"};
 
 	@Before
