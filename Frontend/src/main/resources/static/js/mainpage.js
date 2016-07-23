@@ -1,4 +1,5 @@
 var name = "login=";
+var rightClick;
 var ca = document.cookie.split(';');
 // console.log(ca)
 for(var i = 0; i <ca.length; i++) {
@@ -16,10 +17,10 @@ for(var i = 0; i <ca.length; i++) {
     }
 
 $(document).ready(function($){
-	document.oncontextmenu = function() {return false;};
-	// $("canvas").click(function(event){
- //    	event.preventDefault();
-	// });
+    document.oncontextmenu = function() {return false;};
+    // $("canvas").click(function(event){
+ //     event.preventDefault();
+    // });
     var color = 'gray';
     var len = undefined;
     var nodes = [
@@ -131,7 +132,7 @@ $(document).ready(function($){
             physics: {
               stabilization: false
             },
-        	clickToUse: false,
+            clickToUse: false,
             nodes: {
                 shape: 'circle',
                 size: 50,
@@ -147,6 +148,33 @@ $(document).ready(function($){
             }
         };
                 
+        function populateSidePanel(node, array)
+        {
+            // console.log("Array: " +array[1].topic);
+            // var s = array.topic;
+            for(var i = 0; i < array.length; i++)
+            {
+                $("#sidepanelTitle").html("<h2>"+array[i].topic+"</h2>");
+                console.log("Title: "+$("#sidepanelTitle").text());
+                if(array[i].source =="Facebook")
+                {
+                    $("#facebook").html(array[i].data);
+                }
+                else if(array[i].source == "Gmail")
+                {
+                    $("#gmail").html(array[i].data);
+                }
+                else if(array[i].source == "Twitter")
+                {
+                    $("#twitter").html(array[i].data);
+                }
+                else if(array[i].source == "LinkedIn")
+                {
+                    $("#linkedin").html(array[i].data);
+                }
+                
+            }
+        }
         var network = new vis.Network(container, data, options);
         network.on("click", function(){
             // for(var j=0;j<nodes.length;j++){
@@ -157,7 +185,7 @@ $(document).ready(function($){
             var posY = e.clientY - $("nav").height();
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
-            network.getNodeAt({"x": posX, "y": posY});
+            var selectedNode = network.getNodeAt({"x": posX, "y": posY});
             
             var alledges = network.getSelectedEdges();
             var allnodes = []
@@ -170,6 +198,10 @@ $(document).ready(function($){
             }
             network.selectNodes(allnodes);
             console.log(nodes.length)
+            var array1 = [{'source' : 'Facebook', 'topic': 'Horse', 'dataType' : 'post', 'data' : 'Horse riding with Amy Lochner was so funny. She rode it backwards!' }, 
+            {'source' : 'Gmail', 'topic': 'Horse', 'dataType' : 'email', 'data' : 'Confirmation of your ride <br /> <br /> Dear Acuben We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. Kind regards  Marlene Kruger'}];
+            populateSidePanel(selectedNode, array1);
+                console.log("works on right click");
         });
 
 
@@ -181,18 +213,18 @@ $(document).ready(function($){
             console.log("Y: "+ posY);
             console.log(network.getNodeAt({"x": posX, "y": posY}));
             network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
-            var node = network.getSelectedNodes();
-            console.log(node);
-            	console.log("works on right click");
-            	// $(this).bind("contextmenu", function (e) {
-            	if(node.length != 0)
-            	{
-                    menu.popup(e);
-                    ax5.util.stopEvent(e);
-            	}
-            	// });
+            //Node is an array of nodes
+            rightClick = network.getSelectedNodes();
+            console.log(rightClick);
+
+            if(rightClick.length != 0)
+            {
+                menu.popup(e);
+                ax5.util.stopEvent(e);
+            }
+
         });
-	  
+      
 
 });
 
@@ -228,7 +260,8 @@ $(document).ready(function($){
                     //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
                     // ]
                 }
-            ]
+            ],
+
         });
  
         // $("#mynetwork").bind("contextmenu", function (e) {
