@@ -32,7 +32,7 @@ import data.*;
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
-	final static String queueName = "processed-data";
+	final static String processedDataQueueName = "processed-data.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -44,8 +44,8 @@ public class Application implements CommandLineRunner {
 	RabbitTemplate rabbitTemplate;
 
 	@Bean
-	Queue queue() {
-		return new Queue(queueName, false);
+	Queue processedDataQueue() {
+		return new Queue(processedDataQueueName, false);
 	}
 
 	@Bean
@@ -54,15 +54,15 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(queueName);
+	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(processedDataQueueName);
 	}
 
 	@Bean
-	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+	SimpleMessageListenerContainer processedDataContainer(ConnectionFactory connectionFactory, @Qualifier("processedDataListenerAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(queueName);
+		container.setQueueNames(processedDataQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
@@ -73,7 +73,7 @@ public class Application implements CommandLineRunner {
     }
 
 	@Bean
-	MessageListenerAdapter listenerAdapter(ProcessedDataListener processedDataListener) {
+	MessageListenerAdapter processedDataListenerAdapter(ProcessedDataListener processedDataListener) {
 		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
 	}
 

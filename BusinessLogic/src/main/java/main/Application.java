@@ -16,74 +16,68 @@ import org.springframework.stereotype.Component;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
-import repositories.user.*;
-import repositories.pimprocesseddata.*;
-import listeners.*;
-import data.*;
+import listeners.frontend.*;
 
 @SpringBootApplication
-@EnableRabbit
 public class Application implements CommandLineRunner {
+	private final String topicRequestQueueName = "topic-request.business.rabbit";
+	private final String topicResponseQueueName = "topic-response.business.rabbit";
+
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
 	@Bean
 	Queue topicRequestQueue() {
-		return new Queue("topicrequest.rabbit", false);
+		return new Queue(topicRequestQueueName, false);
 	}
 
 	@Bean
-    public ConnectionFactory connectionFactory() {
-        return new CachingConnectionFactory("localhost");
-    }
+	Queue topicResponseQueue() {
+		return new Queue(topicResponseQueueName, false);
+	}
 
 	@Bean
-    public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
-        return new RabbitAdmin(connectionFactory);
-    }
+	TopicExchange exchange() {
+		return new TopicExchange("spring-boot-exchange");
+	}
 
 	@Bean
-    public RabbitTemplate rabbitTemplate() {
-        return new RabbitTemplate(connectionFactory());
-    }
+	Binding topicRequestBinding(@Qualifier("topicRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
+	}
 
 	@Bean
-    public FanoutExchange topicRequestExchange() {
-        return new FanoutExchange("topicRequest");
-    }
+	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
+	}
 
 	@Bean
-    public Binding topicRequestBinding(Queue topicRequestQueue, FanoutExchange topicRequestExchange) {
-        return BindingBuilder.bind(topicRequestQueue).to(topicRequestExchange);
-    }
+	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
+		return new FrontendListener(rabbitTemplate);
+	}
 
 	@Bean
-    SimpleMessageListenerContainer frontendListenerContainer(ConnectionFactory connectionFactory, @Qualifier("persistenceListenerAdapter") MessageListenerAdapter listenerAdapter) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueues(topicRequestQueue);
-        container.setMessageListener(listenerAdapter);
-        return container;
-    }
+	public MessageListenerAdapter frontendListenerAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveTopicRequest");
+	}
 
 	@Bean
-    MessageListenerAdapter FrontendListenerAdapter(FrontendListener frontendListener) {
-        return new MessageListenerAdapter(frontendListener, "receiveTopicRequest");
-    }
-
-	@Bean
-    FrontendListener frontendListener() {
-        return new FrontendListener();
-    }
+	public SimpleMessageListenerContainer frontendListenerContainer(ConnectionFactory connectionFactory, @Qualifier("frontendListenerAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicRequestQueueName, topicResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -91,10 +85,6 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		userRepository.deleteAll();
-		processedDataRepository.deleteAll();
 
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
-		userRepository.save(acuben);
 	}
 }

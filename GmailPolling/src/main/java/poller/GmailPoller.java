@@ -54,7 +54,7 @@ import data.*;
 * @since   2016-07-11
 */
 public class GmailPoller implements Poller {
-	final static String queueName = "raw-data";
+	final static String queueName = "raw-data.processing.rabbit";
 	private static final String APPLICATION_NAME = "Gmail API";
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
 	private static FileDataStoreFactory DATA_STORE_FACTORY;
