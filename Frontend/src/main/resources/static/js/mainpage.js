@@ -29,8 +29,8 @@ $(document).ready(function($){
     nodes = [
         {id: 0, label: "    ME    ", group: 0},
         {id: 1, label: "Cooking", group: 1},
-        {id: 2, label: "Amy \n Lochner", group: 2},
-        {id: 3, label: "Horse", group: 2},
+        {id: 2, label: "Horse", group: 2},
+        {id: 3, label: "Amy \n Lochner", group: 2},
         {id: 4, label: "COS301", group: 4},
         {id: 5, label: "Fritz \n Solms", group: 4},
         {id: 6, label: "Holiday", group: 9},
@@ -39,13 +39,13 @@ $(document).ready(function($){
         ];
         edges = [
             {from: 1, to: 0},
-            {from: 3, to: 2},
-            {from: 3, to: 0},
+            {from: 2, to: 3},
+            {from: 2, to: 0},
             {from: 5, to: 4},
             {from: 4, to: 0},
             {from: 7, to: 6},
             {from: 6, to: 0},
-            {from: 3, to: 8}
+            {from: 2, to: 8}
         ]
 
       // create a network
