@@ -21,6 +21,7 @@ public class DataProcessor {
 	private NaturalLanguageProcessor nlp;
 	private CountDownLatch latch = new CountDownLatch(1);
 	private RabbitTemplate rabbitTemplate;
+	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
 
 	/**
 	* Constructor that initializes some fields.
@@ -67,7 +68,7 @@ public class DataProcessor {
 	* @param processedData The data that has been processed that needs to be sent to the queue for persistence.
 	*/
 	public void pushToQueue(ProcessedData processedData) {
-        rabbitTemplate.convertAndSend("processed-data", processedData);
+        rabbitTemplate.convertAndSend(processedDataDatabaseQueueName, processedData);
 	}
 
 	/**

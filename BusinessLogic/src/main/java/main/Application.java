@@ -17,36 +17,20 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
-import repositories.user.*;
-import repositories.pimprocesseddata.*;
-import repositories.topic.*;
-import listeners.*;
-import data.*;
-
-import java.util.List;
-import java.util.ArrayList;
+import listeners.frontend.*;
 
 @SpringBootApplication
-@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
-	private final static String processedDataQueueName = "processed-data.database.rabbit";
-	private final static String topicRequestQueueName = "topic-request.database.rabbit";
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private PimProcessedDataRepository processedDataRepository;
-
-	@Autowired
-	private TopicRepository topicRepository;
+	private final String topicRequestQueueName = "topic-request.business.rabbit";
+	private final String topicResponseQueueName = "topic-response.business.rabbit";
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -57,8 +41,8 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	Queue processedDataQueue() {
-		return new Queue(processedDataQueueName, false);
+	Queue topicResponseQueue() {
+		return new Queue(topicResponseQueueName, false);
 	}
 
 	@Bean
@@ -72,28 +56,23 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
+	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
 	}
 
 	@Bean
-	public TopicListener topicListener(RabbitTemplate rabbitTemplate, UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
-		return new TopicListener(rabbitTemplate, userRepository, processedDataRepository, topicRepository);
+	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
+		return new FrontendListener(rabbitTemplate);
 	}
 
 	@Bean
-	public ProcessedDataListener processedDataListener(UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
-		return new ProcessedDataListener(userRepository, processedDataRepository, topicRepository);
+	public MessageListenerAdapter topicRequestAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveTopicRequest");
 	}
 
 	@Bean
-	public MessageListenerAdapter topicRequestAdapter(TopicListener topicListener) {
-		return new MessageListenerAdapter(topicListener, "receiveTopicRequest");
-	}
-
-	@Bean
-	public MessageListenerAdapter processedDataAdapter(ProcessedDataListener processedDataListener) {
-		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
+	public MessageListenerAdapter topicResponseAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveTopicResponse");
 	}
 
 	@Bean
@@ -106,10 +85,10 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public SimpleMessageListenerContainer processedDataContainer(ConnectionFactory connectionFactory, @Qualifier("processedDataAdapter") MessageListenerAdapter listenerAdapter) {
+	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(processedDataQueueName);
+		container.setQueueNames(topicResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
@@ -120,11 +99,6 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		userRepository.deleteAll();
-		processedDataRepository.deleteAll();
-		topicRepository.deleteAll();
 
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
-		userRepository.save(acuben);
 	}
 }

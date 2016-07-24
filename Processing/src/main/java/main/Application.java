@@ -37,7 +37,7 @@ import data.*;
 */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-	final static String queueName = "raw-data";
+	final static String queueName = "raw-data.processing.rabbit";
 
 	@Autowired
 	NaturalLanguageProcessor nlpG;

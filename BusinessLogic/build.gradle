@@ -1,0 +1,41 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+		classpath("org.springframework:springloaded:1.2.6.RELEASE")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+	baseName = 'businesslogic-service'
+	version =  '0.1.0'
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	// Spring stuff
+	testCompile("org.springframework.boot:spring-boot-starter-test")
+
+	// MongoDB
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+	// Queue messaging stuff
+	compile("org.springframework.boot:spring-boot-starter-amqp")
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.3'
+}

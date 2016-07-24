@@ -10,6 +10,9 @@ import org.springframework.data.annotation.Id;
 * @since   2016-07-15
 */
 public class ProcessedData implements Serializable {
+	@Id
+	private String id;
+
 	/**
 	* Indicates the type of PIM that the information was extracted from.
 	*/
@@ -18,7 +21,6 @@ public class ProcessedData implements Serializable {
 	/**
 	* The user ID relevant to the pimSource.
 	*/
-	@Id
 	private String userId = "";
 
 	/**
@@ -58,6 +60,25 @@ public class ProcessedData implements Serializable {
 
 	/**
 	* Default ProcessedData constructor
+	* @param id Id used in database.
+	* @param pimSource PIM where the data was retrieved from.
+	* @param userId Id of the user.
+	* @param involvedContacts IDs of the contacts involved.
+	* @param pimItemId ID of the item that the information was extracted from.
+	* @param topics Array of topics extracted.
+	*/
+	public ProcessedData(String id, String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] topics, long time) {
+		this.id = id;
+		this.pimSource = pimSource;
+		this.userId = userId;
+		this.involvedContacts = involvedContacts;
+		this.pimItemId = pimItemId;
+		this.topics = topics;
+		this.time = time;
+	}
+
+	/**
+	* Default ProcessedData constructor
 	* @param pimSource PIM where the data was retrieved from.
 	* @param userId Id of the user.
 	* @param involvedContacts IDs of the contacts involved.
@@ -73,6 +94,21 @@ public class ProcessedData implements Serializable {
 		this.time = time;
 	}
 
+	/**
+	* Returns value of id
+	* @return The id in the database.
+	*/
+	public String getId() {
+		return id;
+	}
+
+	/**
+	* Set the value of Id
+	* @param id The id used in the database.
+	*/
+	public void setId(String id) {
+		this.id = id;
+	}
 	/**
 	* Returns value of pimSource
 	* @return String name of the PIM the data is from.
@@ -176,6 +212,7 @@ public class ProcessedData implements Serializable {
 	@Override
 	public String toString() {
 		String s = "ProcessedData: {\n" +
+			"\tid: " + id + "\n" +
 			"\tpimSource: " + pimSource + "\n" +
 			"\tuserId: " + userId + "\n" +
 			"\tinvolvedContacts: [\n";
