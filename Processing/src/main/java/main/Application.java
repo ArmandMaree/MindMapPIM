@@ -69,10 +69,10 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
-    @Bean
-    DataProcessor dataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
-        return new DataProcessor(nlp, rabbitTemplate);
-    }
+	@Bean
+	DataProcessor dataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
+		return new DataProcessor(nlp, rabbitTemplate);
+	}
 
 	@Bean
 	MessageListenerAdapter listenerAdapter(DataProcessor dataProcessor) {
@@ -90,13 +90,13 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Override
-    public void run(String... args) throws Exception {
+	public void run(String... args) throws Exception {
 		// System.out.println("Waiting five seconds...");
-        // Thread.sleep(5000);
-        // System.out.println("Sending message...");
+		// Thread.sleep(5000);
+		// System.out.println("Sending message...");
 		// String[] data = {"cheesecake", "horse", "beach"};
 		// RawData rawData = new RawData(null, null, null, null, data);
-        // rabbitTemplate.convertAndSend(queueName, rawData);
-        // dataProcessor(nlpG).getLatch().await(10000, TimeUnit.MILLISECONDS);
+		// rabbitTemplate.convertAndSend(queueName, rawData);
+		// dataProcessor(nlpG).getLatch().await(10000, TimeUnit.MILLISECONDS);
 	}
 }

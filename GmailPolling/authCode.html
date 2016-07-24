@@ -11,17 +11,20 @@
 		<script>
 				$("button").click(function() {
 					console.log({ authCode: $("#authCode").val() });
-					$("p").html("CLICKED");
+					$("p").html("Sending...");
 					$.ajax({
 						type: "POST",
-						url: "http://localhost:50001/google/token",
+						url: "http://localhost:50001/gmail/token",
 						data: JSON.stringify({ authCode: $("#authCode").val() }),
 						contentType: 'application/json',
 						success: function(data) {
 							if(data == 'OK')
-								alert('Sent Successful');
+								$("p").html('Sent successfully.');
 							else
-								alert("Sending failed");
+								$("p").html("Sending failed.");
+						}
+						error: function(data) {
+							$("p").html("Sending failed.");
 						}
 					});
 				});

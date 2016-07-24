@@ -37,7 +37,18 @@ public class DataProcessor {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public void receiveRawData(RawData rawData) {
+		ProcessedData processedData = process(rawData);
+		pushToQueue(processedData);
+	}
+
+	/**
+	* Process rawData.
+	* @param rawData The object that has to be processed.
+	* @return The processed data.
+	*/
+	public ProcessedData process(RawData rawData) {
 		ArrayList<String> topics = new ArrayList<>();
+		ProcessedData processedData = null;
 
 		if (nlp != null) {
 			for (String part : rawData.getData())
@@ -45,9 +56,10 @@ public class DataProcessor {
 
 			topics = nlp.purge(topics);
 
-			ProcessedData processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
-			pushToQueue(processedData);
+			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 		}
+
+		return processedData;
 	}
 
 	/**

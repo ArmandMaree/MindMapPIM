@@ -29072,6 +29072,14 @@ return /******/ (function(modules) { // webpackBootstrap
     }
     return node;
   };
+  //Amy
+  // Network.prototype.getNodeLabelAt = function () {
+  //   var node = this.selectionHandler.getNodeAt.apply(this.selectionHandler, arguments);
+  //   if (node !== undefined && node.id !== undefined) {
+  //     return node.label;
+  //   }
+  //   return node;
+  // };
   Network.prototype.getEdgeAt = function () {
     var edge = this.selectionHandler.getEdgeAt.apply(this.selectionHandler, arguments);
     if (edge !== undefined && edge.id !== undefined) {
