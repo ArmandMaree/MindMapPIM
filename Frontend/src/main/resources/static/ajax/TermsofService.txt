@@ -170,66 +170,66 @@ The completed document should be easily accessible on the website, with a link f
 Section 1.3
 Optional element. Will all or any website users give their express consent to the terms of this document?
 Ideally, from a legal perspective, all users would be asked to expressly agree to the terms of the document. However, in practice, express consent is rarely sought from casual website visitors. On the other hand, it is easy to obtain the express consent of users who register with the website or submit any material to the website, e.g. by clicking "I accept" on an electronic version of the document. You should retain evidence of the acceptance of the document terms by each such user.
-•	Under what circumstances will users be asked to give their express consent to the terms of this document?
+*	Under what circumstances will users be asked to give their express consent to the terms of this document?
 Section 1.4
 Optional element. Are there any age restrictions on the use of the website?
 The use of websites by minors can be legally problematic. There are a number of different legal issues. For example, under English law, contracts may be unenforceable against minors. Another issue concerns data protection. The law of data protection imposes additional burdens in relation to the processing of any personal data of a minor and personal data provided by a minor. The effects of the law of indecency may also depend upon whether a website is accessible by minors. Obviously, the inclusion of a requirement in your terms and conditions that minors refrain from using a website is no guarantee that they will do so. Where your website is directed at, or likely to be used by, minors, we recommend that you seek specialist legal advice.
-•	What is the minimum age for website users?
+*	What is the minimum age for website users?
 Section 1.5
 Optional element. Does the website use cookies (including session cookies and third party cookies)?
 The inclusion of this statement in your website legal documents will not in itself satisfy the requirements of the Privacy and Electronic Communications (EC Directive) Regulations 2003 (as amended) concerning consent to the use of cookies. Guidance concerning methods of obtaining such consent is included on the Information Commissioner's website (http://www.ico.gov.uk).
-•	What is the title of the document on the website that contains cookie information?
+*	What is the title of the document on the website that contains cookie information?
 Section 2: Credit
 Optional element. Although you need to retain the SEQ Legal credit, you should remove the inline copyright warning from this document before use.
 Section 3: Copyright notice
 Section 3.1
-•	What was the year of first publication of the relevant copyright material (or the range of years)?
-•	Who is the principal owner of copyright in the website?
+*	What was the year of first publication of the relevant copyright material (or the range of years)?
+*	Who is the principal owner of copyright in the website?
 Section 4: Licence to use website
 The scope of the licence to use will vary with each site. Consider carefully exactly what your users should be allowed to do with your website and material on your website.
 Section 4.1
-•	Will audio and/or video files be published on the website?
-•	Will the website make available any dynamic services to users?
-•	Describe the website services in question.
+*	Will audio and/or video files be published on the website?
+*	Will the website make available any dynamic services to users?
+*	Describe the website services in question.
 Section 4.2
 Optional element.
 Section 4.3
 Optional element.
-•	For what purposes may the website be used?
+*	For what purposes may the website be used?
 Section 4.4
 Optional element.
 Section 4.6
 Optional element. Are users permitted to redistribute any specific content from the website (e.g. newsletters)?
-•	What types of content are redistributable?
-•	In what formats may redistributable content be redistributed?
-•	To whom may redistributable content be redistributed?
+*	What types of content are redistributable?
+*	In what formats may redistributable content be redistributed?
+*	To whom may redistributable content be redistributed?
 Section 5: Acceptable use
 Section 5.1
-•	Should automated interactions with the website be prohibited?
-•	Will the website incorporate a robots.txt file?
-•	Should users be prohibited from using the website for direct marketing activity?
+*	Should automated interactions with the website be prohibited?
+*	Will the website incorporate a robots.txt file?
+*	Should users be prohibited from using the website for direct marketing activity?
 Section 5.2
 Optional element. Should the use of data collected from the website to contact people and businesses be prohibited?
 Section 5.3
 Optional element.
-•	What standard of veracity etc should user-submitted content meet?
+*	What standard of veracity etc should user-submitted content meet?
 Section 6: Registration and accounts
 Section 6.1
 Optional element. Do any eligibility criteria apply to account registration?
-•	What eligibility criteria apply?
+*	What eligibility criteria apply?
 Section 6.2
-•	How do users register with the website?
+*	How do users register with the website?
 Section 6.3
 Optional element. Will users be permitted to share their accounts?
 Section 6.4
 Optional element.
 Section 6.5
 Optional element.
-•	Are users permitted to use another person's account on the website with the permission of that other person?
+*	Are users permitted to use another person's account on the website with the permission of that other person?
 Section 7: User login details
 Section 7.1
-•	How will users' login details be generated?
-•	What account credentials will users have upon account creation?
+*	How will users' login details be generated?
+*	What account credentials will users have upon account creation?
 Section 7.2
 Optional element.
 Section 7.3
@@ -240,13 +240,13 @@ Section 7.5
 Optional element.
 Section 8: Cancellation and suspension of account
 Section 8.1
-•	Which of these general rights over user accounts does the website operator have?
+*	Which of these general rights over user accounts does the website operator have?
 Section 8.2
-•	How can a user cancel his or her account on the website?
+*	How can a user cancel his or her account on the website?
 Section 9: Your content: licence
 Section 9.2
-•	What type of licence do users grant to the website operator?
-•	What does the licence allow the website operator to do with user content?
+*	What type of licence do users grant to the website operator?
+*	What does the licence allow the website operator to do with user content?
 Section 9.4
 Optional element. Should the website operator be granted a right to bring proceedings in respect of third party infringements?
 Section 9.5
@@ -258,16 +258,16 @@ Section 10.2
 This very general prohibition against unlawful user content may be supplemented by rules relating to specific kinds of illegality, as well as prohibitions upon lawful but undesirable content.
 Section 10.3
 Optional element.
-•	Do you want to expressly prohibit the publication by users of information about how to commit crimes and the promotion of criminal activities?
-•	Should the depiction of violence be prohibited?
-•	Should the prohibition on depicting violence be limited to explicit etc violence?
-•	Should pornographic material be prohibited?
-•	Should the prohibition on pornographic material be supplemented with a prohibition on lewd, suggestive or sexually explicit material?
-•	Should untrue, false, inaccurate or misleading content be prohibited?
-•	Should potentially dangerous advice be prohibited?
-•	Should spam be prohibited?
-•	Should offensive etc material be prohibited?
-•	Should annoying etc material be prohibited?
+*	Do you want to expressly prohibit the publication by users of information about how to commit crimes and the promotion of criminal activities?
+*	Should the depiction of violence be prohibited?
+*	Should the prohibition on depicting violence be limited to explicit etc violence?
+*	Should pornographic material be prohibited?
+*	Should the prohibition on pornographic material be supplemented with a prohibition on lewd, suggestive or sexually explicit material?
+*	Should untrue, false, inaccurate or misleading content be prohibited?
+*	Should potentially dangerous advice be prohibited?
+*	Should spam be prohibited?
+*	Should offensive etc material be prohibited?
+*	Should annoying etc material be prohibited?
 Section 11: Limited warranties
 Section 11.1
 Optional element.
@@ -291,15 +291,15 @@ Section 12.8
 Optional element. If the website operator is a limited liability entity (e.g. a limited company), do you want to expressly exclude liability on the part of officers and employees?
 Section 13: Breaches of these terms and conditions
 Section 13.1
-•	Will account suspension or deletion be a possibility here?
+*	Will account suspension or deletion be a possibility here?
 Section 13.2
 Optional element.
-•	Do you wish to specify types of action that are prohibited here?
-•	Detail the types of action which are prohibited by this provision.
+*	Do you wish to specify types of action that are prohibited here?
+*	Detail the types of action which are prohibited by this provision.
 Section 14: Variation
 Changes to legal documents published on a website will not generally be retrospectively effective, and variations without notice to and/or consent from relevant users may be ineffective.
 Section 14.2
-•	Will website users be notified of changes to the document?
+*	Will website users be notified of changes to the document?
 Section 14.3
 Optional element. Will registered users be required to consent to variations?
 Section 17: Third party rights
@@ -307,62 +307,62 @@ Optional element.
 This provision is designed to exclude any rights a third party may have under the Contracts (Rights of Third Parties) Act 1999.
 Section 18: Entire agreement
 Section 18.1
-•	What other documents govern the use of the website?
+*	What other documents govern the use of the website?
 Section 19: Law and jurisdiction
 The questions of which law governs a document and where disputes relating to the document may be litigated are two distinct questions.
 Section 19.1
 This document has been drafted to comply with English law, and the governing law provision should not be changed without obtaining expert advice from a lawyer qualified in the appropriate jurisdiction. In some circumstances the courts will apply provisions of their local law, such as local competition law or consumer protection law, irrespective of a choice of law clause.
-•	Which law should govern the document?
+*	Which law should govern the document?
 Section 19.2
 In some circumstances your jurisdiction clause may be overridden by the courts.
-•	Should the jurisdiction granted be exclusive or non-exclusive? Choose "non-exclusive" jurisdiction if you may want to enforce the terms and conditions against users outside England and Wales. Otherwise, choose "exclusive jurisdiction".
-•	The courts of which country or jurisdiction should adjudicate disputes under the document?
+*	Should the jurisdiction granted be exclusive or non-exclusive? Choose "non-exclusive" jurisdiction if you may want to enforce the terms and conditions against users outside England and Wales. Otherwise, choose "exclusive jurisdiction".
+*	The courts of which country or jurisdiction should adjudicate disputes under the document?
 Section 20: Statutory and regulatory disclosures
 Do the Electronic Commerce (EC Directive) Regulations 2002 apply to the website or is the website operator registered for VAT?
 This section can be deleted where website operator is not registered for VAT and the Electronic Commerce (EC Directive) Regulations 2002 do not apply. Generally, those Regulations will apply unless a website is entirely non-commercial, i.e. where a website does not offer any goods or services and does not involve any remuneration (which includes remuneration for carrying AdSense or other advertising).
 Section 20.1
 Optional element. Is the website operator registered in a trade or similar register that is available to the public?
 The Electronic Commerce (EC Directive) Regulations 2002 provide that if you are "registered in a trade or similar register available to the public", you must provide "details of the register in which the service provider is entered and his registration number, or equivalent means of identification in that register".
-•	What is the name of the trade register?
-•	At what URL can the trade register be found?
-•	What is the website operator's registration number?
+*	What is the name of the trade register?
+*	At what URL can the trade register be found?
+*	What is the website operator's registration number?
 Section 20.2
 Optional element. Is the website operator subject to an authorisation scheme (e.g. under financial services legislation)?
 The Electronic Commerce (EC Directive) Regulations 2002 provide that "where the provision of the service is subject to an authorisation scheme" you must provide "the particulars of the relevant supervisory authority".
-•	What is the name of the authorisation scheme to which the website operator is subject?
-•	What authority supervises the authorisation scheme?
+*	What is the name of the authorisation scheme to which the website operator is subject?
+*	What authority supervises the authorisation scheme?
 Section 20.3
 Optional element. Is the service provider a member of a regulated profession (e.g. solicitors)?
 The Electronic Commerce (EC Directive) Regulations 2002 provide that if "the service provider exercises a regulated profession", it must provide "(i) the details of any professional body or similar institution with which the service provider is registered; (ii) his professional title and the member State where that title has been granted; (iii) a reference to the professional rules applicable to the service provider in the member State of establishment and the means to access them".
-•	What is the website operator's professional title?
-•	Which professional body regulates the website operator?
-•	In which jurisdiction was the professional title granted?
-•	What is the name of the document containing the rules governing the profession?
-•	At what URL can the rules be found?
+*	What is the website operator's professional title?
+*	Which professional body regulates the website operator?
+*	In which jurisdiction was the professional title granted?
+*	What is the name of the document containing the rules governing the profession?
+*	At what URL can the rules be found?
 Section 20.4
 Optional element. Does the website operator subscribe to any codes of conduct?
 The Electronic Commerce (EC Directive) Regulations 2002 provide that "a service provider shall indicate which relevant codes of conduct he subscribes to and give information on how those codes can be consulted electronically".
-•	Identify the codes of conduct in question.
-•	Where can the codes be viewed?
+*	Identify the codes of conduct in question.
+*	Where can the codes be viewed?
 Section 20.5
 Optional element. Is the website operator registered for VAT?
-•	What is the website operator's VAT number?
+*	What is the website operator's VAT number?
 Section 21: Our details
 Optional element.
 UK companies must provide their corporate names, their registration numbers, their place of registration and their registered office address on their websites (although not necessarily in this document). Sole traders and partnerships that carry on a business in the UK under a "business name" (i.e. a name which is not the name of the trader/names of the partners or certain other specified classes of name) must also make certain website disclosures: (i) in the case of a sole trader, the individual's name; (ii) in the case of a partnership, the name of each member of the partnership; and (iii) in either case, in relation to each person named, an address in the UK at which service of any document relating in any way to the business will be effective. All websites covered by the Electronic Commerce (EC Directive) Regulations 2002 must provide a geographic address (not a PO Box number) and an email address. All website operators covered by the Provision of Services Regulations 2009 must also provide a telephone number.
 Section 21.1
-•	What is the name of the company, partnership, individual or other legal person or entity that owns and operates the website?
+*	What is the name of the company, partnership, individual or other legal person or entity that owns and operates the website?
 Section 21.2
 Optional element. Is the relevant person a company?
-•	In what jurisdiction is the company registered?
-•	What is the company's registration number or equivalent?
-•	Where is the company's registered address?
+*	In what jurisdiction is the company registered?
+*	What is the company's registration number or equivalent?
+*	Where is the company's registered address?
 Section 21.3
 Optional element.
-•	Where is the relevant person's head office or principal place of business?
+*	Where is the relevant person's head office or principal place of business?
 Section 21.4
 Optional element.
-•	By what means may the relevant person be contacted?
-•	Where is the relevant person's postal address published?
-•	Either specify a telephone number or give details of where the relevant number may be found.
-•	Either specify an email address or give details of where the relevant email address may be found.
+*	By what means may the relevant person be contacted?
+*	Where is the relevant person's postal address published?
+*	Either specify a telephone number or give details of where the relevant number may be found.
+*	Either specify an email address or give details of where the relevant email address may be found.

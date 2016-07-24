@@ -82,8 +82,7 @@ $(document).ready(function($){
 
         function populateSidePanel(node, array)
         {
-            // console.log("Array: " +array[1].topic);
-            // var s = array.topic;
+
             $("#accordion").html("");
             if(array.Topic != "Contact")
             {
