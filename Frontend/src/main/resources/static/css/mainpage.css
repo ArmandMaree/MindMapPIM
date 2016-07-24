@@ -11,10 +11,12 @@
     font-size: 18pt !important;
     padding-left: 0 !important;
 }*/
-/*.inmenu
+.email
 {
-    margin: 5%;
-}*/
+    background-color: white !important;
+    color: black;
+    padding : 2%;
+}
 body
 {
     color: #34a8d2!important;

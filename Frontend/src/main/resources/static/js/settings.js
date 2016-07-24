@@ -6,6 +6,9 @@ $(document).ready(function(){
 		$(this).addClass("active");
 		
 	});
+	/**
+	*	This function updates the css settings selected tab and hides/shows the respective div
+	*/
 	$("a").on("click", function(){
 			var title = $(this).text();
 			console.log(title);
@@ -34,12 +37,17 @@ $(document).ready(function(){
 	$("#bubbleSpaceColour").css("backgroundColor","#FFFFEA");
 	$("#sidePanelColour").css("backgroundColor","white");
 
-  
+  	/**
+  	*	This function sets up the first number spinner
+  	*/
     $('#spinner').spinner({
         min: 2,
         max: 5,
         step: 1
     });
+    /**
+  	*	This function sets up the second number spinner
+  	*/
     $('#spinner2').spinner({
         min: 2,
         max: 40,

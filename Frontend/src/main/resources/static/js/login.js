@@ -240,38 +240,47 @@ jQuery(document).ready(function($){
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
 
  $("facebookLogout").hide();
- function statusChangeCallback(response) {
+  /**
+ * This function is called with the results from from FB.getLoginStatus().
+ *	The response object is returned with a status field that lets the
+ *  application using a Facebook know the current login status of the person.
+ *  status = connected, means that the person is logged into our app and Facebook
+ *	status = not_authorized, the person is logged into Facebook but not our app
+ *	any other case means that the person is not logged into Facebook and possibly not our app
+ *	@param {string} response -  an object which contains the status of the Facebook connection
+ */
+ function statusChangeCallback(response) 
+ {
     console.log('statusChangeCallback');
     console.log(response);
-    if (response.status === 'connected') {
-    // Logged into your app and Facebook.
-     var accessToken = response.authResponse.accessToken;
-    console.log(response.authResponse);
-    console.log("Connected to facebook, accessToken:"+ response.authResponse);
-    testAPI();
-  } else if (response.status === 'not_authorized') {
-    // The person is logged into Facebook, but not your app.
-    // document.getElementById('status').innerHTML = 'Please log ' +
-    //   'into this app.';
+    if (response.status === 'connected') 
+    {
+    	var accessToken = response.authResponse.accessToken;
+	    console.log(response.authResponse);
+	    console.log("Connected to facebook, accessToken:"+ response.authResponse);
+	    testAPI();
+  	}
+  	else if (response.status === 'not_authorized') 
+  	{
       console.log("status = not_authorized");
-  } else {
-    // The person is not logged into Facebook, so we're not sure if
-    // they are logged into this app or not.
-    // document.getElementById('status').innerHTML = 'Please log ' +
-    //   'into Facebook.';
+  	}
+  	else
+  	{
        console.log("status = something else");
-  }
-
-    
+  	}
 }
+
+/**
+*	This function is called when a client clicks on the Facebook button to login or signup
+*	It prompts the user to log in to Facebook through the Facebook login dialogue
+*/
 function onFacebookLogin()
 {
   console.log("onFacebookLogin");
   FB.login(function(response) {
     if (response.authResponse) {
-      // _wdfb_notifyAndRedirect();
       console.log("Auth response:");
-      console.log(response.authResponse); //returns an object
+      console.log(response.authResponse); 
       showtick();
     }
     FB.getLoginStatus(function(response) {
@@ -280,6 +289,9 @@ function onFacebookLogin()
   });
 }
 
+/**
+*	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook
+*/
 function showtick()
 {
   console.log("Facebook selected!");
@@ -291,7 +303,9 @@ function showtick()
   $('#nextButton').show();
 }
 
-
+/** 
+*	This function initialises the JavaScript SDK
+*/ 
 window.fbAsyncInit = function() {
 FB.init({
   appId      : '1051696778242173',
@@ -307,7 +321,9 @@ FB.getLoginStatus(function(response) {
 
 };
 
-// Load the SDK asynchronously
+/**
+*	This loads the Facebook SDK asynchronously
+*/
 (function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
@@ -316,8 +332,11 @@ FB.getLoginStatus(function(response) {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-// Here we run a very simple test of the Graph API after login is
-// successful.  See statusChangeCallback() for when this call is made.
+/** 
+*	This function test of the Facebook Graph API after login is
+*	successful.  
+*	This function is called through the statusChangeCallback function.
+*/
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
@@ -331,6 +350,10 @@ function testAPI() {
   });
 }
 
+/**
+*	This function is called after a successful login to Facebook occurs.
+*	unction to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources. 
+*/
 function onSuccessFacebook() {
   $("#googleLogin").animate({
       top: '100px',
