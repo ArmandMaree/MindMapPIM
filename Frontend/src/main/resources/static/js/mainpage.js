@@ -20,6 +20,7 @@ function toJSON(obj) {
 }
 var nodes, edges, network;
 $(document).ready(function($){
+    $("#sidepanel").hide();
     document.oncontextmenu = function() {return false;};
     // $("canvas").click(function(event){
  //     event.preventDefault();
@@ -81,8 +82,7 @@ $(document).ready(function($){
 
         function populateSidePanel(node, array)
         {
-            // console.log("Array: " +array[1].topic);
-            // var s = array.topic;
+
             $("#accordion").html("");
             if(array.Topic != "Contact")
             {
@@ -163,14 +163,20 @@ $(document).ready(function($){
             ],
             onClick: function(){
                 if(this.label=="Expand Bubble"){
+                    var currentNodeID = nodes.length;
+                    console.log("size"+currentNodeID)
+                    var pos=0;
                     console.log(this.label);
-                    var branchinglimit = 8;
+                    var branchinglimit = 4;
+                    var thisgroup = nodes[selectedID].group;
                     for(var i=0 ;i<branchinglimit;i++){
                         try {
                             data.nodes.add({
                                 id: nodes.length,
-                                label: nodes.length
+                                label: mockArrayOfData[pos % branchinglimit],
+                                group: thisgroup
                             });
+
                         }
                         catch (err) {
                             alert(err);
@@ -178,14 +184,24 @@ $(document).ready(function($){
                         console.log()
                         try {
                             data.edges.add({
-                                id: edges.length++,
+                                id: edges.length,
                                 from: selectedID,
-                                to: nodes.length++
+                                to: nodes.length
                             });
                         }
                         catch (err) {
                             alert(err);
                         }
+                        nodes.push({
+                            id: nodes.length,
+                            label: mockArrayOfData[pos++ % branchinglimit],
+                            group: thisgroup
+                        })
+                        edges.push({
+                            id: edges.length++,
+                            from: selectedID,
+                            to: nodes.length++
+                        });
                     }
                 }
 
@@ -241,19 +257,22 @@ $(document).ready(function($){
         });
                 
         network.on("click", function(){
-           
+           console.log(nodes)
            $("#facebook").html("");
            $("#gmail").html("");
            $("#twitter").html("");
            $("#linkedIn").html("");
            $("#sidepanelTitle").html("");
-
+           try{
             var e = window.event;
             var posX = e.clientX;
             var posY = e.clientY - $("nav").height();
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             var selectedNode = network.getNodeAt({"x": posX, "y": posY});
+            }catch(err){
+
+            }
             var s = network.getSelectedNodes();
             // var label = data.node(s);
             console.log("s: "  + s);
@@ -322,14 +341,13 @@ $(document).ready(function($){
             }
 
 
-                if(nodes[s].label =="ME" || s== null || s=="undefined")
+                $("#sidepanel").show();
+                if(nodes[s] =="undefined"  || s== null || s=="")
                 {
                     $("#sidepanel").hide();
                     console.log("Got here");
                 }
-                else
-                    $("#sidepanel").show();
-                if(nodes[s].label =="Horse")
+                else if(nodes[s].label =="Horse")
                 {
                     populateSidePanel(selectedNode, horse);
                     $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
@@ -415,4 +433,5 @@ $(document).ready(function($){
 
     var menu;
     var selectedID;
+    var mockArrayOfData = ["Amy \n Lochner", "Holiday", "Cooking", "Durban"]
     
