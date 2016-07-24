@@ -15,7 +15,10 @@ for(var i = 0; i <ca.length; i++) {
     if(x!="1"){
         window.location.assign('/');
     }
-
+function toJSON(obj) {
+    return JSON.stringify(obj, null, 4);
+}
+var nodes, edges, network;
 $(document).ready(function($){
     document.oncontextmenu = function() {return false;};
     // $("canvas").click(function(event){
@@ -23,105 +26,33 @@ $(document).ready(function($){
     // });
     var color = 'gray';
     var len = undefined;
-    var nodes = [
-        // {id: 0, label: "ME", group: 0,color:{background:"#D3D3D3"}},
-        // {id: 1, label: "1", group: 0,color:{background:"#D3D3D3"}},
-        // {id: 2, label: "2", group: 0,color:{background:"#D3D3D3"}},
-        // {id: 3, label: "3", group: 1,color:{background:"#D3D3D3"}},
-        // {id: 4, label: "4", group: 1,color:{background:"#D3D3D3"}},
-        // {id: 5, label: "5", group: 1,color:{background:"#D3D3D3"}},
-        // {id: 6, label: "6", group: 2,color:{background:"#D3D3D3"}},
-        // {id: 7, label: "7", group: 2,color:{background:"#D3D3D3"}},
-        // {id: 8, label: "8", group: 2,color:{background:"#D3D3D3"}},
-        // {id: 9, label: "9", group: 3,color:{background:"#D3D3D3"}},
-        // {id: 10, label: "10", group: 3,color:{background:"#D3D3D3"}},
-        // {id: 11, label: "11", group: 3,color:{background:"#D3D3D3"}},
-        // {id: 12, label: "12", group: 4,color:{background:"#D3D3D3"}},
-        // {id: 13, label: "13", group: 4,color:{background:"#D3D3D3"}},
-        // {id: 14, label: "14", group: 4,color:{background:"#D3D3D3"}},
-        // {id: 15, label: "15", group: 5,color:{background:"#D3D3D3"}},
-        // {id: 16, label: "16", group: 5,color:{background:"#D3D3D3"}},
-        // {id: 17, label: "17", group: 5,color:{background:"#D3D3D3"}},
-        // {id: 18, label: "18", group: 6,color:{background:"#D3D3D3"}},
-        // {id: 19, label: "19", group: 6,color:{background:"#D3D3D3"}},
-        // {id: 20, label: "20", group: 6,color:{background:"#D3D3D3"}},
-        // {id: 21, label: "21", group: 7,color:{background:"#D3D3D3"}},
-        // {id: 22, label: "22", group: 7,color:{background:"#D3D3D3"}},
-        // {id: 23, label: "23", group: 7,color:{background:"#D3D3D3"}},
-        // {id: 24, label: "24", group: 8,color:{background:"#D3D3D3"}},
-        // {id: 25, label: "25", group: 8,color:{background:"#D3D3D3"}},
-        // {id: 26, label: "26", group: 8,color:{background:"#D3D3D3"}},
-        // {id: 27, label: "27", group: 9,color:{background:"#D3D3D3"}},
-        // {id: 28, label: "28", group: 9,color:{background:"#D3D3D3"}},
-        // {id: 29, label: "29", group: 9,color:{background:"#D3D3D3"}}
-        // ];
+    nodes = [
         {id: 0, label: "    ME    ", group: 0},
-        // {id: 1, label: "1", group: 0},
-        // {id: 2, label: "2", group: 0},
-        // {id: 3, label: "3", group: 1},
-        {id: 4, label: "Cooking", group: 1},
-        // {id: 5, label: "5", group: 1},
-        {id: 6, label: "Amy \n Lochner", group: 2},
-        {id: 7, label: "Horse", group: 2},
-        // {id: 8, label: "8", group: 2},
-        // {id: 9, label: "9", group: 3},
-        // {id: 10, label: "10", group: 3},
-        // {id: 11, label: "11", group: 3},
-        // {id: 12, label: "12", group: 4},
-        {id: 13, label: "COS301", group: 4},
-        {id: 14, label: "Fritz \nSolms", group: 4},
-        // {id: 15, label: "15", group: 5},
-        // {id: 16, label: "16", group: 5},
-        // {id: 17, label: "17", group: 5},
-        // {id: 18, label: "18", group: 6},
-        // {id: 19, label: "19", group: 6},
-        // {id: 20, label: "20", group: 6},
-        // {id: 21, label: "21", group: 7},
-        // {id: 22, label: "22", group: 7},
-        // {id: 23, label: "23", group: 7},
-        // {id: 24, label: "24", group: 8},
-        // {id: 25, label: "25", group: 8},
-        // {id: 26, label: "26", group: 8},
-        // {id: 27, label: "27", group: 9},
-        {id: 28, label: "Holiday", group: 9},
-        {id: 29, label: "Arno \nGrobler", group: 9}
+        {id: 1, label: "Cooking", group: 1},
+        {id: 2, label: "Amy \n Lochner", group: 2},
+        {id: 3, label: "Horse", group: 2},
+        {id: 4, label: "COS301", group: 4},
+        {id: 5, label: "Fritz \n Solms", group: 4},
+        {id: 6, label: "Holiday", group: 9},
+        {id: 7, label: "Arno \n Grobler", group: 9},
+        {id: 8, label: "Arno \n Grobler", group: 2}
         ];
-        var edges = [{from: 1, to: 0},
-            {from: 2, to: 0},
-            {from: 4, to: 3},
+        edges = [
+            {from: 1, to: 0},
+            {from: 3, to: 2},
+            {from: 3, to: 0},
             {from: 5, to: 4},
             {from: 4, to: 0},
             {from: 7, to: 6},
-            {from: 8, to: 7},
-            {from: 7, to: 0},
-            {from: 10, to: 9},
-            {from: 11, to: 10},
-            {from: 10, to: 4},
-            {from: 13, to: 12},
-            {from: 14, to: 13},
-            {from: 13, to: 0},
-            {from: 16, to: 15},
-            {from: 17, to: 15},
-            {from: 15, to: 10},
-            {from: 19, to: 18},
-            {from: 20, to: 19},
-            {from: 19, to: 4},
-            {from: 22, to: 21},
-            {from: 23, to: 22},
-            {from: 22, to: 13},
-            {from: 25, to: 24},
-            {from: 26, to: 25},
-            {from: 25, to: 7},
-            {from: 28, to: 27},
-            {from: 29, to: 28},
-            {from: 28, to: 0}
+            {from: 6, to: 0},
+            {from: 3, to: 8}
         ]
 
       // create a network
       var container = document.getElementById('mynetwork');
       var data = {
-        nodes: nodes,
-        edges: edges
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges)
       };
       
         var options = {
@@ -132,6 +63,7 @@ $(document).ready(function($){
             physics: {
               stabilization: false
             },
+            clickToUse: false,
             nodes: {
                 shape: 'circle',
                 size: 50,
@@ -146,7 +78,7 @@ $(document).ready(function($){
                 width: 1
             }
         };
-                
+
         function populateSidePanel(node, array)
         {
             // console.log("Array: " +array[1].topic);
@@ -202,6 +134,112 @@ $(document).ready(function($){
             
         }
         var network = new vis.Network(container, data, options);
+
+        menu = new ax5.ui.menu({
+            position: "absolute", // default position is "fixed"
+            theme: "info",
+            icons: {
+                'arrow': '<i class="fa fa-caret-right"></i>'
+            },
+            items: [
+                {
+                    icon: '<i class="fa fa-comment"></i>',
+                    label: "Expand Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
+                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
+                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
+                    // ]
+                },
+                {
+                    icon: '<i class="fa fa-comments"></i>',
+                    label: "Remove Bubble",
+                    // items: [
+                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
+                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
+                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
+                    // ]
+                }
+            ],
+            onClick: function(){
+                if(this.label=="Expand Bubble"){
+                    console.log(this.label);
+                    var branchinglimit = 8;
+                    for(var i=0 ;i<branchinglimit;i++){
+                        try {
+                            data.nodes.add({
+                                id: nodes.length,
+                                label: nodes.length
+                            });
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
+                        console.log()
+                        try {
+                            data.edges.add({
+                                id: edges.length++,
+                                from: selectedID,
+                                to: nodes.length++
+                            });
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
+                    }
+                }
+
+                if(this.label=="Remove Bubble"){
+                    // console.log(this.label);
+                    // var e = window.event;
+                    // var posX = e.clientX;
+                    // var posY = e.clientY - $("nav").height();
+                    // console.log("X: "+ posX);
+                    // console.log("Y: "+ posY);
+                    // var selectednode = network.getNodeAt({"x": posX, "y": posY});
+                    var allnodes = [];
+                    var visited=[];
+                    allnodes.push(selectedID);
+                    while(allnodes.length>0){
+                        console.log("Node clicked on :" + selectedID);
+                        // network
+                        var alledges = network.getSelectedEdges();
+                        
+                        // allnodes.push(selectedID);
+                        for(var i=0;i<alledges.length;i++){
+                            var node = network.getConnectedNodes(alledges[i]);
+                            for(var j=0;j<node.length;j++){
+                                console.log(node[j]+">"+ selectedID)
+                                if(node[j]> selectedID){
+                                    allnodes.push(node[j]);
+                                    
+                                }
+                            }
+                        }
+                        visited.push(selectedID);
+                        console.log(visited);
+                            allnodes.splice(0,1);
+                            selectedID = allnodes[0];
+                        if(selectedID!=undefined){
+                            network.selectNodes([selectedID]);
+                        }
+
+
+                    }
+                    
+                    network.selectNodes(visited);
+                    network.deleteSelected();
+
+                    //Loop through all nodes of selected node
+                    //get their children nodes
+                    //check if there are no chilren nodes
+                    //call function recursively on children nodes 
+                    
+                    // console.log(nodes.length)
+                        }
+                    }
+        });
+                
         network.on("click", function(){
            
            $("#facebook").html("");
@@ -219,6 +257,7 @@ $(document).ready(function($){
             var s = network.getSelectedNodes();
             // var label = data.node(s);
             console.log("s: "  + s);
+            // console.log("+++++++++++++"+nodes[s].label )
             var alledges = network.getSelectedEdges();
             var allnodes = []
             for(var i=0;i<alledges.length;i++){
@@ -233,9 +272,9 @@ $(document).ready(function($){
             var horse = { 
                 "Topic" : "Horse",
                 "Facebook" : [ 
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=500" width="500" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="500" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=500" width="500" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=100%" width="100%" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="100%" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=100%" width="100%" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
                 ],
                 "Gmail" :[
                     { "subject" : "Confirmation of your ride","data" : "Dear Acuben<br /><br /> We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. <br /><br />Kind regards <br />Marlene Kruger"}
@@ -243,8 +282,10 @@ $(document).ready(function($){
             var cooking = {
                 "Topic":"Cooking",
                 "Facebook": [
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&width=500" width="500" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&width=500" width="500" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
                 ],
                 "Gmail" : [
                     {"subject": "New recipe for Fridge cheesecake" , "data" : "Dear member <br /><br />Please find attached to your pamphlet a new recipe. Please try this recipe out before next week froday. <br /><br />Enjoy your day!"}
@@ -279,44 +320,46 @@ $(document).ready(function($){
                     {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Lecture notes have been uploaded! Please download asap<br /><br />Kind Regards<br />Fritz Solms"}
                 ]
             }
-                if(s== "0" || s== null || s=="undefined")
+
+
+                if(nodes[s].label =="ME" || s== null || s=="undefined")
                 {
                     $("#sidepanel").hide();
                     console.log("Got here");
                 }
                 else
                     $("#sidepanel").show();
-                if(s == "7")
+                if(nodes[s].label =="Horse")
                 {
                     populateSidePanel(selectedNode, horse);
                     $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
                 }
-                else if(s == "4")
+                else if(nodes[s].label =="Cooking")
                 {
                     populateSidePanel(selectedNode, cooking);
                     $("#breadcrumb").html('<li>Me</li><li>Cooking</li>');
                 }
-                else if(s == "28")
+                else if(nodes[s].label =="Holiday")
                 {
                     populateSidePanel(selectedNode, holiday);
                     $("#breadcrumb").html('<li>Me</li><li>Holiday</li>');
                 }
-                else if(s == "29")
+                else if(nodes[s].label =="Arno \n Grobler")
                 {
                     populateSidePanel(selectedNode, contact);
                     $("#breadcrumb").html('<li>Me</li><li>Holiday</li><li>Arno Grobler</li>');
                 }
-                else if(s == "6")
+                else if(nodes[s].label =="Amy \n Lochner")
                 {
                     populateSidePanel(selectedNode, contact2);
                     $("#breadcrumb").html('<li>Me</li><li>Horse</li><li>Amy Lochner</li>');
                 }
-                else if(s == "13")
+                else if(nodes[s].label =="COS301")
                 {
                     populateSidePanel(selectedNode, cos);
                     $("#breadcrumb").html('<li>Me</li><li>COS301</li>');
                 }
-                else if(s == "14")
+                else if(nodes[s].label =="Fritz \n Solms")
                 {
                     populateSidePanel(selectedNode, contact3);
                     $("#breadcrumb").html('<li>Me</li><li>COS301</li><li>Fritz Solms</li>');
@@ -336,7 +379,18 @@ $(document).ready(function($){
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             console.log(network.getNodeAt({"x": posX, "y": posY}));
+            selectedID = network.getNodeAt({"x": posX, "y": posY});
             network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
+            var node = network.getSelectedNodes();
+            console.log(node);
+                console.log("works on right click");
+                // $(this).bind("contextmenu", function (e) {
+                if(node.length != 0)
+                {
+                    menu.popup(e);
+                    ax5.util.stopEvent(e);
+                }
+                // });
             //Node is an array of nodes
             rightClick = network.getSelectedNodes();
             console.log(rightClick);
@@ -352,159 +406,13 @@ $(document).ready(function($){
 
 });
 
+
+
 // $(document).click(function(event) {
 //     var text = $(event.target).text();
 //     console.log($(event.target));
 // });
 
     var menu;
-    $(document.body).ready(function () {
-        menu = new ax5.ui.menu({
-            position: "absolute", // default position is "fixed"
-            theme: "info",
-            icons: {
-                'arrow': '<i class="fa fa-caret-right"></i>'
-            },
-            items: [
-                {
-                    icon: '<i class="fa fa-comment"></i>',
-                    label: "Expand Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
-                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
-                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
-                    // ]
-                },
-                {
-                    icon: '<i class="fa fa-comments"></i>',
-                    label: "Hide Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
-                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
-                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
-                    // ]
-                }
-            ],
-
-        });
- 
-        // $("#mynetwork").bind("contextmenu", function (e) {
-        //     menu.popup(e);
-        //     ax5.util.stopEvent(e);
-        //     // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
-        // });
-    });
-
-
-var auth2; // The Sign-In object.
-var googleUser; // The current user.
-
-var startApp = function() {
-  gapi.load('auth2', initSigninV2);
-};
-
-var initSigninV2 = function() {
-  auth2 = gapi.auth2.init({
-      client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-      scope: 'profile'
-  });
-  auth2.isSignedIn.listen(signinChanged);
-  if (auth2.isSignedIn.get() == true) {
-    auth2.signIn();
-  }
-  refreshValues();
-};
-
-var signinChanged = function (val) {
-  console.log('Signin state changed to ', val);
-  if(val === true){
-      auth2.signOut().then(function () {
-        console.log('User signed out.');
-    }); 
-  }
-};
-
-function refreshValues() {
-  if (auth2){
-    console.log('Refreshing values...');
-
-    googleUser = auth2.currentUser.get();
-
-    console.log(JSON.stringify(googleUser, undefined, 2));
-    console.log(auth2.isSignedIn.get());
-  }
-}
-
-	(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-	window.fbAsyncInit = function() {
-	  FB.init({
-	    appId      : '1051696778242173',
-	    cookie     : true,  // enable cookies to allow the server to access 
-	                        // the session
-	    xfbml      : true,  // parse social plugins on this page
-	    version    : 'v2.5' // use graph api version 2.5
-	  });
-	}
-//  function statusChangeCallback(response) {
-//     console.log('statusChangeCallback');
-//     console.log(response);
-//     // The response object is returned with a status field that lets the
-//     // app know the current login status of the person.
-//     // Full docs on the response object can be found in the documentation
-//     // for FB.getLoginStatus().
-
-//         if (response.status === 'connected') {
-//         // Logged into your app and Facebook.
-//          var accessToken = response.authResponse.accessToken;
-//         console.log(response.authResponse);
-//         console.log("Connected to facebook, accessToken:"+ response.authResponse);
-//         testAPI();
-//       } else if (response.status === 'not_authorized') {
-//         // The person is logged into Facebook, but not your app.
-//         // document.getElementById('status').innerHTML = 'Please log ' +
-//         //   'into this app.';
-//           console.log("status = not_authorized");
-//       } else {
-//         // The person is not logged into Facebook, so we're not sure if
-//         // they are logged into this app or not.
-//         // document.getElementById('status').innerHTML = 'Please log ' +
-//         //   'into Facebook.';
-//            console.log("status = something else");
-//       }
-
+    var selectedID;
     
-// }
-// function logout()
-// {
-
-//     startApp();
-//     //Facebook logout
-//     var flag =false;
-//     FB.getLoginStatus(function(response) {
-//         if (response && response.status === 'connected') {
-//             flag = true;
-//             FB.logout(function(response) {
-//             });
-//         }
-
-//     });
-
-//         console.log("facebook:"+ !flag)
-//         console.log("google:"+!auth2.isSignedIn.get())
-//         // if (flag && !auth2.isSignedIn.get()) {
-//         setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";window.location.assign('/'); }, 3000);
-        	
-//         // }
-        
-
-
-// }
-// $(document).ready(function(){
-
-// });
