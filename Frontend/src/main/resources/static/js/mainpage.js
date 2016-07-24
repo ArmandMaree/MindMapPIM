@@ -55,36 +55,36 @@ $(document).ready(function($){
         // {id: 28, label: "28", group: 9,color:{background:"#D3D3D3"}},
         // {id: 29, label: "29", group: 9,color:{background:"#D3D3D3"}}
         // ];
-        {id: 0, label: "ME", group: 0},
-        {id: 1, label: "1", group: 0},
-        {id: 2, label: "2", group: 0},
-        {id: 3, label: "3", group: 1},
-        {id: 4, label: "4", group: 1},
-        {id: 5, label: "5", group: 1},
-        {id: 6, label: "6", group: 2},
-        {id: 7, label: "7", group: 2},
-        {id: 8, label: "8", group: 2},
-        {id: 9, label: "9", group: 3},
-        {id: 10, label: "10", group: 3},
-        {id: 11, label: "11", group: 3},
-        {id: 12, label: "12", group: 4},
-        {id: 13, label: "13", group: 4},
-        {id: 14, label: "14", group: 4},
-        {id: 15, label: "15", group: 5},
-        {id: 16, label: "16", group: 5},
-        {id: 17, label: "17", group: 5},
-        {id: 18, label: "18", group: 6},
-        {id: 19, label: "19", group: 6},
-        {id: 20, label: "20", group: 6},
-        {id: 21, label: "21", group: 7},
-        {id: 22, label: "22", group: 7},
-        {id: 23, label: "23", group: 7},
-        {id: 24, label: "24", group: 8},
-        {id: 25, label: "25", group: 8},
-        {id: 26, label: "26", group: 8},
-        {id: 27, label: "27", group: 9},
-        {id: 28, label: "28", group: 9},
-        {id: 29, label: "29", group: 9}
+        {id: 0, label: "    ME    ", group: 0},
+        // {id: 1, label: "1", group: 0},
+        // {id: 2, label: "2", group: 0},
+        // {id: 3, label: "3", group: 1},
+        {id: 4, label: "Cooking", group: 1},
+        // {id: 5, label: "5", group: 1},
+        {id: 6, label: "Amy \n Lochner", group: 2},
+        {id: 7, label: "Horse", group: 2},
+        // {id: 8, label: "8", group: 2},
+        // {id: 9, label: "9", group: 3},
+        // {id: 10, label: "10", group: 3},
+        // {id: 11, label: "11", group: 3},
+        // {id: 12, label: "12", group: 4},
+        {id: 13, label: "COS301", group: 4},
+        {id: 14, label: "Fritz \nSolms", group: 4},
+        // {id: 15, label: "15", group: 5},
+        // {id: 16, label: "16", group: 5},
+        // {id: 17, label: "17", group: 5},
+        // {id: 18, label: "18", group: 6},
+        // {id: 19, label: "19", group: 6},
+        // {id: 20, label: "20", group: 6},
+        // {id: 21, label: "21", group: 7},
+        // {id: 22, label: "22", group: 7},
+        // {id: 23, label: "23", group: 7},
+        // {id: 24, label: "24", group: 8},
+        // {id: 25, label: "25", group: 8},
+        // {id: 26, label: "26", group: 8},
+        // {id: 27, label: "27", group: 9},
+        {id: 28, label: "Holiday", group: 9},
+        {id: 29, label: "Arno \nGrobler", group: 9}
         ];
         var edges = [{from: 1, to: 0},
             {from: 2, to: 0},
@@ -132,13 +132,12 @@ $(document).ready(function($){
             physics: {
               stabilization: false
             },
-            clickToUse: false,
             nodes: {
                 shape: 'circle',
                 size: 50,
                 color: '#7FBEEB ', //rgb(102,167,188)',
                 font: {
-                    size: 32,
+                    size: 26,
                     color: 'black'
                 },
                 borderWidth: 1
@@ -152,33 +151,64 @@ $(document).ready(function($){
         {
             // console.log("Array: " +array[1].topic);
             // var s = array.topic;
-            for(var i = 0; i < array.length; i++)
+            $("#accordion").html("");
+            if(array.Topic != "Contact")
             {
-                $("#sidepanelTitle").html("<h2>"+array[i].topic+"</h2>");
-                console.log("Title: "+$("#sidepanelTitle").text());
-                if(array[i].source =="Facebook")
-                {
-                    $("#facebook").html(array[i].data);
-                }
-                else if(array[i].source == "Gmail")
-                {
-                    $("#gmail").html(array[i].data);
-                }
-                else if(array[i].source == "Twitter")
-                {
-                    $("#twitter").html(array[i].data);
-                }
-                else if(array[i].source == "LinkedIn")
-                {
-                    $("#linkedin").html(array[i].data);
-                }
-                
+                $("#sidepanelTitle").html("<h2>"+array.Topic+"</h2>");
             }
+            else
+            {
+                $("#sidepanelTitle").html("<h2>"+array.Name+"</h2>")
+            }
+            console.log("Title: "+$("#sidepanelTitle").text());
+            if((array.hasOwnProperty('Name')))
+            {
+                $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+                $("#details").html("Email Address: " + array.emailAddress);
+            }
+            if((array.hasOwnProperty('Facebook')))
+            {
+                $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">Facebook</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="facebook" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+                for(var i = 0 ; i < array.Facebook.length; i++ )
+                {
+                    $("#facebook").append("<div>"+array.Facebook[i]+"</div>");
+                }
+            }
+            if((array.hasOwnProperty('Gmail')))
+            {
+                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title">Gmail</h3></div><div id="collapse3" class="panel-collapse collapse"><div id="gmail" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+                for(var i = 0 ; i < array.Gmail.length; i++ )
+                {
+                    $("#gmail").append("<div class='email panel'><h3>"+array.Gmail[i].subject +"</h3><br />"+array.Gmail[i].data+"</div>");
+                }
+            }
+            if((array.hasOwnProperty('Twitter')))
+            {
+                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title">Twitter</h3></div><div id="collapse4" class="panel-collapse collapse"><div id="twitter" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+                for(var i = 0 ; i < array.Twitter.length; i++ )
+                {
+                    $("#twitter").html("<div>"+array.Twitter.data+"</div>");
+                }
+            }
+            if((array.hasOwnProperty('LinkedIn')))
+            {
+                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+                for(var i = 0 ; i < array.LinkedIn.length; i++ )
+                {
+                    $("#linkedIn").html("<div>"+array[i].data+"</div>");
+                }
+            }
+                
+            
         }
         var network = new vis.Network(container, data, options);
         network.on("click", function(){
-            // for(var j=0;j<nodes.length;j++){
-            // }
+           
+           $("#facebook").html("");
+           $("#gmail").html("");
+           $("#twitter").html("");
+           $("#linkedIn").html("");
+           $("#sidepanelTitle").html("");
 
             var e = window.event;
             var posX = e.clientX;
@@ -186,7 +216,9 @@ $(document).ready(function($){
             console.log("X: "+ posX);
             console.log("Y: "+ posY);
             var selectedNode = network.getNodeAt({"x": posX, "y": posY});
-            
+            var s = network.getSelectedNodes();
+            // var label = data.node(s);
+            console.log("s: "  + s);
             var alledges = network.getSelectedEdges();
             var allnodes = []
             for(var i=0;i<alledges.length;i++){
@@ -197,10 +229,102 @@ $(document).ready(function($){
                 }
             }
             network.selectNodes(allnodes);
-            console.log(nodes.length)
-            var array1 = [{'source' : 'Facebook', 'topic': 'Horse', 'dataType' : 'post', 'data' : 'Horse riding with Amy Lochner was so funny. She rode it backwards!' }, 
-            {'source' : 'Gmail', 'topic': 'Horse', 'dataType' : 'email', 'data' : 'Confirmation of your ride <br /> <br /> Dear Acuben We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. Kind regards  Marlene Kruger'}];
-            populateSidePanel(selectedNode, array1);
+            // console.log(nodes.length);
+            var horse = { 
+                "Topic" : "Horse",
+                "Facebook" : [ 
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=500" width="500" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="500" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=500" width="500" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+                ],
+                "Gmail" :[
+                    { "subject" : "Confirmation of your ride","data" : "Dear Acuben<br /><br /> We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. <br /><br />Kind regards <br />Marlene Kruger"}
+                ]};
+            var cooking = {
+                "Topic":"Cooking",
+                "Facebook": [
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&width=500" width="500" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&width=500" width="500" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+                ],
+                "Gmail" : [
+                    {"subject": "New recipe for Fridge cheesecake" , "data" : "Dear member <br /><br />Please find attached to your pamphlet a new recipe. Please try this recipe out before next week froday. <br /><br />Enjoy your day!"}
+                ]
+            };
+            var holiday = {
+                "Topic":"Holiday",
+                "Gmail" : [
+                    {"subject": "Holiday" , "data" : "Dear Acuben<br /><br />How was your holiday in Durban last week?<br /><br />Kind Regards <br />Arno Grobler"}
+                ]
+            };
+            var contact = {
+                "Topic" : "Contact",
+                "Name": "Arno Grobler",
+                "emailAddress" : "arnogrobler@hott.com"
+            }
+            var contact2 = {
+                "Topic" : "Contact",
+                "Name": "Amy Lochner",
+                "emailAddress" : "lochneramy@gmail.com"
+            }
+             var contact3 = {
+                "Topic" : "Contact",
+                "Name": "Fritz Solms",
+                "emailAddress" : "fritzsolms@cs.up.ac.za"
+            }
+            var cos = {
+                "Topic" : "COS301",
+                "Gmail" : [
+                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Please note class will be suspendedd on the 25th July due to unforeseen circumstances. Please use this time to work with your main project group.<br /><br /> Thank you."},
+                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Assignment 2 now due. Please upload as soon as possible!<br /><br />Kind Regards<br />Fritz Solms"},
+                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Lecture notes have been uploaded! Please download asap<br /><br />Kind Regards<br />Fritz Solms"}
+                ]
+            }
+                if(s== "0" || s== null || s=="undefined")
+                {
+                    $("#sidepanel").hide();
+                    console.log("Got here");
+                }
+                else
+                    $("#sidepanel").show();
+                if(s == "7")
+                {
+                    populateSidePanel(selectedNode, horse);
+                    $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
+                }
+                else if(s == "4")
+                {
+                    populateSidePanel(selectedNode, cooking);
+                    $("#breadcrumb").html('<li>Me</li><li>Cooking</li>');
+                }
+                else if(s == "28")
+                {
+                    populateSidePanel(selectedNode, holiday);
+                    $("#breadcrumb").html('<li>Me</li><li>Holiday</li>');
+                }
+                else if(s == "29")
+                {
+                    populateSidePanel(selectedNode, contact);
+                    $("#breadcrumb").html('<li>Me</li><li>Holiday</li><li>Arno Grobler</li>');
+                }
+                else if(s == "6")
+                {
+                    populateSidePanel(selectedNode, contact2);
+                    $("#breadcrumb").html('<li>Me</li><li>Horse</li><li>Amy Lochner</li>');
+                }
+                else if(s == "13")
+                {
+                    populateSidePanel(selectedNode, cos);
+                    $("#breadcrumb").html('<li>Me</li><li>COS301</li>');
+                }
+                else if(s == "14")
+                {
+                    populateSidePanel(selectedNode, contact3);
+                    $("#breadcrumb").html('<li>Me</li><li>COS301</li><li>Fritz Solms</li>');
+                }
+                else
+                {
+                    $("#sidepanel").hide();
+                }
                 console.log("works on right click");
         });
 
