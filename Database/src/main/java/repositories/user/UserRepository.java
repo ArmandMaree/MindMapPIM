@@ -10,7 +10,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 * @since   2016-07-16
 */
 public interface UserRepository extends MongoRepository<User, String> {
-    public User findByFirstName(String firstName);
+    public User findByUserId(String userId);
+    public List<User> findByFirstName(String firstName);
     public List<User> findByLastName(String lastName);
 	public User findByGmailId(String gmailId);
 }

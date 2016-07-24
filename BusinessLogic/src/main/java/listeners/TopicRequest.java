@@ -1,4 +1,4 @@
-package listeners.frontend;
+package listeners;
 
 import java.io.Serializable;
 
@@ -100,23 +100,25 @@ public class TopicRequest implements Serializable {
 	public String toString() {
 		String p = "";
 
-		for (String item : path) {
-			if (p.equals(""))
-				p += item;
-			else {
-				p += "-" + item;
+		if (path != null)
+			for (String item : path) {
+				if (p.equals(""))
+					p += item;
+				else {
+					p += "-" + item;
+				}
 			}
-		}
 
 		String e = "";
 
-		for (String item : exclude) {
-			if (e.equals(""))
-				e += item;
-			else {
-				e += "-" + item;
+		if (exclude != null)
+			for (String item : exclude) {
+				if (e.equals(""))
+					e += item;
+				else {
+					e += "-" + item;
+				}
 			}
-		}
 
 		return "TopicRequest{\n" +
 			"\tuserId: " + userId + "\n" +

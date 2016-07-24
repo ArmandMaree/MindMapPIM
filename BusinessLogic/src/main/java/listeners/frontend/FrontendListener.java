@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import data.*;
+import listeners.*;
 
 /**
 * Waits for messages from the frontend and processes them.
@@ -15,7 +16,7 @@ import data.*;
 public class FrontendListener {
 	private RabbitTemplate rabbitTemplate;
 	private final String databaseRequestQueueName = "topic-request.database.rabbit";
-	
+
 	/**
 	* Default FrontendListener constructor
 	* @param rabbitTemplate Refernece to a rabbitTemplate to send messages to RabbitMQ.
@@ -32,5 +33,11 @@ public class FrontendListener {
 		rabbitTemplate.convertAndSend(databaseRequestQueueName, topicRequest);
 	}
 
-
+	/**
+	* Receives a request for new topics.
+	* @param topicRequest structured as a topicRequest.
+	*/
+	public void receiveTopicResponse(TopicResponse topicResponse) {
+		System.out.println("Business received: " + topicResponse);
+	}
 }

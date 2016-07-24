@@ -66,15 +66,29 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public MessageListenerAdapter frontendListenerAdapter(FrontendListener frontendListener) {
+	public MessageListenerAdapter topicRequestAdapter(FrontendListener frontendListener) {
 		return new MessageListenerAdapter(frontendListener, "receiveTopicRequest");
 	}
 
 	@Bean
-	public SimpleMessageListenerContainer frontendListenerContainer(ConnectionFactory connectionFactory, @Qualifier("frontendListenerAdapter") MessageListenerAdapter listenerAdapter) {
+	public MessageListenerAdapter topicResponseAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveTopicResponse");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicRequestContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(topicRequestQueueName, topicResponseQueueName);
+		container.setQueueNames(topicRequestQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

@@ -26,13 +26,18 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import repositories.user.*;
 import repositories.pimprocesseddata.*;
+import repositories.topic.*;
 import listeners.*;
 import data.*;
+
+import java.util.List;
+import java.util.ArrayList;
 
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
-	final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -41,7 +46,15 @@ public class Application implements CommandLineRunner {
 	private PimProcessedDataRepository processedDataRepository;
 
 	@Autowired
+	private TopicRepository topicRepository;
+
+	@Autowired
 	RabbitTemplate rabbitTemplate;
+
+	@Bean
+	Queue topicRequestQueue() {
+		return new Queue(topicRequestQueueName, false);
+	}
 
 	@Bean
 	Queue processedDataQueue() {
@@ -54,27 +67,51 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(processedDataQueueName);
+	Binding topicRequestBinding(@Qualifier("topicRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
 	}
 
 	@Bean
-	SimpleMessageListenerContainer processedDataContainer(ConnectionFactory connectionFactory, @Qualifier("processedDataListenerAdapter") MessageListenerAdapter listenerAdapter) {
+	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
+	}
+
+	@Bean
+	public TopicListener topicListener(RabbitTemplate rabbitTemplate, UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
+		return new TopicListener(rabbitTemplate, userRepository, processedDataRepository, topicRepository);
+	}
+
+	@Bean
+	public ProcessedDataListener processedDataListener(UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
+		return new ProcessedDataListener(userRepository, processedDataRepository, topicRepository);
+	}
+
+	@Bean
+	public MessageListenerAdapter topicRequestAdapter(TopicListener topicListener) {
+		return new MessageListenerAdapter(topicListener, "receiveTopicRequest");
+	}
+
+	@Bean
+	public MessageListenerAdapter processedDataAdapter(ProcessedDataListener processedDataListener) {
+		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicRequestContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicRequestQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer processedDataContainer(ConnectionFactory connectionFactory, @Qualifier("processedDataAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(processedDataQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
-	}
-
-    @Bean
-    ProcessedDataListener processedDataListener(PimProcessedDataRepository processedDataRepository, UserRepository userRepository) {
-        return new ProcessedDataListener(processedDataRepository, userRepository);
-    }
-
-	@Bean
-	MessageListenerAdapter processedDataListenerAdapter(ProcessedDataListener processedDataListener) {
-		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
 	}
 
 	public static void main(String[] args) {
@@ -85,6 +122,7 @@ public class Application implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		userRepository.deleteAll();
 		processedDataRepository.deleteAll();
+		topicRepository.deleteAll();
 
 		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
 		userRepository.save(acuben);
