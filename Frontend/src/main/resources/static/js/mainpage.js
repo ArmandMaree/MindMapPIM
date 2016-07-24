@@ -91,35 +91,36 @@ $(document).ready(function($){
         {id: 28, label: "28", group: 9},
         {id: 29, label: "29", group: 9}
         ];
-        var edges = [{from: 1, to: 0},
+        var edges = [
+            {from: 1, to: 0},
             {from: 2, to: 0},
-            {from: 4, to: 3},
+            {from: 3, to: 4},
             {from: 5, to: 4},
-            {from: 4, to: 0},
+            {from: 3, to: 0},
             {from: 7, to: 6},
             {from: 8, to: 7},
-            {from: 7, to: 0},
-            {from: 10, to: 9},
+            {from: 6, to: 0},
+            {from: 9, to: 10},
             {from: 11, to: 10},
-            {from: 10, to: 4},
-            {from: 13, to: 12},
+            {from: 9, to: 4},
+            {from: 12, to: 13},
             {from: 14, to: 13},
-            {from: 13, to: 0},
+            {from: 12, to: 0},
             {from: 16, to: 15},
             {from: 17, to: 15},
             {from: 15, to: 10},
-            {from: 19, to: 18},
-            {from: 20, to: 19},
-            {from: 19, to: 4},
+            {from: 18, to: 19},
+            {from: 20, to: 18},
+            {from: 18, to: 4},
             {from: 22, to: 21},
-            {from: 23, to: 22},
-            {from: 22, to: 13},
-            {from: 25, to: 24},
-            {from: 26, to: 25},
-            {from: 25, to: 7},
+            {from: 23, to: 21},
+            {from: 21, to: 13},
+            {from: 24, to: 25},
+            {from: 26, to: 24},
+            {from: 24, to: 7},
             {from: 28, to: 27},
-            {from: 29, to: 28},
-            {from: 28, to: 0}
+            {from: 29, to: 27},
+            {from: 27, to: 0}
         ]
 
       // create a network
@@ -183,7 +184,7 @@ $(document).ready(function($){
             onClick: function(){
                 if(this.label=="Expand Bubble"){
                     console.log(this.label);
-                    var branchinglimit = 4;
+                    var branchinglimit = 8;
                     for(var i=0 ;i<branchinglimit;i++){
                         try {
                             data.nodes.add({
@@ -209,9 +210,54 @@ $(document).ready(function($){
                 }
 
                 if(this.label=="Remove Bubble"){
-                    console.log(this.label);
-                }
-            }
+                    // console.log(this.label);
+                    // var e = window.event;
+                    // var posX = e.clientX;
+                    // var posY = e.clientY - $("nav").height();
+                    // console.log("X: "+ posX);
+                    // console.log("Y: "+ posY);
+                    // var selectednode = network.getNodeAt({"x": posX, "y": posY});
+                    var allnodes = [];
+                    var visited=[];
+                    allnodes.push(selectedID);
+                    while(allnodes.length>0){
+                        console.log("Node clicked on :" + selectedID);
+                        // network
+                        var alledges = network.getSelectedEdges();
+                        
+                        // allnodes.push(selectedID);
+                        for(var i=0;i<alledges.length;i++){
+                            var node = network.getConnectedNodes(alledges[i]);
+                            for(var j=0;j<node.length;j++){
+                                console.log(node[j]+">"+ selectedID)
+                                if(node[j]> selectedID){
+                                    allnodes.push(node[j]);
+                                    
+                                }
+                            }
+                        }
+                        visited.push(selectedID);
+                        console.log(visited);
+                            allnodes.splice(0,1);
+                            selectedID = allnodes[0];
+                        if(selectedID!=undefined){
+                            network.selectNodes([selectedID]);
+                        }
+
+
+                    }
+                    
+                    network.selectNodes(visited);
+                    network.deleteSelected();
+
+                    //Loop through all nodes of selected node
+                    //get their children nodes
+                    //check if there are no chilren nodes
+                    //call function recursively on children nodes 
+                    
+                    // console.log(nodes.length)
+                        }
+                    }
         });
                 
         network.on("click", function(){
