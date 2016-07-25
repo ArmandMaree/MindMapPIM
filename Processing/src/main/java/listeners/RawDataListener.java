@@ -1,4 +1,4 @@
-package processor;
+package listeners;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -7,30 +7,34 @@ import java.util.concurrent.CountDownLatch;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import org.springframework.beans.factory.annotation.*;
+
 import data.*;
+import nlp.NaturalLanguageProcessor;
 
 /**
 * Receives raw data and processes it with a NaturalLanguageProcessor.
 *
 * @author  Armand Maree
-* @since   2016-07-14
+* @since   2016-07-25
 */
-public class DataProcessor {
+public class RawDataListener {
 	private boolean stop = false;
 	private final int TIMEOUT = 10;
-	private NaturalLanguageProcessor nlp;
 	private CountDownLatch latch = new CountDownLatch(1);
-	private RabbitTemplate rabbitTemplate;
 	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
 
+	@Autowired
+	private NaturalLanguageProcessor nlp;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 	/**
-	* Constructor that initializes some fields.
-	* @param nlp An instance of a NaturalLanguageProcessor. If null then the RawDataQueue will just be dequeued as new data is inserted.
-	* @param rabbitTemplate A template to a RabbitMQ instance to send messages to.
+	* Default constructor.
 	*/
-	public DataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
-		this.nlp = nlp;
-		this.rabbitTemplate = rabbitTemplate;
+	public RawDataListener() {
+
 	}
 
 	/**
@@ -55,10 +59,12 @@ public class DataProcessor {
 			for (String part : rawData.getData())
 				topics.addAll(nlp.getTopics(part));
 
-			topics = nlp.purge(topics);
+			topics = nlp.purge(topics); // remove duplicates and excluded words.
 
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 		}
+		else
+			System.out.println("ERROR: No NaturalLanguageProcessor specified.");
 
 		return processedData;
 	}

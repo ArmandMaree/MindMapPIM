@@ -1,9 +1,11 @@
-package repositories.topic;
+package repositories;
+
 
 import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import data.ProcessedData;
+import data.Topic;
 
 /**
 * MongoDB repository for processed data.

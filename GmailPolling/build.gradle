@@ -26,11 +26,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	// Spring Stuff
+	// Spring
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("org.springframework.boot:spring-boot-starter-actuator")
-	compile("org.springframework:spring-messaging")
-	testCompile("junit:junit")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
 
 	// Gmail API
 	compile 'com.google.api-client:google-api-client:1.22.0'
@@ -44,6 +43,9 @@ dependencies {
 
 	// Queue messaging stuff
 	compile("org.springframework.boot:spring-boot-starter-amqp")
+
+	// MongoDB
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
 }
 
 task wrapper(type: Wrapper) {

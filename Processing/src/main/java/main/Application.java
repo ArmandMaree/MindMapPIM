@@ -26,8 +26,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import processor.*;
+import nlp.*;
 import data.*;
+import listeners.*;
 
 /**
 * Main application that starts up the service.
@@ -37,17 +38,17 @@ import data.*;
 */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-	final static String queueName = "raw-data.processing.rabbit";
+	final static String rawDataQueueName = "raw-data.processing.rabbit";
 
 	@Autowired
-	NaturalLanguageProcessor nlpG;
+	NaturalLanguageProcessor nlp;
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
 	@Bean
-	Queue queue() {
-		return new Queue(queueName, false);
+	Queue rawDataQueue() {
+		return new Queue(rawDataQueueName, false);
 	}
 
 	@Bean
@@ -56,27 +57,27 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(queueName);
+	Binding rawDataBinding(@Qualifier("rawDataQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(rawDataQueueName);
 	}
 
 	@Bean
-	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+	RawDataListener rawDataListener() {
+		return new RawDataListener();
+	}
+
+	@Bean
+	MessageListenerAdapter rawDataListenerAdapter(RawDataListener rawDataListener) {
+		return new MessageListenerAdapter(rawDataListener, "receiveRawData");
+	}
+
+	@Bean
+	SimpleMessageListenerContainer rawDataContainer(ConnectionFactory connectionFactory, @Qualifier("rawDataListenerAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(queueName);
+		container.setQueueNames(rawDataQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
-	}
-
-	@Bean
-	DataProcessor dataProcessor(NaturalLanguageProcessor nlp, RabbitTemplate rabbitTemplate) {
-		return new DataProcessor(nlp, rabbitTemplate);
-	}
-
-	@Bean
-	MessageListenerAdapter listenerAdapter(DataProcessor dataProcessor) {
-		return new MessageListenerAdapter(dataProcessor, "receiveRawData");
 	}
 
 	@Bean
@@ -86,17 +87,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
-		ApplicationContext ctx = SpringApplication.run(Application.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		// System.out.println("Waiting five seconds...");
-		// Thread.sleep(5000);
-		// System.out.println("Sending message...");
-		// String[] data = {"cheesecake", "horse", "beach"};
-		// RawData rawData = new RawData(null, null, null, null, data);
-		// rabbitTemplate.convertAndSend(queueName, rawData);
-		// dataProcessor(nlpG).getLatch().await(10000, TimeUnit.MILLISECONDS);
+
 	}
 }

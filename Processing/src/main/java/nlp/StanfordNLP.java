@@ -1,4 +1,4 @@
-package processor;
+package nlp;
 
 import java.io.*;
 import java.util.*;

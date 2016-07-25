@@ -1,8 +1,6 @@
 package testers.listeners;
 
-import repositories.pimprocesseddata.*;
-import repositories.topic.*;
-import repositories.user.*;
+import repositories.*;
 import data.*;
 import testers.AbstractTester;
 

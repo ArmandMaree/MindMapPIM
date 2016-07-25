@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import data.ProcessedData;
-import repositories.pimprocesseddata.PimProcessedDataRepository;
-import repositories.user.*;
-import repositories.topic.*;
+import data.*;
+import repositories.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
 * Receives processed data from a queue messaging applicatiion and persists it.
@@ -16,19 +16,20 @@ import repositories.topic.*;
 * @since   2016-07-16
 */
 public class ProcessedDataListener {
-	private PimProcessedDataRepository processedDataRepository;
+	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private PimProcessedDataRepository processedDataRepository;
+
+	@Autowired
 	private TopicRepository topicRepository;
 
 	/**
-	* Default constructor and initializes some variables.
-	* @param processedDataRepository The repository where the processed data will be persisted.
-	* @param userRepository The repository where user information is persisted.
+	* Default constructor.
 	*/
-	public ProcessedDataListener(UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
-		this.userRepository = userRepository;
-		this.processedDataRepository = processedDataRepository;
-		this.topicRepository = topicRepository;
+	public ProcessedDataListener() {
+
 	}
 
 	/**
@@ -38,57 +39,56 @@ public class ProcessedDataListener {
 	public void receiveProcessedData(ProcessedData processedData) {
 		try {
 			switch (processedData.getPimSource()) {
-				case "Gmail":
+				case "Gmail": // data comes from gmail
 					User user = userRepository.findByGmailId(processedData.getUserId());
 
-					if (user == null)
+					if (user == null) // no user exists with this gmail id
 						return;
 
 					processedData.setUserId(user.getUserId());
 					break;
-				default:
-					break;
+				default: // don't know where the data comes from.
+					return;
 			}
 
 
-			ProcessedData pd = processedDataRepository.save(processedData);
-			String[] pdId = {pd.getId()};
-			ArrayList<Topic> topics = new ArrayList<>();
+			processedData = processedDataRepository.save(processedData); // persist data
 
-			for (String topic : pd.getTopics()) {
-				ArrayList<String> remainingTopics = new ArrayList<>();
+			for (String topic : processedData.getTopics()) { // iterate all topics in data
+				ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
 
-				for (String t : pd.getTopics()) {
+				for (String t : processedData.getTopics()) {
 					if (!t.equals(topic))
 						remainingTopics.add(t);
 				}
 
 				synchronized(this) {
-					Topic topicFromRepo = topicRepository.findByTopicAndUserId(topic, pd.getUserId());
+					Topic topicFromRepo = topicRepository.findByTopicAndUserId(topic, processedData.getUserId()); // gets the current topic from repo if it exists
 
-					if (topicFromRepo == null) {
-						Topic t = new Topic(pd.getUserId(), topic, remainingTopics.toArray(new String[0]), pdId, System.currentTimeMillis());
-						topicRepository.save(t);
+					if (topicFromRepo == null) { // topic not in repo
+						String[] processedDataIds = {processedData.getId()}; // ids of all topics containing the current topic (only one in this case).
+						Topic t = new Topic(processedData.getUserId(), topic, remainingTopics.toArray(new String[0]), processedDataIds, System.currentTimeMillis());
+						topicRepository.save(t); // persist new topic
 					}
-					else {
-						ArrayList<String> repoTopics = new ArrayList<>(Arrays.asList(topicFromRepo.getRelatedTopics()));
+					else { // topic in repo
+						ArrayList<String> repoTopics = new ArrayList<>(Arrays.asList(topicFromRepo.getRelatedTopics())); // get the related topics of the topic in the repo
 
-						for (String t : remainingTopics) {
+						for (String t : remainingTopics) { // adds the topic in the repo's related topics to the related topic list
 							if (!repoTopics.contains(t))
 								repoTopics.add(t);
 						}
 
-						ArrayList<String> repoPdIds = new ArrayList<>(Arrays.asList(topicFromRepo.getProcessedDataIds()));
-						repoPdIds.add(pd.getId());
-						topicFromRepo.setRelatedTopics(repoTopics.toArray(new String[0]));
-						topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0]));
-						topicFromRepo.setTime(System.currentTimeMillis());
-						topicRepository.save(topicFromRepo);
+						ArrayList<String> repoPdIds = new ArrayList<>(Arrays.asList(topicFromRepo.getProcessedDataIds())); // get the ids of the previous data that contains this topic
+						repoPdIds.add(processedData.getId()); // add current data's id
+						topicFromRepo.setRelatedTopics(repoTopics.toArray(new String[0])); // update related topics
+						topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0])); // update processed data ids
+						topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
+						topicRepository.save(topicFromRepo); // update topic in repo
 					}
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e) { // never crash app
 			e.printStackTrace();
 		}
 	}
