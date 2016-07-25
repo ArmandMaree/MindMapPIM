@@ -143,7 +143,7 @@ function googleretrieve(){
           console.log('Connected: ' + frame);
       });
       setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify({ authCode: authResult['code'] }));}, 3000);
-      console.log(document.createTextNode(message));
+      // console.log(document.createTextNode(message));
       
       if (stompClient != null) {
         stompClient.disconnect();
