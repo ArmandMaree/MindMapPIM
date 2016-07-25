@@ -206,11 +206,19 @@ function loadTos(){
  *Function to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
  */
 function loadXMLDoc(){
+  if($(window).width()<=700){
+    $('.login-container').animate({
+        width:"90%",
+        height:"80%"
+
+    });
+  }else{
     $('.login-container').animate({
         width:"450px",
         height:"450px"
 
     });
+  }
 
     $("#continue").animate({
         top: '100px',

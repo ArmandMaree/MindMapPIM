@@ -28,6 +28,7 @@ pre {
     transform: translate(-50%, -70%);
 }
 
+
 #output{
     position: absolute;
     width: 300px;
@@ -342,4 +343,354 @@ pre {
   -webkit-animation-delay: 1s;
   -o-animation-delay: 1s;
   animation-delay: 1s;
+}
+
+@media (max-width: 700px) {
+      body{
+          background : #eee url("/images/back8.jpg");
+          background-repeat: no-repeat;
+          background-size:cover;
+
+        }
+      html,body{
+          position: relative;
+          height: 100%;
+      }
+      pre {
+          white-space: pre-wrap;       /* Since CSS 2.1 */
+          white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+          white-space: -pre-wrap;      /* Opera 4-6 */
+          white-space: -o-pre-wrap;    /* Opera 7 */
+          word-wrap: keep-all;       /* Internet Explorer 5.5+ */
+      }
+      .login-container{
+          width: 80%;
+          height: 60%;
+          margin: 80px auto;
+          padding: 30px 50px 50px;
+          text-align: center;
+          background: #fff;
+          border: 1px solid #ccc;
+          position: fixed;
+          top:50%;
+          left:50%;
+          transform: translate(-50%, -70%);
+      }
+
+
+      #output{
+          position: absolute;
+          width: 300px;
+          top: -75px;
+          left: 0;
+          color: #fff;
+      }
+
+      #output.alert-success{
+          background: rgb(25, 204, 25);
+      }
+
+      #output.alert-danger{
+          background: rgb(228, 105, 105);
+      }
+
+
+      .login-container::before,.login-container::after{
+          content: "";
+          position: absolute;
+          width: 100%;height: 100%;
+          top: 3.5px;left: 0;
+          background: #fff;
+          z-index: -1;
+          -webkit-transform: rotateZ(4deg);
+          -moz-transform: rotateZ(4deg);
+          -ms-transform: rotateZ(4deg);
+          border: 1px solid #ccc;
+
+      }
+
+      .login-container::after{
+          top: 5px;
+          z-index: -2;
+          -webkit-transform: rotateZ(-2deg);
+           -moz-transform: rotateZ(-2deg);
+            -ms-transform: rotateZ(-2deg);
+
+      }
+
+      .avatar{
+          background: #eee url("/images/bubblelogo.png");
+          width: 100px;height: 100px;
+          margin: 10px auto 30px;
+          border-radius: 100%;
+          border: 2px solid #aaa;
+          background-size: cover;
+      }
+
+      .form-box input{
+          width: 100%;
+          padding: 10px;
+          text-align: center;
+          height:40px;
+          border: 1px solid #ccc;;
+          background: #fafafa;
+          transition:0.2s ease-in-out;
+
+      }
+
+      .form-box input:focus{
+          outline: 0;
+          background: #eee;
+      }
+
+      .form-box input[type="text"]{
+          border-radius: 5px 5px 0 0;
+          text-transform: lowercase;
+      }
+
+      .form-box input[type="password"]{
+          border-radius: 0 0 5px 5px;
+          border-top: 0;
+      }
+
+      .form-box button.login{
+          margin-top:15px;
+          padding: 10px 20px;
+      }
+      .animated {
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+      }
+
+      @-webkit-keyframes fadeInUp {
+        0% {
+          opacity: 0;
+          -webkit-transform: translateY(20px);
+          transform: translateY(20px);
+        }
+
+        100% {
+          opacity: 1;
+          -webkit-transform: translateY(0);
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        0% {
+          opacity: 0;
+          -webkit-transform: translateY(20px);
+          -ms-transform: translateY(20px);
+          transform: translateY(20px);
+        }
+
+        100% {
+          opacity: 1;
+          -webkit-transform: translateY(0);
+          -ms-transform: translateY(0);
+          transform: translateY(0);
+        }
+      }
+
+      .fadeInUp {
+        -webkit-animation-name: fadeInUp;
+        animation-name: fadeInUp;
+      }
+      /*Ripple*/
+      @-webkit-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-webkit-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-moz-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-ms-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-moz-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-webkit-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @-o-keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      @keyframes uil-ripple {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 0;
+          margin: 0 0 0 0;
+        }
+        33% {
+          width: 44%;
+          height: 44%;
+          margin: -22% 0 0 -22%;
+          opacity: 1;
+        }
+        100% {
+          width: 88%;
+          height: 88%;
+          margin: -44% 0 0 -44%;
+          opacity: 0;
+        }
+      }
+      .uil-ripple-css {
+        background: none;
+        position: relative;
+        width: 200px;
+        height: 200px;
+      }
+      .uil-ripple-css div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: 0;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        border-radius: 50%;
+        border-width: 12px;
+        border-style: solid;
+        -ms-animation: uil-ripple 2s ease-out infinite;
+        -moz-animation: uil-ripple 2s ease-out infinite;
+        -webkit-animation: uil-ripple 2s ease-out infinite;
+        -o-animation: uil-ripple 2s ease-out infinite;
+        animation: uil-ripple 2s ease-out infinite;
+      }
+      .uil-ripple-css div:nth-of-type(1) {
+        border-color: #b6e2a5;
+      }
+      .uil-ripple-css div:nth-of-type(2) {
+        border-color: #9dd5cf;
+        -ms-animation-delay: 1s;
+        -moz-animation-delay: 1s;
+        -webkit-animation-delay: 1s;
+        -o-animation-delay: 1s;
+        animation-delay: 1s;
+      }
 }
