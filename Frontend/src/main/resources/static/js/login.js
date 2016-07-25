@@ -82,8 +82,8 @@ var signinChanged = function (val) {
       $('#avatar').fadeOut(0, function() {
           $('#avatar').fadeIn(0);
           $('#avatar').css("background","#eee url('/images/avatar3.png')");
-           $('#avatar').css("background-size","cover");
-            $('#avatar').css("opacity","1");
+          $('#avatar').css("background-size","cover");
+          $('#avatar').css("opacity","1");
       });
       $("#continue").show();
       $("#continue").delay(2000).animate({
@@ -207,8 +207,8 @@ function loadTos(){
  */
 function loadXMLDoc(){
     $('.login-container').animate({
-        width:"550px",
-        height:"550px"
+        width:"450px",
+        height:"450px"
 
     });
 
