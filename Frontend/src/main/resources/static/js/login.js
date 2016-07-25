@@ -63,6 +63,11 @@ var signinChanged = function (val) {
           opacity: '0.0'
 
       });
+      $("#tos").hide();
+      $("#tos2").hide();
+      $("#web").hide();
+      // $("#facebookLogin").hide();
+      // $("#googleLogin").hide();
 
       $("#avatar").delay("slow").animate({
           top: '70px',
