@@ -1,7 +1,8 @@
-package testers.processor;
+package testers.listeners;
 
-import processor.*;
+import nlp.*;
 import data.*;
+import listeners.*;
 import testers.AbstractTester;
 
 import java.util.ArrayList;
@@ -18,20 +19,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
-* Unit test methods for the DataProcessor.
+* Unit test methods for the RawDataListener.
 *
 * @author Armand Maree
-* @since 2016-07-20
+* @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)
-public class DataProcessorTester extends AbstractTester {
+public class RawDataListenerTester extends AbstractTester {
 	private RawData rawData;
 	private ProcessedData processedData;
 	private boolean setUpDone = false;
 
 	@Autowired
-	private DataProcessor dataProcessor;
+	private RawDataListener rawDataListener;
 
 	@Before
 	public void setUp() {
@@ -55,13 +56,13 @@ public class DataProcessorTester extends AbstractTester {
 	}
 
 	@Test
-	public void testDataProcessor() {
-		Assert.assertNotNull("Failure - dataProcessor is null.", dataProcessor);
+	public void testRawDataListener() {
+		Assert.assertNotNull("Failure - rawDataListener is null.", rawDataListener);
 	}
 
 	@Test
 	public void testProcess() {
-		ProcessedData pd = dataProcessor.process(rawData);
+		ProcessedData pd = rawDataListener.process(rawData);
 
 		Assert.assertNotNull("Failure - processedData is null.", pd);
 		Assert.assertEquals("Failure - pimSource is not equal.", processedData.getPimSource(), pd.getPimSource());

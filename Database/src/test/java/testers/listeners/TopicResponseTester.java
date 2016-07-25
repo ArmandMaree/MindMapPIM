@@ -1,10 +1,7 @@
-package testers.processor;
+package testers.listeners;
 
-import nlp.*;
-import data.*;
+import listeners.TopicResponse;
 import testers.AbstractTester;
-
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,18 +15,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
-* Unit test methods for the Application.
+* Unit test methods for the TopicResponse.
 *
 * @author Armand Maree
-* @since 2016-07-20
+* @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)
-public class ApplicationTester extends AbstractTester {
+public class TopicResponseTester extends AbstractTester {
 	private boolean setUpDone = false;
-
-	@Autowired
-	RabbitTemplate rabbitTemplate;
 
 	@Before
 	public void setUp() {
@@ -44,7 +38,7 @@ public class ApplicationTester extends AbstractTester {
 	}
 
 	@Test
-	public void testRabbitTemplate() {
-		Assert.assertNotNull("Failure - rabbitTemplate is null. Is RabbitMQ running?", rabbitTemplate);
+	public void test() {
+
 	}
 }

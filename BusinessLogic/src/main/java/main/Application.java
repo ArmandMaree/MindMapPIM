@@ -25,7 +25,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import listeners.frontend.*;
+import listeners.*;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -57,12 +57,12 @@ public class Application implements CommandLineRunner {
 
 	@Bean
 	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
+		return BindingBuilder.bind(queue).to(exchange).with(topicResponseQueueName);
 	}
 
 	@Bean
-	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
-		return new FrontendListener(rabbitTemplate);
+	public FrontendListener frontendListener() {
+		return new FrontendListener();
 	}
 
 	@Bean

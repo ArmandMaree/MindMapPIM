@@ -23,6 +23,8 @@ import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.AmqpException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -54,15 +56,13 @@ import data.*;
 * @since   2016-07-11
 */
 public class GmailPoller implements Poller {
-	final static String queueName = "raw-data.processing.rabbit";
+	final static String rawDataQueue = "raw-data.processing.rabbit";
 	private static final String APPLICATION_NAME = "Gmail API";
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
 	private static FileDataStoreFactory DATA_STORE_FACTORY;
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	private static HttpTransport HTTP_TRANSPORT;
 	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
-
-	private RabbitTemplate rabbitTemplate;
 	private String userAuthCode;
 	private Gmail service;
 	private final String userId = "me";
@@ -70,6 +70,9 @@ public class GmailPoller implements Poller {
 	private long lastEmailMilli = 0;
 	private boolean stop = false;
 	private String firstId = "";
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	static {
 		try {
@@ -86,8 +89,7 @@ public class GmailPoller implements Poller {
 	* @param rabbitTemplate Reference to a rabbitTemplate used to communicate with a RabbitMQ server.
 	* @param userAuthCode Authentication code received from the login service.
 	*/
-	public GmailPoller(RabbitTemplate rabbitTemplate, String userAuthCode) {
-		this.rabbitTemplate = rabbitTemplate;
+	public GmailPoller(String userAuthCode) {
 		this.userAuthCode = userAuthCode;
 
 		try {
@@ -228,7 +230,7 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-			rabbitTemplate.convertAndSend(queueName, rawData);
+			rabbitTemplate.convertAndSend(rawDataQueue, rawData);
 		}
 		catch (AmqpException ampqe) {
 			System.out.println("Could not connect to RabbitMQ.");

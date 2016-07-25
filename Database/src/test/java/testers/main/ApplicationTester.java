@@ -1,8 +1,7 @@
-package testers.processor;
+package testers.main;
 
 import data.*;
-import repositories.user.*;
-import repositories.pimprocesseddata.*;
+import repositories.*;
 import testers.AbstractTester;
 
 import java.util.List;
@@ -24,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * Unit test methods for the Application.
 *
 * @author Armand Maree
-* @since 2016-07-20
+* @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)

@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.*;
 
 import org.springframework.stereotype.Component;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-
 import data.*;
 import poller.*;
 
@@ -25,14 +23,11 @@ import poller.*;
 @RestController
 @Configurable
 public class GoogleTokenController {
-	@Autowired
-	RabbitTemplate rabbitTemplate;
-
 	@CrossOrigin
 	@RequestMapping(value = "/gmail/token", method = RequestMethod.POST, headers = {"Content-type=application/json"})
 	@ResponseBody
 	public String googleToken(@RequestBody AuthCode authCode) {
-		Poller poller = new GmailPoller(rabbitTemplate, authCode.getAuthCode());
+		Poller poller = new GmailPoller(authCode.getAuthCode());
 		new Thread(poller).start();
 		return "OK";
 	}

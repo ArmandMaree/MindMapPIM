@@ -1,7 +1,6 @@
-package testers.listeners.frontend;
+package testers.listeners;
 
 import testers.AbstractTester;
-import listeners.frontend.*;
 import listeners.*;
 import data.*;
 

@@ -7,9 +7,12 @@ import org.springframework.data.annotation.Id;
 * Contains the topics that was extracted from the NaturalLanguageProcessor.
 *
 * @author  Armand Maree
-* @since   2016-07-15
+* @since   2016-07-25
 */
 public class ProcessedData implements Serializable {
+	/**
+	* ID used in database.
+	*/
 	@Id
 	private String id;
 

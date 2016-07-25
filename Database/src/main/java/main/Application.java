@@ -24,9 +24,7 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import repositories.user.*;
-import repositories.pimprocesseddata.*;
-import repositories.topic.*;
+import repositories.*;
 import listeners.*;
 import data.*;
 
@@ -73,17 +71,17 @@ public class Application implements CommandLineRunner {
 
 	@Bean
 	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
+		return BindingBuilder.bind(queue).to(exchange).with(processedDataQueueName);
 	}
 
 	@Bean
-	public TopicListener topicListener(RabbitTemplate rabbitTemplate, UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
-		return new TopicListener(rabbitTemplate, userRepository, processedDataRepository, topicRepository);
+	public TopicListener topicListener() {
+		return new TopicListener();
 	}
 
 	@Bean
-	public ProcessedDataListener processedDataListener(UserRepository userRepository, PimProcessedDataRepository processedDataRepository, TopicRepository topicRepository) {
-		return new ProcessedDataListener(userRepository, processedDataRepository, topicRepository);
+	public ProcessedDataListener processedDataListener() {
+		return new ProcessedDataListener();
 	}
 
 	@Bean
@@ -120,11 +118,13 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		// debug start
 		userRepository.deleteAll();
 		processedDataRepository.deleteAll();
 		topicRepository.deleteAll();
 
 		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
 		userRepository.save(acuben);
+		// debug end
 	}
 }

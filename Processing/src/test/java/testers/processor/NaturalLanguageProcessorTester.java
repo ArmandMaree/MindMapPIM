@@ -1,6 +1,6 @@
 package testers.processor;
 
-import processor.*;
+import nlp.*;
 import data.*;
 import testers.AbstractTester;
 

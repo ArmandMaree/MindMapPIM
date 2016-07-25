@@ -1,8 +1,8 @@
-package testers.processor;
+package testers.main;
 
-import nlp.*;
-import data.*;
 import testers.AbstractTester;
+
+import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * Unit test methods for the Application.
 *
 * @author Armand Maree
-* @since 2016-07-20
+* @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)
