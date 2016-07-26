@@ -1,12 +1,14 @@
 package data;
 
+import java.io.Serializable;
+
 /**
 * Used by the RESTController to map JSON objects to. Contains all the information needed to create a User object to be persisted.
 *
 * @author  Armand Maree
 * @since   2016-07-25
 */
-public class UserRegistration {
+public class UserRegistration implements Serializable {
 	/*
 	* First name of the user.
 	*/

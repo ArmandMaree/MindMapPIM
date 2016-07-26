@@ -31,6 +31,7 @@ import listeners.*;
 public class Application implements CommandLineRunner {
 	private final String topicRequestQueueName = "topic-request.business.rabbit";
 	private final String topicResponseQueueName = "topic-response.business.rabbit";
+	private final String registerQueueName = "register.business.rabbit";
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -43,6 +44,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Queue topicResponseQueue() {
 		return new Queue(topicResponseQueueName, false);
+	}
+
+	@Bean
+	Queue registerQueue() {
+		return new Queue(registerQueueName, false);
 	}
 
 	@Bean
@@ -61,6 +67,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding registerBinding(@Qualifier("registerQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(registerQueueName);
+	}
+
+	@Bean
 	public FrontendListener frontendListener() {
 		return new FrontendListener();
 	}
@@ -73,6 +84,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public MessageListenerAdapter topicResponseAdapter(FrontendListener frontendListener) {
 		return new MessageListenerAdapter(frontendListener, "receiveTopicResponse");
+	}
+
+	@Bean
+	public MessageListenerAdapter registerAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveRegister");
 	}
 
 	@Bean
@@ -89,6 +105,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(topicResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer registerContainer(ConnectionFactory connectionFactory, @Qualifier("registerAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(registerQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

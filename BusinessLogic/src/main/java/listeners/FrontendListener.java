@@ -44,4 +44,8 @@ public class FrontendListener {
 		System.out.println("Business received: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 	}
+
+	public void receiveRegister(UserRegistration userRegistration) {
+		System.out.println("Business received: " + userRegistration);
+	}
 }

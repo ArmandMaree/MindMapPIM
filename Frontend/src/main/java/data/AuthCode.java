@@ -1,12 +1,14 @@
 package data;
 
+import java.io.Serializable;
+
 /**
 * Used by the RESTController to map JSON objects to. Class contains the authorization code needed to access a user account for a specific PIM.
 *
 * @author  Armand Maree
 * @since   2016-07-25
 */
-public class AuthCode {
+public class AuthCode implements Serializable {
 	/**
 	* Id used by the PIM source to identify the user.
 	*/
