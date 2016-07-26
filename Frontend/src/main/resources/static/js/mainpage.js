@@ -275,8 +275,16 @@ $(document).ready(function($){
                         }
                     }
         });
-                
         network.on("click", function(){
+           // console.log("nodes")
+           $("#facebook").html("");
+           $("#gmail").html("");
+           $("#twitter").html("");
+           $("#linkedIn").html("");
+           $("#sidepanelTitle").html("");
+           $("#sidepanel").hide();
+        });
+        network.on("doubleClick", function(){
            console.log(nodes)
            $("#facebook").html("");
            $("#gmail").html("");
