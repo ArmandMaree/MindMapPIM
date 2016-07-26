@@ -45,7 +45,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         String[] exclude = null;
         int maxNumberOfTopics= 4;
         TopicRequest topicrequest = new TopicRequest(userID,path,exclude,maxNumberOfTopics);
-        rabbitTemplate.convertAndSend("topic-request.business.rabbit",topicrequest);
+        rabbitTemplate.convertAndSend("register.business.rabbit",message);
         System.out.println("Rabbit templete sent to business rabbit:\n"+topicrequest);
     }
     
