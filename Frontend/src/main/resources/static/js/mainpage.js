@@ -18,8 +18,28 @@ for(var i = 0; i <ca.length; i++) {
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
+$( window ).resize(function() {
+    if($(window).width()<=700){
+        $("#help").html("   Help");
+        $("#settings").html("   Settings");
+        $("#logout").html("   Logout");
+    }else{
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+    }
+});
 var nodes, edges, network;
 $(document).ready(function($){
+    if($(window).width()<=700){
+        $("#help").html("   Help");
+        $("#settings").html("   Settings");
+        $("#logout").html("   Logout");
+    }else{
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+    }
     $("#sidepanel").hide();
     document.oncontextmenu = function() {return false;};
     // $("canvas").click(function(event){
