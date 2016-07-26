@@ -1,6 +1,7 @@
 var auth2; // The Sign-In object.
 var googleUser; // The current user.
-
+var authCodes = [];
+var gmailUser= null;
 /**
  * Starts the log in process by calling the google api.
  */
@@ -31,6 +32,27 @@ var initSigninV2 = function() {
 
   refreshValues();
 };
+
+var sendUserReg = function(){
+  var socket = new SockJS('/hello');
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function(frame) {
+      console.log('Connected: ' + frame);
+  });
+  var userReg = {};
+  if(gmailUser!=null){
+    userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+  }
+  setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify(userReg));}, 3000);
+  // console.log(document.createTextNode(message));
+  
+  if (stompClient != null) {
+    stompClient.disconnect();
+  }
+  setConnected(false);
+  console.log("Disconnected");
+  window.location.assign('/mainpage');
+}
 /**
  * A function that cheks where any sign in activity for Google has happened and responds.
  * @param {boolean} val - true if a sign in has occured.
@@ -110,6 +132,7 @@ var refreshValues = function() {
  * @param {Object} user - the resulting object that is returned when a user logs in.
  */
 var onSuccess = function(user) {
+    gmailUser = user;
     console.log('Signed in as ' + user.getBasicProfile().getName());
     document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
@@ -139,22 +162,10 @@ function googleretrieve(){
       $('#tickGoogle').show();
       $('#nextButton').show();
       // Send the code to the server
-      console.log(JSON.stringify({ authCode: authResult['code'] }));
-
-
-      var socket = new SockJS('/hello');
-      stompClient = Stomp.over(socket);
-      stompClient.connect({}, function(frame) {
-          console.log('Connected: ' + frame);
-      });
-      setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify({ authCode: authResult['code'] }));}, 3000);
-      // console.log(document.createTextNode(message));
-      
-      if (stompClient != null) {
-        stompClient.disconnect();
-      }
-      setConnected(false);
-      console.log("Disconnected");
+      // console.log(JSON.stringify({ authCode: authResult['code'] }));
+      var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
+      authCodes.push(gmailAuthCode);
+      console.log("added new AuthCode");
 
       // $.ajax({
       //   type: "POST",

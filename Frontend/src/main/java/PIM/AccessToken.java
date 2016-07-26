@@ -2,7 +2,7 @@ package hello;
 
 public class AccessToken {
 
-    private String[] authCode;
+    private String authCode;
 
     public String getAuthCode() {
         return authCode;

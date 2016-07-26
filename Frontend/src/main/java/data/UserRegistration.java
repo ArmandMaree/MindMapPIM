@@ -22,6 +22,10 @@ public class UserRegistration {
 	*/
 	private AuthCode[] authCodes;
 
+	public UserRegistration() {
+
+	}
+
 	/**
 	* Default constructor.
 	* @param firstName First name of the user.
@@ -40,6 +44,18 @@ public class UserRegistration {
 	*/
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setAuthCodes(AuthCode[] authCodes) {
+		this.authCodes = authCodes;
 	}
 
 	/**

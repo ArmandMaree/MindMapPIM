@@ -22,6 +22,10 @@ public class AuthCode {
 	*/
 	private String authCode = "";
 
+	public AuthCode() {
+
+	}
+
 	/**
 	* Constructor that sets the authCode
 	*/
@@ -39,12 +43,24 @@ public class AuthCode {
 		return id;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	/*
 	* Return the value pimSource.
 	* @return Name of the PIM.
 	*/
 	public String getPimSource() {
 		return pimSource;
+	}
+
+	public void setPimSource(String pimSource) {
+		this.pimSource = pimSource;
+	}
+
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
 	}
 	
 	/**
