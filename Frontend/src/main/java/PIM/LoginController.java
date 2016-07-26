@@ -18,7 +18,9 @@ import listeners.*;
 import data.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
@@ -39,9 +41,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
 
     @MessageMapping("/hello")
-    public void accessTokenSend(UserRegistration message) throws Exception {
+    @SendTo("/topic/greetings")
+    public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
         System.out.println("Access Token: " + message);
         rabbitTemplate.convertAndSend("register.business.rabbit",message);
+        Thread.sleep(3000);
+        return new ServerResponse("200");
     }
     
 

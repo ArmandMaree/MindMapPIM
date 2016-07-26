@@ -42,16 +42,25 @@ var sendUserReg = function(){
   var userReg = {};
   if(gmailUser!=null){
     userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+    console.log(JSON.stringify(userReg));
   }
-  setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify(userReg));}, 3000);
+  setTimeout(function(){ 
+
+      stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+
+      stompClient.subscribe('/topic/greetings', function(serverResponse){
+        console.log("Server says: "+JSON.parse(serverResponse.body).content);
+        window.location.assign('/mainpage')
+      });
+  }, 3000);
   // console.log(document.createTextNode(message));
   
-  if (stompClient != null) {
-    stompClient.disconnect();
-  }
-  setConnected(false);
-  console.log("Disconnected");
-  window.location.assign('/mainpage');
+  // if (stompClient != null) {
+  //   stompClient.disconnect();
+  // }
+  // setConnected(false);
+  // console.log("Disconnected");
+  // setTimeout(function(){ window.location.assign('/mainpage')},3000);
 }
 /**
  * A function that cheks where any sign in activity for Google has happened and responds.

@@ -1,10 +1,10 @@
 package hello;
 
-public class Greeting {
+public class ServerResponse {
 
     private String content;
 
-    public Greeting(String content) {
+    public ServerResponse(String content) {
         this.content = content;
     }
 
