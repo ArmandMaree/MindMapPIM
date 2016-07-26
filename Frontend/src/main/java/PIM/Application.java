@@ -32,10 +32,6 @@ public class Application {
 
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 
-	// public static void main(String[] args) {
-	// 	SpringApplication.run(Application.class, args);
-	// }
-
 	@Bean
 	Queue topicResponseQueue() {
 		return new Queue(topicResponseQueueName, false);
