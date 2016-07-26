@@ -178,7 +178,7 @@ h2{
               position: fixed !important;
               left: auto !important;
               right: 0px !important;
-              width: 1000px;
+              width: 100% !important;
               vertical-align: middle !important;
               color: black !important;
               border: solid;
@@ -186,6 +186,7 @@ h2{
               border-top: 0px !important;
               border-bottom: 0px !important;
               border-width: 2px !important;
+              overflow:scroll; 
           }
           /*.glyphicon
           {
