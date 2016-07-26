@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.*;
 import listeners.*;
+import data.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -38,15 +39,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
 
     @MessageMapping("/hello")
-    public void accessTokenSend(AccessToken message) throws Exception {
-        System.out.println("Access Token: " + message.getAuthCode());
-        String userID = "";
-        String[] path= null;
-        String[] exclude = null;
-        int maxNumberOfTopics= 4;
-        TopicRequest topicrequest = new TopicRequest(userID,path,exclude,maxNumberOfTopics);
-        rabbitTemplate.convertAndSend("topic-request.business.rabbit",topicrequest);
-        System.out.println("Rabbit templete sent to business rabbit:\n"+topicrequest);
+    public void accessTokenSend(UserRegistration message) throws Exception {
+        System.out.println("Access Token: " + message);
+        rabbitTemplate.convertAndSend("register.business.rabbit",message);
     }
     
 
