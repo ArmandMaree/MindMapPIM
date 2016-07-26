@@ -18,8 +18,32 @@ for(var i = 0; i <ca.length; i++) {
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
+$( window ).resize(function() {
+    if($(window).width()<=700){
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+        $("#help").html("   Help");
+        $("#settings").html("   Settings");
+        $("#logout").html("   Logout");
+    }else{
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+    }
+});
 var nodes, edges, network;
 $(document).ready(function($){
+    if($(window).width()<=700){
+         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+        $("#help").html("   Help");
+        $("#settings").html("   Settings");
+        $("#logout").html("   Logout");
+    }else{
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+    }
     $("#sidepanel").hide();
     document.oncontextmenu = function() {return false;};
     // $("canvas").click(function(event){
@@ -255,8 +279,25 @@ $(document).ready(function($){
                         }
                     }
         });
-                
+
         network.on("click", function(){
+           // console.log("nodes")
+           $("#facebook").html("");
+           $("#gmail").html("");
+           $("#twitter").html("");
+           $("#linkedIn").html("");
+           $("#sidepanelTitle").html("");
+           $("#sidepanel").hide();
+
+           $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+        });
+        network.on("doubleClick", function(){
+           if($(window).width()<=700){
+                $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")             
+           }else{
+                $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+           }
+
            console.log(nodes)
            $("#facebook").html("");
            $("#gmail").html("");
@@ -430,7 +471,15 @@ $(document).ready(function($){
 //     var text = $(event.target).text();
 //     console.log($(event.target));
 // });
-
+function hidesidebar(){
+    $("#facebook").html("");
+   $("#gmail").html("");
+   $("#twitter").html("");
+   $("#linkedIn").html("");
+   $("#sidepanelTitle").html("");
+   $("#sidepanel").hide();
+   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+}
     var menu;
     var selectedID;
     var mockArrayOfData = ["Amy \n Lochner", "Holiday", "Cooking", "Durban"]

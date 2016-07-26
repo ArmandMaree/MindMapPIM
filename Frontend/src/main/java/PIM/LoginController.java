@@ -14,10 +14,15 @@ import java.lang.Thread;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.*;
+import listeners.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -35,25 +40,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @MessageMapping("/hello")
     public void accessTokenSend(AccessToken message) throws Exception {
         System.out.println("Access Token: " + message.getAuthCode());
-        try{
-            URL url = new URL("http://localhost:50001/google/token");
-            URLConnection con = url.openConnection();
-            HttpURLConnection http = (HttpURLConnection)con;
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            byte[] out = message.getAuthCode().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            http.setFixedLengthStreamingMode(length);
-            http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            http.connect();
-            try(OutputStream os = http.getOutputStream()) {
-                os.write(out);
-            }
-            System.out.println(http.getInputStream());
-        }catch(Exception e){
-
-        }
+        String userID = "";
+        String[] path= null;
+        String[] exclude = null;
+        int maxNumberOfTopics= 4;
+        TopicRequest topicrequest = new TopicRequest(userID,path,exclude,maxNumberOfTopics);
+        rabbitTemplate.convertAndSend("topic-request.business.rabbit",topicrequest);
+        System.out.println("Rabbit templete sent to business rabbit:\n"+topicrequest);
     }
     
 

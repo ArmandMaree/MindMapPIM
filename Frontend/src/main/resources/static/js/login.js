@@ -63,6 +63,11 @@ var signinChanged = function (val) {
           opacity: '0.0'
 
       });
+      $("#tos").hide();
+      $("#tos2").hide();
+      $("#web").hide();
+      // $("#facebookLogin").hide();
+      // $("#googleLogin").hide();
 
       $("#avatar").delay("slow").animate({
           top: '70px',
@@ -77,8 +82,8 @@ var signinChanged = function (val) {
       $('#avatar').fadeOut(0, function() {
           $('#avatar').fadeIn(0);
           $('#avatar').css("background","#eee url('/images/avatar3.png')");
-           $('#avatar').css("background-size","cover");
-            $('#avatar').css("opacity","1");
+          $('#avatar').css("background-size","cover");
+          $('#avatar').css("opacity","1");
       });
       $("#continue").show();
       $("#continue").delay(2000).animate({
@@ -143,7 +148,7 @@ function googleretrieve(){
           console.log('Connected: ' + frame);
       });
       setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify({ authCode: authResult['code'] }));}, 3000);
-      console.log(document.createTextNode(message));
+      // console.log(document.createTextNode(message));
       
       if (stompClient != null) {
         stompClient.disconnect();
@@ -201,11 +206,19 @@ function loadTos(){
  *Function to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
  */
 function loadXMLDoc(){
+  if($(window).width()<=700){
     $('.login-container').animate({
-        width:"550px",
-        height:"550px"
+        width:"90%",
+        height:"80%"
 
     });
+  }else{
+    $('.login-container').animate({
+        width:"450px",
+        height:"450px"
+
+    });
+  }
 
     $("#continue").animate({
         top: '100px',

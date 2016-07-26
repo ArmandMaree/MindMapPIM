@@ -47,10 +47,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">
-                <img alt="Brand" style="width:30px;height:30px" src="/images/bubblelogo.png"/>
-              </a>
-              <p class="navbar-text">PIM</p>
+              <div id="backfromsidebar">
+                <a class="navbar-brand" href="#">
+                  <img alt="Brand" style="width:30px;height:30px" src="/images/bubblelogo.png"/>
+                </a>
+                <p class="navbar-text">PIM</p>
+              </div>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -63,9 +65,9 @@
                 <button type="submit" class="btn btn-default">Submit</button>
               </form> -->
               <ul class="nav navbar-nav navbar-right">
-              <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign"></span></a></li>
+              <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign" id="help"></span></a></li>
               <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"  id="settings"></span></a>
                   <ul id="dropMenu" class="dropdown-menu">
                     <li><a href="#">Set branch factor</a></li>
                     <li><a href="#">Set depth limit</a></li>
@@ -80,7 +82,7 @@
                     <li><a href="#">One more separated link</a></li> -->
                   </ul>
                 </li>
-                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span></a></li>
+                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out" id="logout"></span></a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
