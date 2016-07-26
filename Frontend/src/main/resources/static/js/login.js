@@ -46,12 +46,12 @@ var sendUserReg = function(){
   setTimeout(function(){ stompClient.send("/app/hello", {}, JSON.stringify(userReg));}, 3000);
   // console.log(document.createTextNode(message));
   
-  if (stompClient != null) {
-    stompClient.disconnect();
-  }
-  setConnected(false);
-  console.log("Disconnected");
-  window.location.assign('/mainpage');
+  // if (stompClient != null) {
+  //   stompClient.disconnect();
+  // }
+  // setConnected(false);
+  // console.log("Disconnected");
+  setTimeout(function(){ window.location.assign('/mainpage')},3000);
 }
 /**
  * A function that cheks where any sign in activity for Google has happened and responds.
