@@ -42,6 +42,7 @@ public class RawDataListener {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public void receiveRawData(RawData rawData) {
+		System.out.println("Received: " + rawData);
 		ProcessedData processedData = process(rawData);
 		pushToQueue(processedData);
 	}

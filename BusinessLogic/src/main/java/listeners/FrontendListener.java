@@ -17,6 +17,8 @@ import data.*;
 public class FrontendListener {
 	private final String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
+	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
+	private final String authCodeQueueName = "auth-code.gmail.rabbit";
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -41,11 +43,24 @@ public class FrontendListener {
 	* @param topicResponse Response to a topic request structured as a TopicResponse.
 	*/
 	public void receiveTopicResponse(TopicResponse topicResponse) {
-		System.out.println("Business received: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 	}
 
 	public void receiveRegister(UserRegistration userRegistration) {
-		System.out.println("Business received: " + userRegistration);
+		User user = new User(userRegistration.getFirstName(), userRegistration.getLastName(), null);
+
+		for (AuthCode authCode : userRegistration.getAuthCodes()) {
+			switch (authCode.getPimSource()) {
+				case "Gmail":
+					user.setGmailId(authCode.getId());
+					rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
+					break;
+				default:
+					System.out.println("Unknown PIM Source: " + authCode.getPimSource());
+					break;
+			}
+		}
+
+		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
 	}
 }

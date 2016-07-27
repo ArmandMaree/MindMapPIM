@@ -14,7 +14,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-	baseName = 'businesslogic-service'
+	baseName = 'business-service'
 	version =  '0.1.0'
 }
 

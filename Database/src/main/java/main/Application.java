@@ -36,6 +36,7 @@ import java.util.ArrayList;
 public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
+	private final String userRegisterQueueName = "user-register.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -60,6 +61,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue userRegisterQueue() {
+		return new Queue(userRegisterQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
@@ -75,6 +81,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding userRegisterBinding(@Qualifier("userRegisterQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userRegisterQueueName);
+	}
+
+	@Bean
 	public TopicListener topicListener() {
 		return new TopicListener();
 	}
@@ -85,6 +96,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public BusinessListener businessListener() {
+		return new BusinessListener();
+	}
+
+	@Bean
 	public MessageListenerAdapter topicRequestAdapter(TopicListener topicListener) {
 		return new MessageListenerAdapter(topicListener, "receiveTopicRequest");
 	}
@@ -92,6 +108,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public MessageListenerAdapter processedDataAdapter(ProcessedDataListener processedDataListener) {
 		return new MessageListenerAdapter(processedDataListener, "receiveProcessedData");
+	}
+
+	@Bean
+	public MessageListenerAdapter userRegisterAdapter(BusinessListener businessListener) {
+		return new MessageListenerAdapter(businessListener, "receiveUserRegister");
 	}
 
 	@Bean
@@ -108,6 +129,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(processedDataQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userRegisterContainer(ConnectionFactory connectionFactory, @Qualifier("userRegisterAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userRegisterQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
