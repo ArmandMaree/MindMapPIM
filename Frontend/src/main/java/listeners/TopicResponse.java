@@ -2,24 +2,28 @@ package listeners;
 
 import java.io.Serializable;
 
+import data.Topic;
+
 /**
 * A response for new topics based on a TopicRequest.
 *
 * @author  Armand Maree
-* @since   2016-07-21
+* @since   2016-07-25
 * @see TopicRequest
 */
 public class TopicResponse implements Serializable {
 	private String userId;
-	private String[] topics;
+	private String[] topicsText;
+	private Topic[] topics;
 
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
 	* @param topics The array of topics retrieved from the database.
 	*/
-	public TopicResponse(String userId, String[] topics) {
+	public TopicResponse(String userId, String[] topicsText, Topic[] topics) {
 		this.userId = userId;
+		this.topicsText = topicsText;
 		this.topics = topics;
 	}
 
@@ -40,10 +44,26 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
+	* Get the value of topicsTest.
+	* @return The array of topics retrieved from the database in String form.
+	*/
+	public String[] getTopicsText() {
+		return topicsText;
+	}
+
+	/**
+	* Set the value of topicsText.
+	* @param The array of topics retrieved from the database in String form.
+	*/
+	public void setTopics(String[] topicsText) {
+		this.topicsText = topicsText;
+	}
+
+	/**
 	* Get the value of topics.
 	* @return The array of topics retrieved from the database.
 	*/
-	public String[] getTopics() {
+	public Topic[] getTopics() {
 		return topics;
 	}
 
@@ -51,7 +71,7 @@ public class TopicResponse implements Serializable {
 	* Set the value of topics.
 	* @param The array of topics retrieved from the database.
 	*/
-	public void setTopics(String[] topics) {
+	public void setTopics(Topic[] topics) {
 		this.topics = topics;
 	}
 
@@ -63,8 +83,8 @@ public class TopicResponse implements Serializable {
 	public String toString() {
 		String t = "";
 
-		if (topics != null)
-			for (String item : topics) {
+		if (topicsText != null)
+			for (String item : topicsText) {
 				if (t.equals(""))
 					t += item;
 				else {

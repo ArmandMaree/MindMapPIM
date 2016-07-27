@@ -1,5 +1,6 @@
-package hello;
+package PIM;
 
+import java.util.UUID;
 import java.util.concurrent.*;
 import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -24,8 +25,11 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
-    private LinkedBlockingQueue<TopicResponse> responseLL = new LinkedBlockingQueue<TopicResponse>();
+	@Autowired
+	LinkedBlockingQueue<TopicResponse> topicResponseLL;
 
+	@Autowired
+	LinkedBlockingQueue<UserIdentified> userResponseLL;
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -45,31 +49,46 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
-        System.out.println("Access Token: " + message);
-        rabbitTemplate.convertAndSend("register.business.rabbit",message);
-        Thread.sleep(3000);
-        return new ServerResponse("200");
+        System.out.println("Frontend received: " + message);
+		String id = UUID.randomUUID().toString();
+		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
+        rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
+		while(userResponseLL.peek()==null || !id.equals(userResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+		User user = userResponseLL.poll().getUser(true);
+		System.out.println("Frontend dequeued: " + user);
+        return new ServerResponse(user.getUserId());
     }
 
     @MessageMapping("/request")
     @SendTo("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
-        System.out.println("Client is making a topic request");
+        System.out.println("Frontend received: " + request);
         rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
-        while(responseLL.peek()==null || request.getUserId()==responseLL.peek().getUserId()){//wait for responseLL for new topics with user ID
+        while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
             //do nothing for now, maybe sleep a bit in future?
         }
 
-        return responseLL.poll();
+		TopicResponse topicResponse = topicResponseLL.poll();
+		System.out.println("Frontend dequeued: " + topicResponse);
+        return topicResponse;
     }
-    
+
     public void receiveTopicResponse(TopicResponse topicResponse) {
-        try{
-            responseLL.put(topicResponse);
+        try {
+            topicResponseLL.put(topicResponse);
         }
         catch (InterruptedException ie){}
         // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
     }
+
+	public void receiveUserResponse(UserIdentified user) {
+		try {
+            userResponseLL.put(user);
+        }
+        catch (InterruptedException ie){}
+	}
 
 
     @RequestMapping(value="/mainpage", method=RequestMethod.GET)
@@ -86,4 +105,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public String showHelp() {
         return "help";
     }
+
+
 }

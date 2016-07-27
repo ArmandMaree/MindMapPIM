@@ -46,13 +46,14 @@ public class FrontendListener {
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 	}
 
-	public void receiveRegister(UserRegistration userRegistration) {
-		if (userRegistration == null || userRegistration.getAuthCodes() == null)
+	public void receiveRegister(UserRegistrationIdentified userRegistrationIdentified) {
+		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
-		System.out.println("Business received: " + userRegistration);
-		User user = new User(userRegistration.getFirstName(), userRegistration.getLastName(), null);
+		System.out.println("Business received: " + userRegistrationIdentified);
+		UserIdentified user = new UserIdentified(userRegistrationIdentified.getId(), userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
 
-		for (AuthCode authCode : userRegistration.getAuthCodes()) {
+
+		for (AuthCode authCode : userRegistrationIdentified.getAuthCodes()) {
 			switch (authCode.getPimSource()) {
 				case "Gmail":
 					user.setGmailId(authCode.getId());

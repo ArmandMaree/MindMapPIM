@@ -101,6 +101,6 @@ public class UserRegistration implements Serializable {
 			"\tfirstName: " + firstName + "\n" +
 			"\tlastName: " + lastName + "\n" +
 			"\tauthCodes size: " + ((authCodes == null) ? "null" : authCodes.length) + "\n" +
-		"}"; 
+		"}";
 	}
 }

@@ -1,6 +1,8 @@
-package hello;
+package PIM;
 
-public class ServerResponse {
+import java.io.Serializable;
+
+public class ServerResponse implements Serializable {
 
     private String content;
 
