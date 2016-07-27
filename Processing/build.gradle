@@ -14,7 +14,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-	baseName = 'gs-spring-boot'
+	baseName = 'processor-service'
 	version =  '0.1.0'
 }
 
@@ -27,8 +27,6 @@ targetCompatibility = 1.8
 
 dependencies {
 	// Spring
-	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("org.springframework.boot:spring-boot-starter-actuator")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 
 	// MongoDB

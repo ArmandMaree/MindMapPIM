@@ -1,5 +1,7 @@
 package data;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 
 /**
@@ -8,7 +10,7 @@ import org.springframework.data.annotation.Id;
 * @author  Armand Maree
 * @since   2016-07-25
 */
-public class User {
+public class User implements Serializable {
 	/**
 	* ID used in database.
 	*/

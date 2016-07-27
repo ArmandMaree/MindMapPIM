@@ -1,12 +1,14 @@
 package data;
 
+import java.io.Serializable;
+
 /**
 * Used by the RESTController to map JSON objects to. Contains all the information needed to create a User object to be persisted.
 *
 * @author  Armand Maree
 * @since   2016-07-25
 */
-public class UserRegistration {
+public class UserRegistration implements Serializable {
 	/*
 	* First name of the user.
 	*/
@@ -21,6 +23,10 @@ public class UserRegistration {
 	* Array of authentication codes for the pollers.
 	*/
 	private AuthCode[] authCodes;
+
+	public UserRegistration() {
+
+	}
 
 	/**
 	* Default constructor.
@@ -40,6 +46,18 @@ public class UserRegistration {
 	*/
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setAuthCodes(AuthCode[] authCodes) {
+		this.authCodes = authCodes;
 	}
 
 	/**
