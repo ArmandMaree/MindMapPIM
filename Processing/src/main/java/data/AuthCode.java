@@ -24,6 +24,9 @@ public class AuthCode implements Serializable {
 	*/
 	private String authCode = "";
 
+	/**
+	* Default empty constructor.
+	*/
 	public AuthCode() {
 
 	}
@@ -45,6 +48,10 @@ public class AuthCode implements Serializable {
 		return id;
 	}
 
+	/**
+	* Set the value of id.
+	* @param id Id used by the PIM source to identify the user.
+	*/
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -57,12 +64,12 @@ public class AuthCode implements Serializable {
 		return pimSource;
 	}
 
+	/**
+	* Return the value of pimSource.
+	* @param Name of the PIM.
+	*/
 	public void setPimSource(String pimSource) {
 		this.pimSource = pimSource;
-	}
-
-	public void setAuthCode(String authCode) {
-		this.authCode = authCode;
 	}
 	
 	/**
@@ -71,5 +78,26 @@ public class AuthCode implements Serializable {
 	*/
 	public String getAuthCode() {
 		return authCode;
+	}
+
+	/**
+	* Set the value of AuthCode.
+	* @param authCode The auth code.
+	*/
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
+	}
+
+	/**
+	* String representation of AuthCode used for printing.
+	* @return AuthCode in string form.
+	*/
+	@Override
+	public String toString() {
+		return "AuthCode {\n" +
+			"\tid: " + id + "\n" +
+			"\tpimSource: " + pimSource + "\n" +
+			"\tauthCode: " + authCode + "\n" +
+		"}"; 
 	}
 }

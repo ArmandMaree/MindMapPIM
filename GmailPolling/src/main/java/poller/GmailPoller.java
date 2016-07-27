@@ -71,7 +71,6 @@ public class GmailPoller implements Poller {
 	private boolean stop = false;
 	private String firstId = "";
 
-	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
 	static {
@@ -89,7 +88,8 @@ public class GmailPoller implements Poller {
 	* @param rabbitTemplate Reference to a rabbitTemplate used to communicate with a RabbitMQ server.
 	* @param userAuthCode Authentication code received from the login service.
 	*/
-	public GmailPoller(String userAuthCode) {
+	public GmailPoller(RabbitTemplate rabbitTemplate, String userAuthCode) {
+		this.rabbitTemplate = rabbitTemplate;
 		this.userAuthCode = userAuthCode;
 
 		try {
@@ -244,7 +244,7 @@ public class GmailPoller implements Poller {
 	*/
 	public Gmail getGmailService() throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "http://codehaven.co.za";
+		String REDIRECT_URI = "https://bubbles.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");

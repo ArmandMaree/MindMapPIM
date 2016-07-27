@@ -32,6 +32,8 @@ public class Application implements CommandLineRunner {
 	private final String topicRequestQueueName = "topic-request.business.rabbit";
 	private final String topicResponseQueueName = "topic-response.business.rabbit";
 	private final String registerQueueName = "register.business.rabbit";
+	@Autowired
+	LoginController loginController;
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -82,8 +84,8 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public MessageListenerAdapter topicResponseAdapter(FrontendListener frontendListener) {
-		return new MessageListenerAdapter(frontendListener, "receiveTopicResponse");
+	public MessageListenerAdapter topicResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveTopicResponse");
 	}
 
 	@Bean

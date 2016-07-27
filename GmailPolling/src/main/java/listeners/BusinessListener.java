@@ -3,6 +3,10 @@ package listeners;
 import data.*;
 import poller.*;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
 * Waits for messages from the business service.
 *
@@ -10,8 +14,12 @@ import poller.*;
 * @since   2016-07-25
 */
 public class BusinessListener {
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 	public void receiveAuthCode(AuthCode authCode) {
-		Poller poller = new GmailPoller(authCode.getAuthCode());
+		System.out.println("Gmail Received: " + authCode);
+		Poller poller = new GmailPoller(rabbitTemplate, authCode.getAuthCode());
 		new Thread(poller).start();
 	}
 }
