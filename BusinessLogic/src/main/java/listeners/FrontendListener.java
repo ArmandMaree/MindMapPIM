@@ -47,6 +47,7 @@ public class FrontendListener {
 	}
 
 	public void receiveRegister(UserRegistration userRegistration) {
+		System.out.println("Business received: " + userRegistration);
 		User user = new User(userRegistration.getFirstName(), userRegistration.getLastName(), null);
 
 		for (AuthCode authCode : userRegistration.getAuthCodes()) {

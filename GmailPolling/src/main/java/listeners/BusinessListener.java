@@ -11,6 +11,7 @@ import poller.*;
 */
 public class BusinessListener {
 	public void receiveAuthCode(AuthCode authCode) {
+		System.out.println("Gmail Received: " + authCode);
 		Poller poller = new GmailPoller(authCode.getAuthCode());
 		new Thread(poller).start();
 	}

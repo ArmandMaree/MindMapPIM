@@ -28,7 +28,7 @@ public class FrontendListener {
 	* @param topicRequest structured as a topicRequest.
 	*/
 	public void receiveTopicResponse(TopicResponse topicResponse) {
-		System.out.println("Business received: " + topicResponse);
+		System.out.println("Frontend received: " + topicResponse);
 		//this is where the topic response will be recieved containing the TopicResponse
 		// process info here and send to front end through websocket
 	}

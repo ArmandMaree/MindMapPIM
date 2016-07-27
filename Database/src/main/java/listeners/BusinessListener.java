@@ -24,7 +24,7 @@ public class BusinessListener {
 	private TopicRepository topicRepository;
 
 	public void receiveUserRegister(User user) {
+		System.out.println("Database received: " + user);
 		userRepository.save(user);
-		System.out.println("Database stored: " + user);
 	}
 }

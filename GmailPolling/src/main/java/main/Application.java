@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.CommandLineRunner;
 
 import org.springframework.context.ApplicationContext;
@@ -15,6 +16,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.annotation.*;
 
 import org.springframework.beans.factory.annotation.*;
+
+import org.springframework.stereotype.Component;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
