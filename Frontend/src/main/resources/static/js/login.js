@@ -44,7 +44,7 @@ var sendUserReg = function(){
     userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
     console.log(JSON.stringify(userReg));
   }
-  setTimeout(function(){ 
+  setTimeout(function(){
 
       stompClient.send("/app/hello", {}, JSON.stringify(userReg));
 
@@ -54,7 +54,7 @@ var sendUserReg = function(){
       });
   }, 3000);
   // console.log(document.createTextNode(message));
-  
+
   // if (stompClient != null) {
   //   stompClient.disconnect();
   // }
@@ -73,7 +73,7 @@ var signinChanged = function (val) {
           top: '100px',
           opacity: '0.0'
 
-      });            
+      });
       $("#facebookLogin").animate({
           top: '100px',
           opacity: '0.0'
@@ -156,7 +156,7 @@ var onFailure = function(error) {
  * Google function that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
  */
 function googleretrieve(){
-  
+
   // var auth2 = gapi.auth2.getAuthInstance();
   auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
 
@@ -298,18 +298,18 @@ jQuery(document).ready(function($){
  *	any other case means that the person is not logged into Facebook and possibly not our app
  *	@param {string} response -  an object which contains the status of the Facebook connection
  */
- function statusChangeCallback(response) 
+ function statusChangeCallback(response)
  {
     console.log('statusChangeCallback');
     console.log(response);
-    if (response.status === 'connected') 
+    if (response.status === 'connected')
     {
     	var accessToken = response.authResponse.accessToken;
 	    console.log(response.authResponse);
 	    console.log("Connected to facebook, accessToken:"+ response.authResponse);
 	    testAPI();
   	}
-  	else if (response.status === 'not_authorized') 
+  	else if (response.status === 'not_authorized')
   	{
       console.log("status = not_authorized");
   	}
@@ -329,7 +329,7 @@ function onFacebookLogin()
   FB.login(function(response) {
     if (response.authResponse) {
       console.log("Auth response:");
-      console.log(response.authResponse); 
+      console.log(response.authResponse);
       showtick();
     }
     FB.getLoginStatus(function(response) {
@@ -352,13 +352,13 @@ function showtick()
   $('#nextButton').show();
 }
 
-/** 
+/**
 *	This function initialises the JavaScript SDK
-*/ 
+*/
 window.fbAsyncInit = function() {
 FB.init({
   appId      : '1051696778242173',
-  cookie     : true,  // enable cookies to allow the server to access 
+  cookie     : true,  // enable cookies to allow the server to access
                       // the session
   xfbml      : true,  // parse social plugins on this page
   version    : 'v2.5' // use graph api version 2.5
@@ -381,9 +381,9 @@ FB.getLoginStatus(function(response) {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-/** 
+/**
 *	This function test of the Facebook Graph API after login is
-*	successful.  
+*	successful.
 *	This function is called through the statusChangeCallback function.
 */
 function testAPI() {
@@ -401,7 +401,7 @@ function testAPI() {
 
 /**
 *	This function is called after a successful login to Facebook occurs.
-*	unction to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources. 
+*	unction to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
 */
 function onSuccessFacebook() {
   $("#googleLogin").animate({

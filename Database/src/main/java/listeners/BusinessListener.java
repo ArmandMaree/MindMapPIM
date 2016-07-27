@@ -14,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @since   2016-07-25
 */
 public class BusinessListener {
+	private final String userResponseQueueName = "user-response.frontend.rabbit";
+
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -23,8 +28,11 @@ public class BusinessListener {
 	@Autowired
 	private TopicRepository topicRepository;
 
-	public void receiveUserRegister(User user) {
-		userRepository.save(user);
-		System.out.println("Database stored: " + user);
+	public void receiveUserRegister(UserIdentified user) {
+		User saveUser = new User(user.getFirstName(), user.getLastName(), user.getGmailId());
+		User userReturn = userRepository.save(saveUser);
+		user = new UserIdentified(user.getReturnId(), userReturn);
+		rabbitTemplate.convertAndSend(userResponseQueueName, user);
+		System.out.println("Database sent: " + user);
 	}
 }

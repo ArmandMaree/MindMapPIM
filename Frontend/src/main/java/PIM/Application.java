@@ -1,4 +1,4 @@
-package hello;
+package PIM;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,17 +24,42 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+
 import listeners.*;
+import data.*;
+
+import java.util.concurrent.LinkedBlockingQueue;
+
+
 @SpringBootApplication
 public class Application {
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
+	@Autowired
+	LoginController loginController;
+
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
+	private final String userResponseQueueName = "user-response.frontend.rabbit";
+
+	@Bean
+	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	LinkedBlockingQueue<UserIdentified> userResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
 
 	@Bean
 	Queue topicResponseQueue() {
 		return new Queue(topicResponseQueueName, false);
+	}
+
+	@Bean
+	Queue userResponseQueue() {
+		return new Queue(userResponseQueueName, false);
 	}
 
 	@Bean
@@ -48,13 +73,23 @@ public class Application {
 	}
 
 	@Bean
+	Binding userResponseBinding(@Qualifier("userResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userResponseQueueName);
+	}
+
+	@Bean
 	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
 		return new FrontendListener(rabbitTemplate);
 	}
 
 	@Bean
-	public MessageListenerAdapter topicResponseAdapter(FrontendListener frontendListener) {
-		return new MessageListenerAdapter(frontendListener, "receiveTopicResponse");
+	public MessageListenerAdapter topicResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveTopicResponse");
+	}
+
+	@Bean
+	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveUserResponse");
 	}
 
 	@Bean
@@ -62,6 +97,15 @@ public class Application {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(topicResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

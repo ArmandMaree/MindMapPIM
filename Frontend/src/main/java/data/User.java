@@ -47,6 +47,20 @@ public class User {
     }
 
 	/**
+	* Default constructor.
+	* @param userId ID used in database.
+	* @param firstName First name of the user.
+	* @param lastName Last name of the user.
+	* @param gmailId The email address of the user's Gmail account.
+	*/
+	public User(String userId, String firstName, String lastName, String gmailId) {
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.gmailId = gmailId;
+	}
+
+	/**
 	* Returns value of userId.
 	* @return ID used in database.
 	*/

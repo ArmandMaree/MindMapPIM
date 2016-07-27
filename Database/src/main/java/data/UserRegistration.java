@@ -24,6 +24,9 @@ public class UserRegistration implements Serializable {
 	*/
 	private AuthCode[] authCodes;
 
+	/**
+	* Default empty constructor.
+	*/
 	public UserRegistration() {
 
 	}
@@ -48,16 +51,12 @@ public class UserRegistration implements Serializable {
 		return firstName;
 	}
 
+	/**
+	* Set the value of firstName.
+	* @param firstName First name of the user.
+	*/
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public void setAuthCodes(AuthCode[] authCodes) {
-		this.authCodes = authCodes;
 	}
 
 	/**
@@ -69,10 +68,39 @@ public class UserRegistration implements Serializable {
 	}
 
 	/**
+	* Set the value of lastName.
+	* @param lastName The last name of the user.
+	*/
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	/**
 	* Returns the value of authCodes.
 	* @return Array of authentication codes for the pollers.
 	*/
 	public AuthCode[] getAuthCodes() {
 		return authCodes;
+	}
+
+	/**
+	* Set the value of authCodes.
+	* @param authCodes Array of authentication codes for the pollers.
+	*/
+	public void setAuthCodes(AuthCode[] authCodes) {
+		this.authCodes = authCodes;
+	}
+
+	/**
+	* String representation of UserRegistration used for printing.
+	* @return UserRegistration in string form.
+	*/
+	@Override
+	public String toString() {
+		return "UserRegistration {\n" +
+			"\tfirstName: " + firstName + "\n" +
+			"\tlastName: " + lastName + "\n" +
+			"\tauthCodes size: " + ((authCodes == null) ? "null" : authCodes.length) + "\n" +
+		"}";
 	}
 }

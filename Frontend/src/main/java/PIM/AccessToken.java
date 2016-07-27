@@ -1,6 +1,8 @@
-package hello;
+package PIM;
 
-public class AccessToken {
+import java.io.Serializable;
+
+public class AccessToken implements Serializable {
 
     private String authCode;
 
