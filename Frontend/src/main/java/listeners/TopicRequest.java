@@ -13,7 +13,10 @@ public class TopicRequest implements Serializable {
 	private String[] path;
 	private String[] exclude;
 	private int maxNumberOfTopics;
+	
+	public TopicRequest(){
 
+	}
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.

@@ -33,6 +33,37 @@ $( window ).resize(function() {
 });
 var nodes, edges, network;
 $(document).ready(function($){
+
+
+      var socket = new SockJS('/request');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function(frame) {
+          console.log('Connected: ' + frame);
+      });
+
+      // var userReg = {};
+      // if(gmailUser!=null){
+      //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+      //   console.log(JSON.stringify(userReg));
+      // }
+        // this.userId = userId;
+        // this.path = path;
+        // this.exclude = exclude;
+        // this.maxNumberOfTopics = maxNumberOfTopics;
+
+        topicRequest = {userId: "", path:[], exclude:[], maxNumberOfTopics:4};
+        setTimeout(function(){ 
+          stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+          stompClient.subscribe('/topic/request', function(serverResponse){
+            console.log("Server says: "+JSON.parse(serverResponse.body).content);
+          });
+      }, 3000);
+
+
+
+
+
+
     if($(window).width()<=700){
          $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
         $("#help").html("   Help");

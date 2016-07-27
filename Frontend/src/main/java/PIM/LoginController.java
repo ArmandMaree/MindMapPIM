@@ -1,7 +1,7 @@
 package hello;
 
+import java.util.concurrent.*;
 import javax.validation.Valid;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +24,8 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
+    private LinkedBlockingQueue<TopicResponse> responseLL = new LinkedBlockingQueue<TopicResponse>();
+
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -48,7 +50,27 @@ public class LoginController extends WebMvcConfigurerAdapter {
         Thread.sleep(3000);
         return new ServerResponse("200");
     }
+
+    @MessageMapping("/request")
+    @SendTo("/topic/request")
+    public TopicResponse recieveRequest(TopicRequest request) throws Exception {
+        System.out.println("Client is making a topic request");
+        rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
+        while(request.getUserId()==responseLL.peek().getUserId()){//wait for responseLL for new topics with user ID
+            //do nothing for now, maybe sleep a bit in future?
+        }
+
+        return responseLL.poll();
+    }
     
+    public void receiveTopicResponse(TopicResponse topicResponse) {
+        try{
+            responseLL.put(topicResponse);
+        }
+        catch (InterruptedException ie){}
+        // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
+    }
+
 
     @RequestMapping(value="/mainpage", method=RequestMethod.GET)
     public String showMain() {
