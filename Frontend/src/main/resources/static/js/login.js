@@ -15,7 +15,7 @@ var startApp = function() {
 var initSigninV2 = function() {
   auth2 = gapi.auth2.init({
       client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-      scope: 'profile'
+      scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
   });
   /**
  * Function to attach the google api to the custom button
