@@ -30,9 +30,9 @@ public class BusinessListener {
 
 	public void receiveUserRegister(UserIdentified user) {
 		User saveUser = new User(user.getFirstName(), user.getLastName(), user.getGmailId());
-		User userReturn = userRepository.save(saveUser);
+		userRepository.save(saveUser);
+		User userReturn = userRepository.findByGmailId(saveUser.getGmailId());
 		user = new UserIdentified(user.getReturnId(), userReturn);
-		rabbitTemplate.convertAndSend(userResponseQueueName, user);
-		System.out.println("Database sent: " + user);
+		rabbitTemplate.convertAndSend(userResponseQueueName, user);;
 	}
 }
