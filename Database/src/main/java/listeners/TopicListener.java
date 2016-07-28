@@ -55,7 +55,7 @@ public class TopicListener {
 			for (int i = 0; i < topics.size(); i++) { // store the related topics for later 
 				returnTopics[i] = topics.get(i).getTopic();
 
-				System.out.println("returnTopics["+i+"]: " + returnTopics.length);
+				// System.out.println("returnTopics["+i+"]: " + returnTopics.length);
 			}
 		}
 		else { // a path is specified

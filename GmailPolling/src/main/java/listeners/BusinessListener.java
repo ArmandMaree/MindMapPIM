@@ -18,7 +18,6 @@ public class BusinessListener {
 	private RabbitTemplate rabbitTemplate;
 
 	public void receiveAuthCode(AuthCode authCode) {
-		System.out.println("Gmail Received: " + authCode);
 		Poller poller = new GmailPoller(rabbitTemplate, authCode.getAuthCode());
 		new Thread(poller).start();
 	}

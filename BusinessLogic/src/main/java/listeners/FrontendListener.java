@@ -49,7 +49,7 @@ public class FrontendListener {
 	public void receiveRegister(UserRegistrationIdentified userRegistrationIdentified) {
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
-		System.out.println("Business received: " + userRegistrationIdentified);
+		
 		UserIdentified user = new UserIdentified(userRegistrationIdentified.getId(), userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
 
 
