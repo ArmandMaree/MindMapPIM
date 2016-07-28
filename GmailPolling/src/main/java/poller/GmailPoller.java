@@ -163,6 +163,9 @@ public class GmailPoller implements Poller {
 		catch (MessagingException me) {
 			me.printStackTrace();
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

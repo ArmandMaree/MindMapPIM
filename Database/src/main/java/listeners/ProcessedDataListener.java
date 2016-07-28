@@ -37,7 +37,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) {
-		System.out.println("Database received: " + processedData);
+		// System.out.println("Database received: " + processedData);
 
 		try {
 			switch (processedData.getPimSource()) {
@@ -85,7 +85,8 @@ public class ProcessedDataListener {
 						topicFromRepo.setRelatedTopics(repoTopics.toArray(new String[0])); // update related topics
 						topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0])); // update processed data ids
 						topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
-						topicRepository.save(topicFromRepo); // update topic in repo
+						Topic persistedTopic = topicRepository.save(topicFromRepo); // update topic in repo
+						System.out.println("Persisted topic: " + persistedTopic);
 					}
 				}
 			}

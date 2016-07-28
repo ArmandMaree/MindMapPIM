@@ -58,6 +58,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
 		User user = userResponseLL.poll().getUser(true);
 		System.out.println("Frontend dequeued: " + user);
+        Thread.sleep(2000);
         return new ServerResponse(user.getUserId());
     }
 
@@ -72,6 +73,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
 		TopicResponse topicResponse = topicResponseLL.poll();
 		System.out.println("Frontend dequeued: " + topicResponse);
+        Thread.sleep(2000);
         return topicResponse;
     }
 

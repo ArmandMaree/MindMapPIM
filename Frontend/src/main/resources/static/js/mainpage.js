@@ -1,6 +1,7 @@
 var name = "login=";
 var rightClick;
 var ca = document.cookie.split(';');
+var x="";
 // console.log(ca)
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
@@ -8,7 +9,7 @@ for(var i = 0; i <ca.length; i++) {
         c = c.substring(1);
     }
     if (c.indexOf(name) == 0) {
-        var x = c.substring(name.length,c.length);
+        x = c.substring(name.length,c.length);
     }
 }
 
@@ -50,12 +51,25 @@ $(document).ready(function($){
         // this.path = path;
         // this.exclude = exclude;
         // this.maxNumberOfTopics = maxNumberOfTopics;
+        var name1 = "userId=";
+        var ca1 = document.cookie.split(';');
+        var x1 ="";
+        // console.log(ca1)
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                x1 = c.substring(name1.length,c.length);
+            }
+        }
 
-        topicRequest = {userId: "", path:[], exclude:[], maxNumberOfTopics:4};
+        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
         setTimeout(function(){ 
           stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
           stompClient.subscribe('/topic/request', function(serverResponse){
-            console.log("Server says: "+JSON.parse(serverResponse.body).content);
+            console.log("Server says: "+JSON.parse(serverResponse.body).topics);
           });
       }, 3000);
 

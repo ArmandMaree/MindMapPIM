@@ -2,6 +2,7 @@ var auth2; // The Sign-In object.
 var googleUser; // The current user.
 var authCodes = [];
 var gmailUser= null;
+var connected = false;
 /**
  * Starts the log in process by calling the google api.
  */
@@ -14,8 +15,8 @@ var startApp = function() {
  */
 var initSigninV2 = function() {
   auth2 = gapi.auth2.init({
-      client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
-      scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
+	  client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
+	  scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
   });
   /**
  * Function to attach the google api to the custom button
@@ -27,7 +28,7 @@ var initSigninV2 = function() {
   auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
   auth2.isSignedIn.listen(signinChanged);
   if (auth2.isSignedIn.get() == true) {
-    auth2.signIn();
+	auth2.signIn();
   }
 
   refreshValues();
@@ -37,22 +38,30 @@ var sendUserReg = function(){
   var socket = new SockJS('/hello');
   stompClient = Stomp.over(socket);
   stompClient.connect({}, function(frame) {
-      console.log('Connected: ' + frame);
+	  console.log('Connected: ' + frame);
+	  connected = true;
   });
   var userReg = {};
   if(gmailUser!=null){
-    userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-    console.log(JSON.stringify(userReg));
+	userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+	console.log(JSON.stringify(userReg));
   }
   setTimeout(function(){
-
-      stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-
-      stompClient.subscribe('/topic/greetings', function(serverResponse){
-        console.log("Server says: "+JSON.parse(serverResponse.body).content);
-        window.location.assign('/mainpage')
-      });
+	stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	stompClient.subscribe('/topic/greetings', function(serverResponse){
+		var jsonresponse = JSON.parse(serverResponse.body);
+		console.log("Server says: "+jsonresponse.content);
+		document.cookie="userId="+jsonresponse.content;
+		window.location.assign('/mainpage')
+	}, function(error) {
+	    // display the error's message header:
+	    console.log(error.headers.message);
+  	});
   }, 3000);
+
+
+
+
   // console.log(document.createTextNode(message));
 
   // if (stompClient != null) {
@@ -69,58 +78,58 @@ var sendUserReg = function(){
 var signinChanged = function (val) {
   console.log('Signin state changed to ', val);
   if(val === true){
-     $("#googleLogin").animate({
-          top: '100px',
-          opacity: '0.0'
+	 $("#googleLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-      });
-      $("#facebookLogin").animate({
-          top: '100px',
-          opacity: '0.0'
+	  });
+	  $("#facebookLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-      });
-      $("#tos").animate({
-          top: '100px',
-          opacity: '0.0'
+	  });
+	  $("#tos").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-      });
-      $("#tos2").animate({
-          top: '100px',
-          opacity: '0.0'
+	  });
+	  $("#tos2").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-      });
-      $("#web").animate({
-          top: '100px',
-          opacity: '0.0'
+	  });
+	  $("#web").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-      });
-      $("#tos").hide();
-      $("#tos2").hide();
-      $("#web").hide();
-      // $("#facebookLogin").hide();
-      // $("#googleLogin").hide();
+	  });
+	  $("#tos").hide();
+	  $("#tos2").hide();
+	  $("#web").hide();
+	  // $("#facebookLogin").hide();
+	  // $("#googleLogin").hide();
 
-      $("#avatar").delay("slow").animate({
-          top: '70px',
-          opacity: '0.3'
+	  $("#avatar").delay("slow").animate({
+		  top: '70px',
+		  opacity: '0.3'
 
-      });
-      $("#welcome").show();
-      $("#welcome").delay(1000).animate({
-          opacity: '1'
+	  });
+	  $("#welcome").show();
+	  $("#welcome").delay(1000).animate({
+		  opacity: '1'
 
-      });
-      $('#avatar').fadeOut(0, function() {
-          $('#avatar').fadeIn(0);
-          $('#avatar').css("background","#eee url('/images/avatar3.png')");
-          $('#avatar').css("background-size","cover");
-          $('#avatar').css("opacity","1");
-      });
-      $("#continue").show();
-      $("#continue").delay(2000).animate({
-          opacity: '1'
-      });
-      document.cookie = "login=1";
+	  });
+	  $('#avatar').fadeOut(0, function() {
+		  $('#avatar').fadeIn(0);
+		  $('#avatar').css("background","#eee url('/images/avatar3.png')");
+		  $('#avatar').css("background-size","cover");
+		  $('#avatar').css("opacity","1");
+	  });
+	  $("#continue").show();
+	  $("#continue").delay(2000).animate({
+		  opacity: '1'
+	  });
+	  document.cookie = "login=1";
   }
 };
 /**
@@ -128,12 +137,12 @@ var signinChanged = function (val) {
  */
 var refreshValues = function() {
   if (auth2){
-    console.log('Refreshing values...');
+	console.log('Refreshing values...');
 
-    googleUser = auth2.currentUser.get();
+	googleUser = auth2.currentUser.get();
 
-    console.log(JSON.stringify(googleUser, undefined, 2));
-    console.log(auth2.isSignedIn.get());
+	console.log(JSON.stringify(googleUser, undefined, 2));
+	console.log(auth2.isSignedIn.get());
   }
 }
 /**
@@ -141,16 +150,16 @@ var refreshValues = function() {
  * @param {Object} user - the resulting object that is returned when a user logs in.
  */
 var onSuccess = function(user) {
-    gmailUser = user;
-    console.log('Signed in as ' + user.getBasicProfile().getName());
-    document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
+	gmailUser = user;
+	console.log('Signed in as ' + user.getBasicProfile().getName());
+	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
  * Google callback function when a request has failed.
  * @param {string} error - The error message.
  */
 var onFailure = function(error) {
-    console.log(error);
+	console.log(error);
 };
 /**
  * Google function that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
@@ -166,31 +175,31 @@ function googleretrieve(){
  * @param {string} authResult - the result of calling the google api and signing in
  */
   function signInCallback(authResult) {
-    if (authResult['code']) {
-      console.log(authResult['code']);
-      $('#tickGoogle').show();
-      $('#nextButton').show();
-      // Send the code to the server
-      // console.log(JSON.stringify({ authCode: authResult['code'] }));
-      var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
-      authCodes.push(gmailAuthCode);
-      console.log("added new AuthCode");
+	if (authResult['code']) {
+	  console.log(authResult['code']);
+	  $('#tickGoogle').show();
+	  $('#nextButton').show();
+	  // Send the code to the server
+	  // console.log(JSON.stringify({ authCode: authResult['code'] }));
+	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
+	  authCodes.push(gmailAuthCode);
+	  console.log("added new AuthCode");
 
-      // $.ajax({
-      //   type: "POST",
-      //   url: "http://localhost:50001/google/token",
-      //   data: JSON.stringify({ authCode: authResult['code'] }),
-      //   contentType: 'application/json',
-      //   success: function(data) {
-      //     if(data == 'OK')
-      //       console.log('Sent Successful');
-      //     else
-      //       console.log("Sending failed");
-      //   }
-      // });
-    } else {
-      // There was an error.
-    }
+	  // $.ajax({
+	  //   type: "POST",
+	  //   url: "http://localhost:50001/google/token",
+	  //   data: JSON.stringify({ authCode: authResult['code'] }),
+	  //   contentType: 'application/json',
+	  //   success: function(data) {
+	  //     if(data == 'OK')
+	  //       console.log('Sent Successful');
+	  //     else
+	  //       console.log("Sending failed");
+	  //   }
+	  // });
+	} else {
+	  // There was an error.
+	}
   }
 /**
  * Function to ajax the Privacy Policy document into a modal and display the Privacy policy.
@@ -199,9 +208,9 @@ function loadPrivacy(){
   document.getElementById("modaltitle").innerHTML="Privacy Policy";
   var xmlhttp=new XMLHttpRequest();
   xmlhttp.onreadystatechange=function(){
-       if (xmlhttp.readyState==4 && xmlhttp.status==200){
-          document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
-          }
+	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+		  }
   }
   xmlhttp.open("GET","ajax/PrivacyPolicy.txt");
   // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
@@ -214,9 +223,9 @@ function loadTos(){
   document.getElementById("modaltitle").innerHTML="Terms of Service";
   var xmlhttp=new XMLHttpRequest();
   xmlhttp.onreadystatechange=function(){
-       if (xmlhttp.readyState==4 && xmlhttp.status==200){
-          document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
-          }
+	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+		  }
   }
   xmlhttp.open("GET","ajax/TermsofService.txt");
   // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
@@ -227,45 +236,45 @@ function loadTos(){
  */
 function loadXMLDoc(){
   if($(window).width()<=700){
-    $('.login-container').animate({
-        width:"90%",
-        height:"80%"
+	$('.login-container').animate({
+		width:"90%",
+		height:"80%"
 
-    });
+	});
   }else{
-    $('.login-container').animate({
-        width:"450px",
-        height:"450px"
+	$('.login-container').animate({
+		width:"450px",
+		height:"450px"
 
-    });
+	});
   }
 
-    $("#continue").animate({
-        top: '100px',
-        opacity: '0.0'
+	$("#continue").animate({
+		top: '100px',
+		opacity: '0.0'
 
-    });
+	});
 
-    $("#avatar").animate({
-        top: '100px',
-        opacity: '0.0'
+	$("#avatar").animate({
+		top: '100px',
+		opacity: '0.0'
 
-    });
+	});
 
-    $("#welcome").animate({
-        top: '100px',
-        opacity: '0.0'
+	$("#welcome").animate({
+		top: '100px',
+		opacity: '0.0'
 
-    });
-    var xmlhttp=new XMLHttpRequest();
-    xmlhttp.onreadystatechange=function(){
-         if (xmlhttp.readyState==4 && xmlhttp.status==200){
-            document.getElementById("container").innerHTML=xmlhttp.responseText;
-            }
-    }
-    xmlhttp.open("GET","ajax/selectdata.html");
-    xmlhttp.send();
-    var filename;
+	});
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function(){
+		 if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			document.getElementById("container").innerHTML=xmlhttp.responseText;
+			}
+	}
+	xmlhttp.open("GET","ajax/selectdata.html");
+	xmlhttp.send();
+	var filename;
 }
 /**
  * Google function to sign the user out if they are signed in.
@@ -273,7 +282,7 @@ function loadXMLDoc(){
 function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function () {
-    console.log('User signed out.');
+	console.log('User signed out.');
   });
 }
 
@@ -281,9 +290,9 @@ function signOut() {
  * Function to hide a few elements when the page has loaded.
  */
 jQuery(document).ready(function($){
-    $("#submitID").hide();
-    $("#welcome").hide();
-    $("#continue").hide();
+	$("#submitID").hide();
+	$("#welcome").hide();
+	$("#continue").hide();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
@@ -300,23 +309,23 @@ jQuery(document).ready(function($){
  */
  function statusChangeCallback(response)
  {
-    console.log('statusChangeCallback');
-    console.log(response);
-    if (response.status === 'connected')
-    {
-    	var accessToken = response.authResponse.accessToken;
-	    console.log(response.authResponse);
-	    console.log("Connected to facebook, accessToken:"+ response.authResponse);
-	    testAPI();
-  	}
-  	else if (response.status === 'not_authorized')
-  	{
-      console.log("status = not_authorized");
-  	}
-  	else
-  	{
-       console.log("status = something else");
-  	}
+	console.log('statusChangeCallback');
+	console.log(response);
+	if (response.status === 'connected')
+	{
+		var accessToken = response.authResponse.accessToken;
+		console.log(response.authResponse);
+		console.log("Connected to facebook, accessToken:"+ response.authResponse);
+		testAPI();
+	}
+	else if (response.status === 'not_authorized')
+	{
+	  console.log("status = not_authorized");
+	}
+	else
+	{
+	   console.log("status = something else");
+	}
 }
 
 /**
@@ -327,14 +336,14 @@ function onFacebookLogin()
 {
   console.log("onFacebookLogin");
   FB.login(function(response) {
-    if (response.authResponse) {
-      console.log("Auth response:");
-      console.log(response.authResponse);
-      showtick();
-    }
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
+	if (response.authResponse) {
+	  console.log("Auth response:");
+	  console.log(response.authResponse);
+	  showtick();
+	}
+	FB.getLoginStatus(function(response) {
+	  statusChangeCallback(response);
+	});
   });
 }
 
@@ -347,7 +356,7 @@ function showtick()
   $("#tickFacebook").show();
   if($('#nextButton').show() == true)
   {
-    console.log("show is true");
+	console.log("show is true");
   }
   $('#nextButton').show();
 }
@@ -359,7 +368,7 @@ window.fbAsyncInit = function() {
 FB.init({
   appId      : '1051696778242173',
   cookie     : true,  // enable cookies to allow the server to access
-                      // the session
+					  // the session
   xfbml      : true,  // parse social plugins on this page
   version    : 'v2.5' // use graph api version 2.5
 });
@@ -389,12 +398,12 @@ FB.getLoginStatus(function(response) {
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
-    console.log('Successful login for: ' + response.name);
-    // document.getElementById('status').innerHTML =
-    //   'Thanks for logging in, ' + response.name + '!';
-    document.getElementById('welcome').innerHTML += ", " + response.name;
-    document.cookie = "login=1";
-    onSuccessFacebook();
+	console.log('Successful login for: ' + response.name);
+	// document.getElementById('status').innerHTML =
+	//   'Thanks for logging in, ' + response.name + '!';
+	document.getElementById('welcome').innerHTML += ", " + response.name;
+	document.cookie = "login=1";
+	onSuccessFacebook();
 
   });
 }
@@ -405,51 +414,51 @@ function testAPI() {
 */
 function onSuccessFacebook() {
   $("#googleLogin").animate({
-      top: '100px',
-      opacity: '0.0'
+	  top: '100px',
+	  opacity: '0.0'
 
   });
 
   $("#facebookLogin").animate({
-      top: '100px',
-      opacity: '0.0'
+	  top: '100px',
+	  opacity: '0.0'
 
   });
   $("#web").animate({
-      top: '100px',
-      opacity: '0.0'
+	  top: '100px',
+	  opacity: '0.0'
 
   });
 
   $("#avatar").delay("slow").animate({
-      top: '70px',
-      opacity: '0.3'
+	  top: '70px',
+	  opacity: '0.3'
 
   });
   $("#tos").animate({
-      top: '100px',
-      opacity: '0.0'
+	  top: '100px',
+	  opacity: '0.0'
 
   });
   $("#tos2").animate({
-    top: '100px',
-    opacity: '0.0'
+	top: '100px',
+	opacity: '0.0'
 
   });
   $("#welcome").show();
   $("#welcome").delay(1000).animate({
-      opacity: '1'
+	  opacity: '1'
 
   });
   $('#avatar').fadeOut(0, function() {
-      $('#avatar').fadeIn(0);
-      $('#avatar').css("background","#eee url('/images/avatar3.png')");
-       $('#avatar').css("background-size","cover");
-        $('#avatar').css("opacity","1");
+	  $('#avatar').fadeIn(0);
+	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
+	   $('#avatar').css("background-size","cover");
+		$('#avatar').css("opacity","1");
   });
   $("#continue").show();
   $("#continue").delay(2000).animate({
-      opacity: '1'
+	  opacity: '1'
 
   });
 }
