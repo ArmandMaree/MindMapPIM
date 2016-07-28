@@ -13,12 +13,14 @@ for(var i = 0; i <ca.length; i++) {
     }
 }
 
-    if(x!="1"){
-        window.location.assign('/');
-    }
+if(x!="1"){
+    window.location.assign('/');
+}
+
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
+
 $( window ).resize(function() {
     if($(window).width()<=700){
         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
@@ -67,10 +69,54 @@ $(document).ready(function($){
 
         topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
         setTimeout(function(){ 
-          stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-          stompClient.subscribe('/topic/request', function(serverResponse){
-            console.log("Server says: "+JSON.parse(serverResponse.body).topics);
-          });
+            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+            stompClient.subscribe('/topic/request', function(serverResponse){
+            console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+            //update graph with server response
+
+            var topicsall = JSON.parse(serverResponse.body).topicsText;
+            network.selectNodes([0]);
+            var currentNodeID = nodes.length;
+            console.log("size"+currentNodeID)
+            var pos=0;
+            console.log(this.label);
+            var branchinglimit = topicsall.length;
+            var thisgroup = nodes[selectedID].group;
+            for(var i=0 ;i<branchinglimit;i++){
+                try {
+                    data.nodes.add({
+                        id: nodes.length,
+                        label: topicsall[pos],
+                        group: thisgroup
+                    });
+
+                }
+                catch (err) {
+                    alert(err);
+                }
+                console.log()
+                try {
+                    data.edges.add({
+                        id: edges.length,
+                        from: selectedID,
+                        to: nodes.length
+                    });
+                }
+                catch (err) {
+                    alert(err);
+                }
+                nodes.push({
+                    id: nodes.length,
+                    label: mockArrayOfData[pos++ % branchinglimit],
+                    group: thisgroup
+                })
+                edges.push({
+                    id: edges.length++,
+                    from: selectedID,
+                    to: nodes.length++
+                });
+                }
+              });
       }, 3000);
 
 
@@ -98,28 +144,29 @@ $(document).ready(function($){
     var len = undefined;
     nodes = [
         {id: 0, label: "    ME    ", group: 0},
-        {id: 1, label: "Cooking", group: 1},
-        {id: 2, label: "Horse", group: 2},
-        {id: 3, label: "Amy \n Lochner", group: 2},
-        {id: 4, label: "COS301", group: 4},
-        {id: 5, label: "Fritz \n Solms", group: 4},
-        {id: 6, label: "Holiday", group: 9},
-        {id: 7, label: "Arno \n Grobler", group: 9},
-        {id: 8, label: "Arno \n Grobler", group: 2}
+        // {id: 1, label: "Cooking", group: 1},
+        // {id: 2, label: "Horse", group: 2},
+        // {id: 3, label: "Amy \n Lochner", group: 2},
+        // {id: 4, label: "COS301", group: 4},
+        // {id: 5, label: "Fritz \n Solms", group: 4},
+        // {id: 6, label: "Holiday", group: 9},
+        // {id: 7, label: "Arno \n Grobler", group: 9},
+        // {id: 8, label: "Arno \n Grobler", group: 2}
         ];
         edges = [
             {from: 1, to: 0},
-            {from: 2, to: 3},
-            {from: 2, to: 0},
-            {from: 5, to: 4},
-            {from: 4, to: 0},
-            {from: 7, to: 6},
-            {from: 6, to: 0},
-            {from: 2, to: 8}
+            // {from: 2, to: 3},
+            // {from: 2, to: 0},
+            // {from: 5, to: 4},
+            // {from: 4, to: 0},
+            // {from: 7, to: 6},
+            // {from: 6, to: 0},
+            // {from: 2, to: 8}
         ]
 
       // create a network
       var container = document.getElementById('mynetwork');
+      // network.selectNodes([0]);
       var data = {
         nodes: new vis.DataSet(nodes),
         edges: new vis.DataSet(edges)
