@@ -125,60 +125,60 @@ $(document).ready(function($){
         setTimeout(function(){ 
             stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
             stompClient.subscribe('/topic/request', function(serverResponse){
-            console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
-            
+                console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+                
 
-            //update graph with server response
-
-
-            var JSONServerResponse = JSON.parse(serverResponse.body);
-            // var JSONServerResponse = {"userId":"579a106be4b0dfee6fcec8a3","topicsText":["Horse","photo","New","recipe"],"topics":[{"id":"579a1e92e4b0dfee6fceca94","userId":"579a106be4b0dfee6fcec8a3","topic":"Horse","relatedTopics":["photo"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721044,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca95","userId":"579a106be4b0dfee6fcec8a3","topic":"photo","relatedTopics":["Horse"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721048,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca97","userId":"579a106be4b0dfee6fcec8a3","topic":"New","relatedTopics":["recipe","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721273,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca98","userId":"579a106be4b0dfee6fcec8a3","topic":"recipe","relatedTopics":["New","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721274,"weight":30000.0}]}
+                //update graph with server response
 
 
-            var topicsall = JSONServerResponse.topicsText;
-            network.selectNodes(["0"]);
-            var currentNodeID = nodes.length;
-            console.log("size"+currentNodeID)
-            var pos=0;
-            console.log(this.label);
-            selectedID =0;
-            var branchinglimit = topicsall.length;
-            var thisgroup = nodes[selectedID].group;
-            for(var i=0 ;i<branchinglimit;i++){
-                try {
-                    data.nodes.add({
+                var JSONServerResponse = JSON.parse(serverResponse.body);
+                // var JSONServerResponse = {"userId":"579a106be4b0dfee6fcec8a3","topicsText":["Horse","photo","New","recipe"],"topics":[{"id":"579a1e92e4b0dfee6fceca94","userId":"579a106be4b0dfee6fcec8a3","topic":"Horse","relatedTopics":["photo"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721044,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca95","userId":"579a106be4b0dfee6fcec8a3","topic":"photo","relatedTopics":["Horse"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721048,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca97","userId":"579a106be4b0dfee6fcec8a3","topic":"New","relatedTopics":["recipe","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721273,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca98","userId":"579a106be4b0dfee6fcec8a3","topic":"recipe","relatedTopics":["New","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721274,"weight":30000.0}]}
+
+
+                var topicsall = JSONServerResponse.topicsText;
+                network.selectNodes(["0"]);
+                var currentNodeID = nodes.length;
+                console.log("size"+currentNodeID)
+                var pos=0;
+                console.log(this.label);
+                selectedID =0;
+                var branchinglimit = topicsall.length;
+                var thisgroup = nodes[selectedID].group;
+                for(var i=0 ;i<branchinglimit;i++){
+                    try {
+                        data.nodes.add({
+                            id: nodes.length,
+                            label: topicsall[pos],
+                            group: thisgroup
+                        });
+
+                    }
+                    catch (err) {
+                        alert(err);
+                    }
+                    console.log()
+                    try {
+                        data.edges.add({
+                            id: edges.length,
+                            from: selectedID,
+                            to: nodes.length
+                        });
+                    }
+                    catch (err) {
+                        alert(err);
+                    }
+                    nodes.push({
                         id: nodes.length,
-                        label: topicsall[pos],
+                        label: mockArrayOfData[pos++ % branchinglimit],
                         group: thisgroup
-                    });
-
-                }
-                catch (err) {
-                    alert(err);
-                }
-                console.log()
-                try {
-                    data.edges.add({
-                        id: edges.length,
+                    })
+                    edges.push({
+                        id: edges.length++,
                         from: selectedID,
-                        to: nodes.length
+                        to: nodes.length++
                     });
                 }
-                catch (err) {
-                    alert(err);
-                }
-                nodes.push({
-                    id: nodes.length,
-                    label: mockArrayOfData[pos++ % branchinglimit],
-                    group: thisgroup
-                })
-                edges.push({
-                    id: edges.length++,
-                    from: selectedID,
-                    to: nodes.length++
-                });
-                }
-
+            });
       }, 3000);
 
 
