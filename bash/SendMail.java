@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 public class SendMail {
 	Socket socket;
 	String to;
-	String from = "codehaven@mweb.co.za";
-	String host = "smtp.mweb.co.za";
+	String from = "aamaree@gmail.com";
+	String host = "smtp.vodamail.co.za";
 	String username = "NTI1ODk4MTBAbXdlYi5jby56YQ==";
 	String password = "aW0hOVhJIVA=";
 	String name;
@@ -19,6 +19,7 @@ public class SendMail {
 
 	public static void main(String[] args) {
 		SendMail sendMail = new SendMail("acubencos@gmail.com", "Acuben", 0);
+		sendMail.send();
 	}
 
 	public SendMail(String to, String name, int score) {
@@ -34,42 +35,31 @@ public class SendMail {
 			System.out.println("Connection success");
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
-			out.println("EHLO " + host);
-			System.out.println("EHLO " + host);
+			out.println("HELO Armand");
+			System.out.println("HELO Armand");
 			String msg = in.readLine();
 
-			while(!msg.equals("250 HELP")) {
+			while(!msg.startsWith("220 Welcome")) {
 				System.out.println(msg);
 				msg = in.readLine();
 			}
-
-			System.out.println(msg);
-			send("AUTH LOGIN");
-			System.out.println("AUTH LOGIN");
-			System.out.println(in.readLine());
-			send(username);
-			System.out.println(username);
-			System.out.println(in.readLine());
-			send(password);
-			System.out.println(password);
-			System.out.println(in.readLine());
 
 			send("MAIL FROM: " + from);
 			System.out.println("MAIL FROM: " + from);
 			System.out.println(in.readLine());
 
-			send("RCPT TO: " + to + " ");
-			System.out.println("RCPT TO: " + to + " ");
+			send("RCPT TO: " + to);
+			System.out.println("RCPT TO: " + to);
 			System.out.println(in.readLine());
 
 			send("DATA");
 			System.out.println("DATA");
 			System.out.println(in.readLine());
-			send("subject: Quizzer Result");
+			send("subject: Nandos advertisement");
 			send("");
 			send("Hi " + name + ", ");
 			send("");
-			send("Can we eat pizza after we rode horse tomorrow?");
+			send("Did you see the new advertisement by Nandos? They showed a horse, riding a motorcycle while eating a pizza. They are always so controversial.");
 			
 			out.flush();
 			send(".");

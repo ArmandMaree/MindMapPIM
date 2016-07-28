@@ -37,6 +37,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) {
+		System.out.println("Database received: " + processedData);
 		try {
 			switch (processedData.getPimSource()) {
 				case "Gmail": // data comes from gmail
