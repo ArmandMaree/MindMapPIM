@@ -2,6 +2,11 @@ var name = "login=";
 var rightClick;
 var ca = document.cookie.split(';');
 var x="";
+var x1="";
+var menu;
+var selectedID;
+var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
+var parentlist =[0];
 // console.log(ca)
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
@@ -23,7 +28,7 @@ function toJSON(obj) {
 
 $( window ).resize(function() {
     if($(window).width()<=700){
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
@@ -31,115 +36,14 @@ $( window ).resize(function() {
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
     }
 });
 var nodes, edges, network;
 $(document).ready(function($){
-
-
-      var socket = new SockJS('/request');
-      stompClient = Stomp.over(socket);
-      stompClient.connect({}, function(frame) {
-          console.log('Connected: ' + frame);
-      });
-
-      // var userReg = {};
-      // if(gmailUser!=null){
-      //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-      //   console.log(JSON.stringify(userReg));
-      // }
-        // this.userId = userId;
-        // this.path = path;
-        // this.exclude = exclude;
-        // this.maxNumberOfTopics = maxNumberOfTopics;
-        var name1 = "userId=";
-        var ca1 = document.cookie.split(';');
-        var x1 ="";
-        // console.log(ca1)
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                x1 = c.substring(name1.length,c.length);
-            }
-        }
-
-        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
-        setTimeout(function(){ 
-            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-            stompClient.subscribe('/topic/request', function(serverResponse){
-            console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
-            //update graph with server response
-
-            var topicsall = JSON.parse(serverResponse.body).topicsText;
-            network.selectNodes([0]);
-            var currentNodeID = nodes.length;
-            console.log("size"+currentNodeID)
-            var pos=0;
-            console.log(this.label);
-            var branchinglimit = topicsall.length;
-            var thisgroup = nodes[selectedID].group;
-            for(var i=0 ;i<branchinglimit;i++){
-                try {
-                    data.nodes.add({
-                        id: nodes.length,
-                        label: topicsall[pos],
-                        group: thisgroup
-                    });
-
-                }
-                catch (err) {
-                    alert(err);
-                }
-                console.log()
-                try {
-                    data.edges.add({
-                        id: edges.length,
-                        from: selectedID,
-                        to: nodes.length
-                    });
-                }
-                catch (err) {
-                    alert(err);
-                }
-                nodes.push({
-                    id: nodes.length,
-                    label: mockArrayOfData[pos++ % branchinglimit],
-                    group: thisgroup
-                })
-                edges.push({
-                    id: edges.length++,
-                    from: selectedID,
-                    to: nodes.length++
-                });
-                }
-              });
-      }, 3000);
-
-
-
-
-
-
-    if($(window).width()<=700){
-         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
-        $("#help").html("   Help");
-        $("#settings").html("   Settings");
-        $("#logout").html("   Logout");
-    }else{
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
-        $("#help").html("");
-        $("#settings").html("");
-        $("#logout").html("");
-    }
-    $("#sidepanel").hide();
-    document.oncontextmenu = function() {return false;};
-    // $("canvas").click(function(event){
- //     event.preventDefault();
-    // });
+    $("#loadingAlert").fadeIn(1000, function() {
+        // body...
+    });
     var color = 'gray';
     var len = undefined;
     nodes = [
@@ -154,24 +58,23 @@ $(document).ready(function($){
         // {id: 8, label: "Arno \n Grobler", group: 2}
         ];
         edges = [
-            {from: 1, to: 0},
+            // {from: 1, to: 0},
             // {from: 2, to: 3},
-            // {from: 2, to: 0},
+            // {from: 2, to: 1},
             // {from: 5, to: 4},
-            // {from: 4, to: 0},
+            // {from: 4, to: 1},
             // {from: 7, to: 6},
-            // {from: 6, to: 0},
+            // {from: 6, to: 1},
             // {from: 2, to: 8}
         ]
 
       // create a network
       var container = document.getElementById('mynetwork');
-      // network.selectNodes([0]);
       var data = {
         nodes: new vis.DataSet(nodes),
         edges: new vis.DataSet(edges)
       };
-      
+
         var options = {
             interaction:{
                 hover: true,
@@ -195,6 +98,129 @@ $(document).ready(function($){
                 width: 1
             }
         };
+        network = new vis.Network(container, data, options);
+
+      var socket = new SockJS('/request');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function(frame) {
+          console.log('Connected: ' + frame);
+      });
+
+      // var userReg = {};
+      // if(gmailUser!=null){
+      //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+      //   console.log(JSON.stringify(userReg));
+      // }
+        // this.userId = userId;
+        // this.path = path;
+        // this.exclude = exclude;
+        // this.maxNumberOfTopics = maxNumberOfTopics;
+        var name1 = "userId=";
+        var ca1 = document.cookie.split(';');
+        x1 ="";
+        // console.log(ca1)
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                x1 = c.substring(name1.length,c.length);
+            }
+        }
+
+        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+        setTimeout(function(){
+            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+			selectedID=0
+			document.cookie="lastselectednode="+selectedID;
+            stompClient.subscribe('/topic/request', function(serverResponse){
+				var name2 = "lastselectednode=";
+				var ca2 = document.cookie.split(';');
+				selectedID ="";
+				for(var i = 0; i <ca2.length; i++) {
+					var c = ca2[i];
+					while (c.charAt(0)==' ') {
+						c = c.substring(1);
+					}
+					if (c.indexOf(name2) == 0) {
+						selectedID = c.substring(name2.length,c.length);
+					}
+				}
+
+
+				console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+
+
+				//update graph with server response
+
+
+				var JSONServerResponse = JSON.parse(serverResponse.body);
+				// var JSONServerResponse = {"userId":"579a106be4b0dfee6fcec8a3","topicsText":["Horse","photo","New","recipe"],"topics":[{"id":"579a1e92e4b0dfee6fceca94","userId":"579a106be4b0dfee6fcec8a3","topic":"Horse","relatedTopics":["photo"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721044,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca95","userId":"579a106be4b0dfee6fcec8a3","topic":"photo","relatedTopics":["Horse"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721048,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca97","userId":"579a106be4b0dfee6fcec8a3","topic":"New","relatedTopics":["recipe","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721273,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca98","userId":"579a106be4b0dfee6fcec8a3","topic":"recipe","relatedTopics":["New","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721274,"weight":30000.0}]}
+
+
+				var topicsall = JSONServerResponse.topicsText;
+				var pos=0;
+				var branchinglimit = topicsall.length;
+				var thisgroup = nodes[selectedID].group;
+				for(var i=0 ;i<branchinglimit;i++){
+					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+					try {
+						data.nodes.add({
+							id: nodes.length,
+							label: topicsall[pos],
+							group: thisgroup
+						});
+						parentlist.push(selectedID);
+
+					}
+					catch (err) {
+						alert(err);
+					}
+					try {
+						data.edges.add({
+							id: edges.length,
+							from: selectedID,
+							to: nodes.length
+						});
+					}
+					catch (err) {
+						alert(err);
+					}
+					nodes.push({
+						id: nodes.length,
+						label: topicsall[pos++],
+						group: thisgroup
+					})
+					edges.push({
+						id: edges.length,
+						from: selectedID,
+						to: nodes.length
+					});
+				}
+            });
+
+        $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+        });
+      }, 3000);
+
+    if($(window).width()<=700){
+         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#help").html("   Help");
+        $("#settings").html("   Settings");
+        $("#logout").html("   Logout");
+    }else{
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+    }
+    $("#sidepanel").hide();
+    document.oncontextmenu = function() {return false;};
+    // $("canvas").click(function(event){
+ //     event.preventDefault();
+    // });
 
         function populateSidePanel(node, array)
         {
@@ -246,10 +272,10 @@ $(document).ready(function($){
                     $("#linkedIn").html("<div>"+array[i].data+"</div>");
                 }
             }
-                
-            
+
+
         }
-        var network = new vis.Network(container, data, options);
+
 
         menu = new ax5.ui.menu({
             position: "absolute", // default position is "fixed"
@@ -279,46 +305,88 @@ $(document).ready(function($){
             ],
             onClick: function(){
                 if(this.label=="Expand Bubble"){
-                    var currentNodeID = nodes.length;
-                    console.log("size"+currentNodeID)
+                    var pathtoselectednode=[];
+                    if(selectedID!=0)
+                        var pathtoselectednode =[];
+                    var pathtoselectednodelabels =[]
+                    console.log("selectedID:"+selectedID)
+                    console.log("parentlist "+parentlist)
+
+                    for(var i = selectedID; i > 0; i = parentlist[i]){
+                        pathtoselectednode.push(i);
+                    }
+
+                    console.log("PathFrom: " + pathtoselectednode);
                     var pos=0;
-                    console.log(this.label);
                     var branchinglimit = 4;
                     var thisgroup = nodes[selectedID].group;
-                    for(var i=0 ;i<branchinglimit;i++){
-                        try {
-                            data.nodes.add({
-                                id: nodes.length,
-                                label: mockArrayOfData[pos % branchinglimit],
-                                group: thisgroup
-                            });
-
-                        }
-                        catch (err) {
-                            alert(err);
-                        }
-                        console.log()
-                        try {
-                            data.edges.add({
-                                id: edges.length,
-                                from: selectedID,
-                                to: nodes.length
-                            });
-                        }
-                        catch (err) {
-                            alert(err);
-                        }
-                        nodes.push({
-                            id: nodes.length,
-                            label: mockArrayOfData[pos++ % branchinglimit],
-                            group: thisgroup
-                        })
-                        edges.push({
-                            id: edges.length++,
-                            from: selectedID,
-                            to: nodes.length++
-                        });
+                    for(var i=pathtoselectednode.length-1;i>=0;i--){
+                       pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
                     }
+                    // pathtoselectednodelabels.push()
+                    console.log("PathTo: " + pathtoselectednodelabels);
+
+                    var excludelist=[]
+                    for(var i = 1; i < parentlist.length;i++){
+                        if(parentlist[i]==selectedID){
+                            excludelist.push(nodes[i].label.replace("\n"," "));
+                        }
+                    }
+
+                    console.log("exclude list:"+excludelist);
+
+                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+
+					document.cookie="lastselectednode="+selectedID;
+
+                    setTimeout(function(){
+                        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+
+                        // stompClient.subscribe('/topic/request', function(serverResponse){
+						//
+						//
+                        // });
+
+                    $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                    });
+                  }, 3000);
+
+                    // for(var i=0 ;i<branchinglimit;i++){
+                    //     try {
+                    //         data.nodes.add({
+                    //             id: nodes.length,
+                    //             label: mockArrayOfData[pos % branchinglimit],
+                    //             group: thisgroup
+                    //         });
+                    //         parentlist.push(selectedID);
+
+                    //     }
+                    //     catch (err) {
+                    //         alert(err);
+                    //     }
+                    //     console.log()
+                    //     try {
+                    //         data.edges.add({
+                    //             id: edges.length,
+                    //             from: selectedID,
+                    //             to: nodes.length
+                    //         });
+                    //     }
+                    //     catch (err) {
+                    //         alert(err);
+                    //     }
+                    //     nodes.push({
+                    //         id: nodes.length,
+                    //         label: mockArrayOfData[pos++ % branchinglimit],
+                    //         group: thisgroup
+                    //     })
+                    //     edges.push({
+                    //         id: edges.length,
+                    //         from: selectedID,
+                    //         to: nodes.length
+                    //     });
+                    // }
                 }
 
                 if(this.label=="Remove Bubble"){
@@ -336,7 +404,7 @@ $(document).ready(function($){
                         console.log("Node clicked on :" + selectedID);
                         // network
                         var alledges = network.getSelectedEdges();
-                        
+
                         // allnodes.push(selectedID);
                         for(var i=0;i<alledges.length;i++){
                             var node = network.getConnectedNodes(alledges[i]);
@@ -344,7 +412,7 @@ $(document).ready(function($){
                                 console.log(node[j]+">"+ selectedID)
                                 if(node[j]> selectedID){
                                     allnodes.push(node[j]);
-                                    
+
                                 }
                             }
                         }
@@ -358,19 +426,19 @@ $(document).ready(function($){
 
 
                     }
-                    
+
                     network.selectNodes(visited);
                     network.deleteSelected();
 
                     //Loop through all nodes of selected node
                     //get their children nodes
                     //check if there are no chilren nodes
-                    //call function recursively on children nodes 
-                    
+                    //call function recursively on children nodes
+
                     // console.log(nodes.length)
-                        }
-                    }
-        });
+                }
+            }
+        	});
 
         network.on("click", function(){
            // console.log("nodes")
@@ -381,13 +449,13 @@ $(document).ready(function($){
            $("#sidepanelTitle").html("");
            $("#sidepanel").hide();
 
-           $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")    
+           $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         });
         network.on("doubleClick", function(){
            if($(window).width()<=700){
-                $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")             
+                $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
            }else{
-                $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+                $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
            }
 
            console.log(nodes)
@@ -408,22 +476,22 @@ $(document).ready(function($){
             }
             var s = network.getSelectedNodes();
             // var label = data.node(s);
-            console.log("s: "  + s);
-            // console.log("+++++++++++++"+nodes[s].label )
-            var alledges = network.getSelectedEdges();
-            var allnodes = []
-            for(var i=0;i<alledges.length;i++){
-                var node = network.getConnectedNodes(alledges[i]);
-                console.log(node);
-                for(var j=0;j<node.length;j++){
-                    allnodes.push(node[j]);
-                }
-            }
-            network.selectNodes(allnodes);
+            // console.log("s: "  + s);
+            // // console.log("+++++++++++++"+nodes[s].label )
+            // var alledges = network.getSelectedEdges();
+            // var allnodes = []
+            // for(var i=0;i<alledges.length;i++){
+            //     var node = network.getConnectedNodes(alledges[i]);
+            //     console.log(node);
+            //     for(var j=0;j<node.length;j++){
+            //         allnodes.push(node[j]);
+            //     }
+            // }
+            // network.selectNodes(allnodes);
             // console.log(nodes.length);
-            var horse = { 
+            var horse = {
                 "Topic" : "Horse",
-                "Facebook" : [ 
+                "Facebook" : [
                     '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=100%" width="100%" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
                     '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="100%" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
                     '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=100%" width="100%" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
@@ -553,7 +621,7 @@ $(document).ready(function($){
             }
 
         });
-      
+
 
 });
 
@@ -570,9 +638,5 @@ function hidesidebar(){
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
-   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")   
+   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
 }
-    var menu;
-    var selectedID;
-    var mockArrayOfData = ["Amy \n Lochner", "Holiday", "Cooking", "Durban"]
-    

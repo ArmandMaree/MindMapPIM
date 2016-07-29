@@ -58,8 +58,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 
 		excludedWords.add("dear");
 		excludedWords.add("kind");
-		excludedWords.add("s");
 		excludedWords.add("fwd");
+		excludedWords.add("acuben");
+		excludedWords.add("hi");
+		excludedWords.add("hello");
+		excludedWords.add("re");
+		excludedWords.add("lot");
 	}
 
 	/**
@@ -229,7 +233,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		ArrayList<String> remainingWords = new ArrayList<>();
 
 		for (String word : words) {
-			if (!excludedWords.contains(word.toLowerCase()) && !remainingWords.contains(word))
+			if (!excludedWords.contains(word.toLowerCase()) && !remainingWords.contains(word) && word.length() > 1)
 				remainingWords.add(word);
 		}
 

@@ -49,7 +49,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
-        System.out.println("Frontend received: " + message);
 		String id = UUID.randomUUID().toString();
 		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
         rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
@@ -57,7 +56,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
             //do nothing for now, maybe sleep a bit in future?
         }
 		User user = userResponseLL.poll().getUser(true);
-		System.out.println("Frontend dequeued: " + user);
         Thread.sleep(2000);
         return new ServerResponse(user.getUserId());
     }
@@ -65,14 +63,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @MessageMapping("/request")
     @SendTo("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
-        System.out.println("Frontend received: " + request);
         rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
         while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
             //do nothing for now, maybe sleep a bit in future?
         }
 
 		TopicResponse topicResponse = topicResponseLL.poll();
-		System.out.println("Frontend dequeued: " + topicResponse);
         Thread.sleep(2000);
         return topicResponse;
     }

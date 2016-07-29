@@ -26,19 +26,17 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-
+    // compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.hibernate:hibernate-validator")
     compile("org.apache.tomcat.embed:tomcat-embed-el")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-data-rest")
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")
     compile("org.springframework.boot:spring-boot-starter-amqp")
-
 }
 
 bootRun {
