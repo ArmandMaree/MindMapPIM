@@ -62,6 +62,8 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		excludedWords.add("acuben");
 		excludedWords.add("hi");
 		excludedWords.add("hello");
+		excludedWords.add("re");
+		excludedWords.add("lot");
 	}
 
 	/**

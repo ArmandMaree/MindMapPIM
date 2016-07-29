@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 public class SendMail {
 	Socket socket;
 	String to;
-	String from = "aamaree@gmail.com";
-	String host = "smtp.vodamail.co.za";
-	String username = "NTI1ODk4MTBAbXdlYi5jby56YQ==";
-	String password = "aW0hOVhJIVA=";
+	String from = "acubencos@gmx.com";
+	String host = "mail.gmx.com";
+	String username = "YWN1YmVuY29zQGdteC5jb20=";
+	String password = "YWN1YmVuY29zMTIzNA==";
 	String name;
 	int score;
 	private BufferedReader in;
@@ -31,36 +31,55 @@ public class SendMail {
 	public boolean send()
 	{
 		try{
-			socket = new Socket(host, 25);
+			socket = new Socket(host, 587);
 			System.out.println("Connection success");
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
-			out.println("HELO Armand");
-			System.out.println("HELO Armand");
 			String msg = in.readLine();
+			while(!msg.startsWith("220 gmx.com")) {
+				System.out.println("NOPE: " + msg);
+				msg = in.readLine();
+			}
+			System.out.println(msg);
+			Thread.sleep(2000);
+			out.println("EHLO " + host);
+			System.out.println("EHLO " + host);
+			msg = in.readLine();
+			System.out.println(msg);
 
-			while(!msg.startsWith("220 Welcome")) {
+			while(!msg.startsWith("250-gmx.com")) {
 				System.out.println(msg);
 				msg = in.readLine();
 			}
 
-			send("MAIL FROM: " + from);
-			System.out.println("MAIL FROM: " + from);
+			System.out.println(msg);
+			send("AUTH LOGIN");
+			System.out.println("AUTH LOGIN");
+			System.out.println(in.readLine());
+			send(username);
+			System.out.println(username);
+			System.out.println(in.readLine());
+			send(password);
+			System.out.println(password);
 			System.out.println(in.readLine());
 
-			send("RCPT TO: " + to);
-			System.out.println("RCPT TO: " + to);
+			send("MAIL FROM:<" + from + ">");
+			System.out.println("MAIL FROM:<" + from + ">");
+			System.out.println(in.readLine());
+
+			send("RCPT TO:<" + to + ">");
+			System.out.println("RCPT TO:<" + to + ">");
 			System.out.println(in.readLine());
 
 			send("DATA");
 			System.out.println("DATA");
 			System.out.println(in.readLine());
-			send("subject: Nandos advertisement");
+			send("subject: Quizzer Result");
 			send("");
 			send("Hi " + name + ", ");
 			send("");
-			send("Did you see the new advertisement by Nandos? They showed a horse, riding a motorcycle while eating a pizza. They are always so controversial.");
-			
+			send("The pizza we had yesterday was really nice. Maybe we should get coffee next time.");
+
 			out.flush();
 			send(".");
 			System.out.println(".");
@@ -76,10 +95,11 @@ public class SendMail {
 			System.out.println(e);
 			return false;
 		}
+		catch(InterruptedException ie){return false;}
 	}
 
 	void send(String message) throws IOException {
-		out.println(message);
+		out.print(message + "\r\n");
 		out.flush();
 	}
 }

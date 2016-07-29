@@ -35,6 +35,9 @@ var initSigninV2 = function() {
 };
 
 var sendUserReg = function(){
+	$("#loadingAlert").fadeIn(1000, function() {
+		// body...
+	});
   var socket = new SockJS('/hello');
   stompClient = Stomp.over(socket);
   stompClient.connect({}, function(frame) {
@@ -52,7 +55,10 @@ var sendUserReg = function(){
 		var jsonresponse = JSON.parse(serverResponse.body);
 		console.log("Server says: "+jsonresponse.content);
 		document.cookie="userId="+jsonresponse.content;
-		window.location.assign('/mainpage')
+		$("#loadingAlert").fadeOut(1000, function() {
+		// body...
+		});
+		window.location.assign('/mainpage');
 	}, function(error) {
 	    // display the error's message header:
 	    console.log(error.headers.message);
@@ -293,6 +299,7 @@ jQuery(document).ready(function($){
 	$("#submitID").hide();
 	$("#welcome").hide();
 	$("#continue").hide();
+	$("#loadingAlert").hide();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
