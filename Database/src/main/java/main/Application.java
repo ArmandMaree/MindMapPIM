@@ -153,29 +153,29 @@ public class Application implements CommandLineRunner {
 		processedDataRepository.deleteAll();
 		topicRepository.deleteAll();
 
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
-		userRepository.save(acuben);
-		// debug end
-
-		// debug start 2
-		List<ProcessedData> processedData = new ArrayList<>();
-
-		String[][] processedDataTopics = {
-			{"horse", "photo"},
-			{"horse", "saddle"},
-			{"horse", "pizza"},
-			{"horse", "computer"},
-			{"pizza", "book"},
-			{"glass", "phone"},
-			{"mouse", "pizza"},
-			{"computer", "handle"}
-		};
-
-		for (String[] ts : processedDataTopics)
-			processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, "zsd5465sd4f65s4df65s4df65", ts, System.currentTimeMillis()));
-
-		for (ProcessedData pd : processedData)
-			rabbitTemplate.convertAndSend("processed-data.database.rabbit", pd);
-		// debug end 2
+		// User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		// userRepository.save(acuben);
+		// // debug end
+		//
+		// // debug start 2
+		// List<ProcessedData> processedData = new ArrayList<>();
+		//
+		// String[][] processedDataTopics = {
+		// 	{"horse", "photo"},
+		// 	{"horse", "saddle"},
+		// 	{"horse", "pizza"},
+		// 	{"horse", "computer"},
+		// 	{"pizza", "book"},
+		// 	{"glass", "phone"},
+		// 	{"mouse", "pizza"},
+		// 	{"computer", "handle"}
+		// };
+		//
+		// for (String[] ts : processedDataTopics)
+		// 	processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, "zsd5465sd4f65s4df65s4df65", ts, System.currentTimeMillis()));
+		//
+		// for (ProcessedData pd : processedData)
+		// 	rabbitTemplate.convertAndSend("processed-data.database.rabbit", pd);
+		// // debug end 2
 	}
 }
