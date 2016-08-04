@@ -305,6 +305,9 @@ $(document).ready(function($){
             ],
             onClick: function(){
                 if(this.label=="Expand Bubble"){
+                    $("#loadingAlert").fadeIn(1000, function() {
+                        // body...
+                    });
                     var pathtoselectednode=[];
                     if(selectedID!=0)
                         var pathtoselectednode =[];
@@ -352,90 +355,41 @@ $(document).ready(function($){
                     });
                   }, 3000);
 
-                    // for(var i=0 ;i<branchinglimit;i++){
-                    //     try {
-                    //         data.nodes.add({
-                    //             id: nodes.length,
-                    //             label: mockArrayOfData[pos % branchinglimit],
-                    //             group: thisgroup
-                    //         });
-                    //         parentlist.push(selectedID);
-
-                    //     }
-                    //     catch (err) {
-                    //         alert(err);
-                    //     }
-                    //     console.log()
-                    //     try {
-                    //         data.edges.add({
-                    //             id: edges.length,
-                    //             from: selectedID,
-                    //             to: nodes.length
-                    //         });
-                    //     }
-                    //     catch (err) {
-                    //         alert(err);
-                    //     }
-                    //     nodes.push({
-                    //         id: nodes.length,
-                    //         label: mockArrayOfData[pos++ % branchinglimit],
-                    //         group: thisgroup
-                    //     })
-                    //     edges.push({
-                    //         id: edges.length,
-                    //         from: selectedID,
-                    //         to: nodes.length
-                    //     });
-                    // }
-                }
-
                 if(this.label=="Remove Bubble"){
-                    // console.log(this.label);
-                    // var e = window.event;
-                    // var posX = e.clientX;
-                    // var posY = e.clientY - $("nav").height();
-                    // console.log("X: "+ posX);
-                    // console.log("Y: "+ posY);
-                    // var selectednode = network.getNodeAt({"x": posX, "y": posY});
-                    var allnodes = [];
-                    var visited=[];
-                    allnodes.push(selectedID);
-                    while(allnodes.length>0){
-                        console.log("Node clicked on :" + selectedID);
-                        // network
-                        var alledges = network.getSelectedEdges();
+                    var deletelist
+                    // var allnodes = [];
+                    // var visited=[];
+                    // allnodes.push(selectedID);
+                    // while(allnodes.length>0){
+                    //     console.log("Node clicked on :" + selectedID);
+                    //     // network
+                    //     var alledges = network.getSelectedEdges();
 
-                        // allnodes.push(selectedID);
-                        for(var i=0;i<alledges.length;i++){
-                            var node = network.getConnectedNodes(alledges[i]);
-                            for(var j=0;j<node.length;j++){
-                                console.log(node[j]+">"+ selectedID)
-                                if(node[j]> selectedID){
-                                    allnodes.push(node[j]);
+                    //     // allnodes.push(selectedID);
+                    //     for(var i=0;i<alledges.length;i++){
+                    //         var node = network.getConnectedNodes(alledges[i]);
+                    //         for(var j=0;j<node.length;j++){
+                    //             console.log(node[j]+">"+ selectedID)
+                    //             if(node[j]> selectedID){
+                    //                 allnodes.push(node[j]);
 
-                                }
-                            }
-                        }
-                        visited.push(selectedID);
-                        console.log(visited);
-                            allnodes.splice(0,1);
-                            selectedID = allnodes[0];
-                        if(selectedID!=undefined){
-                            network.selectNodes([selectedID]);
-                        }
+                    //             }
+                    //         }
+                    //     }
+                    //     visited.push(selectedID);
+                    //     console.log(visited);
+                    //         allnodes.splice(0,1);
+                    //         selectedID = allnodes[0];
+                    //     if(selectedID!=undefined){
+                    //         network.selectNodes([selectedID]);
+                    //     }
 
 
-                    }
+                    // }
 
-                    network.selectNodes(visited);
-                    network.deleteSelected();
+                    // network.selectNodes(visited);
+                    // network.deleteSelected();
 
-                    //Loop through all nodes of selected node
-                    //get their children nodes
-                    //check if there are no chilren nodes
-                    //call function recursively on children nodes
-
-                    // console.log(nodes.length)
                 }
             }
         	});
