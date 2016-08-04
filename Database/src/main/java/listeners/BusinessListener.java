@@ -6,6 +6,7 @@ import repositories.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -31,12 +32,9 @@ public class BusinessListener {
 	@Autowired
 	private TopicRepository topicRepository;
 
-	@Autowired
-	private LinkedBlockingQueue<UserIdentified> testQueue;
-
 	public void receiveUserRegister(UserIdentified user) {
 		boolean userAlreadyRegistered = true;
-		User userReturn = userRepository.findByGmailId(user.getUser(true).getGmailId());
+		User userReturn = userRepository.findByGmailId(user.getGmailId());
 
 		if (userReturn == null) {
 			userAlreadyRegistered = false;
@@ -47,26 +45,16 @@ public class BusinessListener {
 
 		user = new UserIdentified(user.getReturnId(), userAlreadyRegistered, userReturn);
 		rabbitTemplate.convertAndSend(userRegisterResponseQueueName, user);
-		System.out.println("Database responded to register: " + user);
-
-		try {
-			testQueue.put(user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void receiveCheckIfRegistered(UserIdentified user) {
-		User userReturn = userRepository.findByGmailId(user.getUser(true).getGmailId());
-		user.setIsRegistered(userReturn != null);
-		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
+		User userReturn = userRepository.findByGmailId(user.getGmailId());
 
-		try {
-			testQueue.put(user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		if (userReturn == null)
+			user.setIsRegistered(false);
+		else
+			user = new UserIdentified(user.getReturnId(), true, userReturn);
+
+		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
 	}
 }

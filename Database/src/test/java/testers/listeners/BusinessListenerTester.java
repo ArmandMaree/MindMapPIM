@@ -2,6 +2,7 @@ package testers.listeners;
 
 import repositories.*;
 import data.*;
+import listeners.*;
 import testers.AbstractTester;
 
 import java.util.*;
@@ -37,27 +38,20 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 * @since 2016-07-24
 */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=main.Application.class)
+@ContextConfiguration(classes=testers.listeners.TestContext.class)
 public class BusinessListenerTester extends AbstractTester {
 	private boolean setUpDone = false;
-
-	@Autowired
-	private LinkedBlockingQueue<UserIdentified> queue;
-
-	private final String userRegisterQueueName = "user-register.database.rabbit";
-	private final String userCheckQueueName = "user-check.database.rabbit";
+	private final String userRegisterQueueName = TestContext.userRegisterQueueName;
+	private final String userCheckQueueName = TestContext.userCheckQueueName;
 
 	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
-	private PimProcessedDataRepository processedDataRepository;
-
-	@Autowired
-	private TopicRepository topicRepository;
-
-	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private LinkedBlockingQueue<UserIdentified> queue;
 
 	@Before
 	public void setUp() throws InterruptedException {
@@ -71,53 +65,53 @@ public class BusinessListenerTester extends AbstractTester {
 
 	@After
 	public void tearDown() {
-		
+
 	}
 
 	@Test
 	public void testReceiveCheckIfRegistered() throws InterruptedException {
-		User user = new User("Acuben", "Cos", "acubencos@gmail.com");
-		UserIdentified userIdentified = new UserIdentified("0000", false, user);
-		rabbitTemplate.convertAndSend(userCheckQueueName, userIdentified);
-		UserIdentified userIdentifiedResponse = queue.poll(10, TimeUnit.SECONDS);
+		User user1 = new User("Acuben", "Cos", "acubencos@gmail.com");
+		UserIdentified userIdentified1 = new UserIdentified("0000", false, user1);
+		rabbitTemplate.convertAndSend(userCheckQueueName, userIdentified1);
+		UserIdentified userIdentifiedResponse1 = queue.poll(5, TimeUnit.SECONDS);
 
-		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
-		Assert.assertEquals("Failed - returnId does not match.", userIdentified.getReturnId(), userIdentifiedResponse.getReturnId());
-		Assert.assertEquals("Failed - user is registered but shouldn't be.", false, userIdentifiedResponse.getIsRegistered());
-	
-		userRepository.save(user);
+		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse1);
+		Assert.assertEquals("Failed - returnId does not match.", userIdentified1.getReturnId(), userIdentifiedResponse1.getReturnId());
+		Assert.assertEquals("Failed - user is registered but shouldn't be.", false, userIdentifiedResponse1.getIsRegistered());
 
-		rabbitTemplate.convertAndSend(userCheckQueueName, userIdentified);
-		userIdentified = new UserIdentified("0000", false, user);
-		rabbitTemplate.convertAndSend(userCheckQueueName, userIdentified);
-		userIdentifiedResponse = queue.poll(10, TimeUnit.SECONDS);
+		userRepository.save(user1);
+		// Thread.sleep(1000);
 
-		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
-		Assert.assertEquals("Failed - returnId does not match.", userIdentified.getReturnId(), userIdentifiedResponse.getReturnId());
-		Assert.assertEquals("Failed - user isn't registered but should be.", true, userIdentifiedResponse.getIsRegistered());
+		User user2 = new User("Acuben", "Cos", "acubencos@gmail.com");
+		UserIdentified userIdentified2 = new UserIdentified("0001", false, user2);
+		rabbitTemplate.convertAndSend(userCheckQueueName, userIdentified2);
+		UserIdentified userIdentifiedResponse2 = queue.poll(5, TimeUnit.SECONDS);
+
+		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse2);
+		Assert.assertEquals("Failed - returnId does not match.", userIdentified2.getReturnId(), userIdentifiedResponse2.getReturnId());
+		Assert.assertEquals("Failed - user isn't registered but should be.", true, userIdentifiedResponse2.getIsRegistered());
 	}
 
 	@Test
 	public void testReceiveUserRegister() throws InterruptedException {
-		userRepository.deleteAll();
-
-		User user = new User("Acuben", "Cos", "acubencos@gmail.com");
-		UserIdentified userIdentified = new UserIdentified("0000", false, user);
+		User user1 = new User("Acuben", "Cos", "acubencos@gmail.com");
+		UserIdentified userIdentified = new UserIdentified("0002", false, user1);
 		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
-		UserIdentified userIdentifiedResponse = queue.poll(10, TimeUnit.SECONDS);
+		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
 
 		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
 		Assert.assertEquals("Failed - returnId does not match.", userIdentified.getReturnId(), userIdentifiedResponse.getReturnId());
 		Assert.assertEquals("Failed - user is registered but shouldn't be.", false, userIdentifiedResponse.getIsRegistered());
-		Thread.sleep(1000);
+		// Thread.sleep(2000);
 
-		UserIdentified userIdentified2 = new UserIdentified("0001", false, user);
+		User user2 = new User("Acuben", "Cos", "acubencos@gmail.com");
+		UserIdentified userIdentified2 = new UserIdentified("0003", false, user2);
 		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified2);
-		UserIdentified userIdentifiedResponse2 = queue.poll(10, TimeUnit.SECONDS);
+		UserIdentified userIdentifiedResponse2 = queue.poll(5, TimeUnit.SECONDS);
 
 		Assert.assertNotNull("Failed - userIdentifiedResponse2 is null.", userIdentifiedResponse2);
 		Assert.assertEquals("Failed - returnId does not match.", userIdentified2.getReturnId(), userIdentifiedResponse2.getReturnId());
 		Assert.assertEquals("Failed - user isn't registered but should be.", true, userIdentifiedResponse2.getIsRegistered());
-		Assert.assertTrue("Failed - Users does not have same ID.", userIdentifiedResponse.getUser(true).getUserId().equals(userIdentifiedResponse2.getUser(true).getUserId()));
+		Assert.assertTrue("Failed - Users does not have same ID.", userIdentifiedResponse.getUserId().equals(userIdentifiedResponse2.getUserId()));
 	}
 }

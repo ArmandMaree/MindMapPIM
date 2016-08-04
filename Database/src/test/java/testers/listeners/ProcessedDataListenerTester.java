@@ -23,7 +23,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public class ProcessedDataListenerTester extends AbstractTester {
 	private boolean setUpDone = false;
 
-	private final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String processedDataQueueName = TestContext.processedDataQueueName;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -84,6 +84,6 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		for (Topic topic : topicsAfter)
 			System.out.println(topic.getTopic());
 
-		// Assert.assertEquals("Failure - topicsAfter is not empty.", 10, topicsAfter.size());
+		Assert.assertEquals("Failure - topicsAfter is not empty.", 10, topicsAfter.size());
 	}
 }

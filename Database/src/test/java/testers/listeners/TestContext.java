@@ -1,18 +1,11 @@
-package main;
+package testers.listeners;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.CommandLineRunner;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.beans.factory.annotation.*;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -23,35 +16,69 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
 import repositories.*;
 import listeners.*;
 import data.*;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
+@Configuration
+public class TestContext {
+	public final static String processedDataQueueName = "processed-data.database.rabbit";
+	public final static String topicRequestQueueName = "topic-request.database.rabbit";
+	public final static String userRegisterQueueName = "user-register.database.rabbit";
+	public final static String userCheckQueueName = "user-check.database.rabbit";
 
-@SpringBootApplication
-@EnableMongoRepositories({"repositories"})
-public class Application implements CommandLineRunner {
-	private final static String processedDataQueueName = "processed-data.database.rabbit";
-	private final static String topicRequestQueueName = "topic-request.database.rabbit";
-	private final String userRegisterQueueName = "user-register.database.rabbit";
-	private final String userCheckQueueName = "user-check.database.rabbit";
-
-	@Autowired
-	private UserRepository userRepository;
+	// test beans start
+	public final static String topicResponseQueueName = "topic-response.frontend.rabbit";
+	public final static String userRegisterResponseQueueName = "user-registration-response.frontend.rabbit";
+	public final static String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 
 	@Autowired
-	private PimProcessedDataRepository processedDataRepository;
+	private LinkedBlockingQueue<UserIdentified> queue;
 
-	@Autowired
-	private TopicRepository topicRepository;
+	@Bean
+	LinkedBlockingQueue<UserIdentified> testUserQueueDev() {
+		return new LinkedBlockingQueue<>();
+	}
 
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	@Bean
+	Queue userRegistrationResponseQueue() {
+		return new Queue(userRegisterResponseQueueName, false);
+	}
+
+	@Bean
+	Queue userCheckResponseQueue() {
+		return new Queue(userCheckResponseQueueName, false);
+	}
+
+	@Bean
+	Binding userRegistrationResponseBinding(@Qualifier("userRegistrationResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userRegisterResponseQueueName);
+	}
+
+	@Bean
+	Binding userCheckResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userCheckResponseQueueName);
+	}
+
+	@Bean
+	public MessageListenerAdapter userRegistrationResponseAdapter() {
+		return new MessageListenerAdapter(this, "receiveUserRegistrationResponse");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userRegistrationResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userRegistrationResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userRegisterResponseQueueName, userCheckResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	public void receiveUserRegistrationResponse(UserIdentified userIdentified) throws InterruptedException {
+		System.out.println("Test Context Received: " + userIdentified);
+		queue.put(userIdentified);
+	}
+	// test beans end
 
 	@Bean
 	Queue topicRequestQueue() {
@@ -167,43 +194,5 @@ public class Application implements CommandLineRunner {
 		container.setQueueNames(userCheckQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
-	}
-
-	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
-		ctx.getEnvironment().setActiveProfiles("production");
-	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		// debug start
-		userRepository.deleteAll();
-		processedDataRepository.deleteAll();
-		topicRepository.deleteAll();
-
-		// User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
-		// userRepository.save(acuben);
-		// // debug end
-		//
-		// // debug start 2
-		// List<ProcessedData> processedData = new ArrayList<>();
-		//
-		// String[][] processedDataTopics = {
-		// 	{"horse", "photo"},
-		// 	{"horse", "saddle"},
-		// 	{"horse", "pizza"},
-		// 	{"horse", "computer"},
-		// 	{"pizza", "book"},
-		// 	{"glass", "phone"},
-		// 	{"mouse", "pizza"},
-		// 	{"computer", "handle"}
-		// };
-		//
-		// for (String[] ts : processedDataTopics)
-		// 	processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, "zsd5465sd4f65s4df65s4df65", ts, System.currentTimeMillis()));
-		//
-		// for (ProcessedData pd : processedData)
-		// 	rabbitTemplate.convertAndSend("processed-data.database.rabbit", pd);
-		// // debug end 2
 	}
 }
