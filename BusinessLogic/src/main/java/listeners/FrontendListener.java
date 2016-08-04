@@ -50,7 +50,7 @@ public class FrontendListener {
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
 		
-		UserIdentified user = new UserIdentified(userRegistrationIdentified.getId(), userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
+		UserIdentified user = new UserIdentified(userRegistrationIdentified.getId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
 
 
 		for (AuthCode authCode : userRegistrationIdentified.getAuthCodes()) {

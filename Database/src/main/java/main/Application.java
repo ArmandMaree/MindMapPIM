@@ -30,6 +30,7 @@ import data.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
@@ -37,6 +38,7 @@ public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String userRegisterQueueName = "user-register.database.rabbit";
+	private final String userCheckQueueName = "user-check.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -51,6 +53,11 @@ public class Application implements CommandLineRunner {
 	RabbitTemplate rabbitTemplate;
 
 	@Bean
+	LinkedBlockingQueue<UserIdentified> linkedBlockingQueue() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
 	Queue topicRequestQueue() {
 		return new Queue(topicRequestQueueName, false);
 	}
@@ -63,6 +70,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Queue userRegisterQueue() {
 		return new Queue(userRegisterQueueName, false);
+	}
+
+	@Bean
+	Queue userCheckQueue() {
+		return new Queue(userCheckQueueName, false);
 	}
 
 	@Bean
@@ -83,6 +95,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding userRegisterBinding(@Qualifier("userRegisterQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userRegisterQueueName);
+	}
+
+	@Bean
+	Binding userCheckBinding(@Qualifier("userCheckQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userCheckQueueName);
 	}
 
 	@Bean
@@ -116,6 +133,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public MessageListenerAdapter userCheckAdapter(BusinessListener businessListener) {
+		return new MessageListenerAdapter(businessListener, "receiveCheckIfRegistered");
+	}
+
+	@Bean
 	public SimpleMessageListenerContainer topicRequestContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
@@ -138,6 +160,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(userRegisterQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userCheckContainer(ConnectionFactory connectionFactory, @Qualifier("userCheckAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userCheckQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

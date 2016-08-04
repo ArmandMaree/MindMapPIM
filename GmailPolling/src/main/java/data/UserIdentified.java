@@ -7,6 +7,11 @@ public class UserIdentified extends User {
 	private String returnId;
 
 	/**
+	* Indicates whether the user is registered already.
+	*/
+	private boolean isRegistered;
+
+	/**
 	* Default empty UserIdentified constructor
 	*/
 	public UserIdentified() {
@@ -16,17 +21,19 @@ public class UserIdentified extends User {
 	/**
 	* Constructor to build from given user.
 	*/
-	public UserIdentified(String returnId, User user) {
+	public UserIdentified(String returnId, boolean isRegistered, User user) {
 		super(user.getUserId(), user.getFirstName(), user.getLastName(), user.getGmailId());
 		this.returnId = returnId;
+		this.isRegistered = isRegistered;
 	}
 
 	/**
 	* Default UserIdentified constructor
 	*/
-	public UserIdentified(String returnId, String firstName, String lastName, String gmailId) {
+	public UserIdentified(String returnId, boolean isRegistered, String firstName, String lastName, String gmailId) {
 		super(firstName, lastName, gmailId);
 		this.returnId = returnId;
+		this.isRegistered = isRegistered;
 	}
 
 	/**
@@ -46,6 +53,22 @@ public class UserIdentified extends User {
 	}
 
 	/**
+	* Returns value of isRegistered
+	* @return  Indicates whether the user is registered already.
+	*/
+	public boolean getIsRegistered() {
+		return isRegistered;
+	}
+
+	/**
+	* Sets new value of isRegistered.
+	* @param isRegistered Indicates whether the user is registered already.
+	*/
+	public void setIsRegistered(boolean isRegistered) {
+		this.isRegistered = isRegistered;
+	}
+
+	/**
 	* Get the parent user.
 	*/
 	public User getUser(boolean getId) {
@@ -62,11 +85,12 @@ public class UserIdentified extends User {
 	@Override
 	public String toString() {
 		return "UserIdentified {\n" +
-		"\treturnId=" + returnId + ",\n" +
-		"\tid=" + getUserId() + ",\n" +
-		"\tfirstName=" + getFirstName()  + ",\n" +
-		"\tlastName=" + getLastName() + ",\n" +
-		"\tgmailId=" + getGmailId() + "\n" +
+		"\treturnId: " + returnId + ",\n" +
+		"\tisRegistered: " + isRegistered + ",\n" +
+		"\tid: " + getUserId() + ",\n" +
+		"\tfirstName: " + getFirstName()  + ",\n" +
+		"\tlastName: " + getLastName() + ",\n" +
+		"\tgmailId: " + getGmailId() + "\n" +
 		"}";
 	}
 }
