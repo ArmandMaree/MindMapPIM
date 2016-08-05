@@ -243,14 +243,13 @@ function loadTos(){
 function loadXMLDoc(){
   if($(window).width()<=700){
 	$('.login-container').animate({
-		width:"90%",
-		height:"80%"
-
+		width:"110%",
+		height:"100%"
 	});
   }else{
 	$('.login-container').animate({
 		width:"450px",
-		height:"450px"
+		height:"450px",
 
 	});
   }
