@@ -58,7 +58,7 @@ $(document).ready(function($){
         // {id: 8, label: "Arno \n Grobler", group: 2}
         ];
         edges = [
-            {from: 0, to: 1},
+            // {from: 0, to: 1},
             // {from: 2, to: 3},
             // {from: 2, to: 0},
             // {from: 5, to: 4},
