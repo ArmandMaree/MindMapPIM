@@ -27,7 +27,7 @@ function toJSON(obj) {
 }
 
 $( window ).resize(function() {
-    if($(window).width()<=700){
+    if($(window).width()<=768){
         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
@@ -58,7 +58,7 @@ $(document).ready(function($){
         // {id: 8, label: "Arno \n Grobler", group: 2}
         ];
         edges = [
-            {from: 0, to: 1},
+            // {from: 0, to: 1},
             // {from: 2, to: 3},
             // {from: 2, to: 0},
             // {from: 5, to: 4},
@@ -205,7 +205,7 @@ $(document).ready(function($){
         });
       }, 3000);
 
-    if($(window).width()<=700){
+    if($(window).width()<=768){
          $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
@@ -397,7 +397,7 @@ $(document).ready(function($){
            $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         });
         network.on("doubleClick", function(){
-           if($(window).width()<=700){
+           if($(window).width()<=768){
                 $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
            }else{
                 $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")

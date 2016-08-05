@@ -355,13 +355,26 @@ pre {
       html,body{
           position: relative;
           height: 100%;
+          font-size: 0.9em !important;
       }
+
       pre {
           white-space: pre-wrap;       /* Since CSS 2.1 */
           white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
           white-space: -pre-wrap;      /* Opera 4-6 */
           white-space: -o-pre-wrap;    /* Opera 7 */
           word-wrap: keep-all;       /* Internet Explorer 5.5+ */
+      }
+      span{
+        font-size: 0.8em !important;
+
+      }
+      #ques{
+        font-size: 1em !important;
+
+      }
+      #welcome{
+        font-size: 1em !important;
       }
       .login-container{
           width: 80%;
@@ -420,12 +433,13 @@ pre {
 
       .avatar{
           background: #eee url("/images/bubblelogo.png");
-          width: 100px;height: 100px;
-          margin: 10px auto 30px;
+          width: 70px;height: 70px;
+          /*margin: 10px auto 30px;*/
           border-radius: 100%;
           border: 2px solid #aaa;
           background-size: cover;
       }
+      .
 
       .form-box input{
           width: 100%;
