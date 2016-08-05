@@ -58,13 +58,13 @@ $(document).ready(function($){
         // {id: 8, label: "Arno \n Grobler", group: 2}
         ];
         edges = [
-            // {from: 1, to: 0},
+            {from: 0, to: 1},
             // {from: 2, to: 3},
-            // {from: 2, to: 1},
+            // {from: 2, to: 0},
             // {from: 5, to: 4},
-            // {from: 4, to: 1},
+            // {from: 4, to: 0},
             // {from: 7, to: 6},
-            // {from: 6, to: 1},
+            // {from: 6, to: 0},
             // {from: 2, to: 8}
         ]
 
@@ -349,50 +349,41 @@ $(document).ready(function($){
 						//
 						//
                         // });
-
-                    $("#loadingAlert").fadeOut(1000, function() {
-                        // body...
-                    });
-                  }, 3000);
+                        $("#loadingAlert").fadeOut(1000, function() {
+                            // body...
+                        });
+                    }, 3000);
+                }
 
                 if(this.label=="Remove Bubble"){
-                    var deletelist
-                    // var allnodes = [];
-                    // var visited=[];
-                    // allnodes.push(selectedID);
-                    // while(allnodes.length>0){
-                    //     console.log("Node clicked on :" + selectedID);
-                    //     // network
-                    //     var alledges = network.getSelectedEdges();
+                    if(selectedID!=0){
+                        // parentlist =[0,0,0,2,0,4,0,6,2];
+                        var deletelist =[]
+                        var templist = []
+                        deletelist.push(selectedID);
+                        templist.push(selectedID);
+                        var count =0;
+                        while(templist.length>0 || count > 10000){
+                            count++;
+                            var parent = templist.pop();
+                            // console.log(parent);
+                            for(var i=0;i<parentlist.length;i++){
+                                // console.log(parentlist[i])
+                                if(parentlist[i] == parent){
+                                    templist.push(i);
+                                    deletelist.push(i);
+                                }
+                            }
+                            // console.log(templist.length)
 
-                    //     // allnodes.push(selectedID);
-                    //     for(var i=0;i<alledges.length;i++){
-                    //         var node = network.getConnectedNodes(alledges[i]);
-                    //         for(var j=0;j<node.length;j++){
-                    //             console.log(node[j]+">"+ selectedID)
-                    //             if(node[j]> selectedID){
-                    //                 allnodes.push(node[j]);
+                        }
 
-                    //             }
-                    //         }
-                    //     }
-                    //     visited.push(selectedID);
-                    //     console.log(visited);
-                    //         allnodes.splice(0,1);
-                    //         selectedID = allnodes[0];
-                    //     if(selectedID!=undefined){
-                    //         network.selectNodes([selectedID]);
-                    //     }
-
-
-                    // }
-
-                    // network.selectNodes(visited);
-                    // network.deleteSelected();
-
+                        network.selectNodes(deletelist);
+                        network.deleteSelected();
+                    }
                 }
             }
-        	});
+    	});
 
         network.on("click", function(){
            // console.log("nodes")
