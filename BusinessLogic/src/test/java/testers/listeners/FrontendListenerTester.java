@@ -7,6 +7,7 @@ import data.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,7 +33,7 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 * @since 2016-07-21
 */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = main.Application.class)
+@ContextConfiguration(classes = testers.listeners.TestContext.class)
 public class FrontendListenerTester extends AbstractTester {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final ByteArrayOutputStream systemOut = new ByteArrayOutputStream();
@@ -46,12 +47,12 @@ public class FrontendListenerTester extends AbstractTester {
 	FrontendListener frontendListener;
 
 	@Autowired
-	@Qualifier("topicRequestContainer")
-	SimpleMessageListenerContainer topicRequestContainer;
+	@Qualifier("testAuthCodeQueueDev")
+	private LinkedBlockingQueue<AuthCode> authCodeQueue;
 
 	@Autowired
-	@Qualifier("topicResponseContainer")
-	SimpleMessageListenerContainer topicResponseContainer;
+	@Qualifier("testUserQueueDev")
+	private LinkedBlockingQueue<UserIdentified> userIdentifiedQueue;
 
 	@Before
 	public void setUp() {
@@ -76,43 +77,18 @@ public class FrontendListenerTester extends AbstractTester {
 	}
 
 	@Test
-	public void testTopicRequestContainer() {
-		Assert.assertNotNull("Failure - topicRequestContainer is null.", topicRequestContainer);
-	}
-
-	@Test
-	public void testTopicResponseContainer() {
-		Assert.assertNotNull("Failure - topicResponseContainer is null.", topicResponseContainer);
-	}
-
-	@Test
-	public void testReceiveTopicRequest() throws InterruptedException {
-		List<ProcessedData> processedData = new ArrayList<>();
-
-		String[][] processedDataTopics = {
-			{"horse", "phone", "pizza"},
-			{"horse", "saddle"},
-			{"horse", "pizza"},
-			{"horse", "computer"},
-			{"pizza", "book"},
-			{"glass", "phone"},
-			{"mouse", "pizza"},
-			{"computer", "handle"}
-		};
-
-		for (String[] ts : processedDataTopics)
-			processedData.add(new ProcessedData("Gmail", "acubencos@gmail.com", null, "zsd5465sd4f65s4df65s4df65", ts, System.currentTimeMillis()));
-
-		for (ProcessedData pd : processedData)
-			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
-
+	public void testReceiveRegister() throws InterruptedException {
+		String id = UUID.randomUUID().toString();
+		String firstName = "Acuben";
+		String lastName = "Cos";
+		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
+		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, firstName, lastName, authCodes);
+		rabbitTemplate.convertAndSend(TestContext.registerBusinessQueueName, userRegistrationIdentified);
 		Thread.sleep(5000);
-		String userId = null;
-		String[] path = {"phone"};
-		String[] exclude = {""};
-		int maxNumberOfTopics = 4;
-		TopicRequest topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
 
-		rabbitTemplate.convertAndSend("topic-request.business.rabbit", topicRequest);
+		AuthCode authCode = authCodeQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failed - authCode is null.", authCode);
+		UserIdentified userIdentified = userIdentifiedQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failed - userIdentified is null.", userIdentified);
 	}
 }
