@@ -8,8 +8,8 @@ var selectedID;
 var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
 var parentlist =[0];
 var expandlist = [];
-var currentlevel =0;
-// console.log(ca)
+var initialdepth = 3;
+// console.log(ca) 
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') {
@@ -136,6 +136,9 @@ $(document).ready(function($){
             stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
 			selectedID=0
 			document.cookie="lastselectednode="+selectedID;
+                $("#loadingAlert").fadeIn(1000, function() {
+                    // body...
+                });
             stompClient.subscribe('/topic/request', function(serverResponse){
 				var name2 = "lastselectednode=";
 				var ca2 = document.cookie.split(';');
@@ -347,18 +350,10 @@ $(document).ready(function($){
                     topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
 					document.cookie="lastselectednode="+selectedID;
-
-                    setTimeout(function(){
-                        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-
-                        // stompClient.subscribe('/topic/request', function(serverResponse){
-						//
-						//
+                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                        // $("#loadingAlert").fadeOut(1000, function() {
+                        //     // body...
                         // });
-                        $("#loadingAlert").fadeOut(1000, function() {
-                            // body...
-                        });
-                    }, 3000);
                 }
 
                 if(this.label=="Remove Bubble"){
@@ -596,9 +591,9 @@ function expandBubble(nextID){
     console.log("auto expanding: "+nextID)
     selectedID = nextID;
      network.selectNodes([nextID]);
-    $("#loadingAlert").fadeIn(1000, function() {
-        // body...
-    });
+    // $("#loadingAlert").fadeIn(1000, function() {
+    //     // body...
+    // });
     var pathtoselectednode=[];
     if(selectedID!=0)
         var pathtoselectednode =[];
@@ -611,41 +606,31 @@ function expandBubble(nextID){
     }
 
     console.log("PathFrom: " + pathtoselectednode);
-    var pos=0;
-    var branchinglimit = 4;
-    var thisgroup = nodes[selectedID].group;
-    for(var i=pathtoselectednode.length-1;i>=0;i--){
-       pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
-    }
-    // pathtoselectednodelabels.push()
-    console.log("PathTo: " + pathtoselectednodelabels);
-
-    var excludelist=[]
-    for(var i = 1; i < parentlist.length;i++){
-        if(parentlist[i]==selectedID){
-            excludelist.push(nodes[i].label.replace("\n"," "));
+    console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
+    if((pathtoselectednode.length+1)<=initialdepth){
+        var pos=0;
+        var branchinglimit = 4;
+        var thisgroup = nodes[selectedID].group;
+        for(var i=pathtoselectednode.length-1;i>=0;i--){
+           pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
         }
-    }
+        // pathtoselectednodelabels.push()
+        console.log("PathTo: " + pathtoselectednodelabels);
 
-    console.log("exclude list:"+excludelist);
+        var excludelist=[]
+        for(var i = 1; i < parentlist.length;i++){
+            if(parentlist[i]==selectedID){
+                excludelist.push(nodes[i].label.replace("\n"," "));
+            }
+        }
 
-    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+        console.log("exclude list:"+excludelist);
 
-    document.cookie="lastselectednode="+selectedID;
+        topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
-    setTimeout(function(){
+        document.cookie="lastselectednode="+selectedID;
         stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-
-        // stompClient.subscribe('/topic/request', function(serverResponse){
-        //
-        //
-        // });
-        // $("#loadingAlert").fadeOut(1000, function() {
-        //     // body...
-        // });
-        // if(expandlist.length!=0)
-        //     expandBubble(expandlist.shift());
-        // finishedtask =true;
-    }, 1000);
-    // while(!finishedtask)={}
+    }else{
+     network.selectNodes([0]);
+    }
 }
