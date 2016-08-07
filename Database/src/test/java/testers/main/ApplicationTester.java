@@ -37,6 +37,9 @@ public class ApplicationTester extends AbstractTester {
 	private PimProcessedDataRepository processedDataRepository;
 
 	@Autowired
+	private TopicRepository topicRepository;
+
+	@Autowired
 	RabbitTemplate rabbitTemplate;
 
 	@Before
@@ -44,9 +47,6 @@ public class ApplicationTester extends AbstractTester {
 		if (!setUpDone) {
 			setUpDone = true;
 		}
-
-		userRepository.deleteAll();
-		processedDataRepository.deleteAll();
 	}
 
 	@After
@@ -70,40 +70,7 @@ public class ApplicationTester extends AbstractTester {
 	}
 
 	@Test
-	public void testUserSave() {
-		User user = new User("Acuben", "Cos", "acubencos@gmail.com");
-		User savedUser = userRepository.save(user);
-		Assert.assertNotNull("Failure - savedUsers is null.", savedUser);
-		Assert.assertEquals("Failure - firstName differs.", user.getFirstName(), savedUser.getFirstName());
-		Assert.assertEquals("Failure - lastName differs.", user.getLastName(), savedUser.getLastName());
-		Assert.assertEquals("Failure - gmailId differs.", user.getGmailId(), savedUser.getGmailId());
-	}
-
-	@Test
-	public void testProcessedDataSave() {
-		String pimSource = "Gmail";
-		String userId = "acubencos@gmail.com";
-		String[] involvedContacts = {"susan@gmail.com", "steve@gmail.com", "thabo@gmail.com", "precious@gmail.com"};
-		String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
-		String[] topics = {"horse", "photo"};
-		long time = System.currentTimeMillis();
-		ProcessedData processedData = new ProcessedData(pimSource, userId, involvedContacts, pimItemId, topics, time);
-
-		ProcessedData pd = processedDataRepository.save(processedData);
-
-		Assert.assertNotNull("Failure - processedData is null.", pd);
-		Assert.assertEquals("Failure - pimSource is not equal.", processedData.getPimSource(), pd.getPimSource());
-		Assert.assertEquals("Failure - userId is not equal.", processedData.getUserId(), pd.getUserId());
-		Assert.assertEquals("Failure - involvedContacts length differs.", processedData.getInvolvedContacts().length, pd.getInvolvedContacts().length);
-
-		for (int i = 0; i < processedData.getInvolvedContacts().length; i++)
-			Assert.assertEquals("Failure - involvedContacts[" + i + "] differs.", processedData.getInvolvedContacts()[i], pd.getInvolvedContacts()[i]);
-
-		Assert.assertEquals("Failure - pimItemId is not equal.", processedData.getPimItemId(), pd.getPimItemId());
-		Assert.assertEquals("Failure - time is not equal.", processedData.getTime(), pd.getTime());
-		Assert.assertEquals("Failure - topics length differs.", processedData.getTopics().length, pd.getTopics().length);
-
-		for (int i = 0; i < processedData.getTopics().length; i++)
-			Assert.assertEquals("Failure - topics[" + i + "] differs.", processedData.getTopics()[i], pd.getTopics()[i]);
+	public void testTopicRepository() {
+		Assert.assertNotNull("Failure - topicRepository is null. Is MongoDB running?", topicRepository);
 	}
 }

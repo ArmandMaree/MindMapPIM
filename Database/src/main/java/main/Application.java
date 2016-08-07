@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.CommandLineRunner;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.annotation.*;
 
@@ -18,6 +19,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
@@ -30,6 +32,9 @@ import data.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
@@ -37,6 +42,7 @@ public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String userRegisterQueueName = "user-register.database.rabbit";
+	private final String userCheckQueueName = "user-check.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -48,7 +54,7 @@ public class Application implements CommandLineRunner {
 	private TopicRepository topicRepository;
 
 	@Autowired
-	RabbitTemplate rabbitTemplate;
+	private RabbitTemplate rabbitTemplate;
 
 	@Bean
 	Queue topicRequestQueue() {
@@ -63,6 +69,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Queue userRegisterQueue() {
 		return new Queue(userRegisterQueueName, false);
+	}
+
+	@Bean
+	Queue userCheckQueue() {
+		return new Queue(userCheckQueueName, false);
 	}
 
 	@Bean
@@ -83,6 +94,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding userRegisterBinding(@Qualifier("userRegisterQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userRegisterQueueName);
+	}
+
+	@Bean
+	Binding userCheckBinding(@Qualifier("userCheckQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userCheckQueueName);
 	}
 
 	@Bean
@@ -116,6 +132,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public MessageListenerAdapter userCheckAdapter(BusinessListener businessListener) {
+		return new MessageListenerAdapter(businessListener, "receiveCheckIfRegistered");
+	}
+
+	@Bean
 	public SimpleMessageListenerContainer topicRequestContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
@@ -142,8 +163,18 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
+	@Bean
+	public SimpleMessageListenerContainer userCheckContainer(ConnectionFactory connectionFactory, @Qualifier("userCheckAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userCheckQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
+		ctx.getEnvironment().setActiveProfiles("production");
 	}
 
 	@Override

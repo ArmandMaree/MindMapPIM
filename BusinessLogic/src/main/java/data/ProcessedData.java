@@ -47,6 +47,13 @@ public class ProcessedData implements Serializable {
 	private long time = 0;
 
 	/**
+	* Default Constructor
+	*/
+	public ProcessedData() {
+		super();
+	}
+
+	/**
 	* Constructor that initializes its fields from raw data and new topics.
 	* @param rawData The RawData object where the information of the topics were extracted from.
 	* @param topics Array of topics as extracted from the data of the rawObject.

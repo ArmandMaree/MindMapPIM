@@ -10,6 +10,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,10 +24,12 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 * @author Armand Maree
 * @since 2016-07-24
 */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes=testers.listeners.TestContext.class)
 public class ProcessedDataListenerTester extends AbstractTester {
 	private boolean setUpDone = false;
 
-	private final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String processedDataQueueName = TestContext.processedDataQueueName;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -68,7 +74,7 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		};
 
 		for (String[] ts : processedDataTopics)
-			processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, "zsd5465sd4f65s4df65s4df65", ts, System.currentTimeMillis()));
+			processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
 
 		List<Topic> topicsBefore = topicRepository.findByUserId(acuben.getUserId());
 
@@ -84,6 +90,6 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		for (Topic topic : topicsAfter)
 			System.out.println(topic.getTopic());
 
-		// Assert.assertEquals("Failure - topicsAfter is not empty.", 10, topicsAfter.size());
+		Assert.assertEquals("Failure - topicsAfter is not 10.", 10, topicsAfter.size());
 	}
 }

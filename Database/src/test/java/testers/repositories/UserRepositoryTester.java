@@ -36,6 +36,8 @@ public class UserRepositoryTester extends AbstractTester {
 		if (!setUpDone) {
 			setUpDone = true;
 		}
+
+		userRepository.deleteAll();
 	}
 
 	@After
@@ -46,8 +48,9 @@ public class UserRepositoryTester extends AbstractTester {
 	@Test
 	public void testSaveAndRetrieve() throws InterruptedException {
 		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
-		User save = userRepository.save(acuben);
+		userRepository.save(acuben);
 		User retrieve = userRepository.findByGmailId(acuben.getGmailId());
-		Assert.assertEquals("FAILURE - save not successful.", save.getUserId(), retrieve.getUserId());
+		Assert.assertNotNull("FAILURE - user not saved.", retrieve);
+		Assert.assertNotNull("FAILURE - saved user has no ID.", retrieve.getUserId());
 	}
 }
