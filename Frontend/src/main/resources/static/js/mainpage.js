@@ -7,7 +7,9 @@ var menu;
 var selectedID;
 var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
 var parentlist =[0];
-// console.log(ca)
+var expandlist = [];
+var initialdepth = 2;
+// console.log(ca) 
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') {
@@ -134,6 +136,9 @@ $(document).ready(function($){
             stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
 			selectedID=0
 			document.cookie="lastselectednode="+selectedID;
+                $("#loadingAlert").fadeIn(1000, function() {
+                    // body...
+                });
             stompClient.subscribe('/topic/request', function(serverResponse){
 				var name2 = "lastselectednode=";
 				var ca2 = document.cookie.split(';');
@@ -149,7 +154,7 @@ $(document).ready(function($){
 				}
 
 
-				console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+				// console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
 
 
 				//update graph with server response
@@ -163,9 +168,12 @@ $(document).ready(function($){
 				var pos=0;
 				var branchinglimit = topicsall.length;
 				var thisgroup = nodes[selectedID].group;
+                var tempnodelength = parseInt(nodes.length);
 				for(var i=0 ;i<branchinglimit;i++){
 					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
 					try {
+                        console.log("push "+ tempnodelength)
+                        expandlist.push(tempnodelength++);
 						data.nodes.add({
 							id: nodes.length,
 							label: topicsall[pos],
@@ -198,11 +206,12 @@ $(document).ready(function($){
 						to: nodes.length
 					});
 				}
+                expandBubble(expandlist.shift());
+                $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                });
             });
 
-        $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-        });
       }, 3000);
 
     if($(window).width()<=768){
@@ -341,18 +350,10 @@ $(document).ready(function($){
                     topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
 					document.cookie="lastselectednode="+selectedID;
-
-                    setTimeout(function(){
-                        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-
-                        // stompClient.subscribe('/topic/request', function(serverResponse){
-						//
-						//
+                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                        // $("#loadingAlert").fadeOut(1000, function() {
+                        //     // body...
                         // });
-                        $("#loadingAlert").fadeOut(1000, function() {
-                            // body...
-                        });
-                    }, 3000);
                 }
 
                 if(this.label=="Remove Bubble"){
@@ -584,4 +585,52 @@ function hidesidebar(){
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
    $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+}
+function expandBubble(nextID){
+    // var finishedtask=false;
+    console.log("auto expanding: "+nextID)
+    selectedID = nextID;
+     network.selectNodes([nextID]);
+    // $("#loadingAlert").fadeIn(1000, function() {
+    //     // body...
+    // });
+    var pathtoselectednode=[];
+    if(selectedID!=0)
+        var pathtoselectednode =[];
+    var pathtoselectednodelabels =[]
+    console.log("selectedID:"+selectedID)
+    console.log("parentlist "+parentlist)
+
+    for(var i = selectedID; i > 0; i = parentlist[i]){
+        pathtoselectednode.push(i);
+    }
+
+    console.log("PathFrom: " + pathtoselectednode);
+    console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
+    if((pathtoselectednode.length+1)<=initialdepth){
+        var pos=0;
+        var branchinglimit = 4;
+        var thisgroup = nodes[selectedID].group;
+        for(var i=pathtoselectednode.length-1;i>=0;i--){
+           pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
+        }
+        // pathtoselectednodelabels.push()
+        console.log("PathTo: " + pathtoselectednodelabels);
+
+        var excludelist=[]
+        for(var i = 1; i < parentlist.length;i++){
+            if(parentlist[i]==selectedID){
+                excludelist.push(nodes[i].label.replace("\n"," "));
+            }
+        }
+
+        console.log("exclude list:"+excludelist);
+
+        topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+
+        document.cookie="lastselectednode="+selectedID;
+        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+    }else{
+     network.selectNodes([0]);
+    }
 }
