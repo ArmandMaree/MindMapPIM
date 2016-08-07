@@ -8,7 +8,7 @@ var selectedID;
 var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
 var parentlist =[0];
 var expandlist = [];
-var initialdepth = 3;
+var initialdepth = 2;
 // console.log(ca) 
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
