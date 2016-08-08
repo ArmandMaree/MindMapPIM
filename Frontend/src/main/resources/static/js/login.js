@@ -1,5 +1,5 @@
-var auth2; // The Sign-In object.
-var googleUser; // The current user.
+var auth2; 
+var googleUser; 
 var authCodes = [];
 var gmailUser= null;
 var connected = false;
@@ -33,37 +33,39 @@ var initSigninV2 = function() {
 
   refreshValues();
 };
-
+ /**
+ * Function to send a User Registration Object through to the frontend application
+ */
 var sendUserReg = function(){
 	$("#loadingAlert").fadeIn(1000, function() {
 		// body...
 	});
-  var socket = new SockJS('/hello');
-  stompClient = Stomp.over(socket);
-  stompClient.connect({}, function(frame) {
-	  console.log('Connected: ' + frame);
-	  connected = true;
-  });
-  var userReg = {};
-  if(gmailUser!=null){
-	userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-	console.log(JSON.stringify(userReg));
-  }
-  setTimeout(function(){
-	stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-	stompClient.subscribe('/topic/greetings', function(serverResponse){
-		var jsonresponse = JSON.parse(serverResponse.body);
-		console.log("Server says: "+jsonresponse.content);
-		document.cookie="userId="+jsonresponse.content;
-		$("#loadingAlert").fadeOut(1000, function() {
-		// body...
-		});
-		window.location.assign('/mainpage');
-	}, function(error) {
-	    // display the error's message header:
-	    console.log(error.headers.message);
-  	});
-  }, 3000);
+	var socket = new SockJS('/hello');
+	stompClient = Stomp.over(socket);
+	stompClient.connect({}, function(frame) {
+	    console.log('Connected: ' + frame);
+	    connected = true;
+	});
+  	var userReg = {};
+  	if(gmailUser!=null){
+		userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+		console.log(JSON.stringify(userReg));
+  	}
+  	setTimeout(function(){
+		stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+		stompClient.subscribe('/topic/greetings', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			console.log("Server says: "+jsonresponse.content);
+			document.cookie="userId="+jsonresponse.content;
+			$("#loadingAlert").fadeOut(1000, function() {
+				// body...
+			});
+			window.location.assign('/mainpage');
+		}, function(error) {
+	    		// display the error's message header:
+	    		console.log(error.headers.message);
+  			});
+  	}, 3000);
 
 
 
@@ -78,7 +80,7 @@ var sendUserReg = function(){
   // setTimeout(function(){ window.location.assign('/mainpage')},3000);
 }
 /**
- * A function that cheks where any sign in activity for Google has happened and responds.
+ * A function that checks where any sign in activity for Google has happened and responds.
  * @param {boolean} val - true if a sign in has occured.
  */
 var signinChanged = function (val) {
@@ -139,7 +141,7 @@ var signinChanged = function (val) {
   }
 };
 /**
- * Google function that checks if the user is already logged in or if the user has just logged in and responds
+ * A function that checks if the user is already logged in to Google or if the user has just logged in and responds
  */
 var refreshValues = function() {
   if (auth2){
@@ -161,14 +163,14 @@ var onSuccess = function(user) {
 	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
- * Google callback function when a request has failed.
+ * A Google callback function when a request has failed.
  * @param {string} error - The error message.
  */
 var onFailure = function(error) {
 	console.log(error);
 };
 /**
- * Google function that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
+ * A function for Google that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
  */
 function googleretrieve(){
 
@@ -191,24 +193,12 @@ function googleretrieve(){
 	  authCodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 
-	  // $.ajax({
-	  //   type: "POST",
-	  //   url: "http://localhost:50001/google/token",
-	  //   data: JSON.stringify({ authCode: authResult['code'] }),
-	  //   contentType: 'application/json',
-	  //   success: function(data) {
-	  //     if(data == 'OK')
-	  //       console.log('Sent Successful');
-	  //     else
-	  //       console.log("Sending failed");
-	  //   }
-	  // });
 	} else {
-	  // There was an error.
+	  	console.log("An error occurred!");
 	}
   }
 /**
- * Function to ajax the Privacy Policy document into a modal and display the Privacy policy.
+ * A function to ajax the Privacy Policy document into a modal and display the Privacy policy.
  */
 function loadPrivacy(){
   document.getElementById("modaltitle").innerHTML="Privacy Policy";
@@ -219,11 +209,10 @@ function loadPrivacy(){
 		  }
   }
   xmlhttp.open("GET","ajax/PrivacyPolicy.txt");
-  // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
   xmlhttp.send();
 }
 /**
- * Function to ajax the Terms of service document into a modal and display the Terms of service.
+ * A function to ajax the Terms of service document into a modal and display the Terms of service.
  */
 function loadTos(){
   document.getElementById("modaltitle").innerHTML="Terms of Service";
@@ -232,40 +221,38 @@ function loadTos(){
 	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
 		  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
 		  }
-  }
+    }
   xmlhttp.open("GET","ajax/TermsofService.txt");
-  // xmlhttp.open("GET","newhtml.txt?rndstr=<%= getRandomStr() %>&fname=Henry&lname=Ford",true);
   xmlhttp.send();
 }
 /**
- *Function to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
+ * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
  */
 function loadXMLDoc(){
-  if($(window).width()<=700){
-	$('.login-container').animate({
-		width:"110%",
-		height:"100%"
-	});
-  }else{
-	$('.login-container').animate({
-		width:"450px",
-		height:"450px",
-
-	});
-  }
-
+    if($(window).width()<=700)
+    {
+		$('.login-container').animate({
+			width:"110%",
+			height:"100%"
+		});
+    }
+    else
+    {
+		$('.login-container').animate({
+			width:"450px",
+			height:"450px",
+		});
+  	}
 	$("#continue").animate({
 		top: '100px',
 		opacity: '0.0'
 
 	});
-
 	$("#avatar").animate({
 		top: '100px',
 		opacity: '0.0'
 
 	});
-
 	$("#welcome").animate({
 		top: '100px',
 		opacity: '0.0'
@@ -273,16 +260,16 @@ function loadXMLDoc(){
 	});
 	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function(){
-		 if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
 			document.getElementById("container").innerHTML=xmlhttp.responseText;
-			}
+		}
 	}
 	xmlhttp.open("GET","ajax/selectdata.html");
 	xmlhttp.send();
 	var filename;
 }
 /**
- * Google function to sign the user out if they are signed in.
+ * A Google function to sign the user out if they are signed in.
  */
 function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();
@@ -292,7 +279,7 @@ function signOut() {
 }
 
 /**
- * Function to hide a few elements when the page has loaded.
+ * A function to hide a few elements when the page has loaded.
  */
 jQuery(document).ready(function($){
 	$("#submitID").hide();
