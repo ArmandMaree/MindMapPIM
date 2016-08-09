@@ -4,6 +4,12 @@ var authCodes = [];
 var gmailUser= null;
 var connected = false;
 /**
+*	Function that prevents auto sign in for Gmail
+*/
+window.onbeforeunload = function(e){
+  gapi.auth2.getAuthInstance().signOut();
+};
+/**
  * Starts the log in process by calling the google api.
  */
 var startApp = function() {
@@ -360,7 +366,7 @@ function showtick()
 window.fbAsyncInit = function() {
 FB.init({
   appId      : '1051696778242173',
-  cookie     : true,  // enable cookies to allow the server to access
+  cookie     : false,  // enable cookies to allow the server to access
 					  // the session
   xfbml      : true,  // parse social plugins on this page
   version    : 'v2.5' // use graph api version 2.5
