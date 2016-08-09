@@ -1,15 +1,48 @@
+/**
+*	@var {String} name - 
+*/
 var name = "login=";
+/**
+*	@var {} rightClick - 
+*/
 var rightClick;
+/**
+*	@var {} ca - 
+*/
 var ca = document.cookie.split(';');
+/**
+*	@var {String} x - 
+*/
 var x="";
+/**
+*	@var {String} x1 - 
+*/
 var x1="";
+/**
+*	@var {} menu - 
+*/
 var menu;
+/**
+*	@var {int} selectedID - 
+*/
 var selectedID;
+/**
+*	@var {String[]} mockArrayOfData - 
+*/
 var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
+/**
+*	@var {} parentlist - 
+*/
 var parentlist =[0];
+/**
+*	@var {} expandlist - 
+*/
 var expandlist = [];
+/**
+*	@var {int} initialdepth - 
+*/
 var initialdepth = 2;
-// console.log(ca) 
+
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') {
@@ -23,11 +56,16 @@ for(var i = 0; i <ca.length; i++) {
 if(x!="1"){
     window.location.assign('/');
 }
-
+/**
+*	A function that creates a json string from an object
+*	@param obj An object that needs to be converted into a JSON string
+*/
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
-
+/**
+*	A JQuery function that allows the sidepanel to be resizeable
+*/
 $( window ).resize(function() {
     if($(window).width()<=768){
         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
@@ -41,12 +79,35 @@ $( window ).resize(function() {
         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
     }
 });
-var nodes, edges, network;
+/**
+*	@var nodes - An array of node objects
+*/
+var nodes;
+/**
+*	@var {} edges - An array of edge objects
+*/
+var edges;
+/**
+*	@var {} network - A variable which holds the created network
+*/
+var network;
+/**
+*	Function that is executed when the document has loaded
+*/
 $(document).ready(function($){
+	/**
+	*	A function that displays the loading bar
+	*/
     $("#loadingAlert").fadeIn(1000, function() {
         // body...
     });
+    /**
+    *	@var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
+    */
     var color = 'gray';
+    /**
+    *	@var len - 
+    */	
     var len = undefined;
     nodes = [
         {id: 0, label: "    ME    ", group: 0},
@@ -70,14 +131,22 @@ $(document).ready(function($){
             // {from: 2, to: 8}
         ]
 
-      // create a network
-      var container = document.getElementById('mynetwork');
-      var data = {
-        nodes: new vis.DataSet(nodes),
-        edges: new vis.DataSet(edges)
-      };
+	    /**
+	      *	@var container - A variable that holds the html element that contains the BubbleMap
+	    */
+	    var container = document.getElementById('mynetwork');
+	    /**
+	      *	@var data - An object that contains the node and edge objects
+	    */
+	    var data = {
+	       nodes: new vis.DataSet(nodes),
+	       edges: new vis.DataSet(edges)
+	    };
 
-        var options = {
+	    /**
+	    *	@var options - An object that contains all settings for the BubbleMap
+	    */
+       	var options = {
             interaction:{
                 hover: true,
                 hoverConnectedEdges: true,
@@ -101,26 +170,43 @@ $(document).ready(function($){
             }
         };
         network = new vis.Network(container, data, options);
-
-      var socket = new SockJS('/request');
-      stompClient = Stomp.over(socket);
-      stompClient.connect({}, function(frame) {
-          console.log('Connected: ' + frame);
-      });
+        /**
+        *	@var socket - holds the web socket object
+        */
+      	var socket = new SockJS('/request');
+      	/**
+      	*	@var stompClient - 
+      	*/
+      	stompClient = Stomp.over(socket);
+      	/**
+      	*	A function that connects the stompClient 
+      	*/
+      	stompClient.connect({}, function(frame) {
+        	console.log('Connected: ' + frame);
+      	});
 
       // var userReg = {};
       // if(gmailUser!=null){
       //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
       //   console.log(JSON.stringify(userReg));
       // }
-        // this.userId = userId;
-        // this.path = path;
-        // this.exclude = exclude;
-        // this.maxNumberOfTopics = maxNumberOfTopics;
+      //   this.userId = userId;
+      //   this.path = path;
+      //   this.exclude = exclude;
+      //   this.maxNumberOfTopics = maxNumberOfTopics;
+
+       /**
+       *	@var {String} name1 - string that contains the userId
+       */
         var name1 = "userId=";
+        /**
+		*	@var ca1 - Cookie....
+		*/
         var ca1 = document.cookie.split(';');
+        /**
+        *	@var x1 - ...
+        */
         x1 ="";
-        // console.log(ca1)
         for(var i = 0; i <ca1.length; i++) {
             var c = ca1[i];
             while (c.charAt(0)==' ') {
@@ -130,17 +216,37 @@ $(document).ready(function($){
                 x1 = c.substring(name1.length,c.length);
             }
         }
-
+        /**
+        *	@var topicRequest -  a JSON oject that contains information for a topic request
+        */
         topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+        /**
+        *	A function that sends the topicRequest object through the websocket in order to make the request
+        */
         setTimeout(function(){
             stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-			selectedID=0
+            /**
+            *	@var {integer} selectedID - contains the id of the last selected node
+            */
+			selectedID=0;
 			document.cookie="lastselectednode="+selectedID;
-                $("#loadingAlert").fadeIn(1000, function() {
-                    // body...
-                });
+            /**
+            *	A function that displays the loading bar
+            */
+            $("#loadingAlert").fadeIn(1000, function() {
+                // body...
+            });
+            /**
+            *	A function that subscribes to a destination that the requests are sent to 
+            */
             stompClient.subscribe('/topic/request', function(serverResponse){
+				/**
+				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
+				*/
 				var name2 = "lastselectednode=";
+				/**
+				*	@var ca2 - Splits the document cookie on semicolons into an array
+				*/
 				var ca2 = document.cookie.split(';');
 				selectedID ="";
 				for(var i = 0; i <ca2.length; i++) {
@@ -159,15 +265,29 @@ $(document).ready(function($){
 
 				//update graph with server response
 
-
+				/**
+				*	@var JSONServerResponse - contains the parsed response from the websocket
+				*/
 				var JSONServerResponse = JSON.parse(serverResponse.body);
-				// var JSONServerResponse = {"userId":"579a106be4b0dfee6fcec8a3","topicsText":["Horse","photo","New","recipe"],"topics":[{"id":"579a1e92e4b0dfee6fceca94","userId":"579a106be4b0dfee6fcec8a3","topic":"Horse","relatedTopics":["photo"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721044,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca95","userId":"579a106be4b0dfee6fcec8a3","topic":"photo","relatedTopics":["Horse"],"processedDataIds":["579a1e92e4b0dfee6fceca93","579a2f73e4b0dfee6fcecaa8","579a3061e4b0dfee6fcecaad"],"time":1469722721048,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca97","userId":"579a106be4b0dfee6fcec8a3","topic":"New","relatedTopics":["recipe","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721273,"weight":30000.0},{"id":"579a1e92e4b0dfee6fceca98","userId":"579a106be4b0dfee6fcec8a3","topic":"recipe","relatedTopics":["New","Fridge","cheesecake","member","pamphlet"],"processedDataIds":["579a1e92e4b0dfee6fceca96","579a2f73e4b0dfee6fcecaa9","579a3061e4b0dfee6fcecaae"],"time":1469722721274,"weight":30000.0}]}
-
-
+				/**
+				*	@var topicsall - an array that contains all topics in the JSONServerResponse variable
+				*/
 				var topicsall = JSONServerResponse.topicsText;
+				/**
+				*	@var {int} pos - a variable that contains the position
+				*/
 				var pos=0;
+				/**
+				*	@var {int} branchinglimit - contains the length of the topicsall array
+				*/
 				var branchinglimit = topicsall.length;
+				/**
+				*	@var thisgroup - ....
+				*/
 				var thisgroup = nodes[selectedID].group;
+				/**
+				*	@var tempnodelength - contains the length of the nodes array
+				*/
                 var tempnodelength = parseInt(nodes.length);
 				for(var i=0 ;i<branchinglimit;i++){
 					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
@@ -214,370 +334,362 @@ $(document).ready(function($){
 
       }, 3000);
 
-    if($(window).width()<=768){
+    if($(window).width()<=768)
+    {
          $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
-    }else{
+    }
+    else
+    {
         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
     }
     $("#sidepanel").hide();
+    /**
+    *	A function that disables the default event that occurs on rightclick event
+    */
     document.oncontextmenu = function() {return false;};
-    // $("canvas").click(function(event){
- //     event.preventDefault();
-    // });
 
-        function populateSidePanel(node, array)
+    /**
+    *	A function that populates the sidepanel with data
+    *	@param node - the node that has been selected
+    *	@param array - contains the data of the selected node
+    */
+    function populateSidePanel(node, array)
+    {
+
+        $("#accordion").html("");
+        if(array.Topic != "Contact")
         {
-
-            $("#accordion").html("");
-            if(array.Topic != "Contact")
+            $("#sidepanelTitle").html("<h2>"+array.Topic+"</h2>");
+        }
+        else
+        {
+            $("#sidepanelTitle").html("<h2>"+array.Name+"</h2>")
+        }
+        console.log("Title: "+$("#sidepanelTitle").text());
+        if((array.hasOwnProperty('Name')))
+        {
+            $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+            $("#details").html("Email Address: " + array.emailAddress);
+        }
+        if((array.hasOwnProperty('Facebook')))
+        {
+            $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">Facebook</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="facebook" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+            for(var i = 0 ; i < array.Facebook.length; i++ )
             {
-                $("#sidepanelTitle").html("<h2>"+array.Topic+"</h2>");
+                $("#facebook").append("<div>"+array.Facebook[i]+"</div>");
             }
-            else
+        }
+        if((array.hasOwnProperty('Gmail')))
+        {
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title">Gmail</h3></div><div id="collapse3" class="panel-collapse collapse"><div id="gmail" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+            for(var i = 0 ; i < array.Gmail.length; i++ )
             {
-                $("#sidepanelTitle").html("<h2>"+array.Name+"</h2>")
+                $("#gmail").append("<div class='email panel'><h3>"+array.Gmail[i].subject +"</h3><br />"+array.Gmail[i].data+"</div>");
             }
-            console.log("Title: "+$("#sidepanelTitle").text());
-            if((array.hasOwnProperty('Name')))
+        }
+        if((array.hasOwnProperty('Twitter')))
+        {
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title">Twitter</h3></div><div id="collapse4" class="panel-collapse collapse"><div id="twitter" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+            for(var i = 0 ; i < array.Twitter.length; i++ )
             {
-                $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-                $("#details").html("Email Address: " + array.emailAddress);
+                $("#twitter").html("<div>"+array.Twitter.data+"</div>");
             }
-            if((array.hasOwnProperty('Facebook')))
+        }
+        if((array.hasOwnProperty('LinkedIn')))
+        {
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+            for(var i = 0 ; i < array.LinkedIn.length; i++ )
             {
-                $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">Facebook</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="facebook" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-                for(var i = 0 ; i < array.Facebook.length; i++ )
-                {
-                    $("#facebook").append("<div>"+array.Facebook[i]+"</div>");
-                }
+                $("#linkedIn").html("<div>"+array[i].data+"</div>");
             }
-            if((array.hasOwnProperty('Gmail')))
-            {
-                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title">Gmail</h3></div><div id="collapse3" class="panel-collapse collapse"><div id="gmail" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-                for(var i = 0 ; i < array.Gmail.length; i++ )
-                {
-                    $("#gmail").append("<div class='email panel'><h3>"+array.Gmail[i].subject +"</h3><br />"+array.Gmail[i].data+"</div>");
-                }
-            }
-            if((array.hasOwnProperty('Twitter')))
-            {
-                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title">Twitter</h3></div><div id="collapse4" class="panel-collapse collapse"><div id="twitter" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-                for(var i = 0 ; i < array.Twitter.length; i++ )
-                {
-                    $("#twitter").html("<div>"+array.Twitter.data+"</div>");
-                }
-            }
-            if((array.hasOwnProperty('LinkedIn')))
-            {
-                $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-                for(var i = 0 ; i < array.LinkedIn.length; i++ )
-                {
-                    $("#linkedIn").html("<div>"+array[i].data+"</div>");
-                }
-            }
-
-
         }
 
 
-        menu = new ax5.ui.menu({
-            position: "absolute", // default position is "fixed"
-            theme: "info",
-            icons: {
-                'arrow': '<i class="fa fa-caret-right"></i>'
+    }
+
+    /**
+    *	@var menu - variable that is assigned the context menu
+    */
+    menu = new ax5.ui.menu({
+        position: "absolute", // default position is "fixed"
+        theme: "info",
+        icons: {
+            'arrow': '<i class="fa fa-caret-right"></i>'
+        },
+        items: [
+            {
+                icon: '<i class="fa fa-comment"></i>',
+                label: "Expand Bubble",
             },
-            items: [
-                {
-                    icon: '<i class="fa fa-comment"></i>',
-                    label: "Expand Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-hand-peace-o"></i>', label: "Menu A-0"},
-                    //     {icon: '<i class="fa fa-hand-rock-o"></i>',label: "Menu A-1"},
-                    //     {icon: '<i class="fa fa-hand-stop-o"></i>',label: "Menu A-2"}
-                    // ]
-                },
-                {
-                    icon: '<i class="fa fa-comments"></i>',
-                    label: "Remove Bubble",
-                    // items: [
-                    //     {icon: '<i class="fa fa-pencil-square"></i>', label: "Menu B-0"},
-                    //     {icon: '<i class="fa fa-phone-square"></i>', label: "Menu B-1"},
-                    //     {icon: '<i class="fa fa-plus-square"></i>', label: "Menu B-2"}
-                    // ]
-                }
-            ],
-            onClick: function(){
-                if(this.label=="Expand Bubble"){
-                    $("#loadingAlert").fadeIn(1000, function() {
-                        // body...
-                    });
-                    var pathtoselectednode=[];
-                    if(selectedID!=0)
-                        var pathtoselectednode =[];
-                    var pathtoselectednodelabels =[]
-                    console.log("selectedID:"+selectedID)
-                    console.log("parentlist "+parentlist)
+            {
+                icon: '<i class="fa fa-comments"></i>',
+                label: "Remove Bubble",
+            }
+        ],
+        onClick: function(){
+            if(this.label=="Expand Bubble"){
+                $("#loadingAlert").fadeIn(1000, function() {
+                    // body...
+                });
+                var pathtoselectednode=[];
+                if(selectedID!=0)
+                    var pathtoselectednode =[];
+                var pathtoselectednodelabels =[]
+                console.log("selectedID:"+selectedID)
+                console.log("parentlist "+parentlist)
 
-                    for(var i = selectedID; i > 0; i = parentlist[i]){
-                        pathtoselectednode.push(i);
-                    }
-
-                    console.log("PathFrom: " + pathtoselectednode);
-                    var pos=0;
-                    var branchinglimit = 4;
-                    var thisgroup = nodes[selectedID].group;
-                    for(var i=pathtoselectednode.length-1;i>=0;i--){
-                       pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
-                    }
-                    // pathtoselectednodelabels.push()
-                    console.log("PathTo: " + pathtoselectednodelabels);
-
-                    var excludelist=[]
-                    for(var i = 1; i < parentlist.length;i++){
-                        if(parentlist[i]==selectedID){
-                            excludelist.push(nodes[i].label.replace("\n"," "));
-                        }
-                    }
-
-                    console.log("exclude list:"+excludelist);
-
-                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
-
-					document.cookie="lastselectednode="+selectedID;
-                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-                        // $("#loadingAlert").fadeOut(1000, function() {
-                        //     // body...
-                        // });
+                for(var i = selectedID; i > 0; i = parentlist[i]){
+                    pathtoselectednode.push(i);
                 }
 
-                if(this.label=="Remove Bubble"){
-                    if(selectedID!=0){
-                        // parentlist =[0,0,0,2,0,4,0,6,2];
-                        var deletelist =[]
-                        var templist = []
-                        deletelist.push(selectedID);
-                        templist.push(selectedID);
-                        var count =0;
-                        while(templist.length>0 || count > 10000){
-                            count++;
-                            var parent = templist.pop();
-                            // console.log(parent);
-                            for(var i=0;i<parentlist.length;i++){
-                                // console.log(parentlist[i])
-                                if(parentlist[i] == parent){
-                                    templist.push(i);
-                                    deletelist.push(i);
-                                }
+                console.log("PathFrom: " + pathtoselectednode);
+                var pos=0;
+                var branchinglimit = 4;
+                var thisgroup = nodes[selectedID].group;
+                for(var i=pathtoselectednode.length-1;i>=0;i--){
+                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
+                }
+                // pathtoselectednodelabels.push()
+                console.log("PathTo: " + pathtoselectednodelabels);
+
+                var excludelist=[]
+                for(var i = 1; i < parentlist.length;i++){
+                    if(parentlist[i]==selectedID){
+                        excludelist.push(nodes[i].label.replace("\n"," "));
+                    }
+                }
+
+                console.log("exclude list:"+excludelist);
+
+                topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+
+				document.cookie="lastselectednode="+selectedID;
+                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                    // $("#loadingAlert").fadeOut(1000, function() {
+                    //     // body...
+                    // });
+            }
+
+            if(this.label=="Remove Bubble"){
+                if(selectedID!=0){
+                    // parentlist =[0,0,0,2,0,4,0,6,2];
+                    var deletelist =[]
+                    var templist = []
+                    deletelist.push(selectedID);
+                    templist.push(selectedID);
+                    var count =0;
+                    while(templist.length>0 || count > 10000){
+                        count++;
+                        var parent = templist.pop();
+                        // console.log(parent);
+                        for(var i=0;i<parentlist.length;i++){
+                            // console.log(parentlist[i])
+                            if(parentlist[i] == parent){
+                                templist.push(i);
+                                deletelist.push(i);
                             }
-                            // console.log(templist.length)
-
                         }
+                        // console.log(templist.length)
 
-                        network.selectNodes(deletelist);
-                        network.deleteSelected();
                     }
+
+                    network.selectNodes(deletelist);
+                    network.deleteSelected();
                 }
             }
-    	});
+        }
+	});
+	/**
+	*	A function that resets the html for certain divs
+	*/
+    network.on("click", function(){
+       // console.log("nodes")
+       $("#facebook").html("");
+       $("#gmail").html("");
+       $("#twitter").html("");
+       $("#linkedIn").html("");
+       $("#sidepanelTitle").html("");
+       $("#sidepanel").hide();
 
-        network.on("click", function(){
-           // console.log("nodes")
-           $("#facebook").html("");
-           $("#gmail").html("");
-           $("#twitter").html("");
-           $("#linkedIn").html("");
-           $("#sidepanelTitle").html("");
-           $("#sidepanel").hide();
+       $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+    });
+    /**
+    *	A function that handles the doubleClick event on the BubbleMap
+    */
+    network.on("doubleClick", function(){
+       if($(window).width()<=768){
+            $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
+       }else{
+            $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+       }
 
-           $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
-        });
-        network.on("doubleClick", function(){
-           if($(window).width()<=768){
-                $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
-           }else{
-                $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
-           }
+       console.log(nodes)
+       $("#facebook").html("");
+       $("#gmail").html("");
+       $("#twitter").html("");
+       $("#linkedIn").html("");
+       $("#sidepanelTitle").html("");
+       try{
+        var e = window.event;
+        var posX = e.clientX;
+        var posY = e.clientY - $("nav").height();
+        console.log("X: "+ posX);
+        console.log("Y: "+ posY);
+        var selectedNode = network.getNodeAt({"x": posX, "y": posY});
+        }catch(err){
 
-           console.log(nodes)
-           $("#facebook").html("");
-           $("#gmail").html("");
-           $("#twitter").html("");
-           $("#linkedIn").html("");
-           $("#sidepanelTitle").html("");
-           try{
-            var e = window.event;
-            var posX = e.clientX;
-            var posY = e.clientY - $("nav").height();
-            console.log("X: "+ posX);
-            console.log("Y: "+ posY);
-            var selectedNode = network.getNodeAt({"x": posX, "y": posY});
-            }catch(err){
-
-            }
-            var s = network.getSelectedNodes();
-            // var label = data.node(s);
-            // console.log("s: "  + s);
-            // // console.log("+++++++++++++"+nodes[s].label )
-            // var alledges = network.getSelectedEdges();
-            // var allnodes = []
-            // for(var i=0;i<alledges.length;i++){
-            //     var node = network.getConnectedNodes(alledges[i]);
-            //     console.log(node);
-            //     for(var j=0;j<node.length;j++){
-            //         allnodes.push(node[j]);
-            //     }
-            // }
-            // network.selectNodes(allnodes);
-            // console.log(nodes.length);
-            var horse = {
-                "Topic" : "Horse",
-                "Facebook" : [
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=100%" width="100%" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="100%" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=100%" width="100%" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
-                ],
-                "Gmail" :[
-                    { "subject" : "Confirmation of your ride","data" : "Dear Acuben<br /><br /> We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. <br /><br />Kind regards <br />Marlene Kruger"}
-                ]};
-            var cooking = {
-                "Topic":"Cooking",
-                "Facebook": [
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-                    // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
-                ],
-                "Gmail" : [
-                    {"subject": "New recipe for Fridge cheesecake" , "data" : "Dear member <br /><br />Please find attached to your pamphlet a new recipe. Please try this recipe out before next week froday. <br /><br />Enjoy your day!"}
-                ]
-            };
-            var holiday = {
-                "Topic":"Holiday",
-                "Gmail" : [
-                    {"subject": "Holiday" , "data" : "Dear Acuben<br /><br />How was your holiday in Durban last week?<br /><br />Kind Regards <br />Arno Grobler"}
-                ]
-            };
-            var contact = {
-                "Topic" : "Contact",
-                "Name": "Arno Grobler",
-                "emailAddress" : "arnogrobler@hott.com"
-            }
-            var contact2 = {
-                "Topic" : "Contact",
-                "Name": "Amy Lochner",
-                "emailAddress" : "lochneramy@gmail.com"
-            }
-             var contact3 = {
-                "Topic" : "Contact",
-                "Name": "Fritz Solms",
-                "emailAddress" : "fritzsolms@cs.up.ac.za"
-            }
-            var cos = {
-                "Topic" : "COS301",
-                "Gmail" : [
-                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Please note class will be suspendedd on the 25th July due to unforeseen circumstances. Please use this time to work with your main project group.<br /><br /> Thank you."},
-                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Assignment 2 now due. Please upload as soon as possible!<br /><br />Kind Regards<br />Fritz Solms"},
-                    {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Lecture notes have been uploaded! Please download asap<br /><br />Kind Regards<br />Fritz Solms"}
-                ]
-            }
+        }
+        var s = network.getSelectedNodes();
+      
+        var horse = {
+            "Topic" : "Horse",
+            "Facebook" : [
+                '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=100%" width="100%" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="100%" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=100%" width="100%" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+            ],
+            "Gmail" :[
+                { "subject" : "Confirmation of your ride","data" : "Dear Acuben<br /><br /> We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. <br /><br />Kind regards <br />Marlene Kruger"}
+            ]};
+        var cooking = {
+            "Topic":"Cooking",
+            "Facebook": [
+                '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
+                // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+            ],
+            "Gmail" : [
+                {"subject": "New recipe for Fridge cheesecake" , "data" : "Dear member <br /><br />Please find attached to your pamphlet a new recipe. Please try this recipe out before next week froday. <br /><br />Enjoy your day!"}
+            ]
+        };
+        var holiday = {
+            "Topic":"Holiday",
+            "Gmail" : [
+                {"subject": "Holiday" , "data" : "Dear Acuben<br /><br />How was your holiday in Durban last week?<br /><br />Kind Regards <br />Arno Grobler"}
+            ]
+        };
+        var contact = {
+            "Topic" : "Contact",
+            "Name": "Arno Grobler",
+            "emailAddress" : "arnogrobler@hott.com"
+        }
+        var contact2 = {
+            "Topic" : "Contact",
+            "Name": "Amy Lochner",
+            "emailAddress" : "lochneramy@gmail.com"
+        }
+         var contact3 = {
+            "Topic" : "Contact",
+            "Name": "Fritz Solms",
+            "emailAddress" : "fritzsolms@cs.up.ac.za"
+        }
+        var cos = {
+            "Topic" : "COS301",
+            "Gmail" : [
+                {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Please note class will be suspendedd on the 25th July due to unforeseen circumstances. Please use this time to work with your main project group.<br /><br /> Thank you."},
+                {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Assignment 2 now due. Please upload as soon as possible!<br /><br />Kind Regards<br />Fritz Solms"},
+                {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Lecture notes have been uploaded! Please download asap<br /><br />Kind Regards<br />Fritz Solms"}
+            ]
+        }
 
 
-                $("#sidepanel").show();
-                if(nodes[s] =="undefined"  || s== null || s=="")
-                {
-                    $("#sidepanel").hide();
-                    console.log("Got here");
-                }
-                else if(nodes[s].label =="Horse")
-                {
-                    populateSidePanel(selectedNode, horse);
-                    $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
-                }
-                else if(nodes[s].label =="Cooking")
-                {
-                    populateSidePanel(selectedNode, cooking);
-                    $("#breadcrumb").html('<li>Me</li><li>Cooking</li>');
-                }
-                else if(nodes[s].label =="Holiday")
-                {
-                    populateSidePanel(selectedNode, holiday);
-                    $("#breadcrumb").html('<li>Me</li><li>Holiday</li>');
-                }
-                else if(nodes[s].label =="Arno \n Grobler")
-                {
-                    populateSidePanel(selectedNode, contact);
-                    $("#breadcrumb").html('<li>Me</li><li>Holiday</li><li>Arno Grobler</li>');
-                }
-                else if(nodes[s].label =="Amy \n Lochner")
-                {
-                    populateSidePanel(selectedNode, contact2);
-                    $("#breadcrumb").html('<li>Me</li><li>Horse</li><li>Amy Lochner</li>');
-                }
-                else if(nodes[s].label =="COS301")
-                {
-                    populateSidePanel(selectedNode, cos);
-                    $("#breadcrumb").html('<li>Me</li><li>COS301</li>');
-                }
-                else if(nodes[s].label =="Fritz \n Solms")
-                {
-                    populateSidePanel(selectedNode, contact3);
-                    $("#breadcrumb").html('<li>Me</li><li>COS301</li><li>Fritz Solms</li>');
-                }
-                else
-                {
-                    $("#sidepanel").hide();
-                }
-                console.log("works on right click");
-        });
+        $("#sidepanel").show();
+        if(nodes[s] =="undefined"  || s== null || s=="")
+        {
+            $("#sidepanel").hide();
+            console.log("Got here");
+        }
+        else if(nodes[s].label =="Horse")
+        {
+            populateSidePanel(selectedNode, horse);
+            $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
+        }
+        else if(nodes[s].label =="Cooking")
+        {
+            populateSidePanel(selectedNode, cooking);
+            $("#breadcrumb").html('<li>Me</li><li>Cooking</li>');
+        }
+        else if(nodes[s].label =="Holiday")
+        {
+            populateSidePanel(selectedNode, holiday);
+            $("#breadcrumb").html('<li>Me</li><li>Holiday</li>');
+        }
+        else if(nodes[s].label =="Arno \n Grobler")
+        {
+            populateSidePanel(selectedNode, contact);
+            $("#breadcrumb").html('<li>Me</li><li>Holiday</li><li>Arno Grobler</li>');
+        }
+        else if(nodes[s].label =="Amy \n Lochner")
+        {
+            populateSidePanel(selectedNode, contact2);
+            $("#breadcrumb").html('<li>Me</li><li>Horse</li><li>Amy Lochner</li>');
+        }
+        else if(nodes[s].label =="COS301")
+        {
+            populateSidePanel(selectedNode, cos);
+            $("#breadcrumb").html('<li>Me</li><li>COS301</li>');
+        }
+        else if(nodes[s].label =="Fritz \n Solms")
+        {
+            populateSidePanel(selectedNode, contact3);
+            $("#breadcrumb").html('<li>Me</li><li>COS301</li><li>Fritz Solms</li>');
+        }
+        else
+        {
+            $("#sidepanel").hide();
+        }
+        console.log("works on right click");
+    });
 
-
-        network.on("oncontext", function(){
-            var e = window.event;
-            var posX = e.clientX;
-            var posY = e.clientY - $("nav").height();
-            console.log("X: "+ posX);
-            console.log("Y: "+ posY);
-            console.log(network.getNodeAt({"x": posX, "y": posY}));
-            selectedID = network.getNodeAt({"x": posX, "y": posY});
-            network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
-            var node = network.getSelectedNodes();
-            console.log(node);
-                console.log("works on right click");
-                // $(this).bind("contextmenu", function (e) {
-                if(node.length != 0)
-                {
-                    menu.popup(e);
-                    ax5.util.stopEvent(e);
-                }
-                // });
-            //Node is an array of nodes
-            rightClick = network.getSelectedNodes();
-            console.log(rightClick);
-
-            if(rightClick.length != 0)
+	/**
+	*	A function that handles the rightClick event on the BubbleMap 
+	*/
+    network.on("oncontext", function(){
+        var e = window.event;
+        var posX = e.clientX;
+        var posY = e.clientY - $("nav").height();
+        console.log("X: "+ posX);
+        console.log("Y: "+ posY);
+        console.log(network.getNodeAt({"x": posX, "y": posY}));
+        selectedID = network.getNodeAt({"x": posX, "y": posY});
+        network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
+        var node = network.getSelectedNodes();
+        console.log(node);
+            console.log("works on right click");
+            // $(this).bind("contextmenu", function (e) {
+            if(node.length != 0)
             {
                 menu.popup(e);
                 ax5.util.stopEvent(e);
             }
+            // });
+        //Node is an array of nodes
+        rightClick = network.getSelectedNodes();
+        console.log(rightClick);
 
-        });
+        if(rightClick.length != 0)
+        {
+            menu.popup(e);
+            ax5.util.stopEvent(e);
+        }
+
+    });
 
 
 });
 
-
-
-// $(document).click(function(event) {
-//     var text = $(event.target).text();
-//     console.log($(event.target));
-// });
-function hidesidebar(){
+/**
+*	A function that hides the sidebar
+*/
+function hidesidebar()
+{
     $("#facebook").html("");
    $("#gmail").html("");
    $("#twitter").html("");
@@ -586,7 +698,11 @@ function hidesidebar(){
    $("#sidepanel").hide();
    $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
 }
-function expandBubble(nextID){
+/**
+*	A function that is called when a user clicks on the expand bubble option in the context menu
+*/
+function expandBubble(nextID)
+{
     // var finishedtask=false;
     console.log("auto expanding: "+nextID)
     selectedID = nextID;

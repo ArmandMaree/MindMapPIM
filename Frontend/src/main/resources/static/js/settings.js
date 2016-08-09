@@ -1,6 +1,9 @@
 $(document).ready(function(){
 	$("#theme").hide();
 	$("#userPreferences").hide();
+	/**
+	*	This function adds/removes the css class active for the selected tab
+	*/
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
 		$(this).addClass("active");
@@ -20,7 +23,6 @@ $(document).ready(function(){
 			}
 			else if(title == "Theme")
 			{
-				console.log("Got Here");
 				$("#accountSettings").hide();
 				$("#userPreferences").hide();
 				$("#theme").show();
