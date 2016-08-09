@@ -173,7 +173,7 @@ var onFailure = function(error) {
 function googleretrieve(){
 
   // var auth2 = gapi.auth2.getAuthInstance();
-  auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+  auth2.grantOfflineAccess({'approval_prompt': 'force', 'redirect_uri': 'postmessage'}).then(signInCallback);
 
 }
 /**

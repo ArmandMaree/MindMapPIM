@@ -3,6 +3,7 @@ package poller;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -48,6 +49,7 @@ import org.jsoup.select.Elements;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import data.*;
+import repositories.*;
 
 /**
 * Uses the Gmail API to retrieve new emails and add them to a queue that lets them be processed.
@@ -64,12 +66,18 @@ public class GmailPoller implements Poller {
 	private static HttpTransport HTTP_TRANSPORT;
 	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
 	private String userAuthCode;
-	private Gmail service;
+	private Gmail service = null;
 	private final String userId = "me";
 	private String lastEmailTimeStampDate = "";
 	private long lastEmailMilli = 0;
 	private boolean stop = false;
 	private String firstId = "";
+	private String lastId = "";
+	private String refreshToken;
+	private GmailRepository gmailRepository;
+	private String userEmail = "";
+	private boolean processedOldEmails = false;
+	private PollingUser pollingUser;
 
 	private RabbitTemplate rabbitTemplate;
 
@@ -88,22 +96,105 @@ public class GmailPoller implements Poller {
 	* @param rabbitTemplate Reference to a rabbitTemplate used to communicate with a RabbitMQ server.
 	* @param userAuthCode Authentication code received from the login service.
 	*/
-	public GmailPoller(RabbitTemplate rabbitTemplate, String userAuthCode) {
+	public GmailPoller(GmailRepository gmailRepository, RabbitTemplate rabbitTemplate, String userAuthCode, String userEmail) {
+		this.gmailRepository = gmailRepository;
 		this.rabbitTemplate = rabbitTemplate;
 		this.userAuthCode = userAuthCode;
+		this.userEmail = userEmail;
 
 		try {
-			service = getGmailService(); // Build a new authorized API client service.
+			if (userAuthCode != null && !userAuthCode.equals(""))
+				service = getGmailServiceFromAuthCode(); // Build a new authorized API client service.
+			else {
+				PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+
+				if (pollingUser == null)
+					return;
+
+				service = getGmailServiceFromRefreshToken(); // Build a new authorized API client service.
+			}
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+
+		pollingUser = gmailRepository.findByUserId(userEmail);
+	}
+
+	public void setFirstId(String firstId) {
+		this.firstId = firstId;
+	}
+
+	public void setLastDate(String lastEmailTimeStampDate) {
+		if (lastEmailTimeStampDate.equals("DONE"))
+			processedOldEmails = true;
+
+		this.lastEmailTimeStampDate = lastEmailTimeStampDate;
+	}
+
+	/**
+	* Build and return an authorized Gmail client service based on an auth code.
+	* @return An authorized Gmail client service
+ 	* @throws java.io.IOException IOException occurs.
+	*/
+	public Gmail getGmailServiceFromAuthCode() throws IOException {
+		String CLIENT_SECRET_FILE = "client_secret.json";
+		String REDIRECT_URI = "https://bubbles.iminsys.com";
+
+		// Exchange auth code for access token
+		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
+		GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), "https://www.googleapis.com/oauth2/v4/token", clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret(), userAuthCode, REDIRECT_URI).execute();
+
+		String accessToken = tokenResponse.getAccessToken();
+		refreshToken = tokenResponse.getRefreshToken();
+
+		// Use access token to call API
+		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+		Gmail gmail = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
+
+		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+
+		if (pollingUser != null)
+			return null;
+		else
+			pollingUser = new PollingUser(userEmail, refreshToken);
+
+		gmailRepository.save(pollingUser);
+
+		return gmail;
+	}
+
+	/**
+	* Build and return an authorized Gmail client service based on an auth code.
+	* @return An authorized Gmail client service
+ 	* @throws java.io.IOException IOException occurs.
+	*/
+	public Gmail getGmailServiceFromRefreshToken() throws IOException {
+		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+		String CLIENT_SECRET_FILE = "client_secret.json";
+		String REDIRECT_URI = "https://bubbles.iminsys.com";
+
+		// Exchange auth code for access token
+		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
+		GoogleTokenResponse tokenResponse = new GoogleRefreshTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), pollingUser.getRefreshToken(), clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret()).execute();
+
+		String accessToken = tokenResponse.getAccessToken();
+
+		// Use access token to call API
+		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+
+		return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
 	}
 
 	/**
 	* Runs the poller on a loop.
 	*/
 	public void run() {
+		if (service == null)
+			return;
+
 		while (!stop) {
 			poll();
 
@@ -119,13 +210,13 @@ public class GmailPoller implements Poller {
 	*/
 	public void poll() {
 		try {
+			service = getGmailServiceFromRefreshToken();
+			String tmpFirst = null;
 			GmailBatchMessages gbm = listNewMessages(null);
-			String lastEmailDate = null;
-			long tmpMilli = 0;
 
 			while (gbm != null) {
-				if (firstId.equals(gbm.messages.get(0).getId()))
-					break;
+				if (tmpFirst == null)
+					tmpFirst = gbm.messages.get(0).getId();
 
 				for (Message message : gbm.messages) {
 					if (firstId.equals(message.getId()))
@@ -134,27 +225,37 @@ public class GmailPoller implements Poller {
 					Message msg = getMessage(message.getId());
 					MimeMessage mimeMessage = getMimeMessage(msg);
 
-					if (getMilliSeconds(mimeMessage) <= lastEmailMilli)
-						continue;
-
-					if (lastEmailDate == null) {
-						lastEmailDate = getTimeStamp(mimeMessage);
-						tmpMilli = getMilliSeconds(mimeMessage);
-						firstId = message.getId();
+					if (!processedOldEmails) {
+						lastEmailTimeStampDate = getTimeStamp(mimeMessage);
+						pollingUser.setLastEmail(lastEmailTimeStampDate);
+						gmailRepository.save(pollingUser);
 					}
 
 					RawData rawData = getRawData(message.getId(), mimeMessage);
+					System.out.println("Processed! " + rawData.getData()[0] + "   " + rawData.getPimItemId());
 
 					if (rawData != null)
 						addToQueue(rawData);
 				}
 
-				gbm = listNewMessages(gbm.nextPageToken);
+				if (gbm.nextPageToken != null) {
+					service = getGmailServiceFromRefreshToken();
+					gbm = listNewMessages(gbm.nextPageToken);
+				}
+				else
+					gbm = null;
 			}
 
-			if (lastEmailDate != null) {
-				lastEmailTimeStampDate = lastEmailDate;
-				lastEmailMilli = tmpMilli;
+			if (!firstId.equals(tmpFirst) && tmpFirst != null) {
+				firstId = tmpFirst;
+				pollingUser.setEarliestEmail(firstId);
+				gmailRepository.save(pollingUser);
+			}
+
+			if (!processedOldEmails) {
+				processedOldEmails = true;
+				pollingUser.setLastEmail("DONE");
+				gmailRepository.save(pollingUser);
 			}
 		}
 		catch (IOException ioe) {
@@ -241,40 +342,17 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* Build and return an authorized Gmail client service.
-	* @return An authorized Gmail client service
- 	* @throws java.io.IOException IOException occurs.
-	*/
-	public Gmail getGmailService() throws IOException {
-		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
-
-		// Exchange auth code for access token
-		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
-		GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), "https://www.googleapis.com/oauth2/v4/token", clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret(), userAuthCode, REDIRECT_URI).execute();
-
-		String accessToken = tokenResponse.getAccessToken();
-
-		// Use access token to call API
-		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
-
-		return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-	}
-
-	/**
 	* List all the emails after a specific date on a specific page.
 	* @param nextPageToken the token of the page that should be looked at.
 	* @return Batch message object containing all the messages found and a token to the next page.
 	* @throws java.io.IOException IOException occurs.
 	*/
 	public GmailBatchMessages listNewMessages(String nextPageToken) throws IOException {
-		//ListMessagesResponse response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
 		String query = "";
 		ListMessagesResponse response = null;
 		String pageToken = null;
 
-		if (!lastEmailTimeStampDate.equals("")) {
+		if (!processedOldEmails) {
 			query = "after:" + lastEmailTimeStampDate;
 
 			if (nextPageToken == null)
@@ -300,7 +378,7 @@ public class GmailPoller implements Poller {
 				pageToken = null;
 		}
 
-		GmailBatchMessages gbm ;
+		GmailBatchMessages gbm;
 
 		if (messages.size() == 0)
 			gbm = null;

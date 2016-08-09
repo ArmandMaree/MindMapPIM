@@ -29,7 +29,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
 	LinkedBlockingQueue<TopicResponse> topicResponseLL;
 
 	@Autowired
-	LinkedBlockingQueue<UserIdentified> userResponseLL;
+	LinkedBlockingQueue<UserIdentified> userRegistrationResponseLL;
+
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -52,10 +53,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
 		String id = UUID.randomUUID().toString();
 		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
         rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
-		while(userResponseLL.peek()==null || !id.equals(userResponseLL.peek().getReturnId())){
+		while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
             //do nothing for now, maybe sleep a bit in future?
         }
-		User user = userResponseLL.poll().getUser(true);
+		User user = userRegistrationResponseLL.poll().getUser(true);
         Thread.sleep(2000);
         return new ServerResponse(user.getUserId());
     }
@@ -81,9 +82,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
         // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
     }
 
-	public void receiveUserResponse(UserIdentified user) {
+	public void receiveUserRegistrationResponse(UserIdentified user) {
 		try {
-            userResponseLL.put(user);
+            userRegistrationResponseLL.put(user);
         }
         catch (InterruptedException ie){}
 	}
