@@ -95,7 +95,7 @@ public class ProcessedDataListener {
 			topicFromRepo.setRelatedTopics(repoTopics.toArray(new String[0])); // update related topics
 			topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0])); // update processed data ids
 			topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
-			Topic persistedTopic = topicRepository.save(topicFromRepo); // update topic in repo
+			topicRepository.save(topicFromRepo); // update topic in repo
 		}
 	}
 }

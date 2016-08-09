@@ -68,7 +68,7 @@ public class GmailPoller implements Poller {
 	private String userAuthCode;
 	private Gmail service = null;
 	private final String userId = "me";
-	private String lastEmailTimeStampDate = "";
+	private String lastEmailTimeStampDate = "1970/01/01";
 	private long lastEmailMilli = 0;
 	private boolean stop = false;
 	private String firstId = "";
@@ -219,8 +219,9 @@ public class GmailPoller implements Poller {
 					tmpFirst = gbm.messages.get(0).getId();
 
 				for (Message message : gbm.messages) {
-					if (firstId.equals(message.getId()))
+					if (firstId.equals(message.getId())) {
 						break;
+					}
 
 					Message msg = getMessage(message.getId());
 					MimeMessage mimeMessage = getMimeMessage(msg);
@@ -232,7 +233,6 @@ public class GmailPoller implements Poller {
 					}
 
 					RawData rawData = getRawData(message.getId(), mimeMessage);
-					System.out.println("Processed! " + rawData.getData()[0] + "   " + rawData.getPimItemId());
 
 					if (rawData != null)
 						addToQueue(rawData);
@@ -400,7 +400,6 @@ public class GmailPoller implements Poller {
 	*/
   	public Message getMessage(String messageId) throws IOException, MessagingException {
 		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
-		// System.out.println(message.toPrettyString()); // print raw message
 
 		return message;
 	}
@@ -413,7 +412,6 @@ public class GmailPoller implements Poller {
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
 	public MimeMessage getMimeMessage(Message message) throws IOException, MessagingException {
-		// System.out.println(message.toPrettyString()); // print raw message
 		byte[] emailBytes = Base64.decodeBase64(message.getRaw());
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
@@ -473,13 +471,9 @@ public class GmailPoller implements Poller {
 						if (!body.contains(tmpBody))
 							body += tmpBody;
 					}
-					// else
-					// 	System.out.println("UNKNOWN MIME TYPE 1: " + mimeBodyPart.getContent());
 				}
 			}
 		}
-		// else
-		// 	System.out.println("UNKNOWN MIME TYPE 2: " + email.getContent());
 
 		rawDataElements.add(body);
 		String userId = email.getHeader("Delivered-To")[0];

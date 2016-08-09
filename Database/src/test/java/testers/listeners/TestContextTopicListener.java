@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TestContextTopicListener  {
 	// test beans start
 	private final String topicResponseQueueName = "topic-response.business.rabbit";
+	public final static String processedDataQueueName = "processed-data.database.rabbit";
 
 	@Autowired
 	private LinkedBlockingQueue<TopicResponse> topicResponseLinkedQueue;

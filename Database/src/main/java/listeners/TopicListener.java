@@ -42,17 +42,13 @@ public class TopicListener {
 	* @param topicRequest Request for topics dequeued form messaging application.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
-		System.out.println("Database received: " + topicRequest);
 		String[] returnTopics = null; // topics that need to be returned.
 
 		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0) { // if a path is not specified
-			System.out.println("Path 0 or null");
 			List<Topic> topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
-			System.out.println("List topics size: " + topics.size());
 			returnTopics = new String[topics.size()];
-			System.out.println("Return size 1: " + returnTopics.length);
 
-			for (int i = 0; i < topics.size(); i++) { // store the related topics for later 
+			for (int i = 0; i < topics.size(); i++) { // store the related topics for later
 				returnTopics[i] = topics.get(i).getTopic();
 
 				// System.out.println("returnTopics["+i+"]: " + returnTopics.length);
@@ -104,8 +100,8 @@ public class TopicListener {
 		for (int i = 0; i < topicsObjectReturn.size(); i++) // store related topics as simple text
 			returnTopics[i] = topicsObjectReturn.get(i).getTopic();
 
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), returnTopics, topicsObjectReturn.toArray(new Topic[0])); // create topic response
+		// TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), returnTopics, topicsObjectReturn.toArray(new Topic[0])); // create topic response with Topic objects
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), returnTopics, null); // create topic response without topics objects
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
-		System.out.println("Database responds: " + topicResponse);
 	}
 }
