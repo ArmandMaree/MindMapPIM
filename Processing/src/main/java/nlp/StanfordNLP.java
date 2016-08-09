@@ -2,6 +2,8 @@ package nlp;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.util.*;
@@ -59,11 +61,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		excludedWords.add("dear");
 		excludedWords.add("kind");
 		excludedWords.add("fwd");
-		excludedWords.add("acuben");
 		excludedWords.add("hi");
 		excludedWords.add("hello");
 		excludedWords.add("re");
 		excludedWords.add("lot");
+		excludedWords.add("unsubscribe");
+		excludedWords.add("email");
 	}
 
 	/**
@@ -231,9 +234,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	*/
 	public ArrayList<String> purge(List<String> words) {
 		ArrayList<String> remainingWords = new ArrayList<>();
+		Pattern p = Pattern.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
 		for (String word : words) {
-			if (!excludedWords.contains(word.toLowerCase()) && !remainingWords.contains(word) && word.length() > 1)
+			Matcher m = p.matcher(word);
+
+			if (!excludedWords.contains(word.toLowerCase()) && !remainingWords.contains(word) && word.length() > 1 && !m.matches())
 				remainingWords.add(word);
 		}
 

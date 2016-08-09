@@ -41,9 +41,11 @@ public class ProcessedDataListener {
 	*/
 	public void receiveProcessedData(ProcessedData processedData) {
 		try {
+			User user = null;
+
 			switch (processedData.getPimSource()) {
 				case "Gmail": // data comes from gmail
-					User user = userRepository.findByGmailId(processedData.getUserId());
+					user = userRepository.findByGmailId(processedData.getUserId());
 
 					if (user == null) // no user exists with this gmail id
 						return;
@@ -59,6 +61,9 @@ public class ProcessedDataListener {
 			processedData = processedDataRepository.findByPimSourceAndPimItemId("Gmail", processedData.getPimItemId());
 
 			for (String topic : processedData.getTopics()) { // iterate all topics in data
+				if (topic.equals(user.getFirstName()) || topic.equals(user.getLastName()) || (topic.equals(user.getFirstName()) && topic.equals(user.getLastName())))
+					continue;
+
 				ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
 
 				for (String t : processedData.getTopics()) {
