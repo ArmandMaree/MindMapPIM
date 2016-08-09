@@ -63,17 +63,20 @@ function refreshValues() {
     fjs.parentNode.insertBefore(js, fjs); 
 }(document, 'script', 'facebook-jssdk'));
 	
-/** 
-*	This function initialises the JavaScript SDK
+/**
+* This function initialises the JavaScript SDK
+* @property {String} appId - the id assigned to your app by Facebook
+* @preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
+* @property {Boolean} xfbml - allows the page to parse social plugins
+* @property {String} version - indicates the graph api version
 */
 window.fbAsyncInit = function() 
 {
     FB.init({
     appId      : '1051696778242173',
-    cookie     : true,  // enable cookies to allow the server to access 
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.5' // use graph api version 2.5
+    cookie     : true,  
+    xfbml      : true,  
+    version    : 'v2.5' 
   });
 }
 /**

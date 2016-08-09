@@ -1,7 +1,22 @@
+/**
+*	@var {} auth2 - The sign-in object
+*/
 var auth2; 
-var googleUser; 
+/**
+* 	@var {} googleUser - The current user
+*/
+var googleUser;
+/**
+* 	@var {} authCodes - ....
+*/ 
 var authCodes = [];
+/**
+* 	@var {} gmailUser - The object that contains all information about the signed-in Gmail user
+*/
 var gmailUser= null;
+/**
+* 	@var {Boolean} connected - indicates whether or not the client is connected to the websocket
+*/
 var connected = false;
 /**
 *	Function that prevents auto sign in for Gmail
@@ -72,18 +87,6 @@ var sendUserReg = function(){
 	    		console.log(error.headers.message);
   			});
   	}, 3000);
-
-
-
-
-  // console.log(document.createTextNode(message));
-
-  // if (stompClient != null) {
-  //   stompClient.disconnect();
-  // }
-  // setConnected(false);
-  // console.log("Disconnected");
-  // setTimeout(function(){ window.location.assign('/mainpage')},3000);
 }
 /**
  * A function that checks where any sign in activity for Google has happened and responds.
@@ -120,8 +123,6 @@ var signinChanged = function (val) {
 	  $("#tos").hide();
 	  $("#tos2").hide();
 	  $("#web").hide();
-	  // $("#facebookLogin").hide();
-	  // $("#googleLogin").hide();
 
 	  $("#avatar").delay("slow").animate({
 		  top: '70px',
@@ -131,7 +132,6 @@ var signinChanged = function (val) {
 	  $("#welcome").show();
 	  $("#welcome").delay(1000).animate({
 		  opacity: '1'
-
 	  });
 	  $('#avatar').fadeOut(0, function() {
 		  $('#avatar').fadeIn(0);
@@ -179,10 +179,7 @@ var onFailure = function(error) {
  * A function for Google that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
  */
 function googleretrieve(){
-
-  // var auth2 = gapi.auth2.getAuthInstance();
   auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
-
 }
 /**
  * Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.
@@ -193,8 +190,6 @@ function googleretrieve(){
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
 	  $('#nextButton').show();
-	  // Send the code to the server
-	  // console.log(JSON.stringify({ authCode: authResult['code'] }));
 	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
@@ -362,14 +357,17 @@ function showtick()
 
 /**
 *	This function initialises the JavaScript SDK
+*	@property {String} appId - the id assigned to your app by Facebook
+*	@preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
+*	@property {Boolean} xfbml - allows the page to parse social plugins
+*	@property {String} version - indicates the graph api version
 */
 window.fbAsyncInit = function() {
 FB.init({
   appId      : '1051696778242173',
-  cookie     : false,  // enable cookies to allow the server to access
-					  // the session
-  xfbml      : true,  // parse social plugins on this page
-  version    : 'v2.5' // use graph api version 2.5
+  cookie     : false,  
+  xfbml      : true, 
+  version    : 'v2.5' 
 });
 
 FB.getLoginStatus(function(response) {
@@ -398,8 +396,6 @@ function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
 	console.log('Successful login for: ' + response.name);
-	// document.getElementById('status').innerHTML =
-	//   'Thanks for logging in, ' + response.name + '!';
 	document.getElementById('welcome').innerHTML += ", " + response.name;
 	document.cookie = "login=1";
 	onSuccessFacebook();
