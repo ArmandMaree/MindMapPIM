@@ -430,7 +430,6 @@ public class GmailPoller implements Poller {
 	public RawData getRawData(String msgId, MimeMessage email) throws IOException, MessagingException {
 		// printEmail(service.users().messages().get(userId, messageId).setFormat("full").execute());
 		String body = "";
-		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
 		ArrayList<String> rawDataElements = new ArrayList<>();
 
 		if (!email.getHeader("Subject")[0].equals(""))
@@ -490,7 +489,7 @@ public class GmailPoller implements Poller {
 	*/
 	private static String extractText(String bodyS) {
 		boolean isHTML = false;
-		String[] elementsToProcess = {"p", "pre", "td", "h1", "h2", "h3"};
+		String[] elementsToProcess = {"dfn", "h1", "h2", "h3"};
 		String body = "";
 
 		if (bodyS.charAt(0) == '<') { // if starts and ends with angle bracket then it is HTML
