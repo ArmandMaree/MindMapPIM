@@ -2,6 +2,7 @@ package listeners;
 
 import data.*;
 import poller.*;
+import repositories.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -17,8 +18,11 @@ public class BusinessListener {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
+	@Autowired
+	private GmailRepository gmailRepository;
+
 	public void receiveAuthCode(AuthCode authCode) {
-		Poller poller = new GmailPoller(rabbitTemplate, authCode.getAuthCode());
+		Poller poller = new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId());
 		new Thread(poller).start();
 	}
 }

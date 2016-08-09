@@ -1,8 +1,12 @@
 package main;
 
 import listeners.*;
+import repositories.*;
+import data.*;
+import poller.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.io.PrintWriter;
 
@@ -31,6 +35,8 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
 /**
 * Main application that starts up the service.
 *
@@ -38,8 +44,15 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 * @since   2016-07-25
 */
 @SpringBootApplication
+@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	private final String authCodeQueueName = "auth-code.gmail.rabbit";
+
+	@Autowired
+	private GmailRepository gmailRepository;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	@Bean
 	Queue authCodeQueue() {
@@ -81,6 +94,24 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		for (String arg : args) {
+			switch (arg) {
+				case "cleandb":
+					gmailRepository.deleteAll();
+					break;
+				default:
+					System.out.println("Invalid argument.");
+					break;
+			}
+		}
 
+		List<PollingUser> pollingUsers = gmailRepository.findAll();
+
+		for (PollingUser pollingUser : pollingUsers) {
+			GmailPoller poller = new GmailPoller(gmailRepository, rabbitTemplate, null, pollingUser.getUserId());
+			poller.setFirstId(pollingUser.getEarliestEmail());
+			poller.setLastDate(pollingUser.getLastEmail());
+			new Thread(poller).start();
+		}
 	}
 }

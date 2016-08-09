@@ -40,7 +40,7 @@ public class Application {
 	LoginController loginController;
 
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
-	private final String userResponseQueueName = "user-response.frontend.rabbit";
+	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
@@ -89,7 +89,7 @@ public class Application {
 
 	@Bean
 	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
-		return new MessageListenerAdapter(loginController, "receiveUserResponse");
+		return new MessageListenerAdapter(loginController, "receiveUserRegistrationResponse");
 	}
 
 	@Bean

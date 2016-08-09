@@ -179,7 +179,10 @@ var onFailure = function(error) {
  * A function for Google that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
  */
 function googleretrieve(){
-  auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+
+  // var auth2 = gapi.auth2.getAuthInstance();
+  auth2.grantOfflineAccess({'approval_prompt': 'force', 'redirect_uri': 'postmessage'}).then(signInCallback);
+
 }
 /**
  * Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.

@@ -71,7 +71,7 @@ public class AuthCode implements Serializable {
 	public void setPimSource(String pimSource) {
 		this.pimSource = pimSource;
 	}
-	
+
 	/**
 	* Getter to return the authCode.
 	* @return Returns the authCode.
@@ -98,6 +98,6 @@ public class AuthCode implements Serializable {
 			"\tid: " + id + "\n" +
 			"\tpimSource: " + pimSource + "\n" +
 			"\tauthCode: " + authCode + "\n" +
-		"}"; 
+		"}";
 	}
 }

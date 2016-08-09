@@ -49,7 +49,7 @@ public class FrontendListener {
 	public void receiveRegister(UserRegistrationIdentified userRegistrationIdentified) {
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
-		
+
 		UserIdentified user = new UserIdentified(userRegistrationIdentified.getId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
 
 
@@ -64,7 +64,7 @@ public class FrontendListener {
 					break;
 			}
 		}
-
+		System.out.println("Received user: " + user.getGmailId());
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
 	}
 }
