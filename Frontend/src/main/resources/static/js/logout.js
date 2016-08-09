@@ -1,10 +1,21 @@
-var auth2; // The Sign-In object.
-var googleUser; // The current user.
-
+/**
+*	@var {} auth2 - The sign-in object
+*/
+var auth2; 
+/**
+* 	@var {} googleUser - The current user
+*/
+var googleUser; 
+/**
+ * Starts the log in process by calling the google api.
+ */
 var startApp = function() {
   gapi.load('auth2', initSigninV2);
 };
-
+/**
+ * Initialises the google api with the specific app ID. Attaches code and callbacks to a custom made button.
+ * @param {id} googleLogin - ID of the element for the custom button
+ */
 var initSigninV2 = function() {
   auth2 = gapi.auth2.init({
       client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
@@ -16,7 +27,9 @@ var initSigninV2 = function() {
   }
   refreshValues();
 };
-
+/**
+* A function that checks the state of the sign-in object
+*/
 var signinChanged = function (val) {
   console.log('Signin state changed to ', val);
   if(val === true){
@@ -25,7 +38,9 @@ var signinChanged = function (val) {
     }); 
   }
 };
-
+/**
+*	A function that refreshes the sign-in object to obtain the current Google user 
+*/
 function refreshValues() {
   if (auth2){
     console.log('Refreshing values...');
