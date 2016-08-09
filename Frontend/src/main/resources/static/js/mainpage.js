@@ -54,7 +54,7 @@ for(var i = 0; i <ca.length; i++) {
 }
 
 if(x!="1"){
-    window.location.assign('/');
+    window.location.assign('/login');
 }
 /**
 *	A function that creates a json string from an object

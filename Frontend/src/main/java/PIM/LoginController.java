@@ -39,12 +39,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
         registry.addViewController("/mainpage").setViewName("mainpage");
         registry.addViewController("/setting").setViewName("setting");
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/").setViewName("login");
+        registry.addViewController("/").setViewName("mainpage");
         registry.addViewController("/help").setViewName("help");
     }
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String showLogin() {
-        return "login";
+        return "mainpage";
     }
 
     @MessageMapping("/hello")
@@ -90,9 +90,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
 	}
 
 
-    @RequestMapping(value="/mainpage", method=RequestMethod.GET)
+    @RequestMapping(value="/login", method=RequestMethod.GET)
     public String showMain() {
-        return "mainpage";
+        return "login";
     }
 
     @RequestMapping(value="/settings", method=RequestMethod.GET)
