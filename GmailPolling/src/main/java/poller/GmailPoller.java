@@ -278,11 +278,20 @@ public class GmailPoller implements Poller {
 	*/
 	public String getTimeStamp(MimeMessage email) throws IOException, MessagingException {
 		String date = email.getHeader("Date")[0];
+		String backDate = date;
 
 		if (date.indexOf("(") != -1)
 			date = date.substring(0, date.indexOf("(") - 1);
 
-		date = date.substring(5, date.length() - 6);
+		int start = 0;
+
+		while (start < date.length() && !Character.isDigit(date.charAt(start)))
+			start++;
+
+		if (start == date.length())
+			return null;
+
+		date = date.substring(start, date.length() - 6);
 
 		DateFormat inputFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 		DateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -293,6 +302,7 @@ public class GmailPoller implements Poller {
 			startDate = inputFormat.parse(date);
 			newDate = outputFormat.format(startDate);
 		} catch (ParseException e) {
+			System.out.println("Incorrect date: " + backDate);
 			e.printStackTrace();
 		}
 
@@ -308,11 +318,20 @@ public class GmailPoller implements Poller {
 	*/
 	public long getMilliSeconds(MimeMessage email) throws IOException, MessagingException {
 		String date = email.getHeader("Date")[0];
+		String backDate = date;
 
 		if (date.indexOf("(") != -1)
 			date = date.substring(0, date.indexOf("(") - 1);
 
-		date = date.substring(5, date.length() - 6);
+		int start = 0;
+
+		while (start < date.length() && !Character.isDigit(date.charAt(start)))
+			start++;
+
+		if (start == date.length())
+			return 0;
+
+		date = date.substring(start, date.length() - 6);
 
 		DateFormat inputFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 		Date startDate;
@@ -322,6 +341,7 @@ public class GmailPoller implements Poller {
 			startDate = inputFormat.parse(date);
 			newDate = startDate.getTime();
 		} catch (ParseException e) {
+			System.out.println("Incorrect date: " + backDate);
 			e.printStackTrace();
 		}
 
@@ -465,20 +485,22 @@ public class GmailPoller implements Poller {
 						mimeStack.push(mmp);
 					}
 					else if (mimeBodyPart.getContent() instanceof String) {
-						String tmpBody = extractText((String)mimeBodyPart.getContent()) + "\n";
-
-						if (!body.contains(tmpBody))
-							body += tmpBody;
+						if (!((String)mimeBodyPart.getContent()).equals("")) {
+							String tmpBody = extractText((String)mimeBodyPart.getContent()) + "\n";
+						
+							if (!body.contains(tmpBody))
+								body += tmpBody;
+						}
 					}
 				}
 			}
 		}
 
 		rawDataElements.add(body);
-		String userId = email.getHeader("Delivered-To")[0];
+
 		ArrayList<String> involvedContacts = new ArrayList<>();
-		involvedContacts.add(email.getHeader("Delivered-To")[0]);
-		RawData rawData = new RawData("Gmail", userId, involvedContacts.toArray(new String[0]), msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
+		// involvedContacts.add(email.getHeader("Delivered-To")[0]);
+		RawData rawData = new RawData("Gmail", userEmail, involvedContacts.toArray(new String[0]), msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
 
 		return rawData;
 	}
@@ -489,9 +511,9 @@ public class GmailPoller implements Poller {
 	*/
 	private static String extractText(String bodyS) {
 		boolean isHTML = false;
-		String[] elementsToProcess = {"dfn", "h1", "h2", "h3"};
+		String[] elementsToProcess = {"dfn", "h1", "h2", "h3", "p"};
 		String body = "";
-
+		
 		if (bodyS.charAt(0) == '<') { // if starts and ends with angle bracket then it is HTML
 			for (int i = bodyS.length() - 1; i > -1; i--) {
 				if (bodyS.charAt(i) == '>') {
