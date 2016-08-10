@@ -61,11 +61,13 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		excludedWords.add("dear");
 		excludedWords.add("kind");
 		excludedWords.add("fwd");
+		excludedWords.add("regards");
 		excludedWords.add("hi");
 		excludedWords.add("hello");
 		excludedWords.add("re");
 		excludedWords.add("lot");
 		excludedWords.add("unsubscribe");
+		excludedWords.add("time");
 		excludedWords.add("email");
 	}
 

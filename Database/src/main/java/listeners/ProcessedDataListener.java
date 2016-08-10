@@ -42,7 +42,7 @@ public class ProcessedDataListener {
 	public void receiveProcessedData(ProcessedData processedData) {
 		try {
 			User user = null;
-
+			
 			switch (processedData.getPimSource()) {
 				case "Gmail": // data comes from gmail
 					user = userRepository.findByGmailId(processedData.getUserId());
@@ -56,7 +56,14 @@ public class ProcessedDataListener {
 					return;
 			}
 
+			List<String> cleanedTopics = new ArrayList<>();
 
+			for (String t : processedData.getTopics()) {
+				if (!t.contains(user.getFirstName()) && !t.contains(user.getLastName()))
+					cleanedTopics.add(t);
+			}
+
+			processedData.setTopics(cleanedTopics.toArray(new String[0]));
 			processedDataRepository.save(processedData); // persist data
 			processedData = processedDataRepository.findByPimSourceAndPimItemId("Gmail", processedData.getPimItemId());
 
