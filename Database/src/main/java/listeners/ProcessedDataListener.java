@@ -68,6 +68,9 @@ public class ProcessedDataListener {
 			processedData = processedDataRepository.findByPimSourceAndPimItemId("Gmail", processedData.getPimItemId());
 
 			for (String topic : processedData.getTopics()) { // iterate all topics in data
+				if (topic.equals(user.getFirstName()) || topic.equals(user.getLastName()) || (topic.equals(user.getFirstName()) && topic.equals(user.getLastName())))
+					continue;
+
 				ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
 
 				for (String t : processedData.getTopics()) {
