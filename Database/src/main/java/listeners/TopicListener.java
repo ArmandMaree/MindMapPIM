@@ -80,8 +80,8 @@ public class TopicListener {
 			}
 		}
 
-		if (returnTopics == null){ // no related topics exist for the given path
-			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), null, null)); // send topic response that contains no topics
+		if (returnTopics == null || returnTopics.length == 0){ // no related topics exist for the given path
+			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null)); // send topic response that contains no topics
 			return;
 		}
 
