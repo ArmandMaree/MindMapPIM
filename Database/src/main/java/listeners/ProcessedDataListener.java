@@ -42,7 +42,7 @@ public class ProcessedDataListener {
 	public void receiveProcessedData(ProcessedData processedData) {
 		try {
 			User user = null;
-			
+
 			switch (processedData.getPimSource()) {
 				case "Gmail": // data comes from gmail
 					user = userRepository.findByGmailId(processedData.getUserId());
@@ -93,6 +93,8 @@ public class ProcessedDataListener {
 			String[] processedDataIds = {processedData.getId()}; // ids of all topics containing the current topic (only one in this case).
 			Topic t = new Topic(processedData.getUserId(), topic, remainingTopics.toArray(new String[0]), processedDataIds, System.currentTimeMillis());
 			topicRepository.save(t); // persist new topic
+			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
+			System.out.println("NEW: " + ttest);
 		}
 		else { // topic in repo
 			ArrayList<String> repoTopics = new ArrayList<>(Arrays.asList(topicFromRepo.getRelatedTopics())); // get the related topics of the topic in the repo
@@ -108,6 +110,8 @@ public class ProcessedDataListener {
 			topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0])); // update processed data ids
 			topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
 			topicRepository.save(topicFromRepo); // update topic in repo
+			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
+			System.out.println("UPDATE: " + ttest);
 		}
 	}
 }

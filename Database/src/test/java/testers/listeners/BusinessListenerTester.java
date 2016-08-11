@@ -2,7 +2,6 @@ package testers.listeners;
 
 import repositories.*;
 import data.*;
-import listeners.*;
 import testers.AbstractTester;
 
 import java.util.*;

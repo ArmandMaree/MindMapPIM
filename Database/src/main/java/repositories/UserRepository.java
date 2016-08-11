@@ -3,7 +3,7 @@ package repositories;
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import data.User;
+import data.*;
 
 /**
 * MongoDB repository for user information.

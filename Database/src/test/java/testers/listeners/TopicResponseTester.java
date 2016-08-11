@@ -1,6 +1,6 @@
 package testers.listeners;
 
-import listeners.TopicResponse;
+import data.*;
 import testers.AbstractTester;
 
 import org.junit.After;

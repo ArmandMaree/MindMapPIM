@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import data.Topic;
+import data.*;
 
 /**
 * MongoDB repository for processed data.

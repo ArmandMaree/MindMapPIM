@@ -1,6 +1,6 @@
 package testers.data;
 
-import data.User;
+import data.*;
 import testers.AbstractTester;
 
 import org.junit.After;

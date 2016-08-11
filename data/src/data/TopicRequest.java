@@ -1,4 +1,4 @@
-package listeners;
+package data;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ public class TopicRequest implements Serializable {
 	private String[] path;
 	private String[] exclude;
 	private int maxNumberOfTopics;
-	
+
 	public TopicRequest(){
 
 	}

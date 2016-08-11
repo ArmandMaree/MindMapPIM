@@ -3,7 +3,7 @@ package repositories;
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import data.ProcessedData;
+import data.*;
 
 /**
 * MongoDB repository for processed data.
