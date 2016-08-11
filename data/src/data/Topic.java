@@ -42,6 +42,15 @@ public class Topic implements Serializable, Comparable<Topic> {
 	*/
 	private long time;
 
+	public Topic() {
+		super();
+	}
+
+	public Topic(String userId) {
+		super();
+		this.userId = userId;
+	}
+
 	/**
 	* Default constructor.
 	* @param userId ID of the user in database the topic is related to.

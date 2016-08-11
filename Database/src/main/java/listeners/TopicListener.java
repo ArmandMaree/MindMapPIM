@@ -3,7 +3,7 @@ package listeners;
 import java.util.*;
 
 import repositories.*;
-import data.Topic;
+import data.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 

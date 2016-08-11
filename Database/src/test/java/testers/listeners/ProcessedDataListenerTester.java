@@ -46,6 +46,9 @@ public class ProcessedDataListenerTester extends AbstractTester {
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
+			userRepository.deleteAll();
+			processedDataRepository.deleteAll();
+			topicRepository.deleteAll();
 			setUpDone = true;
 		}
 	}
@@ -86,6 +89,7 @@ public class ProcessedDataListenerTester extends AbstractTester {
 
 		Thread.sleep(5000);
 
+		System.out.println(acuben);
 		List<Topic> topicsAfter = topicRepository.findByUserId(acuben.getUserId());
 
 		for (Topic topic : topicsAfter)

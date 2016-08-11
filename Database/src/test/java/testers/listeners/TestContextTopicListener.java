@@ -17,7 +17,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import repositories.*;
-import listeners.*;
 import data.*;
 
 import java.util.concurrent.locks.Lock;
