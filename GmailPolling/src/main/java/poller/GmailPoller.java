@@ -487,7 +487,7 @@ public class GmailPoller implements Poller {
 					else if (mimeBodyPart.getContent() instanceof String) {
 						if (!((String)mimeBodyPart.getContent()).equals("")) {
 							String tmpBody = extractText((String)mimeBodyPart.getContent()) + "\n";
-						
+
 							if (!body.contains(tmpBody))
 								body += tmpBody;
 						}
@@ -513,7 +513,7 @@ public class GmailPoller implements Poller {
 		boolean isHTML = false;
 		String[] elementsToProcess = {"dfn", "h1", "h2", "h3", "p"};
 		String body = "";
-		
+
 		if (bodyS.charAt(0) == '<') { // if starts and ends with angle bracket then it is HTML
 			for (int i = bodyS.length() - 1; i > -1; i--) {
 				if (bodyS.charAt(i) == '>') {
