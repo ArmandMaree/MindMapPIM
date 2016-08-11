@@ -26,6 +26,9 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+	// data jar
+	compile files('../data/data.jar')
+
 	// Spring stuff
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 
