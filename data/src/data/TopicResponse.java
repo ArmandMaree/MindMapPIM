@@ -14,17 +14,17 @@ import data.Topic;
 public class TopicResponse implements Serializable {
 	private String userId;
 	private String[] topicsText;
-	private Topic[] topics;
+	private String[][] pimSourceIds;
 
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
-	* @param topics The array of topics retrieved from the database.
+	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public TopicResponse(String userId, String[] topicsText, Topic[] topics) {
+	public TopicResponse(String userId, String[] topicsText, String[][] pimSourceIds) {
 		this.userId = userId;
 		this.topicsText = topicsText;
-		this.topics = topics;
+		this.pimSourceIds = pimSourceIds;
 	}
 
 	/**
@@ -60,19 +60,19 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
-	* Get the value of topics.
-	* @return The array of topics retrieved from the database.
+	* Get the value of pimSourceIds.
+	* @return The array of ids for the ids of the items used by the pims.
 	*/
-	public Topic[] getTopics() {
-		return topics;
+	public String[][] getPimSourceIds() {
+		return pimSourceIds;
 	}
 
 	/**
-	* Set the value of topics.
-	* @param The array of topics retrieved from the database.
+	* Set the value of pimSourceIds.
+	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public void setTopics(Topic[] topics) {
-		this.topics = topics;
+	public void setPimSourceIds(String[][] pimSourceIds) {
+		this.pimSourceIds = pimSourceIds;
 	}
 
 	/**
@@ -92,9 +92,26 @@ public class TopicResponse implements Serializable {
 				}
 			}
 
+		String p = "";
+
+		if (pimSourceIds != null)
+			for (String[] pimIds : pimSourceIds) {
+				p += "\t\t[";
+
+				for (String id : pimIds) {
+					if (p.endsWith("["))
+						p += id;
+					else
+						p += ", " + id;
+				}
+
+				p += "]\n";
+			}
+
 		return "TopicResponse{\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
+			"\tpimSourceIds: \n" + p + 
 			"}";
 	}
 }

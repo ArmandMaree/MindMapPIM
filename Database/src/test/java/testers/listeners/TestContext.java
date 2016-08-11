@@ -24,7 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Configuration
 public class TestContext {
-	public final static String processedDataQueueName = "processed-data.database.rabbit";
 	public final static String topicRequestQueueName = "topic-request.database.rabbit";
 	public final static String userRegisterQueueName = "user-register.database.rabbit";
 	public final static String userCheckQueueName = "user-check.database.rabbit";
@@ -33,6 +32,8 @@ public class TestContext {
 	public final static String topicResponseQueueName = "topic-response.frontend.rabbit";
 	public final static String userRegisterResponseQueueName = "user-registration-response.frontend.rabbit";
 	public final static String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
+	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
+	public final static String processedDataQueueName = "processed-data.database.rabbit";
 
 	@Autowired
 	private LinkedBlockingQueue<UserIdentified> queue;
@@ -79,6 +80,43 @@ public class TestContext {
 	public void receiveUserRegistrationResponse(UserIdentified userIdentified) throws InterruptedException {
 		System.out.println("Test Context Received: " + userIdentified);
 		queue.put(userIdentified);
+	}
+
+	@Autowired
+	private LinkedBlockingQueue<TopicResponse> topicResponseLinkedQueue;
+
+	@Bean
+	LinkedBlockingQueue<TopicResponse> testTopicResponseQueueDev() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	Queue topicResponseQueue() {
+		return new Queue(topicResponseBusinessQueueName, false);
+	}
+
+	@Bean
+	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicResponseBusinessQueueName);
+	}
+
+	@Bean
+	public MessageListenerAdapter topicResponseAdapter() {
+		return new MessageListenerAdapter(this, "receiveTopicResponseResponse");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicResponseBusinessQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	public void receiveTopicResponseResponse(TopicResponse topicResponse) throws InterruptedException {
+		System.out.println("Test Context Received: " + topicResponse);
+		topicResponseLinkedQueue.put(topicResponse);
 	}
 	// test beans end
 }

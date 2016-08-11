@@ -79,6 +79,13 @@ public class UserIdentified extends User {
 	}
 
 	/**
+	* Get the parent user.
+	*/
+	public User getUser() {
+		return getUser(true);
+	}
+
+	/**
 	* Create string representation of UserIdentified for printing
 	* @return String version of UserIdentified.
 	*/

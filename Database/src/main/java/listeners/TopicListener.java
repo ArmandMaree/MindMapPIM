@@ -42,18 +42,10 @@ public class TopicListener {
 	* @param topicRequest Request for topics dequeued form messaging application.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
-		String[] returnTopics = null; // topics that need to be returned.
+		List<Topic> topics = null; // topics that need to be returned.
 
-		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0) { // if a path is not specified
-			List<Topic> topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
-			returnTopics = new String[topics.size()];
-
-			for (int i = 0; i < topics.size(); i++) { // store the related topics for later
-				returnTopics[i] = topics.get(i).getTopic();
-
-				// System.out.println("returnTopics["+i+"]: " + returnTopics.length);
-			}
-		}
+		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) // if a path is not specified
+			topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
 		else { // a path is specified
 			for (int i = 0; i < topicRequest.getPath().length; i++) { // iterate all nodes in path
 				String pathTopic = topicRequest.getPath()[i]; // current node in path
@@ -71,7 +63,8 @@ public class TopicListener {
 					relatedTopics.removeAll(Arrays.asList(topicRequest.getPath())); // remove all topics that occur in path
 
 					if (relatedTopics.size() != 0) // related topics not empty then convert to array
-						returnTopics = relatedTopics.toArray(new String[0]);
+						for (String relatedTopic : relatedTopics)
+							topics.add(topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId()));
 
 					break;
 				}
@@ -80,28 +73,80 @@ public class TopicListener {
 			}
 		}
 
-		if (returnTopics == null || returnTopics.length == 0){ // no related topics exist for the given path
+		if (topics == null || topics.size() == 0) { // no related topics exist for the given path
 			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null)); // send topic response that contains no topics
 			return;
 		}
 
-		List<Topic> topicsObjectReturn = new ArrayList<>(); // Topic objects for the related topics
+		Collections.sort(topics); // sort according to weight
+		System.out.println("TOPICS IDENTIFIED: " + topics);
+		List<Topic> returnTopics = new ArrayList<>();
 
-		for (String t : returnTopics) // get the topic objects for each related topic from the repo and store them
-			topicsObjectReturn.add(topicRepository.findByTopicAndUserId(t, topicRequest.getUserId()));
+		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
+			returnTopics = topics;
+		}
+		else {
+			returnTopics.add(topics.get(0));
 
-		Collections.sort(topicsObjectReturn); // sort according to weight
+			for (int i = 1; i < topics.size() && returnTopics.size() < topicRequest.getMaxNumberOfTopics(); i++) { // take the most relevant topics but also try to reduce closely related topics
+				boolean found = false;
 
-		if (topicsObjectReturn.size() > topicRequest.getMaxNumberOfTopics()) // chop off excess topics
-			topicsObjectReturn = topicsObjectReturn.subList(0, topicRequest.getMaxNumberOfTopics());
+				for (Topic returnTopic : returnTopics) {
+					for (String singleTopic : returnTopic.getRelatedTopics()) {
+						if (singleTopic.equals(topics.get(i).getTopic())) {
+							found = true;
+							break;
+						}
+					}
 
-		returnTopics = new String[topicsObjectReturn.size()];
+					if (found)
+						break;
+				}
 
-		for (int i = 0; i < topicsObjectReturn.size(); i++) // store related topics as simple text
-			returnTopics[i] = topicsObjectReturn.get(i).getTopic();
+				if (!found)
+					returnTopics.add(topics.get(i));
+			}
 
-		// TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), returnTopics, topicsObjectReturn.toArray(new Topic[0])); // create topic response with Topic objects
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), returnTopics, null); // create topic response without topics objects
+			while (returnTopics.size() < topicRequest.getMaxNumberOfTopics()) { // returnTopics isnt full so add the most relevant ones that were filtered previously
+				for (int i = 1; i < topics.size(); i++) {
+					boolean found = false;
+
+					for (Topic returnTopic : returnTopics)
+						if (returnTopic.getTopic().equals(topics.get(i)))
+							found = true;
+
+					if (!found) {
+						returnTopics.add(topics.get(i));
+						break;
+					}
+				}
+			}
+		}
+
+		List<String> gmailIds = new ArrayList<>();
+
+		for (Topic topic : returnTopics) {
+			for (String processedDataId : topic.getProcessedDataIds()) {
+				ProcessedData pd = processedDataRepository.findById(processedDataId);
+
+				switch (pd.getPimSource()) {
+					case "Gmail":
+						gmailIds.add(pd.getPimItemId());
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		String[][] pimIds = new String[1][];
+		pimIds[0] = gmailIds.toArray(new String[gmailIds.size()]);
+		String[] topicsText = new String[returnTopics.size()];
+
+		for (int i = 0; i < returnTopics.size(); i++)
+			topicsText[i] = returnTopics.get(i).getTopic();
+
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, pimIds); // create topic response without topics objects
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 }
