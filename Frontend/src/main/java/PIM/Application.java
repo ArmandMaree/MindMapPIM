@@ -52,10 +52,11 @@ public class Application {
 	LinkedBlockingQueue<UserIdentified> userResponseLL() {
 		return new LinkedBlockingQueue<>();
 	}
-		@Bean
-	LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
-		return new LinkedBlockingQueue<>();
-	}
+	
+	// @Bean
+	// LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
+	// 	return new LinkedBlockingQueue<>();
+	// }
 
 	@Bean
 	Queue topicResponseQueue() {
@@ -88,7 +89,7 @@ public class Application {
 	}
 
 	@Bean
-	Binding userResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
+	Binding userCheckResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userCheckResponseQueueName);
 	}
 
@@ -107,8 +108,8 @@ public class Application {
 		return new MessageListenerAdapter(loginController, "receiveUserRegistrationResponse");
 	}
 
-		@Bean
-	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
+	@Bean
+	public MessageListenerAdapter userCheckResponseAdapter(LoginController loginController) {
 		return new MessageListenerAdapter(loginController, "receiveUserCheckResponse");
 	}
 
@@ -133,7 +134,7 @@ public class Application {
 	public SimpleMessageListenerContainer userCheckResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userCheckResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(userResponseQueueName);
+		container.setQueueNames(userCheckResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
