@@ -41,6 +41,7 @@ public class Application {
 
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
+	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
@@ -49,6 +50,10 @@ public class Application {
 
 	@Bean
 	LinkedBlockingQueue<UserIdentified> userResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+		@Bean
+	LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
 		return new LinkedBlockingQueue<>();
 	}
 
@@ -60,6 +65,11 @@ public class Application {
 	@Bean
 	Queue userResponseQueue() {
 		return new Queue(userResponseQueueName, false);
+	}
+
+	@Bean
+	Queue userCheckResponseQueue() {
+		return new Queue(userCheckResponseQueueName, false);
 	}
 
 	@Bean
@@ -78,6 +88,11 @@ public class Application {
 	}
 
 	@Bean
+	Binding userResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userCheckResponseQueueName);
+	}
+
+	@Bean
 	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
 		return new FrontendListener(rabbitTemplate);
 	}
@@ -92,6 +107,11 @@ public class Application {
 		return new MessageListenerAdapter(loginController, "receiveUserRegistrationResponse");
 	}
 
+		@Bean
+	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveUserCheckResponse");
+	}
+
 	@Bean
 	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -103,6 +123,14 @@ public class Application {
 
 	@Bean
 	public SimpleMessageListenerContainer userResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+	@Bean
+	public SimpleMessageListenerContainer userCheckResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userCheckResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(userResponseQueueName);
