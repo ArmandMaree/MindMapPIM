@@ -27,8 +27,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
 	@Autowired
 	LinkedBlockingQueue<TopicResponse> topicResponseLL;
 
-	@Autowired
-	LinkedBlockingQueue<UserIdentified> userRegistrationResponseLL;
+    @Autowired
+    LinkedBlockingQueue<UserIdentified> userRegistrationResponseLL;
+
+    @Autowired
+    LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -60,6 +63,20 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return new ServerResponse(user.getUserId());
     }
 
+    @MessageMapping("/usercheck")
+    @SendTo("/topic/usercheck")
+    public ServerResponse usercheck(User message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        UserIdentified userRegistrationIdentified = new UserIdentified(id,null, message);
+        rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        UserIdentified user = userCheckResponseLL.poll();
+        Thread.sleep(2000);
+        return new ServerResponse(user.getIsRegistered());
+    }
+
     @MessageMapping("/request")
     @SendTo("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
@@ -88,6 +105,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
 	}
 
+    public void receiveUserCheckResponse(UserIdentified user) {
+        try {
+            userCheckResponseLL.put(user);
+        }
+        catch (InterruptedException ie){}
+    }
 
     @RequestMapping(value="/login", method=RequestMethod.GET)
     public String showMain() {
