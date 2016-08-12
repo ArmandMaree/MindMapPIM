@@ -66,27 +66,31 @@ var sendUserReg = function(){
 	stompClient.connect({}, function(frame) {
 	    console.log('Connected: ' + frame);
 	    connected = true;
+	  	var userReg = {};
+	  	if(gmailUser!=null){
+			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+			console.log(JSON.stringify(userReg));
+	  	}
+	  	setTimeout(function(){
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/topic/greetings', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("Server says: "+jsonresponse.content);
+				document.cookie="userId="+jsonresponse.content;
+				$("#loadingAlert").fadeOut(1000, function() {
+					// body...
+				});
+				if (stompClient != null) {
+		            stompClient.disconnect();
+		        }
+				window.location.assign('/mainpage');
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  			});
+	  	}, 3000);
 	});
-  	var userReg = {};
-  	if(gmailUser!=null){
-		userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-		console.log(JSON.stringify(userReg));
-  	}
-  	setTimeout(function(){
-		stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-		stompClient.subscribe('/topic/greetings', function(serverResponse){
-			var jsonresponse = JSON.parse(serverResponse.body);
-			console.log("Server says: "+jsonresponse.content);
-			document.cookie="userId="+jsonresponse.content;
-			$("#loadingAlert").fadeOut(1000, function() {
-				// body...
-			});
-			window.location.assign('/mainpage');
-		}, function(error) {
-	    		// display the error's message header:
-	    		console.log(error.headers.message);
-  			});
-  	}, 3000);
+
 }
 /**
  * A function that checks where any sign in activity for Google has happened and responds.
@@ -277,6 +281,7 @@ function loadXMLDoc(){
 			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
 			stompClient.subscribe('/topic/usercheck', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+jsonresponse);
 				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 				// document.cookie="userId="+jsonresponse.content;
 				// $("#loadingAlert").fadeOut(1000, function() {
@@ -294,6 +299,9 @@ function loadXMLDoc(){
 					xmlhttp.open("GET","ajax/selectdata.html");
 					xmlhttp.send();
 					var filename;
+					if (stompClient != null) {
+		                stompClient.disconnect();
+		            }
 				}
 			}, function(error) {
 		    		// display the error's message header:

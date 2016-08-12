@@ -54,11 +54,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
 		String id = UUID.randomUUID().toString();
 		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
+        System.out.println(userRegistrationIdentified);
         rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
 		while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
             //do nothing for now, maybe sleep a bit in future?
         }
 		User user = userRegistrationResponseLL.poll().getUser(true);
+        System.out.println(user);
         Thread.sleep(2000);
         return new ServerResponse(user.getUserId());
     }
@@ -74,6 +76,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             //do nothing for now, maybe sleep a bit in future?
         }
         UserIdentified user = userCheckResponseLL.poll();
+        System.out.println(user);
+
         Thread.sleep(2000);
         return new ServerResponse(user.getIsRegistered());
     }

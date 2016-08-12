@@ -5,6 +5,8 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+import org.springframework.web.socket.server.support.*;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -18,9 +20,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/request").setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/usercheck").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/request").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/usercheck").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
 	}
 
 }
