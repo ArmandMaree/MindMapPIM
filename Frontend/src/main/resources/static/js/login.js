@@ -263,31 +263,43 @@ function loadXMLDoc(){
 
 	});
 	setTimeout(function(){
-		stompClient.send("/app/usercheck", {}, JSON.stringify(userReg));
-		stompClient.subscribe('/topic/usercheck', function(serverResponse){
-			var jsonresponse = JSON.parse(serverResponse.body);
-			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-			// document.cookie="userId="+jsonresponse.content;
-			// $("#loadingAlert").fadeOut(1000, function() {
-			// 	// body...
-			// });
-			if(jsonresponse.isRegistered){
-				window.location.assign('/mainpage');
-			}else{
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.onreadystatechange=function(){
-					if (xmlhttp.readyState==4 && xmlhttp.status==200){
-						document.getElementById("container").innerHTML=xmlhttp.responseText;
+		$("#loadingAlert").fadeIn(1000, function() {
+		// body...
+		});
+		var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+
+			var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+
+			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
+			stompClient.subscribe('/topic/usercheck', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+				// document.cookie="userId="+jsonresponse.content;
+				// $("#loadingAlert").fadeOut(1000, function() {
+				// 	// body...
+				// });
+				if(jsonresponse.isRegistered){
+					window.location.assign('/mainpage');
+				}else{
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.onreadystatechange=function(){
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){
+							document.getElementById("container").innerHTML=xmlhttp.responseText;
+						}
 					}
+					xmlhttp.open("GET","ajax/selectdata.html");
+					xmlhttp.send();
+					var filename;
 				}
-				xmlhttp.open("GET","ajax/selectdata.html");
-				xmlhttp.send();
-				var filename;
-			}
-		}, function(error) {
-	    		// display the error's message header:
-	    		console.log(error.headers.message);
-  			});
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		});
   	}, 3000);
 }
 /**
