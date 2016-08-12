@@ -9,7 +9,7 @@ public class ServerResponse implements Serializable {
 
     public ServerResponse(String content) {
         this.content = content;
-        System.out.println("Resonse created");
+        System.out.println("Repsonse created");
     }
     public ServerResponse(Boolean isRegistered) {
         this.isRegistered = isRegistered;
@@ -20,7 +20,7 @@ public class ServerResponse implements Serializable {
         return content;
     }
 
-    public String getIsRegistered() {
+    public Boolean getIsRegistered() {
         return isRegistered;
     }
 
