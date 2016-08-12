@@ -47,6 +47,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	private final String authCodeQueueName = "auth-code.gmail.rabbit";
+	private final String itemRequestQueueName = "item-request.gmail.rabbit";
 
 	@Autowired
 	private GmailRepository gmailRepository;
@@ -60,6 +61,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue itemRequestQueue() {
+		return new Queue(itemRequestQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
@@ -70,8 +76,18 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding itemRequestBinding(@Qualifier("itemRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(itemRequestQueueName);
+	}
+
+	@Bean
 	public BusinessListener businessListener() {
 		return new BusinessListener();
+	}
+
+	@Bean
+	public FrontendListener frontendListener() {
+		return new FrontendListener();
 	}
 
 	@Bean
@@ -80,10 +96,24 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public MessageListenerAdapter itemRequestAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveItemRequest");
+	}
+
+	@Bean
 	public SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(authCodeQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer itemRequestContainer(ConnectionFactory connectionFactory, @Qualifier("itemRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(itemRequestQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

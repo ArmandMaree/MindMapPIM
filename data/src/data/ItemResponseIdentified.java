@@ -27,4 +27,25 @@ public class ItemResponseIdentified extends ItemResponse implements Serializable
 	public void setReturnId(String returnId) {
 		this.returnId = returnId;
 	}
+
+	/**
+	* Create string representation of ItemResponse for printing
+	* @return
+	*/
+	@Override
+	public String toString() {
+		String i = "";
+
+		for (String id : items) {
+			if (i.equals(""))
+				i += "\t\t" + id;
+			else
+				i += ",\n\t\t" + id;
+		}
+
+		return "ItemResponse {\n" +
+			"\treturnId: " + returnId + ",\n" +
+			"\titems: [\n" + i + "\n" +
+		"}";
+	}
 }
