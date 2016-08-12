@@ -262,15 +262,33 @@ function loadXMLDoc(){
 		opacity: '0.0'
 
 	});
-	var xmlhttp=new XMLHttpRequest();
-	xmlhttp.onreadystatechange=function(){
-		if (xmlhttp.readyState==4 && xmlhttp.status==200){
-			document.getElementById("container").innerHTML=xmlhttp.responseText;
-		}
-	}
-	xmlhttp.open("GET","ajax/selectdata.html");
-	xmlhttp.send();
-	var filename;
+	setTimeout(function(){
+		stompClient.send("/app/usercheck", {}, JSON.stringify(userReg));
+		stompClient.subscribe('/topic/usercheck', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+			// document.cookie="userId="+jsonresponse.content;
+			// $("#loadingAlert").fadeOut(1000, function() {
+			// 	// body...
+			// });
+			if(jsonresponse.isRegistered){
+				window.location.assign('/mainpage');
+			}else{
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.onreadystatechange=function(){
+					if (xmlhttp.readyState==4 && xmlhttp.status==200){
+						document.getElementById("container").innerHTML=xmlhttp.responseText;
+					}
+				}
+				xmlhttp.open("GET","ajax/selectdata.html");
+				xmlhttp.send();
+				var filename;
+			}
+		}, function(error) {
+	    		// display the error's message header:
+	    		console.log(error.headers.message);
+  			});
+  	}, 3000);
 }
 /**
  * A Google function to sign the user out if they are signed in.
