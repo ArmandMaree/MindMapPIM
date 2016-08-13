@@ -12,6 +12,8 @@ import data.Topic;
 * @see TopicRequest
 */
 public class TopicResponse implements Serializable {
+	private static final long serialVersionUID = 1479600095184605L;
+
 	private String userId;
 	private String[] topicsText;
 	private String[][] pimSourceIds;
@@ -111,7 +113,7 @@ public class TopicResponse implements Serializable {
 		return "TopicResponse{\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
-			"\tpimSourceIds: \n" + p + 
+			"\tpimSourceIds: \n" + p +
 			"}";
 	}
 }

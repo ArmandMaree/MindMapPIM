@@ -3,6 +3,8 @@ package data;
 import java.io.Serializable;
 
 public class ItemRequestIdentified extends ItemRequest implements Serializable {
+	private static final long serialVersionUID = 4542718995124476L;
+
 	String returnId;
 
 	public ItemRequestIdentified() {

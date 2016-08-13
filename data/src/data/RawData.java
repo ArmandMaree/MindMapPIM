@@ -9,6 +9,8 @@ import java.io.Serializable;
 * @since   2016-07-14
 */
 public class RawData implements Serializable {
+	private static final long serialVersionUID = 0020554067007013L;
+
 	/**
 	* Enables toString to print all the strings in the data array.
 	*/

@@ -9,6 +9,8 @@ import java.io.Serializable;
 * @since   2016-07-25
 */
 public class UserRegistration implements Serializable {
+	private static final long serialVersionUID = 1167458800068207L;
+
 	/*
 	* First name of the user.
 	*/

@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 * @since   2016-07-25
 */
 public class Topic implements Serializable, Comparable<Topic> {
+	private static final long serialVersionUID = 2598785136676361L;
+
 	/**
 	* ID used in database.
 	*/

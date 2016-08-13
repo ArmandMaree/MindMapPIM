@@ -7,6 +7,8 @@ package data;
 * @since   2016-07-26
 */
 public class UserRegistrationIdentified extends UserRegistration {
+	private static final long serialVersionUID = 4123426460166654L;
+
 	/**
 	* ID used to identify the original request.
 	*/

@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 * @since   2016-07-25
 */
 public class User implements Serializable {
+	private static final long serialVersionUID = 7823655309489247L;
+
 	/**
 	* ID used in database.
 	*/
