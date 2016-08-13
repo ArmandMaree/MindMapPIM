@@ -1,47 +1,53 @@
 /**
-*	@var {String} name - 
+*	@var {String} name - varible to hold where the user is current logged in.
 */
 var name = "login=";
 /**
-*	@var {} rightClick - 
+*	@var {Boolean} rightClick - Variable to see where the user is currentluy right clicking
 */
 var rightClick;
 /**
-*	@var {} ca - 
+*	@var {} ca - Variable to hold all split cookies
 */
 var ca = document.cookie.split(';');
 /**
-*	@var {String} x - 
+*	@var {String} x - Temp Variable to hold the cookie result 
 */
 var x="";
 /**
-*	@var {String} x1 - 
+*	@var {String} x1 - Temp Variable to hold the cookie result 
 */
 var x1="";
 /**
-*	@var {} menu - 
+*	@var {} menu - Holds the right click context menu, as to be referenced later
 */
 var menu;
 /**
-*	@var {int} selectedID - 
+*	@var {int} selectedID - The currently selected nodes ID
 */
 var selectedID;
 /**
-*	@var {String[]} mockArrayOfData - 
+*	@var {String[]} mockArrayOfData - Mock data for testing purposes.
 */
 var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
 /**
-*	@var {} parentlist - 
+*	@var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
 var parentlist =[0];
 /**
-*	@var {} expandlist - 
+*	@var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
 var expandlist = [];
 /**
-*	@var {int} initialdepth - 
+*	@var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var initialdepth = 2;
+/**
+*   @var {} allPimIDlist - List to hold all the processed item ID's, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
+*/
+var allPimIDlist = [][][];
+allPimIDlist.push([null][null]);//test if this works here??
+/**
 
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
@@ -270,9 +276,18 @@ $(document).ready(function($){
 				*/
 				var JSONServerResponse = JSON.parse(serverResponse.body);
 				/**
-				*	@var topicsall - an array that contains all topics in the JSONServerResponse variable
+				*	@var topicsall - an array that contains ids for the ids of the items used by the pims.
 				*/
 				var topicsall = JSONServerResponse.topicsText;
+                 /**
+                *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                */
+                var pimSourceIds = JSONServerResponse.pimSourceIds;
+
+                allPimIDlist.push(pimSourceIds);
+                console.log("allPimIDlist :"+allPimIDlist); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+
+
 				/**
 				*	@var {int} pos - a variable that contains the position
 				*/
@@ -300,6 +315,7 @@ $(document).ready(function($){
 							group: thisgroup
 						});
 						parentlist.push(selectedID);
+
 
 					}
 					catch (err) {
