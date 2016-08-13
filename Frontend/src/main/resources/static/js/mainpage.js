@@ -246,6 +246,11 @@ $(document).ready(function($){
             *	A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/topic/request', function(serverResponse){
+                if(serverResponse.getItemIds()!=null){
+                    console.log(serverResponse.getItemIds());
+                    //Need to use data here to update sidebar 
+                    break;
+                }
 				/**
 				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
 				*/
@@ -377,6 +382,14 @@ $(document).ready(function($){
     */
     function populateSidePanel(node, array)
     {
+        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:x1};
+        /**
+        *   A function that sends the gmailItemRequest object through the websocket in order to make the request
+        */
+        // setTimeout(function(){
+        stompClient.send("/app/request", {}, JSON.stringify(gmailItemRequest));
+
+        // }, 3000);
 
         $("#accordion").html("");
         if(array.Topic != "Contact")
