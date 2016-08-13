@@ -42,9 +42,14 @@ public class Application {
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
-
+	private final String itemResponseQueueName = "item-response.frontend.rabbit";
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL() {
 		return new LinkedBlockingQueue<>();
 	}
 
@@ -64,6 +69,12 @@ public class Application {
 	}
 
 	@Bean
+	Queue itemResponseQueue() {
+		return new Queue(itemResponseQueueName, false);
+	}
+
+
+	@Bean
 	Queue userResponseQueue() {
 		return new Queue(userResponseQueueName, false);
 	}
@@ -81,6 +92,11 @@ public class Application {
 	@Bean
 	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(topicResponseQueueName);
+	}
+
+	@Bean
+	Binding itemResponseBinding(@Qualifier("itemResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(itemResponseQueueName);
 	}
 
 	@Bean
@@ -104,6 +120,11 @@ public class Application {
 	}
 
 	@Bean
+	public MessageListenerAdapter itemResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveItemResponse");
+	}
+
+	@Bean
 	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
 		return new MessageListenerAdapter(loginController, "receiveUserRegistrationResponse");
 	}
@@ -118,6 +139,15 @@ public class Application {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(topicResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer itemResponseContainer(ConnectionFactory connectionFactory, @Qualifier("itemResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(itemResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
