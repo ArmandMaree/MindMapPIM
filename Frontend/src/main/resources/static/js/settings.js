@@ -9,6 +9,17 @@ $(document).ready(function(){
 		$(this).addClass("active");
 		
 	});
+
+	$.ajax({
+		type: "GET",
+		url:"ajax/selectdata.html",
+		success: function(data)
+		{
+			$("#ajax").html(data);
+			$("#ques").html("");
+		}
+
+	});
 	/**
 	*	This function updates the css settings selected tab and hides/shows the respective div
 	*/
@@ -56,26 +67,74 @@ $(document).ready(function(){
         step: 1
     });
 
+    /**
+    *	@var {String} value - The value of the selected item in Theme
+    */
+    var value ="";
+    /**
+    *	@var {String} component - The component that the value must be applied to 
+    */
+    var component="";
+    /**
+    *	@var {JsonObject} theme - The object that contains the users theme preferences
+    */
+    var themeObject={
+    	"nav":"",
+    	"map":"",
+    	"sidePanel":""
+    };
 
+$("ul li").on("click",function(){
+	value= $(this).attr("data-value");
+	component = $(this).attr("data-select");
+	console.log("Value"+ value);
+	console.log("Comp"+ component);
+	if(component == "nav")
+	{
+		$("#navColour").css("backgroundColor",value);
+		themeObject.nav=value;
+	}
+	else if(component == "map")
+	{
+		$("#bubbleSpaceColour").css("backgroundColor",value);
+		themeObject.map = value;
+	}
+	else if(component == "panel")
+	{
+		$("#sidePanelColour").css("backgroundColor",value);
+		themeObject.sidePanel =value;
+	}
+	console.log(themeObject);
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+$("#saveTheme").on("click", function(){
+	//Send themeObject through websocket
+		// if(response.success == true)
+		// {
+		// 	$("#Saved").fadeIn(1000, function() {
+		//    		setTimeout(function(){$("#Saved").hide(); }, 2000);
+			 	
+		// 	});
+		// }
+		// else if(response.success == false)
+		// {
+		// 	$("#Error").fadeIn(1000, function() {
+		//    		setTimeout(function(){$("#Error").hide(); }, 4000);
+			 	
+		// 	});
+		// }
 })
+
+$("#Saved").hide();
+$("#Error").hide();
+}); //End of on load
+
+
+function googleretrieve()
+{
+
+}
+function onFacebookLogin()
+{
+
+}
