@@ -1,6 +1,8 @@
 package data;
 
 public class UserIdentified extends User {
+	private static final long serialVersionUID = 3180116540442618L;
+
 	/**
 	* ID used to identify the original request.
 	*/

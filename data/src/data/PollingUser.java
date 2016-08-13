@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 
 public class PollingUser implements Serializable {
+	private static final long serialVersionUID = 3213026260976085L;
+
 	@Id
 	private String id;
 	private String userId;

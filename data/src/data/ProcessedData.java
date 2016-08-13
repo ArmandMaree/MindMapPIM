@@ -10,6 +10,8 @@ import org.springframework.data.annotation.Id;
 * @since   2016-07-25
 */
 public class ProcessedData implements Serializable {
+	private static final long serialVersionUID = 5088477885033031L;
+
 	/**
 	* ID used in database.
 	*/

@@ -9,6 +9,8 @@ import java.io.Serializable;
 * @since   2016-07-25
 */
 public class AuthCode implements Serializable {
+	private static final long serialVersionUID = 7146817820488675L;
+
 	/**
 	* Id used by the PIM source to identify the user.
 	*/

@@ -3,6 +3,8 @@ package data;
 import java.io.Serializable;
 
 public class ItemRequest implements Serializable {
+	private static final long serialVersionUID = 9152211530232119L;
+
 	String[] itemIds;
 	String userId;
 
