@@ -27,8 +27,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
 	@Autowired
 	LinkedBlockingQueue<TopicResponse> topicResponseLL;
 
-	@Autowired
-	LinkedBlockingQueue<UserIdentified> userRegistrationResponseLL;
+    @Autowired
+    @Qualifier("userResponseLL")
+    LinkedBlockingQueue<UserIdentified> userRegistrationResponseLL;
+
+    @Autowired
+    @Qualifier("userCheckResponseLL")
+    LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -50,14 +55,66 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendTo("/topic/greetings")
     public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
 		String id = UUID.randomUUID().toString();
-		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
-        rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
-		while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
+        if(message.getAuthCodes()[0].getAuthCode()!=null){
+    		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
+            System.out.println(userRegistrationIdentified);
+            rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
+            int counter =0;
+            while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
+                if(userRegistrationResponseLL.peek()==null){
+                    System.out.println("null");
+                    if((counter++)>5000)
+                        break;
+                }else{
+                    System.out.println(userRegistrationResponseLL.peek().getReturnId());
+                }//do nothing for now, maybe sleep a bit in future?
+            }
+    		User user = userRegistrationResponseLL.poll().getUser(true);
+            System.out.println(user);
+            Thread.sleep(2000);
+            return new ServerResponse(user.getUserId());
+        }else{
+            System.out.println(message);
+            UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName(),message.getAuthCodes()[0].getId());
+            rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
+            while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+                //do nothing for now, maybe sleep a bit in future?
+            }
+            UserIdentified user = userCheckResponseLL.poll();
+            System.out.println(user);
+
+            Thread.sleep(2000);
+            return new ServerResponse(user.getIsRegistered());
+        }
+    }
+
+    // @MessageMapping("/usercheck")
+    // @SendTo("/topic/usercheck")
+    // public ServerResponse usercheck(User message) throws Exception {
+    //     System.out.println(message);
+    //     String id = UUID.randomUUID().toString();
+    //     UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+    //     rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+    //     while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+    //         //do nothing for now, maybe sleep a bit in future?
+    //     }
+    //     UserIdentified user = userCheckResponseLL.poll();
+    //     System.out.println(user);
+
+    //     Thread.sleep(2000);
+    //     return new ServerResponse(user.getIsRegistered());
+    // }
+
+    public ServerResponse userchecktest(User message) throws Exception {
+        String id = "123456";
+        UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+        rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
             //do nothing for now, maybe sleep a bit in future?
         }
-		User user = userRegistrationResponseLL.poll().getUser(true);
+        UserIdentified user = userCheckResponseLL.poll();
         Thread.sleep(2000);
-        return new ServerResponse(user.getUserId());
+        return new ServerResponse(user.getIsRegistered());
     }
 
     @MessageMapping("/request")
@@ -88,6 +145,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
 	}
 
+    public void receiveUserCheckResponse(UserIdentified user) {
+        try {
+            userCheckResponseLL.put(user);
+        }
+        catch (InterruptedException ie){}
+    }
 
     @RequestMapping(value="/login", method=RequestMethod.GET)
     public String showMain() {
