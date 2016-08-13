@@ -109,7 +109,7 @@
 							    <input type="checkbox"/><label>Google</label>  -->
 						</div> 
 						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
-					  		<button type="submit" id="saveAccount" class="btn btn-success">Save Changes</button>
+					  		<button id="saveAccount" class="btn btn-success">Save Changes</button>
 	              		</div>
 
 	              		<div class="col-xs-12 col-sm-12 col-md-12">
@@ -119,7 +119,7 @@
 	              		</div>
 	              		
 						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
-					  		<button type="submit" id="deleteAccount" class="btn btn-danger">Deactivate Account</button>
+					  		<button  id="deactivateAccount" class="btn btn-danger">Deactivate Account</button>
 					  		<br />
 	              		</div>
 	              
@@ -187,22 +187,25 @@
 		              	</div>
 		              	<div class="col-xs-12 col-sm-12 col-md-12">
 		              			<h5 title="Branch factor is the number of bubbles that are connected to one bubble"><b>Set default branch factor:</b></h5>
-		              		</div>
-		              		<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
-		              			<input name="branch" id="spinner" />
-							    <br />
-								
-							</div>
+		              	</div>
+		              	<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
+		              		<input name="branch" id="spinner" />
+						    <br />		
+						</div>
 
 
 		              	<div class="col-xs-12 col-sm-12 col-md-12">
 		              		<h5 title="Depth factor is the number of levels that a user can move through on a single path"><b>Set default depth factor:</b></h5>
 		              	</div>
 		              	<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
-								    <input name="depth" id="spinner2" />
-
-								     <br />
+							<input name="depth" id="spinner2" />
+							<br />
 						</div>
+						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
+								<br />
+						  		<button type="submit" id="saveUserPreferences" class="btn btn-success">Save Changes</button>
+						  		<br />
+		              		</div>
 						<br />
 							
 					</div>
