@@ -9,7 +9,7 @@ import java.io.Serializable;
 * @since   2016-07-21
 */
 public class TopicRequest implements Serializable {
-	private static final long serialVersionUID = 0732667706236639L;
+	private static final long serialVersionUID = 732667706236639L;
 
 	private String userId;
 	private String[] path;
