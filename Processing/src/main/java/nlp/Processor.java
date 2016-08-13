@@ -1,4 +1,4 @@
-package listeners;
+package nlp;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -18,32 +18,34 @@ import nlp.NaturalLanguageProcessor;
 * @author  Armand Maree
 * @since   2016-07-25
 */
-public class RawDataListener {
+public class Processor implements Runnable {
 	private boolean stop = false;
 	private final int TIMEOUT = 10;
 	private CountDownLatch latch = new CountDownLatch(1);
 	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
 
-	@Autowired
 	private NaturalLanguageProcessor nlp;
-
-	@Autowired
 	private RabbitTemplate rabbitTemplate;
+	private LinkedBlockingQueue<RawData> rawDataQueue;
 
 	/**
 	* Default constructor.
 	*/
-	public RawDataListener() {
-
+	public Processor(LinkedBlockingQueue<RawData> rawDataQueue, RabbitTemplate rabbitTemplate, NaturalLanguageProcessor nlp) {
+		this.rawDataQueue = rawDataQueue;
+		this.rabbitTemplate = rabbitTemplate;
+		this.nlp = nlp;
 	}
 
-	/**
-	* Receives a rawData object and processes it.
-	* @param rawData The rawData object that needs processing.
-	*/
-	public void receiveRawData(RawData rawData) {
-		ProcessedData processedData = process(rawData);
-		pushToQueue(processedData);
+	public void run() {
+		while (!stop) {
+			try {
+				RawData rawData = rawDataQueue.take();
+				ProcessedData processedData = process(rawData);
+				pushToQueue(processedData);
+			}
+			catch (Exception ignore) {}
+		}
 	}
 
 	/**
@@ -56,10 +58,14 @@ public class RawDataListener {
 		ProcessedData processedData = null;
 
 		if (nlp != null) {
-			for (String part : rawData.getData())
-				topics.addAll(nlp.getTopics(part));
+			for (String part : rawData.getData()) {
+				ArrayList<String> topicsIdentified = nlp.getTopics(part);
 
-			topics = nlp.purge(topics); // remove duplicates and excluded words.
+				for (String topic : topicsIdentified) {
+					if (!topics.contains(topic))
+						topics.add(topic);
+				}
+			}
 
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 		}

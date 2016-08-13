@@ -25,11 +25,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 * @since 2016-07-24
 */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=testers.listeners.TestContextTopicListener.class)
+@ContextConfiguration(classes=testers.listeners.TestContext.class)
 public class ProcessedDataListenerTester extends AbstractTester {
 	private boolean setUpDone = false;
 
-	private final static String processedDataQueueName = TestContextTopicListener.processedDataQueueName;
+	private final static String processedDataQueueName = TestContext.processedDataQueueName;
 
 	@Autowired
 	private UserRepository userRepository;

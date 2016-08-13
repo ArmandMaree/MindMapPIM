@@ -171,6 +171,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	public String toString() {
 		String s = "Topic: {\n" +
 			"\tid: " + id + "\n" +
+			"\ttopic: " + topic + "\n" +
 			"\tuserId: " + userId + "\n" +
 			"\trelatedTopics: [\n";
 

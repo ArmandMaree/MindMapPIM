@@ -94,7 +94,6 @@ public class ProcessedDataListener {
 			Topic t = new Topic(processedData.getUserId(), topic, remainingTopics.toArray(new String[0]), processedDataIds, System.currentTimeMillis());
 			topicRepository.save(t); // persist new topic
 			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
-			System.out.println("NEW: " + ttest);
 		}
 		else { // topic in repo
 			ArrayList<String> repoTopics = new ArrayList<>(Arrays.asList(topicFromRepo.getRelatedTopics())); // get the related topics of the topic in the repo
@@ -111,7 +110,6 @@ public class ProcessedDataListener {
 			topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
 			topicRepository.save(topicFromRepo); // update topic in repo
 			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
-			System.out.println("UPDATE: " + ttest);
 		}
 	}
 }

@@ -182,7 +182,10 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 					groups.add(bufferToString(buffer));
 
 				buffer = new ArrayList<>();
-				groups.add(token.get(LemmaAnnotation.class));
+				String word = token.get(LemmaAnnotation.class);
+
+				if (!excludedWords.contains(word))
+					groups.add(word);
 			}
 			else {
 				if (!ner.equals("PERSON") && !ner.equals("LOCATION") && !ner.equals("ORGANIZATION")) {
@@ -196,15 +199,23 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 				else if (ner.equals(buffer.get(0).get(NamedEntityTagAnnotation.class)))
 					buffer.add(token);
 				else {
-					groups.add(bufferToString(buffer));
+					String word = bufferToString(buffer);
+
+					if (!excludedWords.contains(word))
+						groups.add(word);
+
 					buffer = new ArrayList<>();
 					buffer.add(token);
 				}
 			}
 		}
 
-		if (!buffer.isEmpty())
-			groups.add(bufferToString(buffer));
+		if (!buffer.isEmpty()) {
+			String word = bufferToString(buffer);
+
+			if (!excludedWords.contains(word))
+				groups.add(word);
+		}
 
 		return groups;
 	}

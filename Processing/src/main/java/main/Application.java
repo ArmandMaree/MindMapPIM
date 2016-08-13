@@ -62,17 +62,17 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	RawDataListener rawDataListener() {
-		return new RawDataListener();
+	ProcessingManager processingManager() {
+		return new ProcessingManager();
 	}
 
 	@Bean
-	MessageListenerAdapter rawDataListenerAdapter(RawDataListener rawDataListener) {
-		return new MessageListenerAdapter(rawDataListener, "receiveRawData");
+	MessageListenerAdapter processingManagerAdapter(ProcessingManager processingManager) {
+		return new MessageListenerAdapter(processingManager, "receiveRawData");
 	}
 
 	@Bean
-	SimpleMessageListenerContainer rawDataContainer(ConnectionFactory connectionFactory, @Qualifier("rawDataListenerAdapter") MessageListenerAdapter listenerAdapter) {
+	SimpleMessageListenerContainer processingManagerContainer(ConnectionFactory connectionFactory, @Qualifier("processingManagerAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(rawDataQueueName);
@@ -83,7 +83,6 @@ public class Application implements CommandLineRunner {
 	@Bean
 	NaturalLanguageProcessor naturalLanguageProcessor() {
 		return new StanfordNLP();
-		// return null;
 	}
 
 	public static void main(String[] args) {
