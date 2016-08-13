@@ -80,9 +80,9 @@ var sendUserReg = function(){
 				$("#loadingAlert").fadeOut(1000, function() {
 					// body...
 				});
-				if (stompClient != null) {
-		            stompClient.disconnect();
-		        }
+				// if (stompClient != null) {
+		  //           stompClient.disconnect();
+		  //       }
 				window.location.assign('/mainpage');
 			}, function(error) {
 		    		// display the error's message header:
@@ -275,11 +275,13 @@ function loadXMLDoc(){
 		stompClient.connect({}, function(frame) {
 		    console.log('Connected: ' + frame);
 		    connected = true;
+			
+			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
 
-			var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
 
-			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-			stompClient.subscribe('/topic/usercheck', function(serverResponse){
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("ServerResponse is : "+jsonresponse);
 				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
@@ -299,9 +301,9 @@ function loadXMLDoc(){
 					xmlhttp.open("GET","ajax/selectdata.html");
 					xmlhttp.send();
 					var filename;
-					if (stompClient != null) {
-		                stompClient.disconnect();
-		            }
+					// if (stompClient != null) {
+		   //              stompClient.disconnect();
+		   //          }
 				}
 			}, function(error) {
 		    		// display the error's message header:

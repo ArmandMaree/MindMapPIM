@@ -20,9 +20,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/request").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/usercheck").setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy())).setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/request").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/usercheck").setAllowedOrigins("*").withSockJS();
 	}
 
 }

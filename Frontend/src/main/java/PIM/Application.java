@@ -53,10 +53,10 @@ public class Application {
 		return new LinkedBlockingQueue<>();
 	}
 	
-	// @Bean
-	// LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
-	// 	return new LinkedBlockingQueue<>();
-	// }
+	@Bean
+	LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
 
 	@Bean
 	Queue topicResponseQueue() {
