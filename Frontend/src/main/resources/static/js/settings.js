@@ -91,6 +91,9 @@ $(document).ready(function(){
     	"depth":0
     };
 
+    var depth=0;
+    var branch=0;
+
 $("ul li").on("click",function(){
 	value= $(this).attr("data-value");
 	component = $(this).attr("data-select");
@@ -135,9 +138,41 @@ $("#saveTheme").on("click", function(){
 $("#deactivateAccount").on("click", function(){
 
 });
+// $(".branch").on("change", function(){
+// 	branch = $(this).val();
+// 	console.log("Branch: "+branch);
+// });
+
+// $(".depth").on("change", function(){
+// 	branch = $(this).val();
+// 	console.log("Depth: "+branch);
+// });
+$("#saveUserPreferences").on("click", function(){
+	branch = $("#spinner").val();
+	console.log("Branch: "+branch);
+	depth = $("#spinner2").val();
+	console.log("Depth: "+depth);
+
+	//Send themeObject through websocket
+		// if(response.success == true)
+		// {
+		// 	$("#Saved").fadeIn(1000, function() {
+		//    		setTimeout(function(){$("#Saved").hide(); }, 2000);
+			 	
+		// 	});
+		// }
+		// else if(response.success == false)
+		// {
+		// 	$("#Error").fadeIn(1000, function() {
+		//    		setTimeout(function(){$("#Error").hide(); }, 4000);
+			 	
+		// 	});
+		// }
+});
 
 $("#Saved").hide();
 $("#Error").hide();
+console.log("Depth: "+ $(".depth").val())
 }); //End of on load
 
 
