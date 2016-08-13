@@ -69,7 +69,7 @@ var sendUserReg = function(){
 	  	var userReg = {};
 	  	if(gmailUser!=null){
 			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-			console.log(JSON.stringify(userReg));
+			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
 	  	setTimeout(function(){
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
