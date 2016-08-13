@@ -76,12 +76,19 @@ $(document).ready(function(){
     */
     var component="";
     /**
-    *	@var {JsonObject} theme - The object that contains the users theme preferences
+    *	@var {JsonObject} themeObject - The object that contains the users theme preferences
     */
     var themeObject={
     	"nav":"",
     	"map":"",
     	"sidePanel":""
+    };
+    /**
+    *	@var {JsonObject} userPreferences - The object that contains the users preferences
+    */
+    var userPreferences={
+    	"branch":0,
+    	"depth":0
     };
 
 $("ul li").on("click",function(){
@@ -124,6 +131,10 @@ $("#saveTheme").on("click", function(){
 		// 	});
 		// }
 })
+
+$("#deactivateAccount").on("click", function(){
+
+});
 
 $("#Saved").hide();
 $("#Error").hide();
