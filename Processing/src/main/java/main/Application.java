@@ -46,6 +46,17 @@ public class Application implements CommandLineRunner {
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
+	@Autowired
+	ProcessingManager processingManager;
+
+	@Autowired
+	SimpleMessageListenerContainer processingManagerContainer;
+
+	@Bean
+	NaturalLanguageProcessor naturalLanguageProcessor() {
+		return new StanfordNLP();
+	}
+
 	@Bean
 	Queue rawDataQueue() {
 		return new Queue(rawDataQueueName, false);
@@ -62,8 +73,8 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	ProcessingManager processingManager() {
-		return new ProcessingManager();
+	ProcessingManager processingManager(NaturalLanguageProcessor naturalLanguageProcessor, RabbitTemplate rabbitTemplate) {
+		return new ProcessingManager(naturalLanguageProcessor, rabbitTemplate);
 	}
 
 	@Bean
@@ -80,17 +91,12 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
-	@Bean
-	NaturalLanguageProcessor naturalLanguageProcessor() {
-		return new StanfordNLP();
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-
+		processingManager.createShutDownHook(processingManagerContainer);
 	}
 }

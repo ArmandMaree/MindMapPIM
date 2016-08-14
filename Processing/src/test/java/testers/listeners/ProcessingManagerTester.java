@@ -5,7 +5,8 @@ import data.*;
 import listeners.*;
 import testers.AbstractTester;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 /**
 * Unit test methods for the RawDataListener.
 *
@@ -25,27 +27,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = main.Application.class)
+@ContextConfiguration(classes = testers.listeners.TestContext.class)
 public class ProcessingManagerTester extends AbstractTester {
-	private RawData rawData;
-	private ProcessedData processedData;
 	private boolean setUpDone = false;
+	private final static String rawDataQueue = "raw-data.processing.rabbit";
 
 	@Autowired
 	private ProcessingManager processingManager;
 
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private LinkedBlockingQueue<ProcessedData> processedDataQueue;
+
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
-			String pimSource = "Gmail";
-			String userId = "acubencos@gmail.com";
-			String[] involvedContacts = {"susan@gmail.com", "steve@gmail.com", "thabo@gmail.com", "precious@gmail.com"};
-			String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
-			String[] data = {"Horse photo", "Hey Acuben, here is the photo you wanted."};
-			long time = System.currentTimeMillis();
-			rawData = new RawData(pimSource, userId, involvedContacts, pimItemId, data, time);
-			String[] topics = {"horse", "photo", "Acuben"};
-			processedData = new ProcessedData(rawData, topics);
+
 			setUpDone = true;
 		}
 	}
@@ -61,22 +60,19 @@ public class ProcessingManagerTester extends AbstractTester {
 	}
 
 	@Test
-	public void testProcess() {
-		// ProcessedData pd = processingManager.process(rawData);
-		//
-		// Assert.assertNotNull("Failure - processedData is null.", pd);
-		// Assert.assertEquals("Failure - pimSource is not equal.", processedData.getPimSource(), pd.getPimSource());
-		// Assert.assertEquals("Failure - userId is not equal.", processedData.getUserId(), pd.getUserId());
-		// Assert.assertEquals("Failure - involvedContacts length differs.", processedData.getInvolvedContacts().length, pd.getInvolvedContacts().length);
-		//
-		// for (int i = 0; i < processedData.getInvolvedContacts().length; i++)
-		// 	Assert.assertEquals("Failure - involvedContacts[" + i + "] differs.", processedData.getInvolvedContacts()[i], pd.getInvolvedContacts()[i]);
-		//
-		// Assert.assertEquals("Failure - pimItemId is not equal.", processedData.getPimItemId(), pd.getPimItemId());
-		// Assert.assertEquals("Failure - time is not equal.", processedData.getTime(), pd.getTime());
-		// Assert.assertEquals("Failure - topics length differs.", processedData.getTopics().length, pd.getTopics().length);
-		//
-		// for (int i = 0; i < processedData.getTopics().length; i++)
-		// 	Assert.assertEquals("Failure - topics[" + i + "] differs.", processedData.getTopics()[i], pd.getTopics()[i]);
+	public void testProcess() throws InterruptedException {
+		String pimSource = "Gmail";
+		String userId = "acubencos@gmail.com";
+		String[] involvedContacts = {"Susan", "Steve"};
+		String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
+		String[] data = {"Horse photo", "Hey Acuben, here is the photo you wanted."};
+		long time = System.currentTimeMillis();
+		RawData rawData = new RawData(pimSource, userId, involvedContacts, pimItemId, data, time);
+		String[] topics = {"horse", "photo", "Acuben"};
+		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+
+		ProcessedData processedData = processedDataQueue.poll(5, TimeUnit.SECONDS);
+
+		Assert.assertNotNull("Failure - processedData is null.", processedData);
 	}
 }

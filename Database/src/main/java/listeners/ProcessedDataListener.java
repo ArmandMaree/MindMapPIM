@@ -40,6 +40,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) {
+		System.out.println("Received: " + processedData);
 		try {
 			User user = null;
 
