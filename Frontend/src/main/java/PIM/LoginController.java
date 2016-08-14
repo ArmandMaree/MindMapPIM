@@ -81,22 +81,23 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
     }
 
-    // @MessageMapping("/usercheck")
-    // @SendTo("/topic/usercheck")
-    // public ServerResponse usercheck(User message) throws Exception {
-    //     System.out.println(message);
-    //     String id = UUID.randomUUID().toString();
-    //     UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
-    //     rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
-    //     while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-    //         //do nothing for now, maybe sleep a bit in future?
-    //     }
-    //     UserIdentified user = userCheckResponseLL.poll();
-    //     System.out.println(user);
+    @MessageMapping("/usercheck")
+    @SendTo("/topic/usercheck")
+    public ServerResponse usercheck(User message) throws Exception {
+        System.out.println(message);
+        String id = UUID.randomUUID().toString();
+        UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+        rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Found user!");
+        UserIdentified user = userCheckResponseLL.poll();
+        System.out.println(user);
 
-    //     Thread.sleep(2000);
-    //     return new ServerResponse(user.getIsRegistered());
-    // }
+        Thread.sleep(2000);
+        return new ServerResponse(user.getIsRegistered());
+    }
 
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
