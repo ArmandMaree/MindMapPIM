@@ -118,7 +118,6 @@ public class TopicListener {
 			// 	topicIndex++;
 			// }
 		}
-		System.out.println("TOPICS RETURNED: " + returnTopics);
 
 		List<String> gmailIds = new ArrayList<>();
 
@@ -144,6 +143,7 @@ public class TopicListener {
 			topicsText[i] = returnTopics.get(i).getTopic();
 
 		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, pimIds); // create topic response without topics objects
+		System.out.println("TopicResponse: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 }
