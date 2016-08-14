@@ -294,6 +294,9 @@ function loadXMLDoc(){
 					window.location.assign('/mainpage');
 				}else{
 					$("#cssload-pgloading").hide();
+					$("#loadingAlert").fadeOut(1000, function() {
+						// body...
+					});
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.onreadystatechange=function(){
 						if (xmlhttp.readyState==4 && xmlhttp.status==200){
