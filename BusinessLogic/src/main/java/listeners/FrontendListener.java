@@ -49,6 +49,7 @@ public class FrontendListener {
 	}
 
 	public void receiveRegister(UserRegistrationIdentified userRegistrationIdentified) {
+		System.out.println("Received: " + userRegistrationIdentified);
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
 

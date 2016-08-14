@@ -56,6 +56,7 @@ public class BusinessListener {
 		else
 			user = new UserIdentified(user.getReturnId(), true, userReturn);
 
+		System.out.println("UserRCheckResponse: " + user);
 		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
 	}
 }
