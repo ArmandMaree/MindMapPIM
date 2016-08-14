@@ -354,6 +354,7 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
+			System.out.println("Sending RawData: " + rawData.getData().length);
 			rabbitTemplate.convertAndSend(rawDataQueue, rawData);
 		}
 		catch (AmqpException ampqe) {

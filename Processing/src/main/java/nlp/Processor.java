@@ -41,6 +41,7 @@ public class Processor implements Runnable {
 		while (!stop) {
 			try {
 				RawData rawData = rawDataQueue.take();
+				System.out.println("Took: " + rawData);
 				ProcessedData processedData = process(rawData);
 				pushToQueue(processedData);
 			}
@@ -80,6 +81,7 @@ public class Processor implements Runnable {
 	* @param processedData The data that has been processed that needs to be sent to the queue for persistence.
 	*/
 	public void pushToQueue(ProcessedData processedData) {
+		System.out.println(rabbitTemplate + "    Sending: " + processedData);
         rabbitTemplate.convertAndSend(processedDataDatabaseQueueName, processedData);
 	}
 

@@ -66,27 +66,31 @@ var sendUserReg = function(){
 	stompClient.connect({}, function(frame) {
 	    console.log('Connected: ' + frame);
 	    connected = true;
+	  	var userReg = {};
+	  	if(gmailUser!=null){
+			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+			console.log("User registration object:" +JSON.stringify(userReg));
+	  	}
+	  	setTimeout(function(){
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/topic/greetings', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("Server says: "+jsonresponse.content);
+				document.cookie="userId="+jsonresponse.content;
+				$("#loadingAlert").fadeOut(1000, function() {
+					// body...
+				});
+				// if (stompClient != null) {
+		  //           stompClient.disconnect();
+		  //       }
+				window.location.assign('/mainpage');
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  			});
+	  	}, 3000);
 	});
-  	var userReg = {};
-  	if(gmailUser!=null){
-		userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-		console.log(JSON.stringify(userReg));
-  	}
-  	setTimeout(function(){
-		stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-		stompClient.subscribe('/topic/greetings', function(serverResponse){
-			var jsonresponse = JSON.parse(serverResponse.body);
-			console.log("Server says: "+jsonresponse.content);
-			document.cookie="userId="+jsonresponse.content;
-			$("#loadingAlert").fadeOut(1000, function() {
-				// body...
-			});
-			window.location.assign('/mainpage');
-		}, function(error) {
-	    		// display the error's message header:
-	    		console.log(error.headers.message);
-  			});
-  	}, 3000);
+
 }
 /**
  * A function that checks where any sign in activity for Google has happened and responds.
@@ -262,15 +266,51 @@ function loadXMLDoc(){
 		opacity: '0.0'
 
 	});
-	var xmlhttp=new XMLHttpRequest();
-	xmlhttp.onreadystatechange=function(){
-		if (xmlhttp.readyState==4 && xmlhttp.status==200){
-			document.getElementById("container").innerHTML=xmlhttp.responseText;
-		}
-	}
-	xmlhttp.open("GET","ajax/selectdata.html");
-	xmlhttp.send();
-	var filename;
+	setTimeout(function(){
+		$("#loadingAlert").fadeIn(1000, function() {
+		// body...
+		});
+		var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
+
+
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/topic/greetings', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+jsonresponse);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+				// document.cookie="userId="+jsonresponse.content;
+				// $("#loadingAlert").fadeOut(1000, function() {
+				// 	// body...
+				// });
+				if(jsonresponse.isRegistered){
+					window.location.assign('/mainpage');
+				}else{
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.onreadystatechange=function(){
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){
+							document.getElementById("container").innerHTML=xmlhttp.responseText;
+						}
+					}
+					xmlhttp.open("GET","ajax/selectdata.html");
+					xmlhttp.send();
+					var filename;
+					// if (stompClient != null) {
+		   //              stompClient.disconnect();
+		   //          }
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		});
+  	}, 3000);
 }
 /**
  * A Google function to sign the user out if they are signed in.

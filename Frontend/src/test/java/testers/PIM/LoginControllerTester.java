@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
 * Unit test methods for the RawData.
 *
-* @author Armand Maree
+* @author Arno Grobler
 * @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,6 +38,9 @@ public class LoginControllerTester extends AbstractTester {
 	@Autowired
 	LinkedBlockingQueue<UserIdentified> userResponseLL;
 
+	@Autowired
+	LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
+
 	// @Autowired
 	// LinkedBlockingQueue<UserIdentified> TopicResponse;
 
@@ -54,8 +57,10 @@ public class LoginControllerTester extends AbstractTester {
 			String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
 			Topic[] mockTopics = {new Topic("123456","Horse",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Amy Lochner",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Racing",mockrelated,mockprocessedDataIds,1000)};
 			TopicResponse tro = new TopicResponse("123456",mockTopicText,mockTopics);
+			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos","acubancos@gmail.com");
 			try{
 				topicResponseLL.put(tro);
+				userCheckResponseLL.put(ui);
 			}catch(Exception e){
 
 			}
@@ -87,5 +92,9 @@ public class LoginControllerTester extends AbstractTester {
 		Assert.assertEquals("Topic responses userId does not match",tro.getUserId(),loginController.recieveRequest(tr).getUserId());
 		Assert.assertEquals("Topic responses topicsText do not match",tro.getTopicsText(),loginController.recieveRequest(tr).getTopicsText());
 
+	}
+	@Test
+	public void testuserchecktest() throws Exception{
+		Assert.assertEquals("Topic responses userId does not match",true,loginController.userchecktest(new User("Acuban","Cos","acubancos@gmail.com")).getIsRegistered());
 	}
 }

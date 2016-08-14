@@ -22,15 +22,15 @@ import nlp.*;
 public class ProcessingManager {
 	private class ShutDownHookThread extends Thread {
 		private final SimpleMessageListenerContainer processingManagerContainer;
+		private LinkedBlockingQueue<RawData> rawDataQueue;
 
-		public ShutDownHookThread(SimpleMessageListenerContainer processingManagerContainer) {
+		public ShutDownHookThread(SimpleMessageListenerContainer processingManagerContainer, LinkedBlockingQueue<RawData> rawDataQueue) {
 			this.processingManagerContainer = processingManagerContainer;
+			this.rawDataQueue = rawDataQueue;
 		}
 
 		@Override
 		public void run() {
-			processingManagerContainer.setMaxConcurrentConsumers(0);
-
 			for (Processor processor : processors)
 				processor.stop();
 
@@ -51,16 +51,8 @@ public class ProcessingManager {
 	private CountDownLatch latch = new CountDownLatch(1);
 	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
 	private final static String rawDataQueueName = "raw-data.processing.rabbit";
-
-	@Autowired
 	private NaturalLanguageProcessor nlp;
-
-	@Autowired
 	private RabbitTemplate rabbitTemplate;
-
-	@Autowired
-	private final SimpleMessageListenerContainer processingManagerContainer = null;
-
 	private LinkedBlockingQueue<RawData> rawDataQueue = new LinkedBlockingQueue<>();
 	private List<Processor> processors = new ArrayList<>();
 	private List<Thread> processorsThreads = new ArrayList<>();
@@ -68,7 +60,10 @@ public class ProcessingManager {
 	/**
 	* Default constructor.
 	*/
-	public ProcessingManager() {
+	public ProcessingManager(NaturalLanguageProcessor naturalLanguageProcessor, RabbitTemplate rabbitTemplate) {
+		nlp = naturalLanguageProcessor;
+		this.rabbitTemplate = rabbitTemplate;
+
 		for (int i = 0; i < NUM_PROCESSORS; i++) {
 			Processor processor = new Processor(rawDataQueue, rabbitTemplate, nlp);
 			processors.add(processor);
@@ -76,8 +71,10 @@ public class ProcessingManager {
 			processorsThreads.add(thread);
 			thread.start();
 		}
+	}
 
-		Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer));
+	public void createShutDownHook(SimpleMessageListenerContainer processingManagerContainer) {
+		// Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer, rawDataQueue));
 	}
 
 	/**
@@ -85,6 +82,7 @@ public class ProcessingManager {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public void receiveRawData(RawData rawData) {
+		System.out.println("Received: " + rawData);
 		try {
 			rawDataQueue.put(rawData);
 		}
