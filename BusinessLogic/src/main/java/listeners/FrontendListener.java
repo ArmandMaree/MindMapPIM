@@ -35,6 +35,7 @@ public class FrontendListener {
 	* @param topicRequest Request for topics structured as a TopicRequest.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
+		System.out.println("Received: " + topicRequest);
 		rabbitTemplate.convertAndSend(topicRequestQueueName, topicRequest);
 	}
 
@@ -43,6 +44,7 @@ public class FrontendListener {
 	* @param topicResponse Response to a topic request structured as a TopicResponse.
 	*/
 	public void receiveTopicResponse(TopicResponse topicResponse) {
+		System.out.println("Received: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 	}
 
@@ -64,7 +66,7 @@ public class FrontendListener {
 					break;
 			}
 		}
-		System.out.println("Received user: " + user.getGmailId());
+
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
 	}
 }

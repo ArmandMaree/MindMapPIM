@@ -59,15 +59,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
     		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
             System.out.println(userRegistrationIdentified);
             rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
-            int counter =0;
             while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
-                if(userRegistrationResponseLL.peek()==null){
-                    System.out.println("null");
-                    if((counter++)>5000)
-                        break;
-                }else{
-                    System.out.println(userRegistrationResponseLL.peek().getReturnId());
-                }//do nothing for now, maybe sleep a bit in future?
+				//do nothing for now, maybe sleep a bit in future?
             }
     		User user = userRegistrationResponseLL.poll().getUser(true);
             System.out.println(user);

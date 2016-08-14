@@ -42,7 +42,7 @@ public class TopicListener {
 	* @param topicRequest Request for topics dequeued form messaging application.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
-		List<Topic> topics = null; // topics that need to be returned.
+		List<Topic> topics = new ArrayList<>(); // topics that need to be returned.
 
 		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) // if a path is not specified
 			topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
@@ -79,7 +79,6 @@ public class TopicListener {
 		}
 
 		Collections.sort(topics); // sort according to weight
-		System.out.println("TOPICS IDENTIFIED: " + topics);
 		List<Topic> returnTopics = new ArrayList<>();
 
 		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
@@ -92,8 +91,8 @@ public class TopicListener {
 				boolean found = false;
 
 				for (Topic returnTopic : returnTopics) {
-					for (String singleTopic : returnTopic.getRelatedTopics()) {
-						if (singleTopic.equals(topics.get(i).getTopic())) {
+					for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
+						if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
 							found = true;
 							break;
 						}
@@ -107,21 +106,19 @@ public class TopicListener {
 					returnTopics.add(topics.get(i));
 			}
 
-			while (returnTopics.size() < topicRequest.getMaxNumberOfTopics()) { // returnTopics isnt full so add the most relevant ones that were filtered previously
-				for (int i = 1; i < topics.size(); i++) {
-					boolean found = false;
-
-					for (Topic returnTopic : returnTopics)
-						if (returnTopic.getTopic().equals(topics.get(i)))
-							found = true;
-
-					if (!found) {
-						returnTopics.add(topics.get(i));
-						break;
-					}
-				}
-			}
+			// int topicIndex = 1;
+			//
+			// while (returnTopics.size() < topicRequest.getMaxNumberOfTopics()) { // returnTopics isnt full so add the most relevant ones that were filtered previously
+			// 	if (topicIndex >= topics.size())
+			// 		break;
+			//
+			// 	if (!returnTopics.contains(topics.get(topicIndex)))
+			// 		returnTopics.add(topics.get(topicIndex));
+			//
+			// 	topicIndex++;
+			// }
 		}
+		System.out.println("TOPICS RETURNED: " + returnTopics);
 
 		List<String> gmailIds = new ArrayList<>();
 
