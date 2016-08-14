@@ -170,6 +170,11 @@ var refreshValues = function() {
 var onSuccess = function(user) {
 	gmailUser = user;
 	console.log('Signed in as ' + user.getBasicProfile().getName());
+	//Create cookie
+	  document.cookie = "name="+gmailUser.wc.Za;
+	  document.cookie ="surname="+gmailUser.wc.Na;
+	  document.cookie= "email="+user.getBasicProfile().getEmail();
+	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
 	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
