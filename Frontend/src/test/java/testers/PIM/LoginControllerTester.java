@@ -55,8 +55,8 @@ public class LoginControllerTester extends AbstractTester {
 			String[] mockrelated = {"Arno Grobler","Riding"};
 			String[] mockprocessedDataIds = {"09865","098765"};
 			String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
-			Topic[] mockTopics = {new Topic("123456","Horse",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Amy Lochner",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Racing",mockrelated,mockprocessedDataIds,1000)};
-			TopicResponse tro = new TopicResponse("123456",mockTopicText,mockTopics);
+			String[][] mockItemIds = null;
+			TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
 			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos","acubancos@gmail.com");
 			try{
 				topicResponseLL.put(tro);
@@ -86,8 +86,8 @@ public class LoginControllerTester extends AbstractTester {
 		String[] mockrelated = {"Arno Grobler","Riding"};
 		String[] mockprocessedDataIds = {"09865","098765"};
 		String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
-		Topic[] mockTopics = {new Topic("123456","Horse",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Amy Lochner",mockrelated,mockprocessedDataIds,1000),new Topic("123456","Racing",mockrelated,mockprocessedDataIds,1000)};
-		TopicResponse tro = new TopicResponse("123456",mockTopicText,mockTopics);
+		String[][] mockItemIds = null;
+		TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
 
 		Assert.assertEquals("Topic responses userId does not match",tro.getUserId(),loginController.recieveRequest(tr).getUserId());
 		Assert.assertEquals("Topic responses topicsText do not match",tro.getTopicsText(),loginController.recieveRequest(tr).getTopicsText());

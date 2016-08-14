@@ -44,6 +44,7 @@ public class BusinessListener {
 		}
 
 		user = new UserIdentified(user.getReturnId(), userAlreadyRegistered, userReturn);
+		System.out.println("UserRegisterResponse: " + user);
 		rabbitTemplate.convertAndSend(userRegisterResponseQueueName, user);
 	}
 
