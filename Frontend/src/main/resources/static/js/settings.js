@@ -204,9 +204,9 @@ function websocket()
 			var email = getCookie("email");
 			console.log("Got cookie: "+ name,surname,email);
 			var usercheck={firstName:name,lastName:surname,gmailId:email};
-			// /app/hello is the destination that messages are sent to
+			// /app/usercheck is the destination that messages are sent to
 			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-			// Must subscribe to a destination (/topic/greetings )to receive messages
+			// Must subscribe to a destination (/topic/usercheck )to receive messages
 			stompClient.subscribe('/topic/usercheck', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("ServerResponse is : "+jsonresponse);
@@ -216,6 +216,12 @@ function websocket()
 				{
 					$("#tickGoogle").show();
 				}
+				//DONT DELETE!!!!!!!!!!!!!!
+
+				// if(jsonresponse.facebookId != null || jsonresponse.facebookId !="")
+				// {
+				// 	$("#tickFacebook").show();
+				// }
 				else
 				{
 					console.log("Jsonresponse error");
@@ -235,4 +241,3 @@ function onFacebookLogin()
 {
 
 }
-});
