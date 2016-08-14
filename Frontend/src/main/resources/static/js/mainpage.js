@@ -719,7 +719,7 @@ $(document).ready(function($){
 */
 function hidesidebar()
 {
-    $("#facebook").html("");
+   $("#facebook").html("");
    $("#gmail").html("");
    $("#twitter").html("");
    $("#linkedIn").html("");
