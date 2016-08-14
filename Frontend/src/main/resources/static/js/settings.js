@@ -20,6 +20,7 @@ $(document).ready(function(){
 		}
 
 	});
+	websocket();
 	/**
 	*	This function updates the css settings selected tab and hides/shows the respective div
 	*/
@@ -175,6 +176,56 @@ $("#Error").hide();
 console.log("Depth: "+ $(".depth").val())
 }); //End of on load
 
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length,c.length);
+        }
+    }
+    return "";
+}
+function websocket()
+{
+	//Check which sources user is registered for:
+		var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usercheck={firstName:name,lastName:surname,gmailId:email};
+			// /app/hello is the destination that messages are sent to
+			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
+			// Must subscribe to a destination (/topic/greetings )to receive messages
+			stompClient.subscribe('/topic/usercheck', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+jsonresponse);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+		
+				if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
+				{
+					$("#tickGoogle").show();
+				}
+				else
+				{
+					console.log("Jsonresponse error");
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		}, 3000);
+}
 
 function googleretrieve()
 {
@@ -184,3 +235,4 @@ function onFacebookLogin()
 {
 
 }
+});
