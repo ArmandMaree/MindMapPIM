@@ -237,6 +237,7 @@ function loadTos(){
  * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
  */
 function loadXMLDoc(){
+	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {
 		$('.login-container').animate({
@@ -292,6 +293,10 @@ function loadXMLDoc(){
 				if(jsonresponse.isRegistered){
 					window.location.assign('/mainpage');
 				}else{
+					$("#cssload-pgloading").hide();
+					$("#loadingAlert").fadeOut(1000, function() {
+						// body...
+					});
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.onreadystatechange=function(){
 						if (xmlhttp.readyState==4 && xmlhttp.status==200){
@@ -330,6 +335,7 @@ jQuery(document).ready(function($){
 	$("#welcome").hide();
 	$("#continue").hide();
 	$("#loadingAlert").hide();
+	$("#cssload-pgloading").hide();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
