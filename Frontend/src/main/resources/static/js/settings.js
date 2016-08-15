@@ -22,7 +22,7 @@ $(document).ready(function(){
 		}
 
 	});
-	websocket();
+	checkDatabase();
 	/**
 	*	This function updates the css settings selected tab and hides/shows the respective div
 	*/
@@ -82,6 +82,8 @@ $(document).ready(function(){
     *	@var {JsonObject} themeObject - The object that contains the users theme preferences
     */
     var themeObject={
+    	"returnId": "",
+    	"user":"",
     	"nav":"",
     	"map":"",
     	"sidePanel":""
@@ -90,6 +92,8 @@ $(document).ready(function(){
     *	@var {JsonObject} userPreferences - The object that contains the users preferences
     */
     var userPreferences={
+    	"returnId": "",
+    	"user":"",
     	"branch":0,
     	"depth":0
     };
@@ -120,50 +124,93 @@ $("ul li").on("click",function(){
 	console.log(themeObject);
 });
 
-$("#saveTheme").on("click", function(){
-	//Send themeObject through websocket
-		// if(response.success == true)
-		// {
-		// 	$("#Saved").fadeIn(1000, function() {
-		//    		setTimeout(function(){$("#Saved").hide(); }, 2000);
-			 	
-		// 	});
-		// }
-		// else if(response.success == false)
-		// {
-		// 	$("#Error").fadeIn(1000, function() {
-		//    		setTimeout(function(){$("#Error").hide(); }, 4000);
-			 	
-		// 	});
-		// }
-})
+function saveThemeSettings()
+{
+	console.log("Theme settings: " + JSON.stringify(themeObject));
+
+	//Send the data sources object through to backend:
+		var socket = new SockJS('/theme');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usr={firstName:name,lastName:surname,gmailId:email};
+			themeObject.user = usr;
+			stompClient.send("/app/theme", {}, JSON.stringify(themeObject));
+			stompClient.subscribe('/settings/theme', function(Response){
+				var response = JSON.parse(Response.body);
+				console.log("Response is : "+ response);
+		
+				if(response.success == true)
+				{
+					$("#Saved").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
+					});
+				}
+				else if(response.success == false)
+				{
+					$("#Error").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Error").hide(); }, 4000);
+					});
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		}, 3000);
+}
 
 $("#deactivateAccount").on("click", function(){
 
 });
 
-$("#saveUserPreferences").on("click", function(){
+function saveUserPreferences()
+{
 	branch = $("#spinner").val();
 	console.log("Branch: "+branch);
 	depth = $("#spinner2").val();
 	console.log("Depth: "+depth);
 
-	//Send themeObject through websocket
-		// if(response.success == true)
-		// {
-		// 	$("#Saved").fadeIn(1000, function() {
-		//    		setTimeout(function(){$("#Saved").hide(); }, 2000);
-			 	
-		// 	});
-		// }
-		// else if(response.success == false)
-		// {
-		// 	$("#Error").fadeIn(1000, function() {
-		//    		setTimeout(function(){$("#Error").hide(); }, 4000);
-			 	
-		// 	});
-		// }
-});
+	var socket = new SockJS('/userPreferences');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usr={firstName:name,lastName:surname,gmailId:email};
+			userPreferences.user = usr;
+			stompClient.send("/app/userPreferences", {}, JSON.stringify(userPreferences));
+			stompClient.subscribe('/settings/userPreferences', function(Response){
+				var response = JSON.parse(Response.body);
+				console.log("Response is : "+ response);
+		
+				if(response.success == true)
+				{
+					$("#Saved").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
+					});
+				}
+				else if(response.success == false)
+				{
+					$("#Error").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Error").hide(); }, 4000);
+					});
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		}, 3000);
+}
 
 $("#Saved").hide();
 $("#Error").hide();
@@ -184,7 +231,7 @@ function getCookie(cname) {
     }
     return "";
 }
-function websocket()
+function checkDatabase()
 {
 	//Check which sources user is registered for:
 		var socket = new SockJS('/usercheck');
@@ -198,9 +245,7 @@ function websocket()
 			var email = getCookie("email");
 			console.log("Got cookie: "+ name,surname,email);
 			var usercheck={firstName:name,lastName:surname,gmailId:email};
-			// /app/usercheck is the destination that messages are sent to
 			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-			// Must subscribe to a destination (/topic/usercheck )to receive messages
 			stompClient.subscribe('/topic/usercheck', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("ServerResponse is : "+jsonresponse);
@@ -229,7 +274,16 @@ function websocket()
 /**
 *	@var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
 */
-var newDataSources = {gmailChanged:false ,gmailId:"",gmailAccessToken:"",facebookChanged: false, facebookId:"",facebookAccessToken:""}
+var newDataSources = {
+	"user":{"firstName":"","lastName": "", "gmailId":""},
+	"returnId" : "",
+	"gmailChanged" : false ,
+	"gmailId" : "",
+	"gmailAccessToken" : "",
+	"facebookChanged" : false,
+	"facebookId" : "",
+	"facebookAccessToken" : ""
+}
 function checkGoogle()
 {
 	if($("#tickGoogle").is(":visible") == true)
@@ -267,13 +321,46 @@ function checkFacebook()
 		}
 	}
 }
-function SaveChanges()
+function SaveAccountChanges()
 {
-	//Send account object through to business end..
-	// console.log("Got here")
 	console.log("New sources: " + JSON.stringify(newDataSources));
-};
 
+	//Send the data sources object through to backend:
+		var socket = new SockJS('/datasources');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usr={firstName:name,lastName:surname,gmailId:email};
+			newDataSources.user = usr;
+			stompClient.send("/app/datasources", {}, JSON.stringify(newDataSources));
+			stompClient.subscribe('/settings/datasources', function(Response){
+				var response = JSON.parse(Response.body);
+				console.log("Response is : "+ response);
+		
+				if(response.success == true)
+				{
+					$("#Saved").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
+					});
+				}
+				else if(response.success == false)
+				{
+					$("#Error").fadeIn(1000, function() {
+				   		setTimeout(function(){$("#Error").hide(); }, 4000);
+					});
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		}, 3000);
+}
 	
 
 
