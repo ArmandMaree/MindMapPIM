@@ -42,6 +42,7 @@ public class Application {
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
+	// private final String settingsQueueName = "settings.frontend.rabbit";
 
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
@@ -57,6 +58,11 @@ public class Application {
 	LinkedBlockingQueue<UserIdentified> userCheckResponseLL() {
 		return new LinkedBlockingQueue<>();
 	}
+
+	// @Bean
+	// LinkedBlockingQueue<???> settingsResponseLL() {
+	// 	return new LinkedBlockingQueue<>();
+	// }
 
 	@Bean
 	Queue topicResponseQueue() {
