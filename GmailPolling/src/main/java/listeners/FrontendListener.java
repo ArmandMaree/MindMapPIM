@@ -70,6 +70,7 @@ public class FrontendListener {
 	}
 
 	public void receiveItemRequest(ItemRequestIdentified itemRequestIdentified) throws IOException {
+		System.out.println("Received: " + itemRequestIdentified);
 		List<String> items = new ArrayList<>();
 
 		Gmail service = getGmailServiceFromRefreshToken(itemRequestIdentified.getUserId());
@@ -120,7 +121,7 @@ public class FrontendListener {
 		}
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));
-		System.out.println(itemResponseIdentified);
+		System.out.println("Responded: " + itemResponseIdentified);
 		rabbitTemplate.convertAndSend(itemResponseQueueName, itemResponseIdentified);
 	}
 
@@ -135,7 +136,7 @@ public class FrontendListener {
 		String REDIRECT_URI = "https://bubbles.iminsys.com";
 
 		// Exchange auth code for access token
-		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
+		InputStream in = FrontendListener.class.getResourceAsStream("/client_secret.json");
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
 		GoogleTokenResponse tokenResponse = new GoogleRefreshTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), pollingUser.getRefreshToken(), clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret()).execute();
 
