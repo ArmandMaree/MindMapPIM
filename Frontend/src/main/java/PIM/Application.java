@@ -42,7 +42,7 @@ public class Application {
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
-	// private final String settingsQueueName = "settings.frontend.rabbit";
+	private final String settingsResponseQueueName = "settings-response.frontend.rabbit";
 
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
@@ -59,10 +59,11 @@ public class Application {
 		return new LinkedBlockingQueue<>();
 	}
 
-	// @Bean
-	// LinkedBlockingQueue<???> settingsResponseLL() {
-	// 	return new LinkedBlockingQueue<>();
-	// }
+	@Bean
+	LinkedBlockingQueue<EditSourcesResponse> editSourcesResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+
 
 	@Bean
 	Queue topicResponseQueue() {
@@ -78,7 +79,17 @@ public class Application {
 	Queue userCheckResponseQueue() {
 		return new Queue(userCheckResponseQueueName, false);
 	}
+////////////////
+	@Bean
+	Queue editSourcesResponseQueue() {
+		return new Queue(settingsResponseQueueName, false);
+	}
 
+	@Bean
+	Queue editThemeResponseQueue() {
+		return new Queue(settingsResponseQueueName, false);
+	}
+//////////////////
 	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
@@ -98,7 +109,17 @@ public class Application {
 	Binding userCheckResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userCheckResponseQueueName);
 	}
+/////////////Double check this.
+	@Bean
+	Binding editSourcesResponseBinding(@Qualifier("editSourcesResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(settingsResponseQueueName);
+	}
 
+	@Bean
+	Binding editThemeResponseBinding(@Qualifier("editThemeResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(settingsResponseQueueName);
+	}
+///////////
 	@Bean
 	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
 		return new FrontendListener(rabbitTemplate);
@@ -118,7 +139,17 @@ public class Application {
 	public MessageListenerAdapter userCheckResponseAdapter(LoginController loginController) {
 		return new MessageListenerAdapter(loginController, "receiveUserCheckResponse");
 	}
+/////////////
+	@Bean
+	public MessageListenerAdapter editSourcesResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveEditSourcesResponse");
+	}
 
+	@Bean
+	public MessageListenerAdapter editThemeResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveEditThemeResponse");
+	}
+////////////
 	@Bean
 	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -144,7 +175,24 @@ public class Application {
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
-
+/////////////////
+	@Bean
+	public SimpleMessageListenerContainer editSourcesResponseContainer(ConnectionFactory connectionFactory, @Qualifier("editSourcesResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(settingsResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+	@Bean
+	public SimpleMessageListenerContainer editThemeResponseContainer(ConnectionFactory connectionFactory, @Qualifier("editThemeResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(settingsResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+////////////////////
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
