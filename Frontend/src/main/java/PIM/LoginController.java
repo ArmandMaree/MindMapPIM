@@ -34,7 +34,15 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Autowired
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
+//////////////////
+    @Autowired
+    @Qualifier("editSourcesResponseLL")
+    LinkedBlockingQueue<UserIdentified> editSourcesResponseLL;
 
+    @Autowired
+    @Qualifier("editThemeResponseLL")
+    LinkedBlockingQueue<UserIdentified> editThemeResponseLL;
+/////////////////////
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -99,6 +107,24 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return new ServerResponse(user.getIsRegistered());
     }
 
+    @MessageMapping("/usercheck")
+    @SendTo("/topic/usercheck")
+    public ServerResponse sendTheme(EditSourcesRequest message) throws Exception {
+        System.out.println(message);
+        String id = UUID.randomUUID().toString();
+        message.setUserId(id);
+        rabbitTemplate.convertAndSend("settings.database.rabbit",message);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Found user!");
+        UserIdentified user = userCheckResponseLL.poll();
+        System.out.println(user);
+
+        Thread.sleep(2000);
+        return new ServerResponse(user.getIsRegistered());
+    }
+
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
@@ -145,7 +171,21 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         catch (InterruptedException ie){}
     }
+///////////////
+     public void receiveEditSourcesResponse(EditSettingsResponse response) {
+        try {
+            editSourcesResponseLL.put(response);
+        }
+        catch (InterruptedException ie){}
+    }
 
+    public void receiveEditThemeResponse(EditSettingsResponse response) {
+        try {
+            editSourcesResponseLL.put(response);
+        }
+        catch (InterruptedException ie){}
+    }
+///////////////////
     @RequestMapping(value="/login", method=RequestMethod.GET)
     public String showMain() {
         return "login";
