@@ -45,7 +45,9 @@ var initialdepth = 2;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID's, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
-var allPimIDlist = [][][];
+var allPimIDlist = new Array();
+allPimIDlist[0] = new Array();
+allPimIDlist[0][0] = new Array()
 allPimIDlist.push([null][null]);//test if this works here??
 /**
 
@@ -246,111 +248,111 @@ $(document).ready(function($){
             *	A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/topic/request', function(serverResponse){
-                if(serverResponse.getItemIds()!=null){
-                    console.log(serverResponse.getItemIds());
+                if(serverResponse.items!=null){
+                    console.log(serverResponse.items);
                     //Need to use data here to update sidebar 
-                    break;
+                }else{
+    				/**
+    				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
+    				*/
+    				var name2 = "lastselectednode=";
+    				/**
+    				*	@var ca2 - Splits the document cookie on semicolons into an array
+    				*/
+    				var ca2 = document.cookie.split(';');
+    				selectedID ="";
+    				for(var i = 0; i <ca2.length; i++) {
+    					var c = ca2[i];
+    					while (c.charAt(0)==' ') {
+    						c = c.substring(1);
+    					}
+    					if (c.indexOf(name2) == 0) {
+    						selectedID = c.substring(name2.length,c.length);
+    					}
+    				}
+
+
+    				// console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+
+
+    				//update graph with server response
+
+    				/**
+    				*	@var JSONServerResponse - contains the parsed response from the websocket
+    				*/
+    				var JSONServerResponse = JSON.parse(serverResponse.body);
+    				/**
+    				*	@var topicsall - an array that contains ids for the ids of the items used by the pims.
+    				*/
+    				var topicsall = JSONServerResponse.topicsText;
+                     /**
+                    *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                    */
+                    var pimSourceIds = JSONServerResponse.pimSourceIds;
+
+                    allPimIDlist.push(pimSourceIds);
+                    console.log("allPimIDlist :"+allPimIDlist); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+
+
+    				/**
+    				*	@var {int} pos - a variable that contains the position
+    				*/
+    				var pos=0;
+    				/**
+    				*	@var {int} branchinglimit - contains the length of the topicsall array
+    				*/
+    				var branchinglimit = topicsall.length;
+    				/**
+    				*	@var thisgroup - ....
+    				*/
+    				var thisgroup = nodes[selectedID].group;
+    				/**
+    				*	@var tempnodelength - contains the length of the nodes array
+    				*/
+                    var tempnodelength = parseInt(nodes.length);
+    				for(var i=0 ;i<branchinglimit;i++){
+    					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+    					try {
+                            console.log("push "+ tempnodelength)
+                            expandlist.push(tempnodelength++);
+    						data.nodes.add({
+    							id: nodes.length,
+    							label: topicsall[pos],
+    							group: thisgroup
+    						});
+    						parentlist.push(selectedID);
+
+
+    					}
+    					catch (err) {
+    						alert(err);
+    					}
+    					try {
+    						data.edges.add({
+    							id: edges.length,
+    							from: selectedID,
+    							to: nodes.length
+    						});
+    					}
+    					catch (err) {
+    						alert(err);
+    					}
+    					nodes.push({
+    						id: nodes.length,
+    						label: topicsall[pos++],
+    						group: thisgroup
+    					})
+    					edges.push({
+    						id: edges.length,
+    						from: selectedID,
+    						to: nodes.length
+    					});
+    				}
+                    expandBubble(expandlist.shift());
+                    $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                    });
                 }
-				/**
-				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
-				*/
-				var name2 = "lastselectednode=";
-				/**
-				*	@var ca2 - Splits the document cookie on semicolons into an array
-				*/
-				var ca2 = document.cookie.split(';');
-				selectedID ="";
-				for(var i = 0; i <ca2.length; i++) {
-					var c = ca2[i];
-					while (c.charAt(0)==' ') {
-						c = c.substring(1);
-					}
-					if (c.indexOf(name2) == 0) {
-						selectedID = c.substring(name2.length,c.length);
-					}
-				}
-
-
-				// console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
-
-
-				//update graph with server response
-
-				/**
-				*	@var JSONServerResponse - contains the parsed response from the websocket
-				*/
-				var JSONServerResponse = JSON.parse(serverResponse.body);
-				/**
-				*	@var topicsall - an array that contains ids for the ids of the items used by the pims.
-				*/
-				var topicsall = JSONServerResponse.topicsText;
-                 /**
-                *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
-                */
-                var pimSourceIds = JSONServerResponse.pimSourceIds;
-
-                allPimIDlist.push(pimSourceIds);
-                console.log("allPimIDlist :"+allPimIDlist); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
-
-
-				/**
-				*	@var {int} pos - a variable that contains the position
-				*/
-				var pos=0;
-				/**
-				*	@var {int} branchinglimit - contains the length of the topicsall array
-				*/
-				var branchinglimit = topicsall.length;
-				/**
-				*	@var thisgroup - ....
-				*/
-				var thisgroup = nodes[selectedID].group;
-				/**
-				*	@var tempnodelength - contains the length of the nodes array
-				*/
-                var tempnodelength = parseInt(nodes.length);
-				for(var i=0 ;i<branchinglimit;i++){
-					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
-					try {
-                        console.log("push "+ tempnodelength)
-                        expandlist.push(tempnodelength++);
-						data.nodes.add({
-							id: nodes.length,
-							label: topicsall[pos],
-							group: thisgroup
-						});
-						parentlist.push(selectedID);
-
-
-					}
-					catch (err) {
-						alert(err);
-					}
-					try {
-						data.edges.add({
-							id: edges.length,
-							from: selectedID,
-							to: nodes.length
-						});
-					}
-					catch (err) {
-						alert(err);
-					}
-					nodes.push({
-						id: nodes.length,
-						label: topicsall[pos++],
-						group: thisgroup
-					})
-					edges.push({
-						id: edges.length,
-						from: selectedID,
-						to: nodes.length
-					});
-				}
-                expandBubble(expandlist.shift());
-                $("#loadingAlert").fadeOut(1000, function() {
-                    // body...
-                });
             });
 
       }, 3000);
@@ -382,15 +384,6 @@ $(document).ready(function($){
     */
     function populateSidePanel(node, array)
     {
-        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:x1};
-        /**
-        *   A function that sends the gmailItemRequest object through the websocket in order to make the request
-        */
-        // setTimeout(function(){
-        stompClient.send("/app/request", {}, JSON.stringify(gmailItemRequest));
-
-        // }, 3000);
-
         $("#accordion").html("");
         if(array.Topic != "Contact")
         {
@@ -552,6 +545,16 @@ $(document).ready(function($){
     *	A function that handles the doubleClick event on the BubbleMap
     */
     network.on("doubleClick", function(){
+        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:x1};
+        /**
+        *   A function that sends the gmailItemRequest object through the websocket in order to make the request
+        */
+        // setTimeout(function(){
+        stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
+        // stompClient.subscribe('/topic/request', function(serverResponse){
+        //     console.log("Sidebar response: "+serverResponse);
+        // });
+        // }, 3000);
        if($(window).width()<=768){
             $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
        }else{

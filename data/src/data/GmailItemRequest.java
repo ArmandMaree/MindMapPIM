@@ -11,6 +11,8 @@ import java.io.Serializable;
 */
 
 public class GmailItemRequest extends ItemRequest {
+	private static final long serialVersionUID = 9152211530232115L;
+
 	/**
 	* Default empty GmailItemRequest constructor
 	*/

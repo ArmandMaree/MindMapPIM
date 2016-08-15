@@ -25,7 +25,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
     @Autowired
-        @Qualifier("topicResponseLL")
+    @Qualifier("topicResponseLL")
     LinkedBlockingQueue<TopicResponse> topicResponseLL;
 
     @Autowired
@@ -118,19 +118,21 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @MessageMapping("/request")
     @SendTo("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
+        System.out.println(request);
         rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
         while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
             //do nothing for now, maybe sleep a bit in future?
         }
 
 		TopicResponse topicResponse = topicResponseLL.poll();
+        System.out.println(topicResponse);
         Thread.sleep(2000);
         return topicResponse;
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Can we do this??
-    @MessageMapping("/request")
+    @MessageMapping("/gmailItems")
     @SendTo("/topic/request")
-    public ItemResponseIdentified recieveRequest(GmailItemRequest request) throws Exception {
+    public ItemResponseIdentified recieveItemRequest(GmailItemRequest request) throws Exception {
         String id = UUID.randomUUID().toString();
         ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
         rabbitTemplate.convertAndSend("item-response.gmail.rabbit",itemRequestIdentified);
