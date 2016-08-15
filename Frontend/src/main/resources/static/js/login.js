@@ -273,9 +273,9 @@ function loadXMLDoc(){
 
 	});
 	setTimeout(function(){
-		$("#loadingAlert").fadeIn(1000, function() {
-		// body...
-		});
+		// $("#loadingAlert").fadeIn(1000, function() {
+		// // body...
+		// });
 		var socket = new SockJS('/usercheck');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({}, function(frame) {
