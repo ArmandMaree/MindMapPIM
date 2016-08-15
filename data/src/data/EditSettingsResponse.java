@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class EditSettingsResponse implements Serializable {
 	//private static final long serialVersionUID = 3312696172406791L;
-
+	String returnId;
 	String requestFeedback;
 	Boolean success;
 	/**
@@ -17,10 +17,11 @@ public class EditSettingsResponse implements Serializable {
 	/**
 	* Default EditSettingsResponse constructor
 	*/
-	public EditSettingsResponse(Boolean success, String requestFeedback) {
+	public EditSettingsResponse(String returnId,String requestFeedback,Boolean success) {
 		super();
-		this.success = success;
+		this.returnId = returnId;
 		this.requestFeedback = requestFeedback;
+		this.success = success;
 	}
 
 	/**
@@ -30,6 +31,7 @@ public class EditSettingsResponse implements Serializable {
 	@Override
 	public String toString() {
 		return "EditSettingsResponse {\n" +
+			"\treturnId: [\n" + returnId + "\n" +
 			"\tsuccess: [\n" + success + "\n" +
 			"\trequestFeedback: [\n" + requestFeedback + "\n" +
 		"}";
