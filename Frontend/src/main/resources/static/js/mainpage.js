@@ -56,7 +56,6 @@ var shouldRebuild = false;
 var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
-
 allPimIDlist[0]=[null][null];
 /**
 
@@ -366,6 +365,9 @@ $(document).ready(function($){
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
                     });
+                if(serverResponse.items!=null){
+                    console.log(serverResponse.items);
+                    //Need to use data here to update sidebar
                 }else{
     				/**
     				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
@@ -400,14 +402,6 @@ $(document).ready(function($){
     				*	@var topicsall - an array that contains ids for the ids of the items used by the pims.
     				*/
     				var topicsall = JSONServerResponse.topicsText;
-                     /**
-                    *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
-                    */
-                    var pimSourceIds = JSONServerResponse.pimSourceIds;
-
-                    allPimIDlist[selectedID]=pimSourceIds;
-                    console.log("allPimIDlist for node "+selectedID+": "+allPimIDlist[selectedID]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
-
 
     				/**
     				*	@var {int} pos - a variable that contains the position
@@ -436,6 +430,16 @@ $(document).ready(function($){
     							group: thisgroup
     						});
     						parentlist.push(selectedID);
+                            
+                            /**
+                            *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                            */
+                            var pimSourceIds = JSONServerResponse.pimSourceIds;
+
+                            allPimIDlist.push(pimSourceIds);
+                            console.log("allPimIDlist :"+allPimIDlist); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+
+
 
 
     					}

@@ -71,8 +71,7 @@ var sendUserReg = function(){
 			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
 			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
-	  	setTimeout(function(){
-			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	  	// setTimeout(function(){
 			stompClient.subscribe('/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("Server says: "+jsonresponse.content);
@@ -87,8 +86,9 @@ var sendUserReg = function(){
 			}, function(error) {
 		    		// display the error's message header:
 		    		console.log(error.headers.message);
-	  			});
-	  	}, 3000);
+	  		});
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	  	// }, 3000);
 	});
 
 }

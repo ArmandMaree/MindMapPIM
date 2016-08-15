@@ -129,6 +129,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         Thread.sleep(2000);
         return topicResponse;
     }
+
     @MessageMapping("/gmailItems")
     @SendTo("/topic/request")
     public ItemResponse recieveItemRequest(GmailItemRequest request) throws Exception {
