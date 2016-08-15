@@ -120,6 +120,7 @@ public class FrontendListener {
 		}
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));
+		System.out.println(itemResponseIdentified);
 		rabbitTemplate.convertAndSend(itemResponseQueueName, itemResponseIdentified);
 	}
 

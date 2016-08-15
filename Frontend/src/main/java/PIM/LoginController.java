@@ -135,12 +135,14 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public ItemResponseIdentified recieveItemRequest(GmailItemRequest request) throws Exception {
         String id = UUID.randomUUID().toString();
         ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
-        rabbitTemplate.convertAndSend("item-response.gmail.rabbit",itemRequestIdentified);
+        System.out.println(itemRequestIdentified);
+        rabbitTemplate.convertAndSend("item-request.gmail.rabbit",itemRequestIdentified);
         while(itemResponseLL.peek()==null || !itemRequestIdentified.getUserId().equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
             //do nothing for now, maybe sleep a bit in future?
         }
 
         ItemResponseIdentified itemResponse = itemResponseLL.poll();
+        System.out.println(itemResponse);
         Thread.sleep(2000);
         return itemResponse;
     }

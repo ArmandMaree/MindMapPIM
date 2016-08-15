@@ -248,8 +248,9 @@ $(document).ready(function($){
             *	A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/topic/request', function(serverResponse){
+                console.log("/topic/request output: "+ serverResponse)
                 if(serverResponse.items!=null){
-                    console.log(serverResponse.items);
+                    console.log("serverResponse.items: "+serverResponse.items);
                     //Need to use data here to update sidebar 
                 }else{
     				/**
@@ -545,7 +546,7 @@ $(document).ready(function($){
     *	A function that handles the doubleClick event on the BubbleMap
     */
     network.on("doubleClick", function(){
-        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:x1};
+        var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:x1};
         /**
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */
