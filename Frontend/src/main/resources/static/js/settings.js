@@ -17,6 +17,8 @@ $(document).ready(function(){
 		{
 			$("#ajax").html(data);
 			$("#ques").html("");
+			$("#googlesigninButton").attr("onclick","checkGoogle()");
+			$("#facebooksignin").attr("onclick","checkFacebook()");
 		}
 
 	});
@@ -139,15 +141,7 @@ $("#saveTheme").on("click", function(){
 $("#deactivateAccount").on("click", function(){
 
 });
-// $(".branch").on("change", function(){
-// 	branch = $(this).val();
-// 	console.log("Branch: "+branch);
-// });
 
-// $(".depth").on("change", function(){
-// 	branch = $(this).val();
-// 	console.log("Depth: "+branch);
-// });
 $("#saveUserPreferences").on("click", function(){
 	branch = $("#spinner").val();
 	console.log("Branch: "+branch);
@@ -232,12 +226,55 @@ function websocket()
 	  		});
 		}, 3000);
 }
-
-function googleretrieve()
+/**
+*	@var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
+*/
+var newDataSources = {gmailChanged:false ,gmailId:"",gmailAccessToken:"",facebookChanged: false, facebookId:"",facebookAccessToken:""}
+function checkGoogle()
 {
-
+	if($("#tickGoogle").is(":visible") == true)
+	{
+		console.log("Google is selected!");
+		//Unselect it
+		newDataSources.gmailChanged= true;
+		newDataSources.gmailId="";
+		$("#tickGoogle").hide();
+	}
+	else
+	{
+		//Select it'
+		//Google signin here
+	}
 }
-function onFacebookLogin()
+function checkFacebook()
 {
-
+	if($("#tickFacebook").is(":visible") == true)
+	{
+		//Unselect it
+		console.log("Facebook is selected!");
+		newDataSources.facebookChanged= true;
+		newDataSources.facebookId ="";
+		$("#tickFacebook").hide();
+	}
+	else
+	{
+		onFacebookLogin();
+		function getResponse(response)
+		{
+			newDataSources.facebookChanged = true;
+			newDataSources.facebookId = response.authResponse.userID;
+			newDataSources.facebookAccessToken = response.authResponse.accessToken;
+		}
+	}
 }
+function SaveChanges()
+{
+	//Send account object through to business end..
+	// console.log("Got here")
+	console.log("New sources: " + JSON.stringify(newDataSources));
+};
+
+	
+
+
+
