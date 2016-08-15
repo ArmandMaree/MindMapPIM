@@ -13,7 +13,8 @@ import org.springframework.data.annotation.Id;
 public class EditSourcesRequest implements Serializable {
 	
 	// private static final long serialVersionUID = ???;
-	private String userId;
+	private String returnId;
+	private User user;
 	private Boolean gmailChanged;
 	private String gmailId;
 	private String gmailAccessToken;
@@ -26,7 +27,8 @@ public class EditSourcesRequest implements Serializable {
 	}
 	/**
 	* Default constructor.
-	* @param userId the id of the user the request is for.
+	* @param returnId The id of the request
+	* @param user the id of the user the request is for.
 	* @param gmailChanged A boolean value indicating if the respective source has been changed
 	* @param gmailId The gmail user id obtained through Google API
 	* @param gmailAccessToken The access token supplied by Gmail
@@ -34,8 +36,9 @@ public class EditSourcesRequest implements Serializable {
 	* @param facebookId The gmail user id obtained through Google API
 	* @param facebookAccessToken The access token supplied by Gmail
 	*/
-	public TopicRequest(String userId, Boolean gmailChanged, String gmailId, String gmailAccessToken, Boolean facebookChanged, String facebookId, String facebookAccessToken ) {
-		this.userId = userId;
+	public EditSourcesRequest(String returnId,User user, Boolean gmailChanged, String gmailId, String gmailAccessToken, Boolean facebookChanged, String facebookId, String facebookAccessToken ) {
+		this.returnId = returnId;
+		this.user = user;
 		this.gmailChanged = gmailChanged;
 		this.gmailId = gmailId;
 		this.gmailAccessToken = gmailAccessToken;
@@ -45,19 +48,35 @@ public class EditSourcesRequest implements Serializable {
 	}
 
 	/**
-	* Get the value of userId.
-	* @return The id of the user the request is for.
+	* Get the value of returnId.
+	* @return The id of the request that has been sent.
 	*/
-	public String getUserId() {
-		return userId;
+	public String getReturnId() {
+		return returnId;
 	}
 
 	/**
-	* Set the value of userId
-	* @param userId The id of the user the request is for.
+	* Set the value of returnId
+	* @param returnId The id of the request that has been sent.
 	*/
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setReturnId(String returnId) {
+		this.returnId = returnId;
+	}
+
+	/**
+	* Get the value of user.
+	* @return The id of the user the request is for.
+	*/
+	public String getUser() {
+		return user;
+	}
+
+	/**
+	* Set the value of user
+	* @param user The id of the user the request is for.
+	*/
+	public void setUser(String user) {
+		this.user = user;
 	}
 
 	/**
@@ -161,7 +180,7 @@ public class EditSourcesRequest implements Serializable {
 	public String toString() {
 
 		return "EditSourcesRequest{\n" +
-			"\tuserId: " + userId + "\n" +
+			"\tuser: " + user + "\n" +
 			"\tgmailChanged: " + gmailChanged + "\n" +
 			"\tgmailId: " + gmailId + "\n" +
 			"\tgmailAccessToken: " + gmailAccessToken + "\n" +
