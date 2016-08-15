@@ -106,25 +106,43 @@ public class LoginController extends WebMvcConfigurerAdapter {
         Thread.sleep(2000);
         return new ServerResponse(user.getIsRegistered());
     }
-
-    @MessageMapping("/usercheck")
-    @SendTo("/topic/usercheck")
-    public ServerResponse sendTheme(EditSourcesRequest message) throws Exception {
+//////////////
+    @MessageMapping("/datasources")
+    @SendTo("/settings/datasources")
+    public EditSettingsResponse sendNewDataSources(EditSourcesRequest message) throws Exception {
         System.out.println(message);
         String id = UUID.randomUUID().toString();
-        message.setUserId(id);
+        message.setReturnId(id);
         rabbitTemplate.convertAndSend("settings.database.rabbit",message);
-        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+        while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
             //do nothing for now, maybe sleep a bit in future?
         }
-        System.out.println("Found user!");
-        UserIdentified user = userCheckResponseLL.poll();
-        System.out.println(user);
+        System.out.println("Received response!");
+        EditSettingsResponse response = editSourcesResponseLL.poll();
+        System.out.println("Settings response: " +resonse);
 
         Thread.sleep(2000);
-        return new ServerResponse(user.getIsRegistered());
+        return response;
     }
 
+    @MessageMapping("/theme")
+    @SendTo("/settings/theme")
+    public EditSettingsResponse sendTheme(EditThemeRequest message) throws Exception {
+        System.out.println(message);
+        String id = UUID.randomUUID().toString();
+        message.setReturnId(id);
+        rabbitTemplate.convertAndSend("settings.database.rabbit",message);
+        while(editThemeResponseLL.peek()==null || !id.equals(editThemeResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Received response!");
+        EditSettingsResponse response = editThemeResponseLL.poll();
+        System.out.println("Settings response: " +response);
+
+        Thread.sleep(2000);
+        return response;
+    }
+/////////////////
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
