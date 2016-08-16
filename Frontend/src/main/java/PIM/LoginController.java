@@ -129,22 +129,23 @@ public class LoginController extends WebMvcConfigurerAdapter {
         Thread.sleep(2000);
         return topicResponse;
     }
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Can we do this??
     @MessageMapping("/gmailItems")
     @SendTo("/topic/request")
-    public ItemResponseIdentified recieveItemRequest(GmailItemRequest request) throws Exception {
+    public ItemResponse recieveItemRequest(GmailItemRequest request) throws Exception {
         String id = UUID.randomUUID().toString();
         ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
         System.out.println(itemRequestIdentified);
         rabbitTemplate.convertAndSend("item-request.gmail.rabbit",itemRequestIdentified);
-        while(itemResponseLL.peek()==null || !itemRequestIdentified.getUserId().equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
+        while(itemResponseLL.peek()==null || !id.equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
             //do nothing for now, maybe sleep a bit in future?
         }
 
         ItemResponseIdentified itemResponse = itemResponseLL.poll();
         System.out.println(itemResponse);
+        ItemResponse ir = new ItemResponse(itemResponse.getItems());
+        System.out.println(ir);
         Thread.sleep(2000);
-        return itemResponse;
+        return ir;
     }
 
     public void receiveTopicResponse(TopicResponse topicResponse) {

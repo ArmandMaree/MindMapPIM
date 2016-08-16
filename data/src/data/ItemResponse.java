@@ -22,6 +22,9 @@ public class ItemResponse implements Serializable {
 		this.items = items;
 	}
 
+	public String[]  getItems(){
+		return items;
+	}
 	/**
 	* Create string representation of ItemResponse for printing
 	* @return

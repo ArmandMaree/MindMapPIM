@@ -29,7 +29,10 @@ public class ItemResponseIdentified extends ItemResponse implements Serializable
 	public void setReturnId(String returnId) {
 		this.returnId = returnId;
 	}
-
+	
+	public String[]  getItems(){
+		return items;
+	}
 	/**
 	* Create string representation of ItemResponse for printing
 	* @return

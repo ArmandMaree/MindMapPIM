@@ -280,7 +280,7 @@ function loadXMLDoc(){
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
 			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
 
-
+			document.cookie="GmailId="+gmailUser.getBasicProfile().getEmail();
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
 			stompClient.subscribe('/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
