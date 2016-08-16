@@ -124,46 +124,51 @@ $("ul li").on("click",function(){
 	console.log(themeObject);
 });
 
-function saveThemeSettings()
-{
+$("#saveTheme").on("click",function(){
+
 	console.log("Theme settings: " + JSON.stringify(themeObject));
 
 	//Send the data sources object through to backend:
-		var socket = new SockJS('/theme');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
+		// var socket = new SockJS('/theme');
+		// stompClient = Stomp.over(socket);
+		// stompClient.connect({}, function(frame) {
+		//     console.log('Connected: ' + frame);
+		//     connected = true;
 			
 			var name= getCookie("name");
 			var surname = getCookie("surname");
 			var email = getCookie("email");
 			console.log("Got cookie: "+ name,surname,email);
+
 			var usr={firstName:name,lastName:surname,gmailId:email};
 			themeObject.user = usr;
-			stompClient.send("/app/theme", {}, JSON.stringify(themeObject));
-			stompClient.subscribe('/settings/theme', function(Response){
-				var response = JSON.parse(Response.body);
-				console.log("Response is : "+ response);
+			//Change theme
+			$("#nav").css("backgroundColor",themeObject.nav);
+			$("#mynetwork").css("backgroundColor", themeObject.map);
+			$(".panel-default").css("backgroundColor",themeObject.sidePanel);
+			// stompClient.send("/app/theme", {}, JSON.stringify(themeObject));
+			// stompClient.subscribe('/settings/theme', function(Response){
+			// 	var response = JSON.parse(Response.body);
+			// 	console.log("Response is : "+ response);
 		
-				if(response.success == true)
-				{
-					$("#Saved").fadeIn(1000, function() {
-				   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
-					});
-				}
-				else if(response.success == false)
-				{
-					$("#Error").fadeIn(1000, function() {
-				   		setTimeout(function(){$("#Error").hide(); }, 4000);
-					});
-				}
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
-		}, 3000);
-}
+			// 	if(response.success == true)
+			// 	{
+			// 		$("#Saved").fadeIn(1000, function() {
+			// 	   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
+			// 		});
+			// 	}
+			// 	else if(response.success == false)
+			// 	{
+			// 		$("#Error").fadeIn(1000, function() {
+			// 	   		setTimeout(function(){$("#Error").hide(); }, 4000);
+			// 		});
+			// 	}
+			// }, function(error) {
+		 //    		// display the error's message header:
+		 //    		console.log(error.headers.message);
+	  // 		});
+		// }, 3000);
+});
 
 $("#deactivateAccount").on("click", function(){
 
