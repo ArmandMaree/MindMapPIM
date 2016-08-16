@@ -35,13 +35,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 //////////////////
-    @Autowired
-    @Qualifier("editUserSettingsResponseLL")
-    LinkedBlockingQueue<UserIdentified> editUserSettingsResponseLL;
+    // @Autowired
+    // @Qualifier("editUserSettingsResponseLL")
+    // LinkedBlockingQueue<UserIdentified> editUserSettingsResponseLL;
 
-    @Autowired
-    @Qualifier("editThemeResponseLL")
-    LinkedBlockingQueue<UserIdentified> editThemeResponseLL;
+    // @Autowired
+    // @Qualifier("editThemeResponseLL")
+    // LinkedBlockingQueue<UserIdentified> editThemeResponseLL;
 /////////////////////
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -107,23 +107,23 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return new ServerResponse(user.getIsRegistered());
     }
 //////////////
-    @MessageMapping("/datasources")
-    @SendTo("/settings/datasources")
-    public EditSettingsResponse sendNewDataSources(EditSourcesRequest message) throws Exception {
-        System.out.println(message);
-        String id = UUID.randomUUID().toString();
-        message.setReturnId(id);
-        rabbitTemplate.convertAndSend("settings.database.rabbit",message);
-        while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
-        }
-        System.out.println("Received response!");
-        EditSettingsResponse response = editSourcesResponseLL.poll();
-        System.out.println("Settings response: " +resonse);
+    // @MessageMapping("/datasources")
+    // @SendTo("/settings/datasources")
+    // public EditSettingsResponse sendNewDataSources(EditSourcesRequest message) throws Exception {
+    //     System.out.println(message);
+    //     String id = UUID.randomUUID().toString();
+    //     message.setReturnId(id);
+    //     rabbitTemplate.convertAndSend("settings.database.rabbit",message);
+    //     while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
+    //         //do nothing for now, maybe sleep a bit in future?
+    //     }
+    //     System.out.println("Received response!");
+    //     EditSettingsResponse response = editSourcesResponseLL.poll();
+    //     System.out.println("Settings response: " +resonse);
 
-        Thread.sleep(2000);
-        return response;
-    }
+    //     Thread.sleep(2000);
+    //     return response;
+    // }
 
 /////////////////
     public ServerResponse userchecktest(User message) throws Exception {
@@ -173,12 +173,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
     }
 ///////////////
-     public void receiveEditSettingsResponse(EditUserSettingsResponse response) {
-        try {
-            editUserSettingsResponseLL.put(response);
-        }
-        catch (InterruptedException ie){}
-    }
+    //  public void receiveEditSettingsResponse(EditUserSettingsResponse response) {
+    //     try {
+    //         editUserSettingsResponseLL.put(response);
+    //     }
+    //     catch (InterruptedException ie){}
+    // }
 
 ///////////////////
     @RequestMapping(value="/login", method=RequestMethod.GET)
