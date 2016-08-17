@@ -1,6 +1,8 @@
 $(document).ready(function(){
 	$("#theme").hide();
 	$("#userPreferences").hide();
+	$("#Saved").hide();
+	$("#Error").hide();
 	/**
 	*	This function adds/removes the css class active for the selected tab
 	*/
@@ -22,6 +24,10 @@ $(document).ready(function(){
 		}
 
 	});
+	$("#Loading").fadeIn(1000,function(){
+
+	});
+	
 	checkDatabase();
 	/**
 	*	This function updates the css settings selected tab and hides/shows the respective div
@@ -174,6 +180,81 @@ $("#deactivateAccount").on("click", function(){
 
 });
 
+
+
+console.log("Depth: "+ $(".depth").val())
+}); //End of on load
+
+// window.onload = function()
+// {
+// 	$("#Loading").fadeIn(1000, function() {
+// 	});
+// }
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length,c.length);
+        }
+    }
+    return "";
+}
+function checkDatabase()
+{
+	//Check which sources user is registered for:
+		$("#Loading").fadeIn(3000,function(){
+
+		});
+		var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usercheck={firstName:name,lastName:surname,gmailId:email};
+			
+			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
+			stompClient.subscribe('/topic/request', function(serverResponse){
+				console.log("subscribing")
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+ jsonresponse);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+		
+				if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
+				{
+					$("#tickGoogle").show();
+				}
+				//DONT DELETE!!!!!!!!!!!!!!
+
+				// if(jsonresponse.facebookId != null || jsonresponse.facebookId !="")
+				// {
+				// 	$("#tickFacebook").show();
+				// }
+				else
+				{
+					console.log("Jsonresponse error");
+				}
+				$("#Loading").fadeOut(1000,function(){
+
+				});
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+			
+		});
+		
+}
+
 function saveUserPreferences()
 {
 	branch = $("#spinner").val();
@@ -181,6 +262,7 @@ function saveUserPreferences()
 	depth = $("#spinner2").val();
 	console.log("Depth: "+depth);
 
+	console.log("Save user preferences");
 	var socket = new SockJS('/userPreferences');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({}, function(frame) {
@@ -191,9 +273,9 @@ function saveUserPreferences()
 			var surname = getCookie("surname");
 			var email = getCookie("email");
 			console.log("Got cookie: "+ name,surname,email);
+
 			var usr={firstName:name,lastName:surname,gmailId:email};
 			userPreferences.user = usr;
-			stompClient.send("/app/userPreferences", {}, JSON.stringify(userPreferences));
 			stompClient.subscribe('/settings/userPreferences', function(Response){
 				var response = JSON.parse(Response.body);
 				console.log("Response is : "+ response);
@@ -214,80 +296,18 @@ function saveUserPreferences()
 		    		// display the error's message header:
 		    		console.log(error.headers.message);
 	  		});
-		}, 3000);
+		});
+		stompClient.send("/app/userPreferences", {}, JSON.stringify(userPreferences));
 }
 
-$("#Saved").hide();
-$("#Error").hide();
-console.log("Depth: "+ $(".depth").val())
-}); //End of on load
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length,c.length);
-        }
-    }
-    return "";
-}
-function checkDatabase()
-{
-	//Check which sources user is registered for:
-		var socket = new SockJS('/usercheck');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
-			
-			var name= getCookie("name");
-			var surname = getCookie("surname");
-			var email = getCookie("email");
-			console.log("Got cookie: "+ name,surname,email);
-			var usercheck={firstName:name,lastName:surname,gmailId:email};
-			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-			stompClient.subscribe('/topic/usercheck', function(serverResponse){
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+jsonresponse);
-				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-		
-				if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
-				{
-					$("#tickGoogle").show();
-				}
-				//DONT DELETE!!!!!!!!!!!!!!
-
-				// if(jsonresponse.facebookId != null || jsonresponse.facebookId !="")
-				// {
-				// 	$("#tickFacebook").show();
-				// }
-				else
-				{
-					console.log("Jsonresponse error");
-				}
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
-		}, 3000);
-}
 /**
 *	@var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
 */
-var newDataSources = {
-	"user":{"firstName":"","lastName": "", "gmailId":""},
-	"returnId" : "",
-	"gmailChanged" : false ,
-	"gmailId" : "",
-	"gmailAccessToken" : "",
-	"facebookChanged" : false,
-	"facebookId" : "",
-	"facebookAccessToken" : ""
+var UserRegistrationIdentified = {
+	"firstName":"",
+	"lastName": "", 
+	"authCodes":[],
+	"id":""
 }
 function checkGoogle()
 {
@@ -295,15 +315,21 @@ function checkGoogle()
 	{
 		console.log("Google is selected!");
 		//Unselect it
-		newDataSources.gmailChanged= true;
-		newDataSources.gmailId="";
+		var gmailAuthCode = {id:null,pimSource:"Gmail",authCode:null};
 		$("#tickGoogle").hide();
 	}
 	else
 	{
 		//Select it'
-		//Google signin here
+		console.log("Gmail is now selected!");
+		// googleretrieve();
+		function getGmailResponse(gmailUser,response) //Response is authResult['code']
+		{
+			var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:response};
+		}
+
 	}
+	UserRegistrationIdentified.authCodes.push(gmailAuthCode);
 }
 function checkFacebook()
 {
@@ -311,60 +337,64 @@ function checkFacebook()
 	{
 		//Unselect it
 		console.log("Facebook is selected!");
-		newDataSources.facebookChanged= true;
-		newDataSources.facebookId ="";
+		var facebookAuthCode = {id:null,pimSource:"Facebook",authCode:null}
 		$("#tickFacebook").hide();
 	}
 	else
 	{
+		console.log("Facebook is now selected!");
 		onFacebookLogin();
-		function getResponse(response)
-		{
-			newDataSources.facebookChanged = true;
-			newDataSources.facebookId = response.authResponse.userID;
-			newDataSources.facebookAccessToken = response.authResponse.accessToken;
-		}
+		
+		console.log("Response: "+ JSON.stringify(AuthResponse));
+			// newDataSources.facebookAccessToken = response.authResponse.accessToken;
+		var facebookAuthCode = {"id":AuthResponse.userID,"pimSource":"Facebook","authCode":AuthResponse.accessToken}
+		console.log("Facebook Auth code: "+JSON.stringify(facebookAuthCode));
+		
 	}
+	UserRegistrationIdentified.authCodes.push(facebookAuthCode);
 }
 function SaveAccountChanges()
 {
-	console.log("New sources: " + JSON.stringify(newDataSources));
+	
+	console.log("New sources: " + JSON.stringify(UserRegistrationIdentified));
 
 	//Send the data sources object through to backend:
-		var socket = new SockJS('/datasources');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
+		// var socket = new SockJS('/datasources');
+		// stompClient = Stomp.over(socket);
+		// stompClient.connect({}, function(frame) {
+		//     console.log('Connected: ' + frame);
+		//     connected = true;
 			
-			var name= getCookie("name");
-			var surname = getCookie("surname");
-			var email = getCookie("email");
-			console.log("Got cookie: "+ name,surname,email);
-			var usr={firstName:name,lastName:surname,gmailId:email};
-			newDataSources.user = usr;
-			stompClient.send("/app/datasources", {}, JSON.stringify(newDataSources));
-			stompClient.subscribe('/settings/datasources', function(Response){
-				var response = JSON.parse(Response.body);
-				console.log("Response is : "+ response);
+		// 	var name= getCookie("name");
+		// 	var surname = getCookie("surname");
+		// 	var email = getCookie("email");
+		// 	console.log("Got cookie: "+ name,surname,email);
+
+		// 	UserRegistrationIdentified.firstName = name;
+		// 	UserRegistrationIdentified.lastName =surname;
+		// 	UserRegistrationIdentified.gmailId=email;
+		// 	stompClient.send("/app/datasources", {}, JSON.stringify(UserRegistrationIdentified));
+		// 	stompClient.subscribe('/topic/request', function(Response){
+		// 		var response = JSON.parse(Response.body);
+		// 		console.log("Response is : "+ response);
 		
-				if(response.success == true)
-				{
-					$("#Saved").fadeIn(1000, function() {
-				   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
-					});
-				}
-				else if(response.success == false)
-				{
-					$("#Error").fadeIn(1000, function() {
-				   		setTimeout(function(){$("#Error").hide(); }, 4000);
-					});
-				}
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
-		}, 3000);
+		// 		if(response.success == true)
+		// 		{
+		// 			$("#Saved").fadeIn(1000, function() {
+		// 		   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
+		// 			});
+		// 		}
+		// 		else if(response.success == false)
+		// 		{
+		// 			$("#Error").fadeIn(1000, function() {
+		// 		   		setTimeout(function(){$("#Error").hide(); }, 4000);
+		// 			});
+		// 		}
+		// 	}, function(error) {
+		//     		// display the error's message header:
+		//     		console.log(error.headers.message);
+	 //  		});
+		// });
 }
 	
 
