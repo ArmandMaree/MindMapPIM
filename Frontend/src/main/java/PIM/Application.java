@@ -81,7 +81,7 @@ public class Application {
 	}
 ////////////////
 	@Bean
-	Queue editUserSettingResponseQueue() {
+	Queue editUserSettingsResponseQueue() {
 		return new Queue(settingsResponseQueueName, false);
 	}
 //////////////////
