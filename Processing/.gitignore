@@ -2,5 +2,5 @@
 build/
 .gradle/
 javadoc/
-
+all.tar.gz
 src/main/java/*.html

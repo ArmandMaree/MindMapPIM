@@ -2,3 +2,4 @@
 build/*
 javadoc/
 .gradle/
+all.tar.gz
