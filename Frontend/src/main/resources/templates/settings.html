@@ -15,13 +15,14 @@
       <link href="/bootstrap/css/bootstrap-social.css" rel="stylesheet" id="bootstrap-css"></link>
       <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
 
-      <script src="/js/facebook.js"></script>
       <script src="https://code.jquery.com/jquery-1.12.3.min.js" type="text/javascript" ></script>
       <script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js" type="text/javascript" ></script>
       <script src="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.min.js" type="text/javascript" ></script>
       <script src="/js/jquery-2.1.0.min.js"></script>
       <script src="/js/logout.js"></script>
       <script src="/js/settings.js"></script>
+      <script src="/js/facebook.js"></script>
+      <script src="/js/mainpage.js"></script>
       <script src="/bootstrap/js/bootstrap.min.js"></script>
       <script src="//code.jquery.com/jquery-1.10.2.js"></script>
       <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -31,7 +32,7 @@
       <script src="/js/stomp.min.js"></script>
   </head>
   <body>
-        <nav id="nav" class="navbar navbar-default">
+         <nav id="nav" class="navbar navbar-default">
           <div class="container-fluid">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -40,18 +41,27 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="/mainpage">
-                <img alt="Brand" style="width:30px;height:30px" src="/images/bubblelogo.png"/>
-              </a>
-              <p class="navbar-text">PIM</p>
+              <div id="backfromsidebar">
+                <a class="navbar-brand" href="#">
+                  <img alt="Brand" style="width:30px;height:30px" src="/images/bubblelogo.png"/>
+                </a>
+                <p class="navbar-text">PIM</p>
+              </div>
             </div>
 
+            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
              
-            
+             <!--  <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Search"/>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </form> -->
               <ul class="nav navbar-nav navbar-right">
+              <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign" id="help"></span></a></li>
               <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"  id="settings"></span></a>
                   <ul id="dropMenu" class="dropdown-menu">
                     <li><a href="#">Set branch factor</a></li>
                     <li><a href="#">Set depth limit</a></li>
@@ -66,7 +76,7 @@
                     <li><a href="#">One more separated link</a></li> -->
                   </ul>
                 </li>
-                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span></a></li>
+                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out" id="logout"></span></a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
@@ -204,9 +214,13 @@
     </div>
        
      <div class="alert alert-danger" id="Error" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
-      <!-- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> -->
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
       <strong>Oops, something went wrong and we could not save your changes..</strong>    
     </div>
+
+     <div class="alert alert-success" id="Loading" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
+     	<strong>Loading...</strong>
+     </div>
 
     </body>
 </html>
