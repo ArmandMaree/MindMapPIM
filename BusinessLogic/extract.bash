@@ -1,6 +1,6 @@
 #!/bin/bash
 for file in *; do
-    if [ "$file" != "extract.bash" ] &&[ "$file" != "run.bash" ] && [ "$file" != "all.tar.gz" ] && [ "$file" != "all.zip" ] && [ "$file" != "." ] && [ "$file" != ".." ]; then
+    if [ "$file" != "gradle" ] && [ "$file" != "gradlew" ] && [ "$file" != "extract.bash" ] && [ "$file" != "run.bash" ] && [ "$file" != "all.tar.gz" ] && [ "$file" != "all.zip" ] && [ "$file" != "." ] && [ "$file" != ".." ]; then
     	rm -R "$file";
     fi
 done
