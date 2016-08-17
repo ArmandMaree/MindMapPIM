@@ -35,13 +35,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 //////////////////
-    // @Autowired
-    // @Qualifier("editUserSettingsResponseLL")
-    // LinkedBlockingQueue<UserIdentified> editUserSettingsResponseLL;
+    @Autowired
+    @Qualifier("editUserSettingsResponseLL")
+    LinkedBlockingQueue<UserIdentified> editUserSettingsResponseLL;
 
-    // @Autowired
-    // @Qualifier("editThemeResponseLL")
-    // LinkedBlockingQueue<UserIdentified> editThemeResponseLL;
 /////////////////////
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -88,12 +85,14 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return new ServerResponse(user.getIsRegistered());
         }
     }
+////////////// AMY
 
     @MessageMapping("/usercheck")
-    @SendTo("/topic/usercheck")
-    public ServerResponse usercheck(User message) throws Exception {
+    @SendTo("/topic/request")
+    public UserIdentified usercheck(User message) throws Exception {
         System.out.println(message);
         String id = UUID.randomUUID().toString();
+        System.out.println("Request id: "+id);
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
         rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
         while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
@@ -101,18 +100,35 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Found user!");
         UserIdentified user = userCheckResponseLL.poll();
-        System.out.println(user);
+        System.out.println("Found user: "+user);
 
         Thread.sleep(2000);
-        return new ServerResponse(user.getIsRegistered());
+        return user;
     }
-//////////////
-    // @MessageMapping("/datasources")
-    // @SendTo("/settings/datasources")
-    // public EditSettingsResponse sendNewDataSources(EditSourcesRequest message) throws Exception {
+
+    @MessageMapping("/datasources")
+    @SendTo("/topic/request")
+    public EditUserSettingsResponse sendNewDataSources(UserRegistrationIdentified message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        message.setId(id);
+        System.out.println(message);
+        rabbitTemplate.convertAndSend("register.business.rabbit",message);
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        EditUserSettingsResponse response = editUserSettingsResponseLL.poll();
+        System.out.println(response);
+        Thread.sleep(2000);
+        return response;
+    }
+
+    // @MessageMapping("/theme")
+    // @SendTo("/settings/request")
+    // public EditSettingsResponse editTheme (EdiThemeRequest message) throws Exception {
     //     System.out.println(message);
     //     String id = UUID.randomUUID().toString();
     //     message.setReturnId(id);
+
     //     rabbitTemplate.convertAndSend("settings.database.rabbit",message);
     //     while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
     //         //do nothing for now, maybe sleep a bit in future?
