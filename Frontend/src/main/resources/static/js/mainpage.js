@@ -258,47 +258,41 @@ $(document).ready(function($){
       	*/
       	stompClient.connect({}, function(frame) {
         	console.log('Connected: ' + frame);
-      	});
+          // var userReg = {};
+          // if(gmailUser!=null){
+          //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+          //   console.log(JSON.stringify(userReg));
+          // }
+          //   this.userId = userId;
+          //   this.path = path;
+          //   this.exclude = exclude;
+          //   this.maxNumberOfTopics = maxNumberOfTopics;
 
-      // var userReg = {};
-      // if(gmailUser!=null){
-      //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-      //   console.log(JSON.stringify(userReg));
-      // }
-      //   this.userId = userId;
-      //   this.path = path;
-      //   this.exclude = exclude;
-      //   this.maxNumberOfTopics = maxNumberOfTopics;
-
-       /**
-       *	@var {String} name1 - string that contains the userId
-       */
-        var name1 = "userId=";
-        /**
-		*	@var ca1 - Cookie....
-		*/
-        var ca1 = document.cookie.split(';');
-        /**
-        *	@var x1 - ...
-        */
-        x1 ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
+           /**
+           *	@var {String} name1 - string that contains the userId
+           */
+            var name1 = "userId=";
+            /**
+    		*	@var ca1 - Cookie....
+    		*/
+            var ca1 = document.cookie.split(';');
+            /**
+            *	@var x1 - ...
+            */
+            x1 ="";
+            for(var i = 0; i <ca1.length; i++) {
+                var c = ca1[i];
+                while (c.charAt(0)==' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name1) == 0) {
+                    x1 = c.substring(name1.length,c.length);
+                }
             }
-            if (c.indexOf(name1) == 0) {
-                x1 = c.substring(name1.length,c.length);
-            }
-        }
-        /**
-        *	@var topicRequest -  a JSON oject that contains information for a topic request
-        */
-        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
-        /**
-        *	A function that sends the topicRequest object through the websocket in order to make the request
-        */
-        setTimeout(function(){
+            /**
+            *	@var topicRequest -  a JSON oject that contains information for a topic request
+            */
+            topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
             if(!flagHasNodesToLoad){
                 stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
                 /**
@@ -308,6 +302,12 @@ $(document).ready(function($){
                     // body...
                 });
             }
+        });
+
+        /**
+        *   A function that sends the topicRequest object through the websocket in order to make the request
+        */
+        setTimeout(function(){
             /**
             *   @var {integer} selectedID - contains the id of the last selected node
             */
@@ -365,9 +365,6 @@ $(document).ready(function($){
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
                     });
-                if(serverResponse.items!=null){
-                    console.log(serverResponse.items);
-                    //Need to use data here to update sidebar
                 }else{
     				/**
     				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
@@ -421,31 +418,28 @@ $(document).ready(function($){
                     var tempnodelength = parseInt(nodes.length);
     				for(var i=0 ;i<branchinglimit;i++){
     					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
-    					try {
-                            console.log("push "+ tempnodelength)
-                            expandlist.push(tempnodelength++);
-    						data.nodes.add({
-    							id: nodes.length,
-    							label: topicsall[pos],
-    							group: thisgroup
-    						});
-    						parentlist.push(selectedID);
-                            
                             /**
                             *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
                             */
                             var pimSourceIds = JSONServerResponse.pimSourceIds;
 
-                            allPimIDlist.push(pimSourceIds);
-                            console.log("allPimIDlist :"+allPimIDlist); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
-
-
-
-
+                            allPimIDlist[nodes.length]=pimSourceIds[i];
+                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+                        
+                        try {
+                            console.log("push "+ tempnodelength)
+                            expandlist.push(tempnodelength++);
+                            data.nodes.add({
+                                id: nodes.length,
+                                label: topicsall[pos],
+                                group: thisgroup
+                            });
+                            parentlist.push(selectedID);
     					}
     					catch (err) {
     						alert(err);
     					}
+
     					try {
     						data.edges.add({
     							id: edges.length,
@@ -456,6 +450,7 @@ $(document).ready(function($){
     					catch (err) {
     						alert(err);
     					}
+
     					nodes.push({
     						id: nodes.length,
     						label: topicsall[pos++],
@@ -704,6 +699,23 @@ $(document).ready(function($){
                 gmailID = c.substring(name1.length,c.length);
             }
         }
+
+        var name1 = "lastselectednode=";
+        /**
+        *   @var ca1 - Cookie....
+        */
+        var ca1 = document.cookie.split(';');
+        var selectedID ="";
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                selectedID = c.substring(name1.length,c.length);
+            }
+        }
+        console.log(selectedID);
         console.log(allPimIDlist);
         console.log(allPimIDlist[1]);
         console.log(allPimIDlist[1][0]);
@@ -711,12 +723,13 @@ $(document).ready(function($){
         console.log(allPimIDlist);
         console.log(allPimIDlist[2]);
         console.log(allPimIDlist[2][0]);
-        for(var i=0;i<allPimIDlist.length;i++){
+        for(var i=1;i<allPimIDlist.length;i++){
             for(var j=0;j<allPimIDlist[i][0].length;j++){
                console.log(allPimIDlist[i][0][j]);
             }
         }
-        var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:gmailID};
+        console.log(allPimIDlist[selectedID][0]);
+        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:gmailID};
         /**
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */

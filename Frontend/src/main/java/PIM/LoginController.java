@@ -111,7 +111,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             //do nothing for now, maybe sleep a bit in future?
         }
         UserIdentified user = userCheckResponseLL.poll();
-        Thread.sleep(2000);
+        // Thread.sleep(2000);
         return new ServerResponse(user.getIsRegistered());
     }
 
@@ -126,7 +126,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
 		TopicResponse topicResponse = topicResponseLL.poll();
         System.out.println(topicResponse);
-        Thread.sleep(2000);
+        // Thread.sleep(2000);
         return topicResponse;
     }
 
@@ -145,7 +145,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         System.out.println(itemResponse);
         ItemResponse ir = new ItemResponse(itemResponse.getItems());
         System.out.println(ir);
-        Thread.sleep(2000);
+        // Thread.sleep(2000);
         return ir;
     }
 
