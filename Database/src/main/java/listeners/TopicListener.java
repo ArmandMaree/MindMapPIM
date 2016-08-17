@@ -120,30 +120,36 @@ public class TopicListener {
 		}
 		System.out.println("TOPICS RETURNED: " + returnTopics);
 
-		List<String> gmailIds = new ArrayList<>();
+		List<String[][]> nodes = new ArrayList<>();
 
 		for (Topic topic : returnTopics) {
+			List<String[]> pims  = new ArrayList<>();
+			List<String> gmailIds  = new ArrayList<>();
+
 			for (String processedDataId : topic.getProcessedDataIds()) {
 				ProcessedData pd = processedDataRepository.findById(processedDataId);
 
 				switch (pd.getPimSource()) {
 					case "Gmail":
-						gmailIds.add(pd.getPimItemId());
+						gmailIds.add(pd.getPimItemId());		
 						break;
 					default:
 						break;
 				}
 			}
+
+			pims.add(gmailIds.toArray(new String[0]));
+			//facebook stuff here
+			nodes.add(pims.toArray(new String[0][0]));
 		}
 
-		String[][] pimIds = new String[1][];
-		pimIds[0] = gmailIds.toArray(new String[gmailIds.size()]);
+		String[][][] nodesArr = nodes.toArray(new String[0][0][0]);
 		String[] topicsText = new String[returnTopics.size()];
 
 		for (int i = 0; i < returnTopics.size(); i++)
 			topicsText[i] = returnTopics.get(i).getTopic();
 
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, pimIds); // create topic response without topics objects
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, nodesArr); // create topic response without topics objects
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 }

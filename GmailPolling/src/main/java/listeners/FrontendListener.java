@@ -75,6 +75,9 @@ public class FrontendListener {
 
 		Gmail service = getGmailServiceFromRefreshToken(itemRequestIdentified.getUserId());
 
+		if (service == null)
+			return;
+
 		for (String itemId : itemRequestIdentified.getItemIds()) {
 			try {
 				MimeMessage email = getMimeMessage(getMessage(itemId, service));
@@ -132,6 +135,12 @@ public class FrontendListener {
 	*/
 	public Gmail getGmailServiceFromRefreshToken(String userEmail) throws IOException {
 		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+
+		if (pollingUser == null) {
+			System.out.println("No user found for email address: " + userEmail);
+			return null;
+		}
+
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "https://bubbles.iminsys.com";
 
