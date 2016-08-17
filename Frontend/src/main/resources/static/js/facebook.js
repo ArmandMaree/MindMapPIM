@@ -1,3 +1,7 @@
+ /**
+ *	@var AuthResponse -Facebook object that returns user information
+ */
+var AuthResponse; 
   /**
  * This function is called with the results from from FB.getLoginStatus().
  *	The response object is returned with a status field that lets the
@@ -14,9 +18,10 @@
 	if (response.status === 'connected')
 	{
 		var accessToken = response.authResponse.accessToken;
-		console.log(response.authResponse);
+		// console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
 		testAPI();
+		return;
 	}
 	else if (response.status === 'not_authorized')
 	{
@@ -37,12 +42,14 @@ function onFacebookLogin()
   console.log("onFacebookLogin");
   FB.login(function(response) {
 	if (response.authResponse) {
-	  console.log("Auth response:");
+	  AuthResponse = response.authResponse;
 	  console.log(response.authResponse);
+	
 	  showtick();
 	}
 	FB.getLoginStatus(function(response) {
 	  statusChangeCallback(response);
+	  return;
 	});
   });
 }
@@ -96,12 +103,10 @@ FB.getLoginStatus(function(response) {
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
-	console.log('Successful login for: ' + response.name);
-	document.getElementById('welcome').innerHTML += ", " + response.name;
-	document.cookie = "login=1";
-	onSuccessFacebook(response);
-
+	// console.log('Successful login for: ' + response.name);
+	AuthResponse = response.authResponse;
   });
+return;
 }
 
 /**
