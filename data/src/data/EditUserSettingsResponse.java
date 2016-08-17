@@ -21,6 +21,10 @@ public class EditUserSettingsResponse implements Serializable {
 		this.returnId = returnId;
 		this.success = success;
 	}
+	public String getReturnId()
+	{
+		return returnId;
+	}
 
 	/**
 	* Create string representation of EditUserSettingsResponse for printing
