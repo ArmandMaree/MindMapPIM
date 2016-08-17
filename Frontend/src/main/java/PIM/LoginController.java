@@ -37,7 +37,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
 //////////////////
     @Autowired
     @Qualifier("editUserSettingsResponseLL")
-    LinkedBlockingQueue<UserIdentified> editUserSettingsResponseLL;
+    LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL;
 
 /////////////////////
     @Autowired
