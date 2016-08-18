@@ -45,7 +45,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = true;
+var mocktesting = false;
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
@@ -110,6 +110,10 @@ var network;
 *	Function that is executed when the document has loaded
 */
 $(document).ready(function($){
+    /**
+    *   A function that hieds the error
+    */
+    $("#loadingAlertError").hide();  
 	/**
 	*	A function that displays the loading bar
 	*/
@@ -159,7 +163,7 @@ $(document).ready(function($){
                 {id: 7, label: "Arno \n Grobler", group: 0},
                 {id: 8, label: "Arno \n Grobler", group: 0}
             ]
-            parentlist =[0,0,0,2,0,4,6,7,2];
+            parentlist =["0","0","0","2","0","4","6","7","2"];
             allPimIDlist[1] = [["1","2"],[null]];
             allPimIDlist[2] = [["3","4"],[null]];
             allPimIDlist[3] = [["5","6"],[null]];
@@ -367,11 +371,14 @@ $(document).ready(function($){
                     console.log("this object: "+JSON.stringify(dataForSideBar))
                     for(var i=0;i<items.length;i++){
                         dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
-                        console.log("first loop")
                     }
 
                     for(var i = s; i > 0; i = parentlist[i]){
-                        pathtoselectednode.push(i);
+                        console.log(i)
+                        if(pathtoselectednode.indexOf(i)==-1)
+                            pathtoselectednode.push(i);
+                        else
+                            break;
                     }
 
                     console.log("PathFrom: " + pathtoselectednode);
@@ -462,6 +469,12 @@ $(document).ready(function($){
                         }
                         catch (err) {
                             alert(err);
+                            $("#loadingAlert").fadeOut(1000, function() {
+                                // body...
+                            });
+                            $("#loadingAlertError").fadeIn(1000, function() {
+                                // body...
+                            });
                         }
 
                         try {
@@ -473,6 +486,12 @@ $(document).ready(function($){
                         }
                         catch (err) {
                             alert(err);
+                            $("#loadingAlert").fadeOut(1000, function() {
+                                // body...
+                            });
+                            $("#loadingAlertError").fadeIn(1000, function() {
+                                // body...
+                            });
                         }
 
                         nodes.push({
@@ -519,7 +538,16 @@ $(document).ready(function($){
             else
                 topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
             if(!flagHasNodesToLoad){
-                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                try{
+                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                }catch(err){
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+                    $("#loadingAlertError").fadeIn(1000, function() {
+                    });
+                    $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+                }
                 /**
                 *   A function that displays the loading bar
                 */
@@ -669,7 +697,16 @@ $(document).ready(function($){
                     topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
 				document.cookie="lastselectednode="+selectedID;
-                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                try{
+                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                }catch(err){
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+                    $("#loadingAlertError").fadeIn(1000, function() {
+                    });
+                    $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+                }
                     // $("#loadingAlert").fadeOut(1000, function() {
                     //     // body...
                     // });
@@ -785,8 +822,16 @@ $(document).ready(function($){
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */
         // setTimeout(function(){
-
-        stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
+        try{
+            stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
+        }catch(err){
+            $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+            });
+            $("#loadingAlertError").fadeIn(1000, function() {
+            });
+            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        }
     });
 
 	/**
@@ -847,7 +892,16 @@ function expandBubble(nextID)
     // var finishedtask=false;
     console.log("auto expanding: "+nextID)
     selectedID = nextID;
-     network.selectNodes([nextID]);
+    try{
+        network.selectNodes([nextID]);
+    }catch(err){
+        $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+        });
+        $("#loadingAlertError").fadeIn(1000, function() {
+        });
+        $("#loadingAlertError").html("Error: No topics were returned. Please reload and try again.")
+    }
     // $("#loadingAlert").fadeIn(1000, function() {
     //     // body...
     // });
@@ -889,8 +943,17 @@ function expandBubble(nextID)
             topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
         
         document.cookie="lastselectednode="+selectedID;
-        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+        try{
+            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+        }catch(err){
+            $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+            });
+            $("#loadingAlertError").fadeIn(1000, function() {
+            });
+            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        }
     }else{
-     network.selectNodes([0]);
+         network.selectNodes([0]);
     }
 }
