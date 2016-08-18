@@ -152,12 +152,12 @@ $(document).ready(function($){
                 {id: 0, label: "    ME    ", group: 0},
                 {id: 1, label: "Cooking", group: 0},
                 {id: 2, label: "Horse", group: 0},
-                {id: 3, label: "Amy \n Lochner", group: 2},
+                {id: 3, label: "Amy \n Lochner", group: 0},
                 {id: 4, label: "COS301", group: 0},
-                {id: 5, label: "Fritz \n Solms", group: 2},
+                {id: 5, label: "Fritz \n Solms", group: 0},
                 {id: 6, label: "Holiday", group: 0},
-                {id: 7, label: "Arno \n Grobler", group: 2},
-                {id: 8, label: "Arno \n Grobler", group: 2}
+                {id: 7, label: "Arno \n Grobler", group: 0},
+                {id: 8, label: "Arno \n Grobler", group: 0}
             ]
             parentlist =[0,0,0,2,0,4,6,7,2];
             allPimIDlist[1] = [["1","2"],[null]];
@@ -353,34 +353,38 @@ $(document).ready(function($){
                     var s = network.getSelectedNodes();
                     $("#sidepanel").show();
 
-                    var dataForSideBar = {
-                        "Topic" : nodes[selectedID].label,
-                        "Gmail" : []
-                    }
-
-                    for(var i=0;i<items.length;i++){
-                        dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
-                    }
                     var pathtoselectednode=[];
-                    if(selectedID!=0)
+                    if(s!=0)
                         var pathtoselectednode =[];
                     var pathtoselectednodelabels =[]
-                    console.log("selectedID:"+selectedID)
+                    console.log("s:"+s)
                     console.log("parentlist "+parentlist)
 
-                    for(var i = selectedID; i > 0; i = parentlist[i]){
+                    var dataForSideBar = {
+                        "Topic" : nodes[s].label,
+                        "Gmail" : []
+                    }
+                    console.log("this object: "+JSON.stringify(dataForSideBar))
+                    for(var i=0;i<items.length;i++){
+                        dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
+                        console.log("first loop")
+                    }
+
+                    for(var i = s; i > 0; i = parentlist[i]){
                         pathtoselectednode.push(i);
                     }
 
                     console.log("PathFrom: " + pathtoselectednode);
                     var breadcrumb = '<li>Me</li>';
-                    for(var i=0;pathtoselectednode.length;i++){
+                    console.log("pathtoselectednode.length: "+pathtoselectednode.length)
+                    for(var i=pathtoselectednode.length-1;i>=0;i--){
+                        breadcrumb+='<li>'+nodes[pathtoselectednode[i]].label+'</li>';
                         console.log(breadcrumb);
-                        breadcrumb.concat('<li>'+pathtoselectednode[i]+'</li>');
-                        break;
+                        // break;
                     }
                     $("#breadcrumb").html(breadcrumb);
-                    populateSidePanel(selectedID, dataForSideBar);
+                    console.log(s);
+                    populateSidePanel(s, dataForSideBar);
 
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -553,14 +557,15 @@ $(document).ready(function($){
     */
     function populateSidePanel(node, array)
     {
+        console.log("node is this: "+node)
         $("#accordion").html("");
         if(array.Topic != "Contact")
         {
-            $("#sidepanelTitle").html("<h2>"+array.Topic+"</h2>");
+            $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         }
         else
         {
-            $("#sidepanelTitle").html("<h2>"+array.Name+"</h2>")
+            $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>")
         }
         console.log("Title: "+$("#sidepanelTitle").text());
         if((array.hasOwnProperty('Name')))
@@ -782,110 +787,6 @@ $(document).ready(function($){
         // setTimeout(function(){
 
         stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
-        // stompClient.subscribe('/topic/request', function(serverResponse){
-        //     console.log("Sidebar response: "+serverResponse);
-        // });
-        // }, 3000);
-
-      
-        // var horse = {
-        //     "Topic" : "Horse",
-        //     "Facebook" : [
-        //         '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=100%" width="100%" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-        //         '<iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="100%" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-        //         '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109116388424&amp;width=100%" width="100%" height="142" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
-        //     ],
-        //     "Gmail" :[
-        //         { "subject" : "Confirmation of your ride","data" : "Dear Acuben<br /><br /> We would just like to confirm that you are still coming to the ride you booked for on Tuesday for 6 people. <br /><br />Kind regards <br />Marlene Kruger"}
-        //     ]};
-        // var cooking = {
-        //     "Topic":"Cooking",
-        //     "Facebook": [
-        //         '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-        //         // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115213054481&amp;width=100%" width="100%" height="537" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-        //         '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
-        //         // '<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107115546387781&amp;width=100%" width="100%" height="553" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
-        //     ],
-        //     "Gmail" : [
-        //         {"subject": "New recipe for Fridge cheesecake" , "data" : "Dear member <br /><br />Please find attached to your pamphlet a new recipe. Please try this recipe out before next week froday. <br /><br />Enjoy your day!"}
-        //     ]
-        // };
-        // var holiday = {
-        //     "Topic":"Holiday",
-        //     "Gmail" : [
-        //         {"subject": "Holiday" , "data" : "Dear Acuben<br /><br />How was your holiday in Durban last week?<br /><br />Kind Regards <br />Arno Grobler"}
-        //     ]
-        // };
-        // var contact = {
-        //     "Topic" : "Contact",
-        //     "Name": "Arno Grobler",
-        //     "emailAddress" : "arnogrobler@hott.com"
-        // }
-        // var contact2 = {
-        //     "Topic" : "Contact",
-        //     "Name": "Amy Lochner",
-        //     "emailAddress" : "lochneramy@gmail.com"
-        // }
-        //  var contact3 = {
-        //     "Topic" : "Contact",
-        //     "Name": "Fritz Solms",
-        //     "emailAddress" : "fritzsolms@cs.up.ac.za"
-        // }
-        // var cos = {
-        //     "Topic" : "COS301",
-        //     "Gmail" : [
-        //         {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Please note class will be suspendedd on the 25th July due to unforeseen circumstances. Please use this time to work with your main project group.<br /><br /> Thank you."},
-        //         {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Assignment 2 now due. Please upload as soon as possible!<br /><br />Kind Regards<br />Fritz Solms"},
-        //         {"subject": "COS301 Announcement" , "data" : "Dear Students<br /><br />Lecture notes have been uploaded! Please download asap<br /><br />Kind Regards<br />Fritz Solms"}
-        //     ]
-        // }
-
-
-
-        // if(nodes[s] =="undefined"  || s== null || s=="")
-        // {
-        //     $("#sidepanel").hide();
-        //     console.log("Got here");
-        // }
-        // else if(nodes[s].label =="Horse")
-        // {
-        //     $("#breadcrumb").html('<li>Me</li><li>Horse</li>');
-        // }
-        // else if(nodes[s].label =="Cooking")
-        // {
-        //     populateSidePanel(selectedNode, cooking);
-        //     $("#breadcrumb").html('<li>Me</li><li>Cooking</li>');
-        // }
-        // else if(nodes[s].label =="Holiday")
-        // {
-        //     populateSidePanel(selectedNode, holiday);
-        //     $("#breadcrumb").html('<li>Me</li><li>Holiday</li>');
-        // }
-        // else if(nodes[s].label =="Arno \n Grobler")
-        // {
-        //     populateSidePanel(selectedNode, contact);
-        //     $("#breadcrumb").html('<li>Me</li><li>Holiday</li><li>Arno Grobler</li>');
-        // }
-        // else if(nodes[s].label =="Amy \n Lochner")
-        // {
-        //     populateSidePanel(selectedNode, contact2);
-        //     $("#breadcrumb").html('<li>Me</li><li>Horse</li><li>Amy Lochner</li>');
-        // }
-        // else if(nodes[s].label =="COS301")
-        // {
-        //     populateSidePanel(selectedNode, cos);
-        //     $("#breadcrumb").html('<li>Me</li><li>COS301</li>');
-        // }
-        // else if(nodes[s].label =="Fritz \n Solms")
-        // {
-        //     populateSidePanel(selectedNode, contact3);
-        //     $("#breadcrumb").html('<li>Me</li><li>COS301</li><li>Fritz Solms</li>');
-        // }
-        // else
-        // {
-        //     $("#sidepanel").hide();
-        // }
-        // console.log("works on right click");
     });
 
 	/**
