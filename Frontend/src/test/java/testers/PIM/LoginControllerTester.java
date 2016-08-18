@@ -97,4 +97,9 @@ public class LoginControllerTester extends AbstractTester {
 	public void testuserchecktest() throws Exception{
 		Assert.assertEquals("Topic responses userId does not match",true,loginController.userchecktest(new User("Acuban","Cos","acubancos@gmail.com")).getIsRegistered());
 	}
+	// @Test
+	// public void testSendNewDataSources() throws Exception
+	// {
+		
+	// }
 }

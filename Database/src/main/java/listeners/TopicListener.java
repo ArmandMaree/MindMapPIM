@@ -118,7 +118,6 @@ public class TopicListener {
 			// 	topicIndex++;
 			// }
 		}
-		System.out.println("TOPICS RETURNED: " + returnTopics);
 
 		List<String[][]> nodes = new ArrayList<>();
 

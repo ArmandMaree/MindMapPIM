@@ -39,7 +39,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Autowired
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
+//////////////////
+    @Autowired
+    @Qualifier("editUserSettingsResponseLL")
+    LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL;
 
+/////////////////////
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -85,7 +90,63 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return new ServerResponse(user.getIsRegistered());
         }
     }
+////////////// AMY
 
+    @MessageMapping("/usercheck")
+    @SendTo("/topic/request")
+    public UserIdentified usercheck(User message) throws Exception {
+        System.out.println(message);
+        String id = UUID.randomUUID().toString();
+        System.out.println("Request id: "+id);
+        UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+        rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Found user!");
+        UserIdentified user = userCheckResponseLL.poll();
+        System.out.println("Found user: "+user);
+
+        Thread.sleep(2000);
+        return user;
+    }
+
+    @MessageMapping("/datasources")
+    @SendTo("/topic/request")
+    public EditUserSettingsResponse sendNewDataSources(UserRegistrationIdentified message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        message.setId(id);
+        System.out.println(message);
+        rabbitTemplate.convertAndSend("register.business.rabbit",message);
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        EditUserSettingsResponse response = editUserSettingsResponseLL.poll();
+        System.out.println(response);
+        Thread.sleep(2000);
+        return response;
+    }
+
+    // @MessageMapping("/theme")
+    // @SendTo("/settings/request")
+    // public EditSettingsResponse editTheme (EdiThemeRequest message) throws Exception {
+    //     System.out.println(message);
+    //     String id = UUID.randomUUID().toString();
+    //     message.setReturnId(id);
+
+    //     rabbitTemplate.convertAndSend("settings.database.rabbit",message);
+    //     while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
+    //         //do nothing for now, maybe sleep a bit in future?
+    //     }
+    //     System.out.println("Received response!");
+    //     EditSettingsResponse response = editSourcesResponseLL.poll();
+    //     System.out.println("Settings response: " +resonse);
+
+    //     Thread.sleep(2000);
+    //     return response;
+    // }
+
+/////////////////
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
@@ -199,7 +260,15 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         catch (InterruptedException ie){}
     }
+///////////////
+    //  public void receiveEditSettingsResponse(EditUserSettingsResponse response) {
+    //     try {
+    //         editUserSettingsResponseLL.put(response);
+    //     }
+    //     catch (InterruptedException ie){}
+    // }
 
+///////////////////
     @RequestMapping(value="/login", method=RequestMethod.GET)
     public String showMain() {
         return "login";

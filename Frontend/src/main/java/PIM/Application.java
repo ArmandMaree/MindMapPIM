@@ -43,6 +43,7 @@ public class Application {
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 	private final String itemResponseQueueName = "item-response.frontend.rabbit";
+	private final String settingsResponseQueueName = "edit-user-response.frontend.rabbit";
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
 		return new LinkedBlockingQueue<>();
@@ -64,6 +65,12 @@ public class Application {
 	}
 
 	@Bean
+	LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+
+
+	@Bean
 	Queue topicResponseQueue() {
 		return new Queue(topicResponseQueueName, false);
 	}
@@ -83,7 +90,12 @@ public class Application {
 	Queue userCheckResponseQueue() {
 		return new Queue(userCheckResponseQueueName, false);
 	}
-
+////////////////
+	@Bean
+	Queue editUserSettingsResponseQueue() {
+		return new Queue(settingsResponseQueueName, false);
+	}
+//////////////////
 	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
@@ -108,7 +120,12 @@ public class Application {
 	Binding userCheckResponseBinding(@Qualifier("userCheckResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userCheckResponseQueueName);
 	}
-
+/////////////Double check this.
+	@Bean
+	Binding editUserSettingsResponseBinding(@Qualifier("editUserSettingsResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(settingsResponseQueueName);
+	}
+///////////
 	@Bean
 	public FrontendListener frontendListener(RabbitTemplate rabbitTemplate) {
 		return new FrontendListener(rabbitTemplate);
@@ -133,7 +150,13 @@ public class Application {
 	public MessageListenerAdapter userCheckResponseAdapter(LoginController loginController) {
 		return new MessageListenerAdapter(loginController, "receiveUserCheckResponse");
 	}
+/////////////
+	@Bean
+	public MessageListenerAdapter editUserSettingsResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveEditSettingsResponse");
+	}
 
+////////////
 	@Bean
 	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -168,7 +191,17 @@ public class Application {
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
+/////////////////
+	@Bean
+	public SimpleMessageListenerContainer editUserSettingsResponseContainer(ConnectionFactory connectionFactory, @Qualifier("editUserSettingsResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(settingsResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
 
+////////////////////
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
