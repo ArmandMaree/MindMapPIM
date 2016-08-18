@@ -14,4 +14,10 @@ fi
 
 ./run.bash
 ./gradlew build -x test
-java -jar "build/libs/frontend-service-0.1.0.java"
+
+if [ $# -eq 0 ]
+then
+	java -jar "build/libs/frontend-service-0.1.0.jar";
+else
+	java -jar "build/libs/frontend-service-0.1.0.jar" "$1";
+fi
