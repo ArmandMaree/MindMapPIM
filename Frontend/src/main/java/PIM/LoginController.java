@@ -86,23 +86,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
     }
 
-    // @MessageMapping("/usercheck")
-    // @SendTo("/topic/usercheck")
-    // public ServerResponse usercheck(User message) throws Exception {
-    //     System.out.println(message);
-    //     String id = UUID.randomUUID().toString();
-    //     UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
-    //     rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
-    //     while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-    //         //do nothing for now, maybe sleep a bit in future?
-    //     }
-    //     UserIdentified user = userCheckResponseLL.poll();
-    //     System.out.println(user);
-
-    //     Thread.sleep(2000);
-    //     return new ServerResponse(user.getIsRegistered());
-    // }
-
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
@@ -119,34 +102,72 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendTo("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
-        rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
-        while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
-            //do nothing for now, maybe sleep a bit in future?
-        }
+        if(!request.getUserId().contains("mocktesting")){
+            rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
+            while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
+                //do nothing for now, maybe sleep a bit in future?
+            }
 
-		TopicResponse topicResponse = topicResponseLL.poll();
-        System.out.println(topicResponse);
-        // Thread.sleep(2000);
-        return topicResponse;
+    		TopicResponse topicResponse = topicResponseLL.poll();
+            System.out.println(topicResponse);
+            // Thread.sleep(2000);
+            return topicResponse;
+        }else{
+            String [][][] mockpimIds =  new String[4][2][2];
+            mockpimIds[0][0][0] = "1";
+            mockpimIds[0][0][1] = "2";
+            mockpimIds[1][0][0] = "3";
+            mockpimIds[1][0][1] = "4";
+            mockpimIds[2][0][0] = "5";
+            mockpimIds[2][0][1] = "6";
+            mockpimIds[3][0][0] = "7";
+            mockpimIds[3][0][1] = "8";
+
+            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its","Me","Nobody"},mockpimIds);
+            System.out.println(topicResponse);
+            // thread.sleep(2000);
+            return topicResponse;
+        }
     }
 
     @MessageMapping("/gmailItems")
     @SendTo("/topic/request")
     public ItemResponse recieveItemRequest(GmailItemRequest request) throws Exception {
-        String id = UUID.randomUUID().toString();
-        ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
-        System.out.println(itemRequestIdentified);
-        rabbitTemplate.convertAndSend("item-request.gmail.rabbit",itemRequestIdentified);
-        while(itemResponseLL.peek()==null || !id.equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
-            //do nothing for now, maybe sleep a bit in future?
-        }
+        if(!request.getUserId().contains("mocktesting")){
+            String id = UUID.randomUUID().toString();
+            ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
+            System.out.println(itemRequestIdentified);
+            rabbitTemplate.convertAndSend("item-request.gmail.rabbit",itemRequestIdentified);
+            while(itemResponseLL.peek()==null || !id.equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
+                //do nothing for now, maybe sleep a bit in future?
+            }
 
-        ItemResponseIdentified itemResponse = itemResponseLL.poll();
-        System.out.println(itemResponse);
-        ItemResponse ir = new ItemResponse(itemResponse.getItems());
-        System.out.println(ir);
-        // Thread.sleep(2000);
-        return ir;
+            ItemResponseIdentified itemResponse = itemResponseLL.poll();
+            System.out.println(itemResponse);
+            ItemResponse ir = new ItemResponse(itemResponse.getItems());
+            System.out.println(ir);
+            // Thread.sleep(2000);
+            return ir;
+        }else{
+            System.out.println(request);
+            String [] itemresponse = new String[2];
+            for(int i=0;i<request.getItemIds().length;i++){
+                switch (request.getItemIds()[i]) {
+                    case "1": itemresponse[i] = "Hey Acuban\n How is the weather?";break;
+                    case "2": itemresponse[i] = "Reminder about school fees";break;
+                    case "3": itemresponse[i] = "Horse riding club just lost all the horses";break;
+                    case "4": itemresponse[i] = "Hey Acuban\n When are you available for coffee";break;
+                    case "5": itemresponse[i] = "Thank you so much for my horse sized mug and the horse!";break;
+                    case "6": itemresponse[i] = "Hmmmm";break;
+                    case "7": itemresponse[i] = "Random email\n Random random random";break;
+                    case "8": itemresponse[i] = "Hey Acuban\n How is father?";break;
+                }
+            }
+            ItemResponse ir = new ItemResponse(itemresponse);
+            System.out.println(ir);
+            // Thread.sleep(2000);
+            return ir;
+        }
     }
 
     public void receiveTopicResponse(TopicResponse topicResponse) {

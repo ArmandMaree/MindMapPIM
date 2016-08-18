@@ -27,10 +27,6 @@ var menu;
 */
 var selectedID;
 /**
-*	@var {String[]} mockArrayOfData - Mock data for testing purposes.
-*/
-var mockArrayOfData = ["Amy\nLochner", "Holiday", "Cooking", "Durban"]
-/**
 *	@var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
 var parentlist =[0];
@@ -47,6 +43,10 @@ var initialdepth = 2;
 */
 var flagHasNodesToLoad = false;
 /**
+*   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
+*/
+var mocktesting = true;
+/**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
 var shouldRebuild = false;
@@ -57,7 +57,6 @@ var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
-/**
 
 for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
@@ -148,9 +147,32 @@ $(document).ready(function($){
         }
     }
     if(tempnodes==""){
-        nodes = [
-            {id: 0, label: "    ME    ", group: 0}
-        ]
+        if(mocktesting){
+            nodes = [
+                {id: 0, label: "    ME    ", group: 0},
+                {id: 1, label: "Cooking", group: 0},
+                {id: 2, label: "Horse", group: 0},
+                {id: 3, label: "Amy \n Lochner", group: 2},
+                {id: 4, label: "COS301", group: 0},
+                {id: 5, label: "Fritz \n Solms", group: 2},
+                {id: 6, label: "Holiday", group: 0},
+                {id: 7, label: "Arno \n Grobler", group: 2},
+                {id: 8, label: "Arno \n Grobler", group: 2}
+            ]
+            parentlist =[0,0,0,2,0,4,6,7,2];
+            allPimIDlist[1] = [["1","2"],[null]];
+            allPimIDlist[2] = [["3","4"],[null]];
+            allPimIDlist[3] = [["5","6"],[null]];
+            allPimIDlist[4] = [["7","8"],[null]];
+            allPimIDlist[5] = [["7","8"],[null]];
+            allPimIDlist[6] = [["1","2"],[null]];
+            allPimIDlist[7] = [["3","4"],[null]];
+            allPimIDlist[8] = [["5","6"],[null]];
+        }else{
+            nodes = [
+                {id: 0, label: "    ME    ", group: 0}
+            ]
+        }      
     }else{
         nodes =[];
         var splitter = tempnodes.split('%');
@@ -189,7 +211,20 @@ $(document).ready(function($){
         }
     }
     if(tempedges==""){
-        edges = []
+        if(mocktesting){
+            edges = [
+                {from: 0, to: 1},
+                {from: 2, to: 3},
+                {from: 2, to: 0},
+                {from: 5, to: 4},
+                {from: 4, to: 0},
+                {from: 7, to: 6},
+                {from: 6, to: 0},
+                {from: 2, to: 8}
+            ]
+        }else{
+            edges = []
+        }
     }else{
         edges =[];
         edges.push({id:0,from:"0",to:1});
@@ -289,32 +324,15 @@ $(document).ready(function($){
                     x1 = c.substring(name1.length,c.length);
                 }
             }
-            /**
-            *	@var topicRequest -  a JSON oject that contains information for a topic request
-            */
-            topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
-            if(!flagHasNodesToLoad){
-                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-                /**
-                *	A function that displays the loading bar
-                */
-                $("#loadingAlert").fadeIn(1000, function() {
-                    // body...
-                });
-            }
-        });
 
-        /**
-        *   A function that sends the topicRequest object through the websocket in order to make the request
-        */
-        setTimeout(function(){
             /**
             *   @var {integer} selectedID - contains the id of the last selected node
             */
             selectedID=0;
             document.cookie="lastselectednode="+selectedID;
+        
             /**
-            *	A function that subscribes to a destination that the requests are sent to 
+            *   A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/topic/request', function(serverResponse){
                 if(JSON.parse(serverResponse.body).items!=null){
@@ -357,7 +375,9 @@ $(document).ready(function($){
                     console.log("PathFrom: " + pathtoselectednode);
                     var breadcrumb = '<li>Me</li>';
                     for(var i=0;pathtoselectednode.length;i++){
-                        breadcrumb.concat('<li>'+pathtoselectednode[i]+'</li>')
+                        console.log(breadcrumb);
+                        breadcrumb.concat('<li>'+pathtoselectednode[i]+'</li>');
+                        break;
                     }
                     $("#breadcrumb").html(breadcrumb);
                     populateSidePanel(selectedID, dataForSideBar);
@@ -366,58 +386,58 @@ $(document).ready(function($){
                         // body...
                     });
                 }else{
-    				/**
-    				*	@var {String} name2 - a variable that contains the data for the last selected node for the cookie
-    				*/
-    				var name2 = "lastselectednode=";
-    				/**
-    				*	@var ca2 - Splits the document cookie on semicolons into an array
-    				*/
-    				var ca2 = document.cookie.split(';');
-    				selectedID ="";
-    				for(var i = 0; i <ca2.length; i++) {
-    					var c = ca2[i];
-    					while (c.charAt(0)==' ') {
-    						c = c.substring(1);
-    					}
-    					if (c.indexOf(name2) == 0) {
-    						selectedID = c.substring(name2.length,c.length);
-    					}
-    				}
+                    /**
+                    *   @var {String} name2 - a variable that contains the data for the last selected node for the cookie
+                    */
+                    var name2 = "lastselectednode=";
+                    /**
+                    *   @var ca2 - Splits the document cookie on semicolons into an array
+                    */
+                    var ca2 = document.cookie.split(';');
+                    selectedID ="";
+                    for(var i = 0; i <ca2.length; i++) {
+                        var c = ca2[i];
+                        while (c.charAt(0)==' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(name2) == 0) {
+                            selectedID = c.substring(name2.length,c.length);
+                        }
+                    }
 
 
-    				// console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+                    // console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
 
 
-    				//update graph with server response
+                    //update graph with server response
 
-    				/**
-    				*	@var JSONServerResponse - contains the parsed response from the websocket
-    				*/
-    				var JSONServerResponse = JSON.parse(serverResponse.body);
-    				/**
-    				*	@var topicsall - an array that contains ids for the ids of the items used by the pims.
-    				*/
-    				var topicsall = JSONServerResponse.topicsText;
+                    /**
+                    *   @var JSONServerResponse - contains the parsed response from the websocket
+                    */
+                    var JSONServerResponse = JSON.parse(serverResponse.body);
+                    /**
+                    *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
+                    */
+                    var topicsall = JSONServerResponse.topicsText;
 
-    				/**
-    				*	@var {int} pos - a variable that contains the position
-    				*/
-    				var pos=0;
-    				/**
-    				*	@var {int} branchinglimit - contains the length of the topicsall array
-    				*/
-    				var branchinglimit = topicsall.length;
-    				/**
-    				*	@var thisgroup - ....
-    				*/
-    				var thisgroup = nodes[selectedID].group;
-    				/**
-    				*	@var tempnodelength - contains the length of the nodes array
-    				*/
+                    /**
+                    *   @var {int} pos - a variable that contains the position
+                    */
+                    var pos=0;
+                    /**
+                    *   @var {int} branchinglimit - contains the length of the topicsall array
+                    */
+                    var branchinglimit = topicsall.length;
+                    /**
+                    *   @var thisgroup - ....
+                    */
+                    var thisgroup = nodes[selectedID].group;
+                    /**
+                    *   @var tempnodelength - contains the length of the nodes array
+                    */
                     var tempnodelength = parseInt(nodes.length);
-    				for(var i=0 ;i<branchinglimit;i++){
-    					console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+                    for(var i=0 ;i<branchinglimit;i++){
+                        console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
                             /**
                             *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
                             */
@@ -435,33 +455,33 @@ $(document).ready(function($){
                                 group: thisgroup
                             });
                             parentlist.push(selectedID);
-    					}
-    					catch (err) {
-    						alert(err);
-    					}
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
 
-    					try {
-    						data.edges.add({
-    							id: edges.length,
-    							from: selectedID,
-    							to: nodes.length
-    						});
-    					}
-    					catch (err) {
-    						alert(err);
-    					}
+                        try {
+                            data.edges.add({
+                                id: edges.length,
+                                from: selectedID,
+                                to: nodes.length
+                            });
+                        }
+                        catch (err) {
+                            alert(err);
+                        }
 
-    					nodes.push({
-    						id: nodes.length,
-    						label: topicsall[pos++],
-    						group: thisgroup
-    					})
-    					edges.push({
-    						id: edges.length,
-    						from: selectedID,
-    						to: nodes.length
-    					});
-    				}
+                        nodes.push({
+                            id: nodes.length,
+                            label: topicsall[pos++],
+                            group: thisgroup
+                        })
+                        edges.push({
+                            id: edges.length,
+                            from: selectedID,
+                            to: nodes.length
+                        });
+                    }
                     expandBubble(expandlist.shift());
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -487,8 +507,24 @@ $(document).ready(function($){
                     }
                 }
             });
+            /**    
+            *   @var topicRequest -  a JSON oject that contains information for a topic request
+            */
+            if(mocktesting)
+                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
+            else
+                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+            if(!flagHasNodesToLoad){
+                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                /**
+                *   A function that displays the loading bar
+                */
+                $("#loadingAlert").fadeIn(1000, function() {
+                    // body...
+                });
+            }
+        });
 
-      }, 3000);
 
     if($(window).width()<=768)
     {
@@ -621,8 +657,11 @@ $(document).ready(function($){
                 }
 
                 console.log("exclude list:"+excludelist);
-
-                topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+       
+                if(mocktesting)
+                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+                else
+                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
 				document.cookie="lastselectednode="+selectedID;
                 stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
@@ -715,21 +754,28 @@ $(document).ready(function($){
                 selectedID = c.substring(name1.length,c.length);
             }
         }
+        var node = network.getSelectedNodes();
+        selectedID = node;
         console.log(selectedID);
         console.log(allPimIDlist);
-        console.log(allPimIDlist[1]);
-        console.log(allPimIDlist[1][0]);
+        // console.log(allPimIDlist[1]);
+        // console.log(allPimIDlist[1][0]);
 
-        console.log(allPimIDlist);
-        console.log(allPimIDlist[2]);
-        console.log(allPimIDlist[2][0]);
-        for(var i=1;i<allPimIDlist.length;i++){
-            for(var j=0;j<allPimIDlist[i][0].length;j++){
-               console.log(allPimIDlist[i][0][j]);
-            }
-        }
+        // console.log(allPimIDlist);
+        // console.log(allPimIDlist[2]);
+        // console.log(allPimIDlist[2][0]);
+        // for(var i=1;i<allPimIDlist.length;i++){
+        //     for(var j=0;j<allPimIDlist[i][0].length;j++){
+        //        console.log(allPimIDlist[i][0][j]);
+        //     }
+        // }
+        console.log(allPimIDlist[selectedID]);
         console.log(allPimIDlist[selectedID][0]);
-        var gmailItemRequest = {itemIds:allPimIDlist[selectedID],userId:gmailID};
+        console.log(allPimIDlist[selectedID][0][1]);
+        if(!mocktesting)
+            var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:gmailID};
+        else
+            var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:"mocktesting"+gmailID};
         /**
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */
@@ -917,7 +963,7 @@ function expandBubble(nextID)
 
     console.log("PathFrom: " + pathtoselectednode);
     console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
         var pos=0;
         var branchinglimit = 4;
         var thisgroup = nodes[selectedID].group;
@@ -935,9 +981,12 @@ function expandBubble(nextID)
         }
 
         console.log("exclude list:"+excludelist);
-
-        topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
-
+       
+        if(mocktesting)
+            topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+        else
+            topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+        
         document.cookie="lastselectednode="+selectedID;
         stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
     }else{
