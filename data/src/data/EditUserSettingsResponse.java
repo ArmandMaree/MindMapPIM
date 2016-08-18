@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class EditUserSettingsResponse implements Serializable {
 	private static final long serialVersionUID = 3312696172406796L;
 	String returnId;
-	Boolean success;
+	boolean success;
 	/**
 	* Default empty EditUserSettingsResponse constructor
 	*/
@@ -16,7 +16,7 @@ public class EditUserSettingsResponse implements Serializable {
 	/**
 	* Default EditUserSettingsResponse constructor
 	*/
-	public EditUserSettingsResponse(String returnId,Boolean success) {
+	public EditUserSettingsResponse(String returnId, boolean success) {
 		super();
 		this.returnId = returnId;
 		this.success = success;

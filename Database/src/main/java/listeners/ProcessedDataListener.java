@@ -79,9 +79,10 @@ public class ProcessedDataListener {
 				}
 
 				addToDatabase(topic, processedData, remainingTopics);
+				System.out.println("Added topic: " + topic + "  for user: " + user.getGmailId());
 			}
 		}
-		catch (Exception e) { // never crash app
+		catch (Exception e) { // never crash thread
 			e.printStackTrace();
 		}
 	}

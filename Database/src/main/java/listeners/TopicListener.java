@@ -75,6 +75,7 @@ public class TopicListener {
 
 		if (topics == null || topics.size() == 0) { // no related topics exist for the given path
 			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null)); // send topic response that contains no topics
+			System.out.println("No topics found.");
 			return;
 		}
 
@@ -130,7 +131,7 @@ public class TopicListener {
 
 				switch (pd.getPimSource()) {
 					case "Gmail":
-						gmailIds.add(pd.getPimItemId());		
+						gmailIds.add(pd.getPimItemId());
 						break;
 					default:
 						break;

@@ -1,13 +1,13 @@
 #!/bin/bash
 cd data;
-./upload.bash ;
+./upload.bash;
 cd ../BusinessLogic;
-./upload.bash ;
+./upload.bash;
 cd ../Database;
-./upload.bash ;
+./upload.bash;
 cd ../Frontend;
-./upload.bash ;
+./upload.bash;
 cd ../GmailPolling;
-./upload.bash ;
+./upload.bash;
 cd ../Processing;
-./upload.bash ;
+./upload.bash;
