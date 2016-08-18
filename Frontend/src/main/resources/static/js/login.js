@@ -291,7 +291,7 @@ function loadXMLDoc(){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("ServerResponse is : "+jsonresponse);
 				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-				// document.cookie="userId="+jsonresponse.content;
+				document.cookie="userId="+jsonresponse.content;
 				// $("#loadingAlert").fadeOut(1000, function() {
 				// 	// body...
 				// });

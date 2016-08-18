@@ -15,6 +15,12 @@ public class ServerResponse implements Serializable {
         this.isRegistered = isRegistered;
         System.out.println("Response created");
     }
+    
+    public ServerResponse(Boolean isRegistered,String content) {
+        this.content = content;
+        this.isRegistered = isRegistered;
+        System.out.println("Response created");
+    }
 
     public String getContent() {
         return content;

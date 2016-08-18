@@ -87,7 +87,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             System.out.println(user);
 
             Thread.sleep(2000);
-            return new ServerResponse(user.getIsRegistered());
+            return new ServerResponse(user.getIsRegistered(),user.getUserId());
         }
     }
 ////////////// AMY
