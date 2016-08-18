@@ -40,7 +40,11 @@ public class Processor implements Runnable {
 	public void run() {
 		while (!stop) {
 			try {
-				RawData rawData = rawDataQueue.take();
+				RawData rawData = rawDataQueue.poll(10, TimeUnit.SECONDS);
+
+				if (rawData == null)
+					continue;
+
 				ProcessedData processedData = process(rawData);
 				pushToQueue(processedData);
 			}
@@ -61,12 +65,11 @@ public class Processor implements Runnable {
 			for (String part : rawData.getData()) {
 				ArrayList<String> topicsIdentified = nlp.getTopics(part);
 
-				for (String topic : topicsIdentified) {
-					if (!topics.contains(topic))
-						topics.add(topic);
-				}
+				for (String topic : topicsIdentified)
+					topics.add(topic);
 			}
 
+			topics = nlp.purge(topics);
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 		}
 		else

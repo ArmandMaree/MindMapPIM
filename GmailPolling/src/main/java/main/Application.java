@@ -56,6 +56,11 @@ public class Application implements CommandLineRunner {
 	private RabbitTemplate rabbitTemplate;
 
 	@Bean
+	RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+		return new RabbitAdmin(connectionFactory);
+	}
+
+	@Bean
 	Queue authCodeQueue() {
 		return new Queue(authCodeQueueName, false);
 	}
@@ -127,6 +132,7 @@ public class Application implements CommandLineRunner {
 		for (String arg : args) {
 			switch (arg) {
 				case "cleandb":
+					System.out.println("Cleaning all databases...");
 					gmailRepository.deleteAll();
 					break;
 				default:

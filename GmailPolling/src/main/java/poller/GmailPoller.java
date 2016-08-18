@@ -22,6 +22,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.AmqpException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class GmailPoller implements Poller {
 	private String userEmail = "";
 	private boolean processedOldEmails = false;
 	private PollingUser pollingUser;
-
+	private Properties props;
 	private RabbitTemplate rabbitTemplate;
 
 	static {
@@ -354,8 +355,8 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-			System.out.println("Sending RawData: " + rawData.getData().length);
-			rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+				System.out.println("Sending RawData: " + rawData.getPimItemId());
+				rabbitTemplate.convertAndSend(rawDataQueue, rawData);
 		}
 		catch (AmqpException ampqe) {
 			System.out.println("Could not connect to RabbitMQ.");
@@ -463,7 +464,10 @@ public class GmailPoller implements Poller {
 		boolean isHTML = false;
 
 		if (email.getContent() instanceof String) {
-			body += extractText((String)email.getContent());
+			String newText = extractText((String)email.getContent());
+
+			if (!body.contains(newText))
+				body += newText;
 		}
 		else if (email.getContent() instanceof MimeMultipart) {
 			MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
@@ -487,10 +491,10 @@ public class GmailPoller implements Poller {
 					}
 					else if (mimeBodyPart.getContent() instanceof String) {
 						if (!((String)mimeBodyPart.getContent()).equals("")) {
-							String tmpBody = extractText((String)mimeBodyPart.getContent()) + "\n";
+							String newText = extractText((String)mimeBodyPart.getContent()) + "\n";
 
-							if (!body.contains(tmpBody))
-								body += tmpBody;
+							if (!body.contains(newText))
+								body += newText;
 						}
 					}
 				}

@@ -78,8 +78,8 @@ public class ProcessedDataListener {
 						remainingTopics.add(t);
 				}
 
-				addToDatabase(topic, processedData, remainingTopics);
-				System.out.println("Added topic: " + topic + "  for user: " + user.getGmailId());
+				boolean existed = addToDatabase(topic, processedData, remainingTopics);
+				System.out.println("Added topic: " + topic + "  for user: " + user.getGmailId() + "  existsed: " + existed);
 			}
 		}
 		catch (Exception e) { // never crash thread
@@ -87,10 +87,12 @@ public class ProcessedDataListener {
 		}
 	}
 
-	public synchronized void addToDatabase(String topic, ProcessedData processedData, ArrayList<String> remainingTopics) {
+	public synchronized boolean addToDatabase(String topic, ProcessedData processedData, ArrayList<String> remainingTopics) {
 		Topic topicFromRepo = topicRepository.findByTopicAndUserId(topic, processedData.getUserId()); // gets the current topic from repo if it exists
 
+		boolean exists = true;
 		if (topicFromRepo == null) { // topic not in repo
+			exists = false;
 			String[] processedDataIds = {processedData.getId()}; // ids of all topics containing the current topic (only one in this case).
 			Topic t = new Topic(processedData.getUserId(), topic, remainingTopics.toArray(new String[0]), processedDataIds, System.currentTimeMillis());
 			topicRepository.save(t); // persist new topic
@@ -112,5 +114,7 @@ public class ProcessedDataListener {
 			topicRepository.save(topicFromRepo); // update topic in repo
 			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
 		}
+
+		return exists;
 	}
 }

@@ -5,6 +5,7 @@ import poller.*;
 import repositories.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

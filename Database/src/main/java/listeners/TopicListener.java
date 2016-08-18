@@ -42,6 +42,7 @@ public class TopicListener {
 	* @param topicRequest Request for topics dequeued form messaging application.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
+		System.out.println("Received: " + topicRequest);
 		List<Topic> topics = new ArrayList<>(); // topics that need to be returned.
 
 		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) // if a path is not specified
@@ -63,10 +64,17 @@ public class TopicListener {
 					relatedTopics.removeAll(Arrays.asList(topicRequest.getPath())); // remove all topics that occur in path
 
 					if (relatedTopics.size() != 0) // related topics not empty then convert to array
-						for (String relatedTopic : relatedTopics)
-							topics.add(topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId()));
+						for (String relatedTopic : relatedTopics) {
+							boolean found = false;
 
-					break;
+							for (Topic t : topics) {
+								if (t.getTopic().equals(relatedTopic))
+									found = true;
+							}
+
+							if (!found)
+								topics.add(topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId()));
+						}
 				}
 				else if (!relatedTopics.contains(topicRequest.getPath()[i + 1])) // else if related topics does not contain next node in path then stop
 					break;
@@ -75,7 +83,7 @@ public class TopicListener {
 
 		if (topics == null || topics.size() == 0) { // no related topics exist for the given path
 			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null)); // send topic response that contains no topics
-			System.out.println("No topics found.");
+			System.out.println("No topics found for user: " + topicRequest.getUserId());
 			return;
 		}
 

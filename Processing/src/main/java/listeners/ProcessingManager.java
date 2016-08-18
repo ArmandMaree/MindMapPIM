@@ -21,16 +21,23 @@ import nlp.*;
 */
 public class ProcessingManager {
 	private class ShutDownHookThread extends Thread {
-		private final SimpleMessageListenerContainer processingManagerContainer;
-		private LinkedBlockingQueue<RawData> rawDataQueue;
+		private SimpleMessageListenerContainer processingManagerContainer;
 
-		public ShutDownHookThread(SimpleMessageListenerContainer processingManagerContainer, LinkedBlockingQueue<RawData> rawDataQueue) {
+		public ShutDownHookThread(SimpleMessageListenerContainer processingManagerContainer) {
 			this.processingManagerContainer = processingManagerContainer;
-			this.rawDataQueue = rawDataQueue;
 		}
 
 		@Override
 		public void run() {
+			if (processingManagerContainer != null) {
+				processingManagerContainer.stop();
+				System.out.println("Stopped consumers.");
+			}
+			else
+				System.out.println("Container null.");
+
+			System.out.println("Size of rawDataQueue: " + rawDataQueue.size());
+
 			for (Processor processor : processors)
 				processor.stop();
 
@@ -74,16 +81,27 @@ public class ProcessingManager {
 	}
 
 	public void createShutDownHook(SimpleMessageListenerContainer processingManagerContainer) {
-		// Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer, rawDataQueue));
+		Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer));
 	}
 
 	/**
 	* Receives a rawData object and sends it to processors.
 	* @param rawData The rawData object that needs processing.
 	*/
-	public void receiveRawData(RawData rawData) {
+	public synchronized void receiveRawData(RawData rawData) {
+		boolean inserted = false;
+
 		try {
-			rawDataQueue.put(rawData);
+			while (!inserted) {
+				if (rawDataQueue.size() > 500) {
+					System.out.println("Queue full: " + rawDataQueue.size());
+					Thread.sleep(5000);
+					continue;
+				}
+
+				rawDataQueue.put(rawData);
+				inserted = true;
+			}
 		}
 		catch (InterruptedException ignore) {}
 	}
