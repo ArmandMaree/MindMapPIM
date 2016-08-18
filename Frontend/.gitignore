@@ -1,2 +1,5 @@
+// ignore build folder
 build/
 .gradle/
+javadoc/
+all.tar.gz

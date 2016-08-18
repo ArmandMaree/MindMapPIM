@@ -16,14 +16,14 @@ public class TopicResponse implements Serializable {
 
 	private String userId;
 	private String[] topicsText;
-	private String[][] pimSourceIds;
+	private String[][][] pimSourceIds;
 
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public TopicResponse(String userId, String[] topicsText, String[][] pimSourceIds) {
+	public TopicResponse(String userId, String[] topicsText, String[][][] pimSourceIds) {
 		this.userId = userId;
 		this.topicsText = topicsText;
 		this.pimSourceIds = pimSourceIds;
@@ -65,7 +65,7 @@ public class TopicResponse implements Serializable {
 	* Get the value of pimSourceIds.
 	* @return The array of ids for the ids of the items used by the pims.
 	*/
-	public String[][] getPimSourceIds() {
+	public String[][][] getPimSourceIds() {
 		return pimSourceIds;
 	}
 
@@ -73,7 +73,7 @@ public class TopicResponse implements Serializable {
 	* Set the value of pimSourceIds.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public void setPimSourceIds(String[][] pimSourceIds) {
+	public void setPimSourceIds(String[][][] pimSourceIds) {
 		this.pimSourceIds = pimSourceIds;
 	}
 
@@ -94,26 +94,12 @@ public class TopicResponse implements Serializable {
 				}
 			}
 
-		String p = "";
-
-		if (pimSourceIds != null)
-			for (String[] pimIds : pimSourceIds) {
-				p += "\t\t[";
-
-				for (String id : pimIds) {
-					if (p.endsWith("["))
-						p += id;
-					else
-						p += ", " + id;
-				}
-
-				p += "]\n";
-			}
+		String p = "" + ((pimSourceIds == null) ? "null" : pimSourceIds.length);
 
 		return "TopicResponse{\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
-			"\tpimSourceIds: \n" + p +
+			"\tpimSourceIds (numNodes): " + p + "\n" +
 			"}";
 	}
 }

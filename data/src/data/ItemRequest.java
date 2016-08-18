@@ -50,6 +50,7 @@ public class ItemRequest implements Serializable {
 
 		return "ItemRequest {\n" +
 			"\titemids: [\n" + i + "\n" +
+			"\tuserId: [\n" + userId + "\n" +
 			"\t]\n" +
 		"}";
 	}

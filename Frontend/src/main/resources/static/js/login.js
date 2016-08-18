@@ -71,8 +71,7 @@ var sendUserReg = function(){
 			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
 			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
-	  	setTimeout(function(){
-			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	  	// setTimeout(function(){
 			stompClient.subscribe('/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("Server says: "+jsonresponse.content);
@@ -87,8 +86,9 @@ var sendUserReg = function(){
 			}, function(error) {
 		    		// display the error's message header:
 		    		console.log(error.headers.message);
-	  			});
-	  	}, 3000);
+	  		});
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	  	// }, 3000);
 	});
 
 }
@@ -170,6 +170,11 @@ var refreshValues = function() {
 var onSuccess = function(user) {
 	gmailUser = user;
 	console.log('Signed in as ' + user.getBasicProfile().getName());
+	//Create cookie
+	  document.cookie = "name="+gmailUser.wc.Za;
+	  document.cookie ="surname="+gmailUser.wc.Na;
+	  document.cookie= "email="+user.getBasicProfile().getEmail();
+	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
 	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
@@ -268,9 +273,9 @@ function loadXMLDoc(){
 
 	});
 	setTimeout(function(){
-		$("#loadingAlert").fadeIn(1000, function() {
-		// body...
-		});
+		// $("#loadingAlert").fadeIn(1000, function() {
+		// // body...
+		// });
 		var socket = new SockJS('/usercheck');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({}, function(frame) {
@@ -280,7 +285,7 @@ function loadXMLDoc(){
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
 			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
 
-
+			document.cookie="GmailId="+gmailUser.getBasicProfile().getEmail();
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
 			stompClient.subscribe('/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
@@ -339,7 +344,14 @@ jQuery(document).ready(function($){
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
-
+/**
+*		@var {} AuthResponse - object containing user information sent by Facebook
+*/
+var AuthResponse;
+/**
+* 		@var {} FacebookUser - object containing user personal information
+*/
+var FacebookUser;
  $("facebookLogout").hide();
   /**
  * This function is called with the results from from FB.getLoginStatus().
@@ -357,6 +369,7 @@ jQuery(document).ready(function($){
 	if (response.status === 'connected')
 	{
 		var accessToken = response.authResponse.accessToken;
+
 		console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
 		testAPI();
@@ -381,6 +394,7 @@ function onFacebookLogin()
   FB.login(function(response) {
 	if (response.authResponse) {
 	  console.log("Auth response:");
+	  AuthResponse = response;
 	  console.log(response.authResponse);
 	  showtick();
 	}
@@ -390,6 +404,60 @@ function onFacebookLogin()
   });
 }
 
+function sendUserObjectForFacebook(response)
+{
+	var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
+			var name = FacebookUser.name
+			var fullName = name.split(" ");
+			var fname = fullName[0];
+			var lname = fullName[fullName.length-1];
+
+			document.cookie = "name="+fname;
+	  		document.cookie ="surname="+lname;
+	  		document.cookie= "userid="+ AuthResponse.userID;
+			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"Facebook",authCode:AuthResponse.accessToken}]};
+
+
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/topic/greetings', function(serverResponse){
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+jsonresponse);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+				// document.cookie="userId="+jsonresponse.content;
+				// $("#loadingAlert").fadeOut(1000, function() {
+				// 	// body...
+				// });
+				if(jsonresponse.isRegistered){
+					window.location.assign('/mainpage');
+				}else{
+					$("#cssload-pgloading").hide();
+					$("#loadingAlert").fadeOut(1000, function() {
+						// body...
+					});
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.onreadystatechange=function(){
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){
+							document.getElementById("container").innerHTML=xmlhttp.responseText;
+						}
+					}
+					xmlhttp.open("GET","ajax/selectdata.html");
+					xmlhttp.send();
+					var filename;
+					// if (stompClient != null) {
+		   //              stompClient.disconnect();
+		   //          }
+				}
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
+		});
+}
 /**
 *	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook
 */
@@ -419,9 +487,10 @@ FB.init({
   version    : 'v2.5' 
 });
 
-FB.getLoginStatus(function(response) {
-  statusChangeCallback(response);
-});
+// Cause auto login to facebook
+// FB.getLoginStatus(function(response) {
+//   statusChangeCallback(response);
+// }); 
 
 };
 
@@ -445,6 +514,7 @@ function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
 	console.log('Successful login for: ' + response.name);
+	console.log(response);
 	document.getElementById('welcome').innerHTML += ", " + response.name;
 	document.cookie = "login=1";
 	onSuccessFacebook();

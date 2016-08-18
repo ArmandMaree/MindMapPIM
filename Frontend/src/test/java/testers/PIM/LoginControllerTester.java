@@ -55,7 +55,7 @@ public class LoginControllerTester extends AbstractTester {
 			String[] mockrelated = {"Arno Grobler","Riding"};
 			String[] mockprocessedDataIds = {"09865","098765"};
 			String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
-			String[][] mockItemIds = null;
+			String[][][] mockItemIds = null;
 			TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
 			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos","acubancos@gmail.com");
 			try{
@@ -86,7 +86,7 @@ public class LoginControllerTester extends AbstractTester {
 		String[] mockrelated = {"Arno Grobler","Riding"};
 		String[] mockprocessedDataIds = {"09865","098765"};
 		String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
-		String[][] mockItemIds = null;
+		String[][][] mockItemIds = null;
 		TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
 
 		Assert.assertEquals("Topic responses userId does not match",tro.getUserId(),loginController.recieveRequest(tr).getUserId());
@@ -97,4 +97,9 @@ public class LoginControllerTester extends AbstractTester {
 	public void testuserchecktest() throws Exception{
 		Assert.assertEquals("Topic responses userId does not match",true,loginController.userchecktest(new User("Acuban","Cos","acubancos@gmail.com")).getIsRegistered());
 	}
+	// @Test
+	// public void testSendNewDataSources() throws Exception
+	// {
+		
+	// }
 }

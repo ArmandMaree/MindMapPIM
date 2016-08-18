@@ -12,7 +12,7 @@ public class UserRegistrationIdentified extends UserRegistration {
 	/**
 	* ID used to identify the original request.
 	*/
-	private String id;
+	private String returnId;
 
 	/**
 	* Default empty UserRegistrationIdentified constructor
@@ -24,33 +24,33 @@ public class UserRegistrationIdentified extends UserRegistration {
 	/**
 	* Default empty UserRegistrationIdentified constructor
 	*/
-	public UserRegistrationIdentified(String id, UserRegistration userRegistration) {
+	public UserRegistrationIdentified(String returnId, UserRegistration userRegistration) {
 		super(userRegistration.getFirstName(), userRegistration.getLastName(), userRegistration.getAuthCodes());
-		this.id = id;
+		this.returnId = returnId;
 	}
 
 	/**
 	* Default UserRegistrationIdentified constructor
 	*/
-	public UserRegistrationIdentified(String id, String firstName, String lastName, AuthCode[] authCodes) {
+	public UserRegistrationIdentified(String returnId, String firstName, String lastName, AuthCode[] authCodes) {
 		super(firstName, lastName, authCodes);
-		this.id = id;
+		this.returnId = returnId;
 	}
 
 	/**
-	* Returns value of id
+	* Returns value of returnId
 	* @return ID used to identify the original request.
 	*/
-	public String getId() {
-		return id;
+	public String getReturnId() {
+		return returnId;
 	}
 
 	/**
-	* Sets new value of id
-	* @param id ID used to identify the original request.
+	* Sets new value of returnId
+	* @param returnId ID used to identify the original request.
 	*/
-	public void setId(String id) {
-		this.id = id;
+	public void setReturnId(String returnId) {
+		this.returnId = returnId;
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class UserRegistrationIdentified extends UserRegistration {
 	@Override
 	public String toString() {
 		return "UserRegistrationIdentified {\n" +
-			"\tid: " + id + "\n" +
+			"\treturnId: " + returnId + "\n" +
 			"\tfirstName: " + getFirstName() + "\n" +
 			"\tlastName: " + getLastName() + "\n" +
 			"\tauthCodes size: " + ((getAuthCodes() == null) ? "null" : getAuthCodes().length) + "\n" +
