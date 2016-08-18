@@ -252,8 +252,19 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		for (String word : words) {
 			Matcher m = p.matcher(word);
 
-			if (!excludedWords.contains(word.toLowerCase()) && !remainingWords.contains(word) && word.length() > 1 && !m.matches())
-				remainingWords.add(word);
+			if (word.length() > 1 && !word.startsWith("http") && !m.matches() && !excludedWords.contains(word.toLowerCase())) {
+				boolean found = false;
+
+				for (String topic : remainingWords) {
+					if (topic.toLowerCase().equals(word.toLowerCase())) {
+						found = false;
+						break;
+					}
+				}
+
+				if (!found)
+					remainingWords.add(word);
+			}
 		}
 
 		return remainingWords;

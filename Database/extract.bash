@@ -13,4 +13,11 @@ else
 fi
 
 ./run.bash
-./gradlew bootRun
+./gradlew build -x test
+
+if [ $# -eq 0 ]
+then
+	java -jar "build/libs/database-service-0.1.0.jar";
+else
+	java -jar "build/libs/database-service-0.1.0.jar" "$1";
+fi

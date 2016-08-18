@@ -182,6 +182,7 @@ public class Application implements CommandLineRunner {
 		for (String arg : args) {
 			switch (arg) {
 				case "cleandb":
+					System.out.println("Cleaning all databases...");
 					userRepository.deleteAll();
 					processedDataRepository.deleteAll();
 					topicRepository.deleteAll();

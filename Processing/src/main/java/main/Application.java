@@ -50,6 +50,7 @@ public class Application implements CommandLineRunner {
 	ProcessingManager processingManager;
 
 	@Autowired
+	@Qualifier("processingManagerContainer")
 	SimpleMessageListenerContainer processingManagerContainer;
 
 	@Bean
