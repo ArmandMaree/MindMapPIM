@@ -37,7 +37,7 @@ var expandlist = [];
 /**
 *	@var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
-var initialdepth = 2;
+var initialdepth = 5;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
@@ -46,6 +46,10 @@ var flagHasNodesToLoad = false;
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
 var mocktesting = false;
+/**
+*   @var {bool} currFramerate - Stores the current framerate.
+*/
+var currFramerate = 60;
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
@@ -114,19 +118,19 @@ $(document).ready(function($){
     *   A function that hieds the error
     */
     $("#loadingAlertError").hide();  
-	/**
-	*	A function that displays the loading bar
-	*/
+    /**
+    *   A function that displays the loading bar
+    */
     $("#loadingAlert").fadeIn(1000, function() {
         // body...
     });
     /**
-    *	@var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
+    *   @var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
     */
     var color = 'gray';
     /**
-    *	@var len - 
-    */	
+    *   @var len - 
+    */  
     var len = undefined;
 
     /**
@@ -258,9 +262,9 @@ $(document).ready(function($){
         };
 
         /**
-	    *	@var options - An object that contains all settings for the BubbleMap
-	    */
-       	var options = {
+        *   @var options - An object that contains all settings for the BubbleMap
+        */
+        var options = {
             interaction:{
                 hover: true,
                 hoverConnectedEdges: true,
@@ -279,18 +283,59 @@ $(document).ready(function($){
                 },
                 borderWidth: 1
             },
+            configure:function (option, path) {
+              if (path.indexOf('smooth') !== -1 || option === 'smooth') {
+                return true;
+              }
+              return false;
+            },
             edges: {
                 width: 1
             }
         };
         network = new vis.Network(container, data, options);
+        
+        if(!window.FPSMeter){
+        alert("This test page doesn't seem to include FPSMeter: aborting"); 
+        return;
+        }
+
+        var results = document.getElementById("results");
+        
+
+        // Register a progress call-back
+        document.addEventListener('fps',
+            function(evt) {
+                currFramerate = evt.fps
+                if(currFramerate<25){
+                    var options = {
+                      "edges": {
+                        "smooth": false
+                        }
+                      }
+                      network.setOptions(options);
+                }else if(currFramerate>40){
+                    var options = {
+                      "edges": {
+                        "smooth": true
+                        }
+                      }
+                      network.setOptions(options);
+                }
+                // console.log("Current framerate: " + evt.fps + " fps");
+            },
+            false);
+
+        // Start FPS analysis, optionnally specifying the rate at which FPS 
+        // are evaluated (in seconds, defaults to 1).
+        FPSMeter.run();
         /**
-        *	@var socket - holds the web socket object
+        *   @var socket - holds the web socket object
         */
-      	var socket = new SockJS('/request');
-      	/**
-      	*	@var stompClient - 
-      	*/
+        var socket = new SockJS('/request');
+        /**
+        *   @var stompClient - 
+        */
       	stompClient = Stomp.over(socket);
       	/**
       	*	A function that connects the stompClient 

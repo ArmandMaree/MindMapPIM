@@ -27,6 +27,8 @@
       <script type="text/javascript" src="/js/vis.js"></script><style type="text/css"></style>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
       <script src="/js/stomp.min.js"></script>
+      <script type='text/javascript' src='/js/fpsmeter.js'></script>
+      
       
       <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"></link>
       <link rel="icon" href="/images/favicon.ico" type="image/x-icon"></link>
@@ -57,16 +59,12 @@
                 <p class="navbar-text">PIM</p>
               </div>
             </div>
+            <aside>
+                <div id="fps"></div>
+            </aside>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-             
-             <!--  <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Search"/>
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </form> -->
               <ul class="nav navbar-nav navbar-right">
               <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign" id="help"></span></a></li>
               <li class="dropdown">
@@ -80,9 +78,6 @@
                     
                     <li role="separator" class="divider"></li>
                     <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
-                    <!-- <li><a href="#">Separated link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">One more separated link</a></li> -->
                   </ul>
                 </li>
                 <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out" id="logout"></span></a></li>
@@ -102,51 +97,6 @@
             </ol>
             
             <div class="panel-group" id="accordion">
-                <!-- <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Gmail</h3>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse">
-                        <div id="gmail" class="panel-body" ></div>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">Facebook</h3>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse" style="overflow-x:hidden;">
-                        <div id="facebook" class="panel-body" style="max-height: 50vh;overflow-y: scroll;" >
-                      <div class="fb-post" data-href="https://www.facebook.com/20531316728/posts/10154009990506729/" data-width="500" data-show-text="true"><blockquote cite="https://www.facebook.com/20531316728/posts/10154009990506729/" class="fb-xfbml-parse-ignore">Posted by <a href="https://www.facebook.com/lochneramy/">Amy Lochner</a> on&nbsp;<a href="https://www.facebook.com/20531316728/posts/10154009990506729/">Thursday, August 27, 2015</a></blockquote></div>
-                     
-                     <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059&amp;width=500" width="500" height="142" style="border:none;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
-                     <iframe src="https://www.facebook.com/plugins/comment_embed.php?href=https%3A%2F%2Fwww.facebook.com%2Facuben.cos%2Fposts%2F107109433055059%3Fcomment_id%3D107116923054310&amp;include_parent=false" width="500" height="141" style="border:none;background-color:white;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
-                        </div>
-                    </div>
-                 </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title">LinkedIn</h3>
-                    </div>
-                    <div id="collapse3" class="panel-collapse collapse">
-                        <div id="linkedin" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;">
-                         
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title">Twitter</h3>
-                    </div>
-                    <div id="collapse4" class="panel-collapse collapse">
-                        <div id="twitter" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;">
-                            
-                        </div>
-                    </div>
-                </div> -->
-            
             </div>
         </div>
         <div class="alert alert-success" id="loadingAlert" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
