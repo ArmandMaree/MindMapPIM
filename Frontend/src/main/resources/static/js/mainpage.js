@@ -391,6 +391,7 @@ $(document).ready(function($){
                     }
                     $("#breadcrumb").html(breadcrumb);
                     console.log(s);
+
                     populateSidePanel(s, dataForSideBar);
 
                     $("#loadingAlert").fadeOut(1000, function() {
@@ -814,10 +815,15 @@ $(document).ready(function($){
         console.log(allPimIDlist[selectedID]);
         console.log(allPimIDlist[selectedID][0]);
         console.log(allPimIDlist[selectedID][0][1]);
+        var uniqueIds = [];
+            $.each(allPimIDlist[selectedID][0], function(i, el){
+                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
+            });
+            console.log(uniqueIds);
         if(!mocktesting)
-            var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:gmailID};
+            var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
         else
-            var gmailItemRequest = {itemIds:allPimIDlist[selectedID][0],userId:"mocktesting"+gmailID};
+            var gmailItemRequest = {itemIds:uniqueIds,userId:"mocktesting"+gmailID};
         /**
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */
