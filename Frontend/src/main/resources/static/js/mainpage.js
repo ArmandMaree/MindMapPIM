@@ -1,43 +1,43 @@
 /**
-*	@var {String} name - varible to hold where the user is current logged in.
+*   @var {String} name - varible to hold where the user is current logged in.
 */
 var name = "login=";
 /**
-*	@var {Boolean} rightClick - Variable to see where the user is currentluy right clicking
+*   @var {Boolean} rightClick - Variable to see where the user is currentluy right clicking
 */
 var rightClick;
 /**
-*	@var {} ca - Variable to hold all split cookies
+*   @var {} ca - Variable to hold all split cookies
 */
 var ca = document.cookie.split(';');
 /**
-*	@var {String} x - Temp Variable to hold the cookie result 
+*   @var {String} x - Temp Variable to hold the cookie result 
 */
 var x="";
 /**
-*	@var {String} x1 - Temp Variable to hold the cookie result 
+*   @var {String} x1 - Temp Variable to hold the cookie result 
 */
 var x1="";
 /**
-*	@var {} menu - Holds the right click context menu, as to be referenced later
+*   @var {} menu - Holds the right click context menu, as to be referenced later
 */
 var menu;
 /**
-*	@var {int} selectedID - The currently selected nodes ID
+*   @var {int} selectedID - The currently selected nodes ID
 */
 var selectedID;
 /**
-*	@var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
+*   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
 var parentlist =[0];
 /**
-*	@var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
+*   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
 var expandlist = [];
 /**
-*	@var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
+*   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
-var initialdepth = 5;
+var initialdepth = 2;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
@@ -76,14 +76,14 @@ if(x!="1"){
     window.location.assign('/login');
 }
 /**
-*	A function that creates a json string from an object
-*	@param obj An object that needs to be converted into a JSON string
+*   A function that creates a json string from an object
+*   @param obj An object that needs to be converted into a JSON string
 */
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
 /**
-*	A JQuery function that allows the sidepanel to be resizeable
+*   A JQuery function that allows the sidepanel to be resizeable
 */
 $( window ).resize(function() {
     if($(window).width()<=768){
@@ -99,20 +99,31 @@ $( window ).resize(function() {
     }
 });
 /**
-*	@var nodes - An array of node objects
+*   @var nodes - An array of node objects
 */
 var nodes;
 /**
-*	@var {} edges - An array of edge objects
+*   @var {} edges - An array of edge objects
 */
 var edges;
 /**
-*	@var {} network - A variable which holds the created network
+*   @var {} network - A variable which holds the created network
 */
 var network;
 /**
-*	Function that is executed when the document has loaded
+*   Function that is executed when the document has loaded
 */
+$.holdReady(true);
+basket
+.require({ url: '/js/vis.js' })
+.then(function () {
+    // Success
+    $.holdReady(false)
+    console.log("Loaded all required scripts.");
+}, function (error) {
+    // There was an error fetching the script
+    console.log(error);
+});
 $(document).ready(function($){
     /**
     *   A function that hieds the error

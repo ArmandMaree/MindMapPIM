@@ -74,7 +74,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             }
     		User user = userRegistrationResponseLL.poll().getUser(true);
             System.out.println(user);
-            Thread.sleep(2000);
+            // Thread.sleep(2000);
             return new ServerResponse(user.getUserId());
         }else{
             System.out.println(message);
@@ -86,7 +86,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             UserIdentified user = userCheckResponseLL.poll();
             System.out.println(user);
 
-            Thread.sleep(2000);
+            // Thread.sleep(2000);
             return new ServerResponse(user.getIsRegistered(),user.getUserId());
         }
     }
