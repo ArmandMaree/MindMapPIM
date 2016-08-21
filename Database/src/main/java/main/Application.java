@@ -40,6 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String priorityProcessedDataQueueName = "priority-processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String userRegisterQueueName = "user-register.database.rabbit";
 	private final String userCheckQueueName = "user-check.database.rabbit";
@@ -67,6 +68,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue priorityProcessedDataQueue() {
+		return new Queue(priorityProcessedDataQueueName, false);
+	}
+
+	@Bean
 	Queue userRegisterQueue() {
 		return new Queue(userRegisterQueueName, false);
 	}
@@ -89,6 +95,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding processedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(processedDataQueueName);
+	}
+
+	@Bean
+	Binding priorityProcessedDataBinding(@Qualifier("processedDataQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(priorityProcessedDataQueueName);
 	}
 
 	@Bean
@@ -127,6 +138,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public MessageListenerAdapter priorityProcessedDataAdapter(ProcessedDataListener processedDataListener) {
+		return new MessageListenerAdapter(processedDataListener, "receivePriorityProcessedData");
+	}
+
+	@Bean
 	public MessageListenerAdapter userRegisterAdapter(BusinessListener businessListener) {
 		return new MessageListenerAdapter(businessListener, "receiveUserRegister");
 	}
@@ -150,6 +166,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(processedDataQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer priorityProcessedDataContainer(ConnectionFactory connectionFactory, @Qualifier("priorityProcessedDataAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(priorityProcessedDataQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

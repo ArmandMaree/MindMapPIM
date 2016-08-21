@@ -1,6 +1,8 @@
 package data;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.data.annotation.Id;
 
@@ -11,11 +13,8 @@ import org.springframework.data.annotation.Id;
 * @since   2016-07-25
 */
 public class Topic implements Serializable, Comparable<Topic> {
-	private static final long serialVersionUID = 2598785136676361L;
+	private static final long serialVersionUID = 2698785136676361L;
 
-	/**
-	* ID used in database.
-	*/
 	@Id
 	private String id;
 
@@ -32,12 +31,12 @@ public class Topic implements Serializable, Comparable<Topic> {
 	/**
 	* Array of topics that are related.
 	*/
-	private String[] relatedTopics;
+	private List<String> relatedTopics;
 
 	/**
 	* IDs of the ProcessedData in the repository that contains this topic.
 	*/
-	private String[] processedDataIds;
+	private List<String> processedDataIds;
 
 	/**
 	* Last time in milliseconds this topic was updated.
@@ -59,19 +58,48 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* @param topic The topic's name.
 	* @param relatedTopics Array of topics that are related.
 	* @param processedDataIds IDs of the ProcessedData in the repository that contains this topic.
-	* @param time Last time in milliseconds this topic was updated. Usually the current time.
+	* @param time Last time in milliseconds this topic was updated.
 	*/
-	public Topic(String userId, String topic, String[] relatedTopics, String[] processedDataIds, long time) {
+	public Topic(String userId, String topic, List<String> relatedTopics, List<String> processedDataIds, long time) {
 		this.userId = userId;
 		this.topic = topic;
-		this.relatedTopics = relatedTopics;
+		addRelatedTopics(relatedTopics);
 		this.processedDataIds = processedDataIds;
 		this.time = time;
+	}
+	
+	public void addRelatedTopics(List<String> newRelatedTopics) {
+		if (relatedTopics == null)
+			relatedTopics = new ArrayList<>();
+
+		for (String relatedTopic : newRelatedTopics) {
+			boolean found = false;
+			int pos = 0;
+
+			while (pos < relatedTopics.size() && relatedTopics.get(pos).compareTo(relatedTopic) >= 0) {
+				if (relatedTopics.get(pos).equals(relatedTopic)) {
+					found = true;
+					break;
+				}
+
+				pos++;
+			}
+
+			if (!found)
+				relatedTopics.add(pos, relatedTopic);
+		}
+	}
+
+	public void addProcessedDataId(String id) {
+		if (processedDataIds == null)
+			processedDataIds = new ArrayList<>();
+		
+		processedDataIds.add(id);
 	}
 
 	/**
 	* Returns the value of id.
-	* @return The ID used in the database.
+	* @return ID of the user in database the topic is related to.
 	*/
 	public String getId() {
 		return id;
@@ -79,7 +107,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of id.
-	* @param id The ID used in the database.
+	* @param id ID of the topic in database the topic is related to.
 	*/
 	public void setId(String id) {
 		this.id = id;
@@ -87,7 +115,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Returns the value of userId.
-	* @return ID of the user in database the topic is related to.
+	* @return ID of the topic in database the topic is related to.
 	*/
 	public String getUserId() {
 		return userId;
@@ -121,7 +149,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Returns the value of relatedTopics.
 	* @return Array of topics that are related.
 	*/
-	public String[] getRelatedTopics() {
+	public List<String> getRelatedTopics() {
 		return relatedTopics;
 	}
 
@@ -129,7 +157,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Set the value of relatedTopics.
 	* @param id Array of topics that are related.
 	*/
-	public void setRelatedTopics(String[] relatedTopics) {
+	public void setRelatedTopics(List<String> relatedTopics) {
 		this.relatedTopics = relatedTopics;
 	}
 
@@ -137,7 +165,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Returns the value of processedDataIds.
 	* @return IDs of the ProcessedData in the repository that contains this topic.
 	*/
-	public String[] getProcessedDataIds() {
+	public List<String> getProcessedDataIds() {
 		return processedDataIds;
 	}
 
@@ -145,7 +173,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Set the value of processedDataIds.
 	* @param id IDs of the ProcessedData in the repository that contains this topic.
 	*/
-	public void setProcessedDataIds(String[] processedDataIds) {
+	public void setProcessedDataIds(List<String> processedDataIds) {
 		this.processedDataIds = processedDataIds;
 	}
 
@@ -198,16 +226,21 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* @param other The topic this one is compared to.
 	*/
 	public int compareTo(Topic other) {
-		return -1 * (int)(getWeight() - other.getWeight());
+		if (getWeight() > other.getWeight())
+			return 1;
+		else if (getWeight() < other.getWeight())
+			return -1;
+		else 
+			return 0;
 	}
 
 	/**
 	* Calculated the weight of the topic at the current moment.
 	*/
 	public double getWeight() {
-		long secs = (System.currentTimeMillis() - time) / 1000; // seconds between time and current time
-		double hours = Math.max(secs / 3600, 0.01); // hours between time and current time with a minimum of 0.01
-		double weight = (100 / hours) * processedDataIds.length; // inverse of hourse * 100 * number of data associated with topic.
+		long secs = time / 1000; // seconds between time and current time
+		double hours = secs / 3600 - 306816; // hours since 01/01/2005
+		double weight = 100 * hours * processedDataIds.size(); // inverse of hourse * 100 * number of data associated with topic.
 		return weight;
 	}
 }

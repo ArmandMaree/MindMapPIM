@@ -131,6 +131,11 @@ public class Application implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		for (String arg : args) {
 			switch (arg) {
+				case "testaccount":
+					// System.out.println("Setting up test account.");
+					// GmailPoller poller = new GmailPoller(gmailRepository, rabbitTemplate, "4/W4n6Kmnm1JP-WmVLwbG8cusspwoh2FCl0-iRXp8zoTo", "acubencos@gmail.com", "http://codehaven.co.za/");
+					// new Thread(poller).start();
+					break;
 				case "cleandb":
 					System.out.println("Cleaning all databases...");
 					gmailRepository.deleteAll();

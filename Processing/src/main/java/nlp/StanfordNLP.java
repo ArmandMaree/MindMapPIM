@@ -69,6 +69,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		excludedWords.add("unsubscribe");
 		excludedWords.add("time");
 		excludedWords.add("email");
+		excludedWords.add("html");
 	}
 
 	/**
@@ -77,12 +78,17 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @return A list of topics discovered in the text.
 	*/
 	public ArrayList<String> getTopics(String text) {
-		List<CoreMap> sentences = parse(text);
-		// ArrayList<String> topics = getPOS("VB", sentences); // get verbs
-		// topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
-		ArrayList<String> topics = getGroups(sentences); // get nouns grouped by NamedEntityTagAnnotation
+		try {
+			List<CoreMap> sentences = parse(text);
+			// ArrayList<String> topics = getPOS("VB", sentences); // get verbs
+			// topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
+			ArrayList<String> topics = getGroups(sentences); // get nouns grouped by NamedEntityTagAnnotation
 
-		return topics;
+			return topics;
+		}
+		catch(OutOfMemoryError oome) {
+			return null;
+		}
 	}
 
 	/**
@@ -90,7 +96,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param text The text that should be parsed. A single well written sentence works best.
 	* @return A list of words with their metadata.
 	*/
-	private List<CoreMap> parse(String text) {
+	private List<CoreMap> parse(String text) throws OutOfMemoryError {
 		// create an empty Annotation just with the given text
 		Annotation document = new Annotation(text);
 
@@ -252,12 +258,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		for (String word : words) {
 			Matcher m = p.matcher(word);
 
-			if (word.length() > 1 && !word.startsWith("http") && !m.matches() && !excludedWords.contains(word.toLowerCase())) {
+			if (word.length() > 1 && !word.startsWith("http") && !word.startsWith("<") && !m.matches() && !excludedWords.contains(word.toLowerCase())) {
 				boolean found = false;
 
 				for (String topic : remainingWords) {
 					if (topic.toLowerCase().equals(word.toLowerCase())) {
-						found = false;
+						found = true;
 						break;
 					}
 				}

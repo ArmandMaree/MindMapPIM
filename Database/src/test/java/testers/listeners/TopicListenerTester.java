@@ -78,15 +78,16 @@ public class TopicListenerTester extends AbstractTester {
 		List<ProcessedData> processedData = new ArrayList<>();
 
 		String[][] processedDataTopics = {
-			{"horse", "pizza"},
+			{"horse", "photo"},
+			{"horse", "pizza", "pizza", "pizza"},
+			{"horse", "pizza", "pizza"},
 			{"horse", "saddle"},
 			{"horse", "pizza"},
 			{"horse", "computer"},
 			{"pizza", "book"},
 			{"glass", "phone"},
 			{"mouse", "pizza"},
-			{"computer", "handle"},
-			{"computer", "sock"}
+			{"computer", "handle"}
 		};
 
 		for (String[] ts : processedDataTopics)
@@ -105,8 +106,20 @@ public class TopicListenerTester extends AbstractTester {
 		Thread.sleep(5000);
 
 		TopicResponse topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
+
+		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);
+
+		path = new String[1];
+		path[0] = "horse";
+		topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
+		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
+		Thread.sleep(5000);
+
+		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 		System.out.println("Received: " + topicResponse);
 
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);	
 	}
 }

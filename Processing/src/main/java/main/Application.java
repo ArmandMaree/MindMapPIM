@@ -39,6 +39,7 @@ import listeners.*;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	final static String rawDataQueueName = "raw-data.processing.rabbit";
+	final static String priorityRawDataQueueName = "priority-raw-data.processing.rabbit";
 
 	@Autowired
 	NaturalLanguageProcessor nlp;
@@ -64,6 +65,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue priorityRawDataQueue() {
+		return new Queue(priorityRawDataQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
@@ -71,6 +77,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding rawDataBinding(@Qualifier("rawDataQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(rawDataQueueName);
+	}
+
+	@Bean
+	Binding priorityRawDataBinding(@Qualifier("priorityRawDataQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(priorityRawDataQueueName);
 	}
 
 	@Bean
@@ -84,10 +95,24 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	MessageListenerAdapter priorityProcessingManagerAdapter(ProcessingManager processingManager) {
+		return new MessageListenerAdapter(processingManager, "receivePriorityRawData");
+	}
+
+	@Bean
 	SimpleMessageListenerContainer processingManagerContainer(ConnectionFactory connectionFactory, @Qualifier("processingManagerAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(rawDataQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	SimpleMessageListenerContainer priorityProcessingManagerContainer(ConnectionFactory connectionFactory, @Qualifier("priorityProcessingManagerAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(priorityRawDataQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

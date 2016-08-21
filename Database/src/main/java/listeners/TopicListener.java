@@ -55,26 +55,21 @@ public class TopicListener {
 				if (topic == null) // user does not have a topic with this name
 					break;
 
-				ArrayList<String> relatedTopics = new ArrayList<>(Arrays.asList(topic.getRelatedTopics())); // store the related topics of the topic retrieved from repo
+				List<String> relatedTopics = topic.getRelatedTopics(); // store the related topics of the topic retrieved from repo
 
 				if (i == topicRequest.getPath().length - 1) { // if on last node of path
 					if (topicRequest.getExclude() != null && topicRequest.getExclude().length != 0) // if exclude contains nodes, then remove them from related topics
 						relatedTopics.removeAll(Arrays.asList(topicRequest.getExclude()));
 
 					relatedTopics.removeAll(Arrays.asList(topicRequest.getPath())); // remove all topics that occur in path
+					System.out.println("Related topics: ");
+					for (String relatedTopic : relatedTopics) {
+						System.out.println("\t" + relatedTopic);
+						Topic t = topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId());
 
-					if (relatedTopics.size() != 0) // related topics not empty then convert to array
-						for (String relatedTopic : relatedTopics) {
-							boolean found = false;
-
-							for (Topic t : topics) {
-								if (t.getTopic().equals(relatedTopic))
-									found = true;
-							}
-
-							if (!found)
-								topics.add(topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId()));
-						}
+						if (t != null)
+							topics.add(t);
+					}
 				}
 				else if (!relatedTopics.contains(topicRequest.getPath()[i + 1])) // else if related topics does not contain next node in path then stop
 					break;
@@ -87,7 +82,7 @@ public class TopicListener {
 			return;
 		}
 
-		Collections.sort(topics); // sort according to weight
+		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight
 		List<Topic> returnTopics = new ArrayList<>();
 
 		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
@@ -114,18 +109,6 @@ public class TopicListener {
 				if (!found)
 					returnTopics.add(topics.get(i));
 			}
-
-			// int topicIndex = 1;
-			//
-			// while (returnTopics.size() < topicRequest.getMaxNumberOfTopics()) { // returnTopics isnt full so add the most relevant ones that were filtered previously
-			// 	if (topicIndex >= topics.size())
-			// 		break;
-			//
-			// 	if (!returnTopics.contains(topics.get(topicIndex)))
-			// 		returnTopics.add(topics.get(topicIndex));
-			//
-			// 	topicIndex++;
-			// }
 		}
 
 		List<String[][]> nodes = new ArrayList<>();

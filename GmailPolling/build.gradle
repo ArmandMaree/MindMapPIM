@@ -40,7 +40,7 @@ dependencies {
 	// Other used for mail processing
 	compile 'javax.mail:mail:1.4.1'
 	compile 'commons-codec:commons-codec:1.10'
-	compile 'org.jsoup:jsoup:1.8.1'
+	compile 'org.jsoup:jsoup:1.9.2'
 
 	// Queue messaging stuff
 	compile("org.springframework.boot:spring-boot-starter-amqp")
