@@ -4,6 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.io.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -52,7 +53,7 @@ public class ProcessingManager {
 		}
 	}
 
-	private int NUM_PROCESSORS = 10;
+	private int NUM_PROCESSORS = 5;
 	private boolean stop = false;
 	private final int TIMEOUT = 10;
 	private CountDownLatch latch = new CountDownLatch(1);
@@ -61,6 +62,7 @@ public class ProcessingManager {
 	private NaturalLanguageProcessor nlp;
 	private RabbitTemplate rabbitTemplate;
 	private LinkedBlockingQueue<RawData> rawDataQueue = new LinkedBlockingQueue<>();
+	private LinkedBlockingQueue<RawData> priorityRawDataQueue = new LinkedBlockingQueue<>();
 	private List<Processor> processors = new ArrayList<>();
 	private List<Thread> processorsThreads = new ArrayList<>();
 
@@ -72,7 +74,7 @@ public class ProcessingManager {
 		this.rabbitTemplate = rabbitTemplate;
 
 		for (int i = 0; i < NUM_PROCESSORS; i++) {
-			Processor processor = new Processor(rawDataQueue, rabbitTemplate, nlp);
+			Processor processor = new Processor(rawDataQueue, priorityRawDataQueue, rabbitTemplate, nlp);
 			processors.add(processor);
 			Thread thread = new Thread(processor);
 			processorsThreads.add(thread);
@@ -81,7 +83,7 @@ public class ProcessingManager {
 	}
 
 	public void createShutDownHook(SimpleMessageListenerContainer processingManagerContainer) {
-		Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer));
+		// Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer));
 	}
 
 	/**
@@ -89,19 +91,25 @@ public class ProcessingManager {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public synchronized void receiveRawData(RawData rawData) {
-		boolean inserted = false;
-
 		try {
-			while (!inserted) {
-				if (rawDataQueue.size() > 500) {
-					System.out.println("Queue full: " + rawDataQueue.size());
-					Thread.sleep(5000);
-					continue;
-				}
-
-				rawDataQueue.put(rawData);
-				inserted = true;
+			if (rawDataQueue.size() >= 50) {
+				rabbitTemplate.convertAndSend("raw-data.processing.rabbit");
+				return;
 			}
+
+			rawDataQueue.put(rawData);
+		}
+		catch (InterruptedException ignore) {}
+	}
+
+	public synchronized void receivePriorityRawData(RawData rawData) throws FileNotFoundException {
+		try {
+			if (priorityRawDataQueue.size() >= 50) {
+				rabbitTemplate.convertAndSend("priority-raw-data.processing.rabbit");
+				return;
+			}
+
+			priorityRawDataQueue.put(rawData);
 		}
 		catch (InterruptedException ignore) {}
 	}

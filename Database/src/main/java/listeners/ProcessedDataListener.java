@@ -3,7 +3,8 @@ package listeners;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import data.*;
 import repositories.*;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.Scope;
 * @author  Armand Maree
 * @since   2016-07-16
 */
-@Scope("singleton")
 public class ProcessedDataListener {
 	@Autowired
 	private UserRepository userRepository;
@@ -28,18 +28,90 @@ public class ProcessedDataListener {
 	@Autowired
 	private TopicRepository topicRepository;
 
+	private static LinkedBlockingQueue<PendingTopic> pendingTopics = new LinkedBlockingQueue<>();
+	private static LinkedBlockingQueue<PendingTopic> priorityPendingTopics = new LinkedBlockingQueue<>();
+	private static Thread addToDatabaseThread = null;
+	private static boolean stop = false;
+
 	/**
 	* Default constructor.
 	*/
 	public ProcessedDataListener() {
+		if (addToDatabaseThread != null)
+			return;
 
+		addToDatabaseThread = new Thread() {
+			@Override
+			public void run() {
+				while (!stop) {
+					PendingTopic pendingTopic;
+
+					try {
+						pendingTopic = priorityPendingTopics.poll();
+
+						if (pendingTopic == null)
+							pendingTopic = pendingTopics.poll(5, TimeUnit.SECONDS);
+
+						if (pendingTopic == null) {
+							Thread.sleep(5000);
+							continue;
+						}
+					} catch(InterruptedException ignore) {
+						continue;
+					}
+
+					ProcessedData processedData = pendingTopic.getProcessedData();
+					Topic topicInRepo = topicRepository.findByTopicAndUserId(pendingTopic.getTopic(), processedData.getUserId());
+
+					if (topicInRepo == null) { // topic not in db yet
+						List<String> processedDataIds = new ArrayList<>();
+						processedDataIds.add(processedData.getId()); // ids of all topics containing the current topic (only one in this case).
+						topicInRepo = new Topic(processedData.getUserId(), pendingTopic.getTopic(), pendingTopic.getRemainingTopics(), processedDataIds, processedData.getTime());
+						topicRepository.save(topicInRepo); // persist new topic
+						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
+						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+					}
+					else {
+						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
+						topicInRepo.addProcessedDataId(processedData.getId());
+						topicInRepo.setTime(processedData.getTime());
+						topicRepository.save(topicInRepo);
+						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+					}
+				}
+			}
+		};
+
+		addToDatabaseThread.start();
 	}
 
 	/**
 	* Receives processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
-	public void receiveProcessedData(ProcessedData processedData) {
+	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
+		System.out.println("Received processedData for user: " + processedData.getUserId());
+		List<PendingTopic> pt = processProcessedData(processedData);
+
+		for (PendingTopic pendingTopic : pt)	
+			pendingTopics.put(pendingTopic);
+	}
+
+	/**
+	* Receives processedData and updates the userId then sends the object to the repositry for persistence.
+	* @param processedData The object that needs to be persisted.
+	*/
+	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
+		System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
+		List<PendingTopic> pt = processProcessedData(processedData);
+
+		for (PendingTopic pendingTopic : pt)
+			priorityPendingTopics.put(pendingTopic);
+	}
+
+	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
+		List<PendingTopic> pt = new ArrayList<>();
+
 		try {
 			User user = null;
 
@@ -48,12 +120,12 @@ public class ProcessedDataListener {
 					user = userRepository.findByGmailId(processedData.getUserId());
 
 					if (user == null) // no user exists with this gmail id
-						return;
+						return pt;
 
 					processedData.setUserId(user.getUserId());
 					break;
 				default: // don't know where the data comes from.
-					return;
+					return pt;
 			}
 
 			List<String> cleanedTopics = new ArrayList<>();
@@ -78,43 +150,13 @@ public class ProcessedDataListener {
 						remainingTopics.add(t);
 				}
 
-				boolean existed = addToDatabase(topic, processedData, remainingTopics);
-				System.out.println("Added topic: " + topic + "  for user: " + user.getGmailId() + "  existsed: " + existed);
+				pt.add(new PendingTopic(topic, processedData, remainingTopics));
 			}
 		}
 		catch (Exception e) { // never crash thread
 			e.printStackTrace();
 		}
-	}
 
-	public synchronized boolean addToDatabase(String topic, ProcessedData processedData, ArrayList<String> remainingTopics) {
-		Topic topicFromRepo = topicRepository.findByTopicAndUserId(topic, processedData.getUserId()); // gets the current topic from repo if it exists
-
-		boolean exists = true;
-		if (topicFromRepo == null) { // topic not in repo
-			exists = false;
-			String[] processedDataIds = {processedData.getId()}; // ids of all topics containing the current topic (only one in this case).
-			Topic t = new Topic(processedData.getUserId(), topic, remainingTopics.toArray(new String[0]), processedDataIds, System.currentTimeMillis());
-			topicRepository.save(t); // persist new topic
-			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
-		}
-		else { // topic in repo
-			ArrayList<String> repoTopics = new ArrayList<>(Arrays.asList(topicFromRepo.getRelatedTopics())); // get the related topics of the topic in the repo
-
-			for (String t : remainingTopics) { // adds the topic in the repo's related topics to the related topic list
-				if (!repoTopics.contains(t))
-					repoTopics.add(t);
-			}
-
-			ArrayList<String> repoPdIds = new ArrayList<>(Arrays.asList(topicFromRepo.getProcessedDataIds())); // get the ids of the previous data that contains this topic
-			repoPdIds.add(processedData.getId()); // add current data's id
-			topicFromRepo.setRelatedTopics(repoTopics.toArray(new String[0])); // update related topics
-			topicFromRepo.setProcessedDataIds(repoPdIds.toArray(new String[0])); // update processed data ids
-			topicFromRepo.setTime(System.currentTimeMillis()); // update modified time to current time
-			topicRepository.save(topicFromRepo); // update topic in repo
-			Topic ttest = topicRepository.findByTopicAndUserId(topic, processedData.getUserId());
-		}
-
-		return exists;
+		return pt;
 	}
 }

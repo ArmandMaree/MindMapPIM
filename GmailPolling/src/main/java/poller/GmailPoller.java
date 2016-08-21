@@ -46,6 +46,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.safety.Whitelist;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -81,6 +82,7 @@ public class GmailPoller implements Poller {
 	private PollingUser pollingUser;
 	private Properties props;
 	private RabbitTemplate rabbitTemplate;
+	private boolean firstPageDone = false;
 
 	static {
 		try {
@@ -113,6 +115,7 @@ public class GmailPoller implements Poller {
 					return;
 
 				service = getGmailServiceFromRefreshToken(); // Build a new authorized API client service.
+				firstPageDone = true;
 			}
 		}
 		catch (IOException ioe) {
@@ -132,6 +135,7 @@ public class GmailPoller implements Poller {
 
 		this.lastEmailTimeStampDate = lastEmailTimeStampDate;
 	}
+
 
 	/**
 	* Build and return an authorized Gmail client service based on an auth code.
@@ -238,6 +242,8 @@ public class GmailPoller implements Poller {
 					if (rawData != null)
 						addToQueue(rawData);
 				}
+
+				firstPageDone = true;
 
 				if (gbm.nextPageToken != null) {
 					service = getGmailServiceFromRefreshToken();
@@ -355,11 +361,15 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId());
-				rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone);
+
+				if (firstPageDone)
+					rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+				else
+					rabbitTemplate.convertAndSend("priority-" + rawDataQueue, rawData);
 		}
 		catch (AmqpException ampqe) {
-			System.out.println("Could not connect to RabbitMQ.");
+			System.out.println("Could not send message to RabbitMQ.");
 		}
 	}
 
@@ -461,13 +471,11 @@ public class GmailPoller implements Poller {
 			return null;
 		}
 
-		boolean isHTML = false;
-
 		if (email.getContent() instanceof String) {
 			String newText = extractText((String)email.getContent());
 
 			if (!body.contains(newText))
-				body += newText;
+				body += " " + newText;
 		}
 		else if (email.getContent() instanceof MimeMultipart) {
 			MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
@@ -494,7 +502,7 @@ public class GmailPoller implements Poller {
 							String newText = extractText((String)mimeBodyPart.getContent()) + "\n";
 
 							if (!body.contains(newText))
-								body += newText;
+								body += " " + newText;
 						}
 					}
 				}
@@ -514,46 +522,48 @@ public class GmailPoller implements Poller {
 	* Extracts text from a string even if it contains HTML.
 	* @param bodyS The string that has to be parsed.
 	*/
-	private static String extractText(String bodyS) {
+	private String extractText(String bodyS) {
 		boolean isHTML = false;
-		String[] elementsToProcess = {"dfn", "h1", "h2", "h3", "p"};
 		String body = "";
+		List<String> elementsToProcess = new ArrayList<>();
+		elementsToProcess.add("h1");
+		elementsToProcess.add("h2");
+		elementsToProcess.add("h3");
+		elementsToProcess.add("dnf");
+		elementsToProcess.add("pre");
+		elementsToProcess.add("stong");
 
-		if (bodyS.charAt(0) == '<') { // if starts and ends with angle bracket then it is HTML
-			for (int i = bodyS.length() - 1; i > -1; i--) {
-				if (bodyS.charAt(i) == '>') {
-					isHTML = true;
-					break;
-				}
-				else if ((int)bodyS.charAt(i) != 10 && (int)bodyS.charAt(i) != 13 && (int)bodyS.charAt(i) != 9 && (int)bodyS.charAt(i) != 32)
-					break;
-			}
-		}
+		Whitelist wl = Whitelist.none();
 
-		if (isHTML) { // if it is HTML then use Jsoup to parse
-			Document doc = Jsoup.parse(bodyS);
+		for (String element : elementsToProcess)
+			wl.addTags(element);
 
-			for (String elem : elementsToProcess) {
-				Elements elements = doc.select(elem);
+		String bodySTmp = Jsoup.clean(bodyS, wl);
+		Document doc = Jsoup.parse(bodySTmp);
+		String extracted = extractNodeText(doc, elementsToProcess);
 
-				for (Element element : elements) {
-					String replaced = element.text().replaceAll("[\\t\\n\\r]"," ");
+		if (extracted == null || extracted.equals(""))
+			extracted = doc.text();
 
-					if (replaced.length() != 0 && !body.contains(replaced))
-						body += replaced + "\n";
-				}
-			}
-		}
-		else {
-			String replaced = bodyS.replaceAll("[\\t\\n\\r]"," ");
-
-			if (replaced.length() != 0 && !body.contains(replaced))
-				body += replaced + "\n";
-		}
-
+		if (extracted.length() != 0 && !body.contains(extracted))
+			body += extracted + "\n";
+	
 		body = body.replaceAll("[\\t\\n\\r]"," ");
 		body = body.replaceAll("[\\s]+", " ");
 		return body;
+	}
+
+	private String extractNodeText(Element element, List<String> elementsToProcess) {
+		if (elementsToProcess.contains(element.tag().getName()))
+			return element.text();
+
+		String completeInnerText = "";
+
+		for (Element child : element.children()) {
+			completeInnerText += extractNodeText(child, elementsToProcess);
+		}
+
+		return completeInnerText;
 	}
 
 	/**

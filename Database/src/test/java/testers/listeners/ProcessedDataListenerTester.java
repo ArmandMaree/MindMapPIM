@@ -64,10 +64,14 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		userRepository.save(acuben);
 		acuben = userRepository.findByGmailId(acuben.getGmailId());
 
+		Assert.assertNotNull("Failure - acuben is null.", acuben);
+
 		List<ProcessedData> processedData = new ArrayList<>();
 
 		String[][] processedDataTopics = {
 			{"horse", "photo"},
+			{"horse", "pizza"},
+			{"horse", "pizza"},
 			{"horse", "saddle"},
 			{"horse", "pizza"},
 			{"horse", "computer"},
@@ -89,12 +93,43 @@ public class ProcessedDataListenerTester extends AbstractTester {
 
 		Thread.sleep(5000);
 
-		System.out.println(acuben);
 		List<Topic> topicsAfter = topicRepository.findByUserId(acuben.getUserId());
 
-		for (Topic topic : topicsAfter)
-			System.out.println(topic.getTopic());
-
 		Assert.assertEquals("Failure - topicsAfter is not 10.", 10, topicsAfter.size());
+
+		for (Topic topic : topicsAfter) {
+			switch (topic.getTopic()) {
+				case "horse":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to horse.", 4, topic.getRelatedTopics().size());
+					break;
+				case "photo":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to photo.", 1, topic.getRelatedTopics().size());
+					break;
+				case "saddle":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to saddle.", 1, topic.getRelatedTopics().size());
+					break;
+				case "pizza":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to pizza.", 3, topic.getRelatedTopics().size());
+					break;
+				case "computer":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to computer.", 2, topic.getRelatedTopics().size());
+					break;
+				case "book":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to book.", 1, topic.getRelatedTopics().size());
+					break;
+				case "glass":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to glass.", 1, topic.getRelatedTopics().size());
+					break;
+				case "phone":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to phone.", 1, topic.getRelatedTopics().size());
+					break;
+				case "mouse":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to mouse.", 1, topic.getRelatedTopics().size());
+					break;
+				case "handle":
+					Assert.assertEquals("Failure - incorrect number of relatedTopics to handle.", 1, topic.getRelatedTopics().size());
+					break;
+			}
+		}
 	}
 }
