@@ -6,6 +6,11 @@ sudo: required
 
 notifications:
   email: false
+  slack: 
+    rooms:
+      - aaan:nPcmtLyPdpi69PCnz3alvwRl#development
+    on_success: always
+    on_failure: always
 
 services:
   - rabbitmq
