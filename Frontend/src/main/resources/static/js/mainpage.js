@@ -113,506 +113,502 @@ var network;
 /**
 *   Function that is executed when the document has loaded
 */
-$(document).ready(function($){
-    $.holdReady(true);
-    basket
-    .require({ url: '/js/vis.js' })
-    .then(function () {
-        // Success
-        $.holdReady(false)
-        console.log("Loaded all required scripts.");
-        /**
-        *   A function that hieds the error
-        */
-        $("#loadingAlertError").hide();  
-        /**
-        *   A function that displays the loading bar
-        */
-        $("#loadingAlert").fadeIn(1000, function() {
-            // body...
-        });
-        /**
-        *   @var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
-        */
-        var color = 'gray';
-        /**
-        *   @var len - 
-        */  
-        var len = undefined;
 
-        /**
-       *    @var {String} name1 - string that contains the userId
-       */
-        var name1 = "nodes=";
-        /**
-        *   @var ca1 - Cookie....
-        */
-        var ca1 = document.cookie.split(';');
-        /**
-        *   @var tempnodes - ...
-        */
-        tempnodes ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                tempnodes = c.substring(name1.length,c.length);
-            }
+basket
+.require({ url: '/js/vis.js' }).then(function() {
+    start();
+});
+
+$(document).ready(start);
+function start(){
+    /**
+    *   A function that hieds the error
+    */
+    $("#loadingAlertError").hide();  
+    /**
+    *   A function that displays the loading bar
+    */
+    $("#loadingAlert").fadeIn(1000, function() {
+        // body...
+    });
+    /**
+    *   @var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
+    */
+    var color = 'gray';
+    /**
+    *   @var len - 
+    */  
+    var len = undefined;
+
+    /**
+   *    @var {String} name1 - string that contains the userId
+   */
+    var name1 = "nodes=";
+    /**
+    *   @var ca1 - Cookie....
+    */
+    var ca1 = document.cookie.split(';');
+    /**
+    *   @var tempnodes - ...
+    */
+    tempnodes ="";
+    for(var i = 0; i <ca1.length; i++) {
+        var c = ca1[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
         }
-        if(tempnodes==""){
-            if(mocktesting){
-                nodes = [
-                    {id: 0, label: "    ME    ", group: 0},
-                    {id: 1, label: "Cooking", group: 0},
-                    {id: 2, label: "Horse", group: 0},
-                    {id: 3, label: "Amy \n Lochner", group: 0},
-                    {id: 4, label: "COS301", group: 0},
-                    {id: 5, label: "Fritz \n Solms", group: 0},
-                    {id: 6, label: "Holiday", group: 0},
-                    {id: 7, label: "Arno \n Grobler", group: 0},
-                    {id: 8, label: "Arno \n Grobler", group: 0}
-                ]
-                parentlist =["0","0","0","2","0","4","6","7","2"];
-                allPimIDlist[1] = [["1","2"],[null]];
-                allPimIDlist[2] = [["3","4"],[null]];
-                allPimIDlist[3] = [["5","6"],[null]];
-                allPimIDlist[4] = [["7","8"],[null]];
-                allPimIDlist[5] = [["7","8"],[null]];
-                allPimIDlist[6] = [["1","2"],[null]];
-                allPimIDlist[7] = [["3","4"],[null]];
-                allPimIDlist[8] = [["5","6"],[null]];
-            }else{
-                nodes = [
-                    {id: 0, label: "    ME    ", group: 0}
-                ]
-            }      
+        if (c.indexOf(name1) == 0) {
+            tempnodes = c.substring(name1.length,c.length);
+        }
+    }
+    if(tempnodes==""){
+        if(mocktesting){
+            nodes = [
+                {id: 0, label: "    ME    ", group: 0},
+                {id: 1, label: "Cooking", group: 0},
+                {id: 2, label: "Horse", group: 0},
+                {id: 3, label: "Amy \n Lochner", group: 0},
+                {id: 4, label: "COS301", group: 0},
+                {id: 5, label: "Fritz \n Solms", group: 0},
+                {id: 6, label: "Holiday", group: 0},
+                {id: 7, label: "Arno \n Grobler", group: 0},
+                {id: 8, label: "Arno \n Grobler", group: 0}
+            ]
+            parentlist =["0","0","0","2","0","4","6","7","2"];
+            allPimIDlist[1] = [["1","2"],[null]];
+            allPimIDlist[2] = [["3","4"],[null]];
+            allPimIDlist[3] = [["5","6"],[null]];
+            allPimIDlist[4] = [["7","8"],[null]];
+            allPimIDlist[5] = [["7","8"],[null]];
+            allPimIDlist[6] = [["1","2"],[null]];
+            allPimIDlist[7] = [["3","4"],[null]];
+            allPimIDlist[8] = [["5","6"],[null]];
         }else{
-            nodes =[];
-            var splitter = tempnodes.split('%');
-            for(var i = 0; i <splitter.length; i++) {
-                var c = splitter[i];
-                console.log(c);
-                if(c==""|| c=="undefined"){
-                    break;
-                }
-                tempnodes = JSON.parse(c);
-                nodes.push(tempnodes);
+            nodes = [
+                {id: 0, label: "    ME    ", group: 0}
+            ]
+        }      
+    }else{
+        nodes =[];
+        var splitter = tempnodes.split('%');
+        for(var i = 0; i <splitter.length; i++) {
+            var c = splitter[i];
+            console.log(c);
+            if(c==""|| c=="undefined"){
+                break;
             }
-            flagHasNodesToLoad =true;
+            tempnodes = JSON.parse(c);
+            nodes.push(tempnodes);
         }
+        flagHasNodesToLoad =true;
+    }
 
 
-        /**
-       *    @var {String} name1 - string that contains the userId
-       */
-        var name1 = "edges=";
-        /**
-        *   @var ca1 - Cookie....
-        */
-        var ca1 = document.cookie.split(';');
-        /**
-        *   @var tempedges - ...
-        */
-        tempedges ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                tempedges = c.substring(name1.length,c.length);
-            }
+    /**
+   *    @var {String} name1 - string that contains the userId
+   */
+    var name1 = "edges=";
+    /**
+    *   @var ca1 - Cookie....
+    */
+    var ca1 = document.cookie.split(';');
+    /**
+    *   @var tempedges - ...
+    */
+    tempedges ="";
+    for(var i = 0; i <ca1.length; i++) {
+        var c = ca1[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
         }
-        if(tempedges==""){
-            if(mocktesting){
-                edges = [
-                    {from: 0, to: 1},
-                    {from: 2, to: 3},
-                    {from: 2, to: 0},
-                    {from: 5, to: 4},
-                    {from: 4, to: 0},
-                    {from: 7, to: 6},
-                    {from: 6, to: 0},
-                    {from: 2, to: 8}
-                ]
-            }else{
-                edges = []
-            }
+        if (c.indexOf(name1) == 0) {
+            tempedges = c.substring(name1.length,c.length);
+        }
+    }
+    if(tempedges==""){
+        if(mocktesting){
+            edges = [
+                {from: 0, to: 1},
+                {from: 2, to: 3},
+                {from: 2, to: 0},
+                {from: 5, to: 4},
+                {from: 4, to: 0},
+                {from: 7, to: 6},
+                {from: 6, to: 0},
+                {from: 2, to: 8}
+            ]
         }else{
-            edges =[];
-            edges.push({id:0,from:"0",to:1});
-            var splitter = tempedges.split('%');
-            for(var i = 0; i <splitter.length; i++) {
-                var c = splitter[i];
-                console.log(c);
-                if(c=="" || c=="undefined"){
-                    break;
-                }
-                tempedges = JSON.parse(c);
-                tempedges.id +=1;
-                edges.push(tempedges);
+            edges = []
+        }
+    }else{
+        edges =[];
+        edges.push({id:0,from:"0",to:1});
+        var splitter = tempedges.split('%');
+        for(var i = 0; i <splitter.length; i++) {
+            var c = splitter[i];
+            console.log(c);
+            if(c=="" || c=="undefined"){
+                break;
             }
+            tempedges = JSON.parse(c);
+            tempedges.id +=1;
+            edges.push(tempedges);
+        }
+    }
+
+        /**
+          * @var container - A variable that holds the html element that contains the BubbleMap
+        */
+        var container = document.getElementById('mynetwork');
+        /**
+          * @var data - An object that contains the node and edge objects
+        */
+        var data = {
+           nodes: new vis.DataSet(nodes),
+           edges: new vis.DataSet(edges)
+        };
+
+        /**
+        *   @var options - An object that contains all settings for the BubbleMap
+        */
+        var options = {
+            interaction:{
+                hover: true,
+                hoverConnectedEdges: true,
+            },
+            physics: {
+              stabilization: false
+            },
+            clickToUse: false,
+            nodes: {
+                shape: 'circle',
+                size: 50,
+                color: '#7FBEEB ', //rgb(102,167,188)',
+                font: {
+                    size: 26,
+                    color: 'black'
+                },
+                borderWidth: 1
+            },
+            configure:function (option, path) {
+              if (path.indexOf('smooth') !== -1 || option === 'smooth') {
+                return true;
+              }
+              return false;
+            },
+            edges: {
+                width: 1
+            }
+        };
+        network = new vis.Network(container, data, options);
+        
+        if(!window.FPSMeter){
+        alert("This test page doesn't seem to include FPSMeter: aborting"); 
+        return;
         }
 
-            /**
-              * @var container - A variable that holds the html element that contains the BubbleMap
-            */
-            var container = document.getElementById('mynetwork');
-            /**
-              * @var data - An object that contains the node and edge objects
-            */
-            var data = {
-               nodes: new vis.DataSet(nodes),
-               edges: new vis.DataSet(edges)
-            };
+        var results = document.getElementById("results");
+        
 
-            /**
-            *   @var options - An object that contains all settings for the BubbleMap
-            */
-            var options = {
-                interaction:{
-                    hover: true,
-                    hoverConnectedEdges: true,
-                },
-                physics: {
-                  stabilization: false
-                },
-                clickToUse: false,
-                nodes: {
-                    shape: 'circle',
-                    size: 50,
-                    color: '#7FBEEB ', //rgb(102,167,188)',
-                    font: {
-                        size: 26,
-                        color: 'black'
-                    },
-                    borderWidth: 1
-                },
-                configure:function (option, path) {
-                  if (path.indexOf('smooth') !== -1 || option === 'smooth') {
-                    return true;
-                  }
-                  return false;
-                },
-                edges: {
-                    width: 1
+        // Register a progress call-back
+        document.addEventListener('fps',
+            function(evt) {
+                currFramerate = evt.fps
+                if(currFramerate<25){
+                    var options = {
+                      "edges": {
+                        "smooth": false
+                        }
+                      }
+                      network.setOptions(options);
+                }else if(currFramerate>40){
+                    var options = {
+                      "edges": {
+                        "smooth": true
+                        }
+                      }
+                      network.setOptions(options);
                 }
-            };
-            network = new vis.Network(container, data, options);
-            
-            if(!window.FPSMeter){
-            alert("This test page doesn't seem to include FPSMeter: aborting"); 
-            return;
+                // console.log("Current framerate: " + evt.fps + " fps");
+            },
+            false);
+
+        // Start FPS analysis, optionnally specifying the rate at which FPS 
+        // are evaluated (in seconds, defaults to 1).
+        FPSMeter.run();
+        /**
+        *   @var socket - holds the web socket object
+        */
+        var socket = new SockJS('/request');
+        /**
+        *   @var stompClient - 
+        */
+      	stompClient = Stomp.over(socket);
+      	/**
+      	*	A function that connects the stompClient 
+      	*/
+      	stompClient.connect({}, function(frame) {
+        	console.log('Connected: ' + frame);
+          // var userReg = {};
+          // if(gmailUser!=null){
+          //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+          //   console.log(JSON.stringify(userReg));
+          // }
+          //   this.userId = userId;
+          //   this.path = path;
+          //   this.exclude = exclude;
+          //   this.maxNumberOfTopics = maxNumberOfTopics;
+
+           /**
+           *	@var {String} name1 - string that contains the userId
+           */
+            var name1 = "userId=";
+            /**
+    		*	@var ca1 - Cookie....
+    		*/
+            var ca1 = document.cookie.split(';');
+            /**
+            *	@var x1 - ...
+            */
+            x1 ="";
+            for(var i = 0; i <ca1.length; i++) {
+                var c = ca1[i];
+                while (c.charAt(0)==' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name1) == 0) {
+                    x1 = c.substring(name1.length,c.length);
+                }
             }
 
-            var results = document.getElementById("results");
-            
-
-            // Register a progress call-back
-            document.addEventListener('fps',
-                function(evt) {
-                    currFramerate = evt.fps
-                    if(currFramerate<25){
-                        var options = {
-                          "edges": {
-                            "smooth": false
-                            }
-                          }
-                          network.setOptions(options);
-                    }else if(currFramerate>40){
-                        var options = {
-                          "edges": {
-                            "smooth": true
-                            }
-                          }
-                          network.setOptions(options);
-                    }
-                    // console.log("Current framerate: " + evt.fps + " fps");
-                },
-                false);
-
-            // Start FPS analysis, optionnally specifying the rate at which FPS 
-            // are evaluated (in seconds, defaults to 1).
-            FPSMeter.run();
             /**
-            *   @var socket - holds the web socket object
+            *   @var {integer} selectedID - contains the id of the last selected node
             */
-            var socket = new SockJS('/request');
+            selectedID=0;
+            document.cookie="lastselectednode="+selectedID;
+        
             /**
-            *   @var stompClient - 
+            *   A function that subscribes to a destination that the requests are sent to 
             */
-          	stompClient = Stomp.over(socket);
-          	/**
-          	*	A function that connects the stompClient 
-          	*/
-          	stompClient.connect({}, function(frame) {
-            	console.log('Connected: ' + frame);
-              // var userReg = {};
-              // if(gmailUser!=null){
-              //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-              //   console.log(JSON.stringify(userReg));
-              // }
-              //   this.userId = userId;
-              //   this.path = path;
-              //   this.exclude = exclude;
-              //   this.maxNumberOfTopics = maxNumberOfTopics;
-
-               /**
-               *	@var {String} name1 - string that contains the userId
-               */
-                var name1 = "userId=";
-                /**
-        		*	@var ca1 - Cookie....
-        		*/
-                var ca1 = document.cookie.split(';');
-                /**
-                *	@var x1 - ...
-                */
-                x1 ="";
-                for(var i = 0; i <ca1.length; i++) {
-                    var c = ca1[i];
-                    while (c.charAt(0)==' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name1) == 0) {
-                        x1 = c.substring(name1.length,c.length);
-                    }
-                }
-
-                /**
-                *   @var {integer} selectedID - contains the id of the last selected node
-                */
-                selectedID=0;
-                document.cookie="lastselectednode="+selectedID;
-            
-                /**
-                *   A function that subscribes to a destination that the requests are sent to 
-                */
-                stompClient.subscribe('/topic/request', function(serverResponse){
-                    if(JSON.parse(serverResponse.body).items!=null){
-                        console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
-                        var items = JSON.parse(serverResponse.body).items;
-                        $("#accordion").html(""); 
-                        if($(window).width()<=768){
-                            $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
-                        }else{
-                            $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
-                        }
-
-                        $("#facebook").html("");
-                        $("#gmail").html("");
-                        $("#twitter").html("");
-                        $("#linkedIn").html("");
-                        $("#sidepanelTitle").html("");
-                        var s = network.getSelectedNodes();
-                        $("#sidepanel").show();
-
-                        var pathtoselectednode=[];
-                        if(s!=0)
-                            var pathtoselectednode =[];
-                        var pathtoselectednodelabels =[]
-                        console.log("s:"+s)
-                        console.log("parentlist "+parentlist)
-
-                        var dataForSideBar = {
-                            "Topic" : nodes[s].label,
-                            "Gmail" : []
-                        }
-                        console.log("this object: "+JSON.stringify(dataForSideBar))
-                        for(var i=0;i<items.length;i++){
-                            dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
-                        }
-
-                        for(var i = s; i > 0; i = parentlist[i]){
-                            console.log(i)
-                            if(pathtoselectednode.indexOf(i)==-1)
-                                pathtoselectednode.push(i);
-                            else
-                                break;
-                        }
-
-                        console.log("PathFrom: " + pathtoselectednode);
-                        var breadcrumb = '<li>Me</li>';
-                        console.log("pathtoselectednode.length: "+pathtoselectednode.length)
-                        for(var i=pathtoselectednode.length-1;i>=0;i--){
-                            breadcrumb+='<li>'+nodes[pathtoselectednode[i]].label+'</li>';
-                            console.log(breadcrumb);
-                            // break;
-                        }
-                        $("#breadcrumb").html(breadcrumb);
-                        console.log(s);
-
-                        populateSidePanel(s, dataForSideBar);
-
-                        $("#loadingAlert").fadeOut(1000, function() {
-                            // body...
-                        });
+            stompClient.subscribe('/user/topic/request', function(serverResponse){
+                if(JSON.parse(serverResponse.body).items!=null){
+                    console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
+                    var items = JSON.parse(serverResponse.body).items;
+                    $("#accordion").html(""); 
+                    if($(window).width()<=768){
+                        $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
-                        /**
-                        *   @var {String} name2 - a variable that contains the data for the last selected node for the cookie
-                        */
-                        var name2 = "lastselectednode=";
-                        /**
-                        *   @var ca2 - Splits the document cookie on semicolons into an array
-                        */
-                        var ca2 = document.cookie.split(';');
-                        selectedID ="";
-                        for(var i = 0; i <ca2.length; i++) {
-                            var c = ca2[i];
-                            while (c.charAt(0)==' ') {
-                                c = c.substring(1);
-                            }
-                            if (c.indexOf(name2) == 0) {
-                                selectedID = c.substring(name2.length,c.length);
-                            }
+                        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+                    }
+
+                    $("#facebook").html("");
+                    $("#gmail").html("");
+                    $("#twitter").html("");
+                    $("#linkedIn").html("");
+                    $("#sidepanelTitle").html("");
+                    var s = network.getSelectedNodes();
+                    $("#sidepanel").show();
+
+                    var pathtoselectednode=[];
+                    if(s!=0)
+                        var pathtoselectednode =[];
+                    var pathtoselectednodelabels =[]
+                    console.log("s:"+s)
+                    console.log("parentlist "+parentlist)
+
+                    var dataForSideBar = {
+                        "Topic" : nodes[s].label,
+                        "Gmail" : []
+                    }
+                    console.log("this object: "+JSON.stringify(dataForSideBar))
+                    for(var i=0;i<items.length;i++){
+                        dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
+                    }
+
+                    for(var i = s; i > 0; i = parentlist[i]){
+                        console.log(i)
+                        if(pathtoselectednode.indexOf(i)==-1)
+                            pathtoselectednode.push(i);
+                        else
+                            break;
+                    }
+
+                    console.log("PathFrom: " + pathtoselectednode);
+                    var breadcrumb = '<li>Me</li>';
+                    console.log("pathtoselectednode.length: "+pathtoselectednode.length)
+                    for(var i=pathtoselectednode.length-1;i>=0;i--){
+                        breadcrumb+='<li>'+nodes[pathtoselectednode[i]].label+'</li>';
+                        console.log(breadcrumb);
+                        // break;
+                    }
+                    $("#breadcrumb").html(breadcrumb);
+                    console.log(s);
+
+                    populateSidePanel(s, dataForSideBar);
+
+                    $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                    });
+                }else{
+                    /**
+                    *   @var {String} name2 - a variable that contains the data for the last selected node for the cookie
+                    */
+                    var name2 = "lastselectednode=";
+                    /**
+                    *   @var ca2 - Splits the document cookie on semicolons into an array
+                    */
+                    var ca2 = document.cookie.split(';');
+                    selectedID ="";
+                    for(var i = 0; i <ca2.length; i++) {
+                        var c = ca2[i];
+                        while (c.charAt(0)==' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(name2) == 0) {
+                            selectedID = c.substring(name2.length,c.length);
+                        }
+                    }
+
+
+                    // console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
+
+
+                    //update graph with server response
+
+                    /**
+                    *   @var JSONServerResponse - contains the parsed response from the websocket
+                    */
+                    var JSONServerResponse = JSON.parse(serverResponse.body);
+                    /**
+                    *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
+                    */
+                    var topicsall = JSONServerResponse.topicsText;
+
+                    /**
+                    *   @var {int} pos - a variable that contains the position
+                    */
+                    var pos=0;
+                    /**
+                    *   @var {int} branchinglimit - contains the length of the topicsall array
+                    */
+                    var branchinglimit = topicsall.length;
+                    /**
+                    *   @var thisgroup - ....
+                    */
+                    var thisgroup = nodes[selectedID].group;
+                    /**
+                    *   @var tempnodelength - contains the length of the nodes array
+                    */
+                    var tempnodelength = parseInt(nodes.length);
+                    for(var i=0 ;i<branchinglimit;i++){
+                        console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+                            /**
+                            *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                            */
+                            var pimSourceIds = JSONServerResponse.pimSourceIds;
+
+                            allPimIDlist[nodes.length]=pimSourceIds[i];
+                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+                        
+                        try {
+                            console.log("push "+ tempnodelength)
+                            expandlist.push(tempnodelength++);
+                            data.nodes.add({
+                                id: nodes.length,
+                                label: topicsall[pos],
+                                group: thisgroup
+                            });
+                            parentlist.push(selectedID);
+                        }
+                        catch (err) {
+                            alert(err);
+                            $("#loadingAlert").fadeOut(1000, function() {
+                                // body...
+                            });
+                            $("#loadingAlertError").fadeIn(1000, function() {
+                                // body...
+                            });
                         }
 
-
-                        // console.log("Server says: "+JSON.parse(serverResponse.body).topicsText);
-
-
-                        //update graph with server response
-
-                        /**
-                        *   @var JSONServerResponse - contains the parsed response from the websocket
-                        */
-                        var JSONServerResponse = JSON.parse(serverResponse.body);
-                        /**
-                        *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
-                        */
-                        var topicsall = JSONServerResponse.topicsText;
-
-                        /**
-                        *   @var {int} pos - a variable that contains the position
-                        */
-                        var pos=0;
-                        /**
-                        *   @var {int} branchinglimit - contains the length of the topicsall array
-                        */
-                        var branchinglimit = topicsall.length;
-                        /**
-                        *   @var thisgroup - ....
-                        */
-                        var thisgroup = nodes[selectedID].group;
-                        /**
-                        *   @var tempnodelength - contains the length of the nodes array
-                        */
-                        var tempnodelength = parseInt(nodes.length);
-                        for(var i=0 ;i<branchinglimit;i++){
-                            console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
-                                /**
-                                *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
-                                */
-                                var pimSourceIds = JSONServerResponse.pimSourceIds;
-
-                                allPimIDlist[nodes.length]=pimSourceIds[i];
-                                console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
-                            
-                            try {
-                                console.log("push "+ tempnodelength)
-                                expandlist.push(tempnodelength++);
-                                data.nodes.add({
-                                    id: nodes.length,
-                                    label: topicsall[pos],
-                                    group: thisgroup
-                                });
-                                parentlist.push(selectedID);
-                            }
-                            catch (err) {
-                                alert(err);
-                                $("#loadingAlert").fadeOut(1000, function() {
-                                    // body...
-                                });
-                                $("#loadingAlertError").fadeIn(1000, function() {
-                                    // body...
-                                });
-                            }
-
-                            try {
-                                data.edges.add({
-                                    id: edges.length,
-                                    from: selectedID,
-                                    to: nodes.length
-                                });
-                            }
-                            catch (err) {
-                                alert(err);
-                                $("#loadingAlert").fadeOut(1000, function() {
-                                    // body...
-                                });
-                                $("#loadingAlertError").fadeIn(1000, function() {
-                                    // body...
-                                });
-                            }
-
-                            nodes.push({
-                                id: nodes.length,
-                                label: topicsall[pos++],
-                                group: thisgroup
-                            })
-                            edges.push({
+                        try {
+                            data.edges.add({
                                 id: edges.length,
                                 from: selectedID,
                                 to: nodes.length
                             });
                         }
-                        expandBubble(expandlist.shift());
-                        $("#loadingAlert").fadeOut(1000, function() {
-                            // body...
-                        });
-                        if(shouldRebuild){
-                            var tempstring ="";
-                            for(var i=0;i<nodes.length;i++){
-                                tempstring+= JSON.stringify(nodes[i])+"%";
-                            }
-                            console.log(tempstring);
-                            document.cookie="nodes="+tempstring;
-
-                            var tempstring ="";
-                            for(var i=0;i<edges.length;i++){
-                                tempstring+= JSON.stringify(edges[i])+"%";
-                            }
-                            // tempstring+= JSON.stringify({"id":0,"from":"0","to":1})+"%";
-                            console.log(tempstring);
-                            console.log(edges);
-                            document.cookie="edges="+tempstring;
-                        }else{
-                            
+                        catch (err) {
+                            alert(err);
+                            $("#loadingAlert").fadeOut(1000, function() {
+                                // body...
+                            });
+                            $("#loadingAlertError").fadeIn(1000, function() {
+                                // body...
+                            });
                         }
-                    }
-                });
-                /**    
-                *   @var topicRequest -  a JSON oject that contains information for a topic request
-                */
-                if(mocktesting)
-                    topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
-                else
-                    topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
-                if(!flagHasNodesToLoad){
-                    try{
-                        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-                    }catch(err){
-                        $("#loadingAlert").fadeOut(1000, function() {
-                        // body...
+
+                        nodes.push({
+                            id: nodes.length,
+                            label: topicsall[pos++],
+                            group: thisgroup
+                        })
+                        edges.push({
+                            id: edges.length,
+                            from: selectedID,
+                            to: nodes.length
                         });
-                        $("#loadingAlertError").fadeIn(1000, function() {
-                        });
-                        $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
                     }
-                    /**
-                    *   A function that displays the loading bar
-                    */
-                    $("#loadingAlert").fadeIn(1000, function() {
+                    expandBubble(expandlist.shift());
+                    $("#loadingAlert").fadeOut(1000, function() {
                         // body...
                     });
+                    if(shouldRebuild){
+                        var tempstring ="";
+                        for(var i=0;i<nodes.length;i++){
+                            tempstring+= JSON.stringify(nodes[i])+"%";
+                        }
+                        console.log(tempstring);
+                        document.cookie="nodes="+tempstring;
+
+                        var tempstring ="";
+                        for(var i=0;i<edges.length;i++){
+                            tempstring+= JSON.stringify(edges[i])+"%";
+                        }
+                        // tempstring+= JSON.stringify({"id":0,"from":"0","to":1})+"%";
+                        console.log(tempstring);
+                        console.log(edges);
+                        document.cookie="edges="+tempstring;
+                    }else{
+                        
+                    }
                 }
-        }, function (error) {
-        // There was an error fetching the script
-        console.log(error);
+            });
+            /**    
+            *   @var topicRequest -  a JSON oject that contains information for a topic request
+            */
+            if(mocktesting)
+                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
+            else
+                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+            if(!flagHasNodesToLoad){
+                try{
+                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                }catch(err){
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+                    $("#loadingAlertError").fadeIn(1000, function() {
+                    });
+                    $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+                }
+                /**
+                *   A function that displays the loading bar
+                */
+                $("#loadingAlert").fadeIn(1000, function() {
+                    // body...
+                });
+            }
         });
-    });
 
 
     if($(window).width()<=768)
@@ -931,7 +927,7 @@ $(document).ready(function($){
     });
 
 
-});
+};
 
 /**
 *	A function that hides the sidebar

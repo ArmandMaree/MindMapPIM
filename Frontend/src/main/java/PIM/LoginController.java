@@ -15,12 +15,12 @@ import java.lang.Thread;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.*;
-import data.*;
+import data.*; 
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 
 @Controller
 public class LoginController extends WebMvcConfigurerAdapter {
@@ -45,6 +45,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
     // LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL;
 
 /////////////////////
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -160,7 +163,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
 
     @MessageMapping("/request")
-    @SendTo("/topic/request")
+    @SendToUser("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
         if(!request.getUserId().contains("mocktesting")){
@@ -168,10 +171,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
                 //do nothing for now, maybe sleep a bit in future?
             }
-
+ 
     		TopicResponse topicResponse = topicResponseLL.poll();
             System.out.println(topicResponse);
             // Thread.sleep(2000);
+            // this.simpMessagingTemplate.convertAndSend("/queue/chats-" + request.getUserId(), topicResponse);
             return topicResponse;
         }else{
             String [][][] mockpimIds =  new String[4][2][2];
@@ -183,16 +187,16 @@ public class LoginController extends WebMvcConfigurerAdapter {
             mockpimIds[2][0][1] = "6";
             mockpimIds[3][0][0] = "7";
             mockpimIds[3][0][1] = "8";
-
             TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its","Me","Nobody"},mockpimIds);
             System.out.println(topicResponse);
+            // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
             // thread.sleep(2000);
             return topicResponse;
         }
     }
 
     @MessageMapping("/gmailItems")
-    @SendTo("/topic/request")
+    @SendToUser("/topic/request")
     public ItemResponse recieveItemRequest(GmailItemRequest request) throws Exception {
         if(!request.getUserId().contains("mocktesting")){
             String id = UUID.randomUUID().toString();
