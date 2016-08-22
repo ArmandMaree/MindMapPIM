@@ -2,4 +2,9 @@ language: java
 jdk:
   - oraclejdk8
  
-script: ./gradlew test
+script:
+  - ./BusinessLogic/gradlew test
+  - ./Database/gradlew test
+  - ./Frontend/gradlew test
+  - ./GmailPolling/gradlew test
+  - ./Processing/gradlew test
