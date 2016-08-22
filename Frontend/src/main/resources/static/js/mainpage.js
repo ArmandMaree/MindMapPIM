@@ -114,13 +114,8 @@ var network;
 *   Function that is executed when the document has loaded
 */
 
-basket
-.require({ url: '/js/vis.js' }).then(function() {
-    start();
-});
 
-$(document).ready(start);
-function start(){
+$(document).ready(function(){
     /**
     *   A function that hieds the error
     */
@@ -307,13 +302,14 @@ function start(){
         return;
         }
 
-        var results = document.getElementById("results");
+
         
 
         // Register a progress call-back
         document.addEventListener('fps',
             function(evt) {
                 currFramerate = evt.fps
+                // console.log(evt.fps);
                 if(currFramerate<25){
                     var options = {
                       "edges": {
@@ -927,7 +923,7 @@ function start(){
     });
 
 
-};
+});
 
 /**
 *	A function that hides the sidebar
