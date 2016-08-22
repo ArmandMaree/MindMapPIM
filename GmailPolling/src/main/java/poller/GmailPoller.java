@@ -83,6 +83,7 @@ public class GmailPoller implements Poller {
 	private Properties props;
 	private RabbitTemplate rabbitTemplate;
 	private boolean firstPageDone = false;
+	private boolean oldDone = false;
 
 	static {
 		try {
@@ -202,6 +203,7 @@ public class GmailPoller implements Poller {
 
 		while (!stop) {
 			poll();
+			oldDone = true;
 
 			try {
 				java.lang.Thread.sleep(10000);
@@ -361,12 +363,12 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone);
+				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
 
-				if (firstPageDone)
-					rabbitTemplate.convertAndSend(rawDataQueue, rawData);
-				else
+				if (!firstPageDone || oldDone)
 					rabbitTemplate.convertAndSend("priority-" + rawDataQueue, rawData);
+				else
+					rabbitTemplate.convertAndSend(rawDataQueue, rawData);
 		}
 		catch (AmqpException ampqe) {
 			System.out.println("Could not send message to RabbitMQ.");
