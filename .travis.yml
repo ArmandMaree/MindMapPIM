@@ -3,8 +3,13 @@ jdk:
   - oraclejdk8
  
 script:
-  - ./BusinessLogic/gradlew test
-  - ./Database/gradlew test
-  - ./Frontend/gradlew test
-  - ./GmailPolling/gradlew test
-  - ./Processing/gradlew test
+  - cd BusinessLogic/
+  - ./gradlew test
+  - cd ../Database/
+  - ./gradlew test
+  - cd ../Frontend/
+  - ./gradlew test
+  - cd ../GmailPolling/
+  - ./gradlew test
+  - cd ../Processing/
+  - ./gradlew test
