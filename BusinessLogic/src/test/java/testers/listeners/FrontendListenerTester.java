@@ -62,8 +62,9 @@ public class FrontendListenerTester extends AbstractTester {
 	}
 
 	@After
-	public void tearDown() {
-
+	public void tearDown() throws InterruptedException {
+		while (authCodeQueue.poll(1, TimeUnit.SECONDS) != null);
+		while (userIdentifiedQueue.poll(1, TimeUnit.SECONDS) != null);
 	}
 
 	@Test
@@ -96,8 +97,12 @@ public class FrontendListenerTester extends AbstractTester {
 		//test without gmail changing
 		String id = UUID.randomUUID().toString();
 		String userId = UUID.randomUUID().toString();
-		UserIdentified userIdentified = new UserIdentified(id, userId);
-		rabbitTemplate.convertAndSend(TestContext.userUpdateDatabaseQueueName, userIdentified);
+		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
+		UserUpdateRequestIdentified userUpdateIdentified = new UserUpdateRequestIdentified(id, userId, authCodes);
+		rabbitTemplate.convertAndSend(TestContext.userUpdateBusinessQueueName, userUpdateIdentified);
+
+		AuthCode authCode = authCodeQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failed - authCode is null.", authCode);
 
 		UserIdentified userIdentifiedResponse = userIdentifiedQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - userIdentifiedResponse is null.", userIdentifiedResponse);

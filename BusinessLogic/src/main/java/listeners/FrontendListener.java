@@ -56,7 +56,6 @@ public class FrontendListener {
 
 		UserIdentified user = new UserIdentified(userRegistrationIdentified.getReturnId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
 
-
 		for (AuthCode authCode : userRegistrationIdentified.getAuthCodes()) {
 			switch (authCode.getPimSource()) {
 				case "Gmail":
@@ -72,11 +71,23 @@ public class FrontendListener {
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
 	}
 
-	public void receiveUserUpdate(UserIdentified userIdentified) {
-		if (userIdentified.getGmailId() != null && userIdentified.getGmailId().equals("")) {
-			// stop gmail poller
+	public void receiveUserUpdate(UserUpdateRequestIdentified userUpdateIdentified) {
+		UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
+
+		if (userUpdateIdentified.getAuthCodes() != null) {
+			for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
+				switch (authCode.getPimSource()) {
+					case "Gmail":
+						user.setGmailId(authCode.getId());
+						rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
+						break;
+					default:
+						System.out.println("Unknown PIM Source: " + authCode.getPimSource());
+						break;
+				}
+			}
 		}
 
-		rabbitTemplate.convertAndSend(userUpdateQueueName, userIdentified);
+		rabbitTemplate.convertAndSend(userUpdateQueueName, user);
 	}
 }

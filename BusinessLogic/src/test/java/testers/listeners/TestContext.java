@@ -27,7 +27,8 @@ public class TestContext {
 	public final static String topicRequestBusinessQueueName = "topic-request.business.rabbit";
 	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
 	public final static String registerBusinessQueueName = "register.business.rabbit";
-	public final static String userUpdateDatabaseQueueName = "user-update.database.rabbit";
+	public final static String userUpdateDatabaseQueueName = "user-update-request.database.rabbit";
+	public final static String userUpdateBusinessQueueName = "user-update-request.business.rabbit";
 
 	// test beans start
 	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
