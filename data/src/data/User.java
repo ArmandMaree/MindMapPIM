@@ -34,6 +34,21 @@ public class User implements Serializable {
 	*/
 	private String gmailId;
 
+	/**
+	* An array that contains the theme for various sections of the website.
+	*/
+	private String[] theme = {"#0f4d71", "#ffffff", ""};
+
+	/**
+	* The depth to which the graph should expand to when the mainpage loads.
+	*/
+	private int initialDepth = 2;
+
+	/**
+	* How many nodes should be retrieved when a node is expanded.
+	*/
+	private int branchingFactor = 4;
+
     public User() {
 
 	}
@@ -126,6 +141,54 @@ public class User implements Serializable {
 	*/
 	public void setGmailId(String gmailId) {
 		this.gmailId = gmailId;
+	}
+
+	/**
+	* Returns value of theme.
+	* @return An array that contains the theme for various sections of the website.
+	*/
+	public String[] getTheme() {
+		return theme;
+	}
+
+	/**
+	* Sets new value of theme.
+	* @param theme An array that contains the theme for various sections of the website.
+	*/
+	public void setTheme(String[] theme) {
+		this.theme = theme;
+	}
+
+	/**
+	* Returns value of initialDepth.
+	* @return The depth to which the graph should expand to when the mainpage loads.
+	*/
+	public int getInitialDepth() {
+		return initialDepth;
+	}
+
+	/**
+	* Sets new value of initialDepth.
+	* @param initialDepth The depth to which the graph should expand to when the mainpage loads.
+	*/
+	public void setInitialDepth(int initialDepth) {
+		this.initialDepth = initialDepth;
+	}
+
+	/**
+	* Returns value of branchingFactor.
+	* @return How many nodes should be retrieved when a node is expanded.
+	*/
+	public int getBranchingFactor() {
+		return branchingFactor;
+	}
+
+	/**
+	* Sets new value of branchingFactor.
+	* @param branchingFactor How many nodes should be retrieved when a node is expanded.
+	*/
+	public void setBranchingFactor(int branchingFactor) {
+		this.branchingFactor = branchingFactor;
 	}
 
 	/**
