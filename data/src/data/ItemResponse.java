@@ -31,17 +31,8 @@ public class ItemResponse implements Serializable {
 	*/
 	@Override
 	public String toString() {
-		String i = "";
-
-		for (String id : items) {
-			if (i.equals(""))
-				i += "\t\t" + id;
-			else
-				i += ",\n\t\t" + id;
-		}
-
 		return "ItemResponse {\n" +
-			"\titems: [\n" + i + "\n" +
+			"\titems size: \n" + items.length + "\n" +
 		"}";
 	}
 }

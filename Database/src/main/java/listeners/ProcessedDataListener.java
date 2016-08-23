@@ -90,7 +90,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received processedData for user: " + processedData.getUserId());
+		// System.out.println("Received processedData for user: " + processedData.getUserId());
 		List<PendingTopic> pt = processProcessedData(processedData);
 
 		for (PendingTopic pendingTopic : pt)	

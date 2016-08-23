@@ -77,12 +77,12 @@ public class Processor implements Runnable {
 			for (String part : rawData.getData()) {
 				ArrayList<String> topicsIdentified = nlp.getTopics(part);
 
-				if (topicsIdentified == null)
-					return null;
-
 				for (String topic : topicsIdentified)
 					topics.add(topic);
 			}
+
+			if (topics.size() == 0)
+				return null;
 
 			topics = nlp.purge(topics);
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
@@ -98,7 +98,7 @@ public class Processor implements Runnable {
 	* @param processedData The data that has been processed that needs to be sent to the queue for persistence.
 	*/
 	public void pushToQueue(ProcessedData processedData, boolean priority) {
-		System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority);
+		// System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority);
 		if (priority)
         	rabbitTemplate.convertAndSend("priority-" + processedDataDatabaseQueueName, processedData);
 		else

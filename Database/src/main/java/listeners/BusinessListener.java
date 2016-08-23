@@ -44,7 +44,7 @@ public class BusinessListener {
 		}
 
 		user = new UserIdentified(user.getReturnId(), userAlreadyRegistered, userReturn);
-		System.out.println("Responding with: " + user);
+		System.out.println("Respond: " + user);
 		rabbitTemplate.convertAndSend(userRegisterResponseQueueName, user);
 	}
 
@@ -56,7 +56,7 @@ public class BusinessListener {
 		else
 			user = new UserIdentified(user.getReturnId(), true, userReturn);
 
-		System.out.println("Responding with: " + user);
+		System.out.println("Respond: " + user);
 		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
 	}
 }
