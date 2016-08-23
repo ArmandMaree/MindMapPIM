@@ -19,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class BusinessListener {
 	private final String userRegisterResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
+	private final String userUpdateResponseQueueName = "user-update-response.frontend.rabbit";
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -58,5 +59,36 @@ public class BusinessListener {
 
 		System.out.println("Respond: " + user);
 		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
+	}
+
+	public void receiveUserUpdate(UserIdentified userIdentified) {
+		System.out.println("Received: " + userIdentified);
+		User userInRepo = userRepository.findByUserId(userIdentified.getUserId());
+		UserUpdateResponseIdentified userUpdateResponseIdentified = new UserUpdateResponseIdentified(userIdentified.getReturnId());
+
+		if (userInRepo == null)
+			userUpdateResponseIdentified.setCode(UserUpdateResponse.USER_NOT_FOUND);
+		else {
+			if (userIdentified.getGmailId() != null)
+				if (userIdentified.getGmailId().equals(""))
+					userInRepo.setGmailId(null);
+				else
+					userInRepo.setGmailId(userIdentified.getGmailId());
+
+			if (userIdentified.getTheme() != null)
+				userInRepo.setTheme(userIdentified.getTheme());
+
+			if (userIdentified.getInitialDepth() != userInRepo.getInitialDepth())
+				userInRepo.setInitialDepth(userIdentified.getInitialDepth());
+
+			if (userIdentified.getBranchingFactor() != userInRepo.getBranchingFactor())
+				userInRepo.setBranchingFactor(userIdentified.getBranchingFactor());
+
+			userRepository.save(userInRepo);
+			userUpdateResponseIdentified.setCode(UserUpdateResponse.SUCCESS);
+		}
+
+		System.out.println("Respond: " + userUpdateResponseIdentified);
+		rabbitTemplate.convertAndSend(userUpdateResponseQueueName, userUpdateResponseIdentified);
 	}
 }

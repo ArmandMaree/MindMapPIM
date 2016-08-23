@@ -52,6 +52,9 @@ public class BusinessListenerTester extends AbstractTester {
 	@Autowired
 	private LinkedBlockingQueue<UserIdentified> queue;
 
+	@Autowired
+	private LinkedBlockingQueue<UserUpdateResponseIdentified> userUpdateQueue;
+
 	@Before
 	public void setUp() throws InterruptedException {
 		if (!setUpDone) {
@@ -59,12 +62,12 @@ public class BusinessListenerTester extends AbstractTester {
 		}
 
 		userRepository.deleteAll();
-		while (queue.poll(1, TimeUnit.SECONDS) != null);
 	}
 
 	@After
-	public void tearDown() {
-
+	public void tearDown() throws InterruptedException {
+		while (userUpdateQueue.poll(1, TimeUnit.SECONDS) != null);
+		while (queue.poll(1, TimeUnit.SECONDS) != null);
 	}
 
 	@Test
@@ -112,5 +115,86 @@ public class BusinessListenerTester extends AbstractTester {
 		Assert.assertEquals("Failed - returnId does not match.", userIdentified2.getReturnId(), userIdentifiedResponse2.getReturnId());
 		Assert.assertEquals("Failed - user isn't registered but should be.", true, userIdentifiedResponse2.getIsRegistered());
 		Assert.assertTrue("Failed - Users does not have same ID.", userIdentifiedResponse.getUserId().equals(userIdentifiedResponse2.getUserId()));
+	}
+
+	@Test
+	public void testReceiveUserUpdate() throws InterruptedException {
+		// update user that doesnt exist
+		UserIdentified userIdentifiedRequest = new UserIdentified(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, userIdentifiedRequest);
+
+		UserUpdateResponseIdentified uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - returnIds does not match.", userIdentifiedRequest.getReturnId(), uuResponseIdentified.getReturnId());
+		Assert.assertEquals("Failure - User was found but shouln't have.", UserUpdateResponse.USER_NOT_FOUND, uuResponseIdentified.getCode());
+
+		// update a user that does not require any updates
+		UserIdentified user = new UserIdentified(UUID.randomUUID().toString(), false, "Acuben", "Cos", "acubencos@gmail.com");
+		rabbitTemplate.convertAndSend(userRegisterQueueName, user);
+		user = queue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", user);
+
+		UserIdentified updatesUser = new UserIdentified(UUID.randomUUID().toString(), user.getUserId());
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, updatesUser);
+
+		uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - uuResponseIdentified did not return success, but should have.", UserUpdateResponse.SUCCESS, uuResponseIdentified.getCode());
+
+		User userInRepo = userRepository.findByUserId(user.getUserId());
+		Assert.assertEquals("Failure - userInRepo's gmailId changed and shouldn't have.", user.getGmailId(), userInRepo.getGmailId());
+		Assert.assertEquals("Failure - userInRepo's theme[0] changed and shouldn't have.", user.getTheme()[0], userInRepo.getTheme()[0]);
+		Assert.assertEquals("Failure - userInRepo's theme[1] changed and shouldn't have.", user.getTheme()[1], userInRepo.getTheme()[1]);
+		Assert.assertEquals("Failure - userInRepo's branchingFactor changed and shouldn't have.", user.getBranchingFactor(), userInRepo.getBranchingFactor());
+		Assert.assertEquals("Failure - userInRepo's initialDepth changed and shouldn't have.", user.getInitialDepth(), userInRepo.getInitialDepth());
+
+		// change user's gmailId
+		updatesUser = new UserIdentified(UUID.randomUUID().toString(), user.getUserId());
+		updatesUser.setGmailId("test@example.com");
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, updatesUser);
+
+		uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - uuResponseIdentified did not return success, but should have.", UserUpdateResponse.SUCCESS, uuResponseIdentified.getCode());
+
+		userInRepo = userRepository.findByUserId(user.getUserId());
+		Assert.assertEquals("Failure - userInRepo's gmailId did not change but should have.", updatesUser.getGmailId(), userInRepo.getGmailId());
+
+		// change user's theme
+		updatesUser = new UserIdentified(UUID.randomUUID().toString(), user.getUserId());
+		String[] updateTheme = {"test1", "test2"};
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, updatesUser);
+
+		uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - uuResponseIdentified did not return success, but should have.", UserUpdateResponse.SUCCESS, uuResponseIdentified.getCode());
+
+		userInRepo = userRepository.findByUserId(user.getUserId());
+		Assert.assertEquals("Failure - userInRepo's theme[0] did not change but should have.", user.getTheme()[0], userInRepo.getTheme()[0]);
+		Assert.assertEquals("Failure - userInRepo's theme[1] did not change but should have.", updatesUser.getTheme()[1], userInRepo.getTheme()[1]);
+
+		// change user's branchingFactor
+		updatesUser = new UserIdentified(UUID.randomUUID().toString(), user.getUserId());
+		updatesUser.setBranchingFactor(10);
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, updatesUser);
+
+		uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - uuResponseIdentified did not return success, but should have.", UserUpdateResponse.SUCCESS, uuResponseIdentified.getCode());
+
+		userInRepo = userRepository.findByUserId(user.getUserId());
+		Assert.assertEquals("Failure - userInRepo's branchingFactor did not change but should have.", updatesUser.getBranchingFactor(), userInRepo.getBranchingFactor());
+
+		// change user's branchingFactor
+		updatesUser = new UserIdentified(UUID.randomUUID().toString(), user.getUserId());
+		updatesUser.setInitialDepth(5);
+		rabbitTemplate.convertAndSend(TestContext.userUpdateRequestQueueName, updatesUser);
+
+		uuResponseIdentified = userUpdateQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userUpdateResponseIdentified is null.", uuResponseIdentified);
+		Assert.assertEquals("Failure - uuResponseIdentified did not return success, but should have.", UserUpdateResponse.SUCCESS, uuResponseIdentified.getCode());
+
+		userInRepo = userRepository.findByUserId(user.getUserId());
+		Assert.assertEquals("Failure - userInRepo's initialDepth did not change but should have.", updatesUser.getInitialDepth(), userInRepo.getInitialDepth());
 	}
 }

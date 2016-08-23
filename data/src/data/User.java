@@ -32,12 +32,12 @@ public class User implements Serializable {
 	/**
 	* The email address of the user's Gmail account.
 	*/
-	private String gmailId;
+	private String gmailId = null;
 
 	/**
 	* An array that contains the theme for various sections of the website.
 	*/
-	private String[] theme = {"#0f4d71", "#ffffff", ""};
+	private String[] theme = {"#0f4d71", "#ffffff"};
 
 	/**
 	* The depth to which the graph should expand to when the mainpage loads.
@@ -49,8 +49,19 @@ public class User implements Serializable {
 	*/
 	private int branchingFactor = 4;
 
+	/**
+	* Default empty constructor.
+	*/
     public User() {
+    	super();
+	}
 
+	/**
+	* Constructor user for updates for user settings.
+	*/
+	public User(String userId) {
+		super();
+		this.userId = userId;
 	}
 
 	/**

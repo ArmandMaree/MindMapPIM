@@ -163,7 +163,7 @@ public class GmailPoller implements Poller {
 		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 		if (pollingUser != null)
-			return null;
+			pollingUser.setRefreshToken(refreshToken);
 		else
 			pollingUser = new PollingUser(userEmail, refreshToken);
 
@@ -203,6 +203,15 @@ public class GmailPoller implements Poller {
 			return;
 
 		while (!stop) {
+			PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+
+			if (pollingUser.getRefreshToken() == null) {
+				System.out.println("Poller stopping.");
+				return;
+			}
+			else
+				refreshToken = pollingUser.getRefreshToken();
+
 			poll();
 			oldDone = true;
 

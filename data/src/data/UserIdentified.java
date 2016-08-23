@@ -14,10 +14,18 @@ public class UserIdentified extends User {
 	private boolean isRegistered;
 
 	/**
-	* Default empty UserIdentified constructor
+	* Default empty constructor.
 	*/
 	public UserIdentified() {
 		super();
+	}
+
+	/**
+	* Constructor used when updating the user settings.
+	*/
+	public UserIdentified(String returnId, String id) {
+		super(id);
+		this.returnId = returnId;
 	}
 
 	/**
