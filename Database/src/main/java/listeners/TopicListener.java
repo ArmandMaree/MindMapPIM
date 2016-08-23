@@ -141,6 +141,7 @@ public class TopicListener {
 			topicsText[i] = returnTopics.get(i).getTopic();
 
 		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, nodesArr); // create topic response without topics objects
+		System.out.println("Respond: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 }

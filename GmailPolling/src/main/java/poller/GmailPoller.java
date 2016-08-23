@@ -39,6 +39,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.codec.binary.StringUtils;
 
@@ -463,21 +464,36 @@ public class GmailPoller implements Poller {
 	*/
 	public RawData getRawData(String msgId, MimeMessage email) throws IOException, MessagingException {
 		// printEmail(service.users().messages().get(userId, messageId).setFormat("full").execute());
+		if (email.getContent() == null)
+			return null;
+
+		String address;
+
+		if (email.getSender() == null)
+			address = email.getHeader("From")[0];
+		else
+			address = ((InternetAddress)email.getSender()).getAddress();
+
+		if (address.indexOf("@") == -1)
+			return null;
+
+		String senderName = address.substring(0, address.indexOf("@"));
+
+		if ((senderName.contains("no") && senderName.contains("reply")) || senderName.contains("news") || senderName.contains("info"))
+			return null;
+
 		String body = "";
 		ArrayList<String> rawDataElements = new ArrayList<>();
 
 		if (!email.getHeader("Subject")[0].equals(""))
 			rawDataElements.add(email.getHeader("Subject")[0]);
 
-		if (email.getContent() == null) {
-			return null;
-		}
 
 		if (email.getContent() instanceof String) {
 			String newText = extractText((String)email.getContent());
 
-			if (!body.contains(newText))
-				body += " " + newText;
+			if (newText != null && !body.contains(newText))
+					body += " " + newText;
 		}
 		else if (email.getContent() instanceof MimeMultipart) {
 			MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
@@ -501,15 +517,23 @@ public class GmailPoller implements Poller {
 					}
 					else if (mimeBodyPart.getContent() instanceof String) {
 						if (!((String)mimeBodyPart.getContent()).equals("")) {
-							String newText = extractText((String)mimeBodyPart.getContent()) + "\n";
+							if (mimeBodyPart.isMimeType("text/plain"))
+								body += (String)mimeBodyPart.getContent() + "\n";
+							// String newText = extractText((String)mimeBodyPart.getContent()) + "\n";
 
-							if (!body.contains(newText))
-								body += " " + newText;
+							// if (newText == null)
+							// 	continue;
+
+							// if (!body.contains(newText))
+							// 	body += " " + newText;
 						}
 					}
 				}
 			}
 		}
+
+		if (body == null || body.equals(""))
+			return null;
 
 		rawDataElements.add(body);
 
@@ -542,6 +566,7 @@ public class GmailPoller implements Poller {
 
 		String bodySTmp = Jsoup.clean(bodyS, wl);
 		Document doc = Jsoup.parse(bodySTmp);
+
 		String extracted = extractNodeText(doc, elementsToProcess);
 
 		if (extracted == null || extracted.equals(""))

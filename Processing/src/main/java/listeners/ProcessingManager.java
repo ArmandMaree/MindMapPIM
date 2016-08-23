@@ -103,6 +103,7 @@ public class ProcessingManager {
 	}
 
 	public synchronized void receivePriorityRawData(RawData rawData) throws FileNotFoundException {
+		System.out.println("Received priorityRawData for user: " + rawData.getUserId());
 		try {
 			if (priorityRawDataQueue.size() >= 50) {
 				rabbitTemplate.convertAndSend("priority-raw-data.processing.rabbit");
