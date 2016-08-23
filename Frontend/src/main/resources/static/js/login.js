@@ -341,6 +341,17 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
+	// $.holdReady(true);
+	basket
+	.require({ url: '/js/vis.js' })
+	.then(function () {
+	    // Success
+	    // $.holdReady(false)
+	    console.log("Loaded all required scripts.");
+	}, function (error) {
+	    // There was an error fetching the script
+	    console.log(error);
+	});
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
