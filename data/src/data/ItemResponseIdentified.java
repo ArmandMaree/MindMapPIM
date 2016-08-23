@@ -50,7 +50,7 @@ public class ItemResponseIdentified extends ItemResponse implements Serializable
 
 		return "ItemResponse {\n" +
 			"\treturnId: " + returnId + ",\n" +
-			"\titems: [\n" + i + "\n" +
+			"\titems size: \n" + items.length + "\n" +
 		"}";
 	}
 }

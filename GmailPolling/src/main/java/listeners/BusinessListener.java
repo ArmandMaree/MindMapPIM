@@ -30,7 +30,7 @@ public class BusinessListener {
 			new Thread(poller).start();
 		}
 		else {
-			if (authCode.getAuthCode() == null)
+			if (authCode.getAuthCode() == null || authCode.getAuthCode().equals(""))
 				pollingUser.setRefreshToken(null);
 			else
 				new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId()); // this will update the pollingUser in the repository.
