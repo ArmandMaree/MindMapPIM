@@ -44,6 +44,7 @@ public class Application implements CommandLineRunner {
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String userRegisterQueueName = "user-register.database.rabbit";
 	private final String userCheckQueueName = "user-check.database.rabbit";
+	private final String userUpdateQueueName = "user-update.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -83,6 +84,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue userUpdateQueue() {
+		return new Queue(userUpdateQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
@@ -110,6 +116,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding userCheckBinding(@Qualifier("userCheckQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userCheckQueueName);
+	}
+
+	@Bean
+	Binding userUpdateBinding(@Qualifier("userUpdateQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userUpdateQueueName);
 	}
 
 	@Bean
@@ -153,6 +164,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public MessageListenerAdapter userUpdateAdapter(BusinessListener businessListener) {
+		return new MessageListenerAdapter(businessListener, "receiveUserUpdate");
+	}
+
+	@Bean
 	public SimpleMessageListenerContainer topicRequestContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
@@ -193,6 +209,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(userCheckQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userUpdateContainer(ConnectionFactory connectionFactory, @Qualifier("userUpdateAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userUpdateQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

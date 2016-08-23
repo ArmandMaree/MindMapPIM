@@ -19,6 +19,7 @@ public class FrontendListener {
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
 	private final String authCodeQueueName = "auth-code.gmail.rabbit";
+	private final String userUpdateQueueName = "user-update-request.database.rabbit";
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -69,5 +70,13 @@ public class FrontendListener {
 		}
 
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
+	}
+
+	public void receiveUserUpdate(UserIdentified userIdentified) {
+		if (userIdentified.getGmailId() != null && userIdentified.getGmailId().equals("")) {
+			// stop gmail poller
+		}
+
+		rabbitTemplate.convertAndSend(userUpdateQueueName, userIdentified);
 	}
 }

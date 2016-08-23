@@ -32,6 +32,7 @@ public class Application implements CommandLineRunner {
 	private final String topicRequestQueueName = "topic-request.business.rabbit";
 	private final String topicResponseQueueName = "topic-response.business.rabbit";
 	private final String registerQueueName = "register.business.rabbit";
+	private final String userUpdateQueueName = "user-update-request.business.rabbit";
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
@@ -49,6 +50,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Queue registerQueue() {
 		return new Queue(registerQueueName, false);
+	}
+
+	@Bean
+	Queue userUpdateQueue() {
+		return new Queue(userUpdateQueueName, false);
 	}
 
 	@Bean
@@ -72,6 +78,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding userUpdateBinding(@Qualifier("userUpdateQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userUpdateQueueName);
+	}
+
+	@Bean
 	public FrontendListener frontendListener() {
 		return new FrontendListener();
 	}
@@ -89,6 +100,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public MessageListenerAdapter registerAdapter(FrontendListener frontendListener) {
 		return new MessageListenerAdapter(frontendListener, "receiveRegister");
+	}
+
+	@Bean
+	public MessageListenerAdapter userUpdateAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveUserUpdate");
 	}
 
 	@Bean
@@ -114,6 +130,15 @@ public class Application implements CommandLineRunner {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(registerQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userUpdateContainer(ConnectionFactory connectionFactory, @Qualifier("userUpdateAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userUpdateQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

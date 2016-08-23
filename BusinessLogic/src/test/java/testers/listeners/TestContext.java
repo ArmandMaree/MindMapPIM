@@ -27,6 +27,7 @@ public class TestContext {
 	public final static String topicRequestBusinessQueueName = "topic-request.business.rabbit";
 	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
 	public final static String registerBusinessQueueName = "register.business.rabbit";
+	public final static String userUpdateDatabaseQueueName = "user-update.database.rabbit";
 
 	// test beans start
 	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
@@ -34,7 +35,7 @@ public class TestContext {
 
 	@Autowired
 	@Qualifier("testUserQueueDev")
-	private LinkedBlockingQueue<UserIdentified> userRegisterQueue;
+	private LinkedBlockingQueue<UserIdentified> userIdentifiedQueue;
 
 	@Bean
 	LinkedBlockingQueue<UserIdentified> testUserQueueDev() {
@@ -45,28 +46,39 @@ public class TestContext {
 	Queue userRegisterDatabaseQueue() {
 		return new Queue(userRegisterDatabaseQueueName, false);
 	}
+
+	@Bean
+	Queue userUpdateDatabaseQueue() {
+		return new Queue(userUpdateDatabaseQueueName, false);
+	}
+
 	@Bean
 	Binding userRegisterDatabaseBinding(@Qualifier("userRegisterDatabaseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userRegisterDatabaseQueueName);
 	}
+
 	@Bean
-	public MessageListenerAdapter userRegisterDatabaseAdapter() {
-		return new MessageListenerAdapter(this, "receiveUserRegistrationResponse");
+	Binding userUpdateDatabaseBinding(@Qualifier("userUpdateDatabaseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userUpdateDatabaseQueueName);
+	}
+	
+	@Bean
+	public MessageListenerAdapter userIdentifedDatabaseAdapter() {
+		return new MessageListenerAdapter(this, "receiveUserIdentifiedResponse");
 	}
 
 	@Bean
-	public SimpleMessageListenerContainer userRegisterDatabaseContainer(ConnectionFactory connectionFactory, @Qualifier("userRegisterDatabaseAdapter") MessageListenerAdapter listenerAdapter) {
-		System.out.println("HELLO");
+	public SimpleMessageListenerContainer userRegisterDatabaseContainer(ConnectionFactory connectionFactory, @Qualifier("userIdentifedDatabaseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(userRegisterDatabaseQueueName);
+		container.setQueueNames(userRegisterDatabaseQueueName, userUpdateDatabaseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
 
-	public void receiveUserRegistrationResponse(UserIdentified userIdentified) throws InterruptedException {
+	public void receiveUserIdentifiedResponse(UserIdentified userIdentified) throws InterruptedException {
 		System.out.println("Test Context Received: " + userIdentified);
-		userRegisterQueue.put(userIdentified);
+		userIdentifiedQueue.put(userIdentified);
 	}
 
 	// auth code
