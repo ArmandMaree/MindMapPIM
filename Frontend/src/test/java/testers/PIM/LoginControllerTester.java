@@ -55,8 +55,9 @@ public class LoginControllerTester extends AbstractTester {
 			String[] mockrelated = {"Arno Grobler","Riding"};
 			String[] mockprocessedDataIds = {"09865","098765"};
 			String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
+			String[] involvedContacts = {"Armand Maree", "Arno Grobler"};
 			String[][][] mockItemIds = null;
-			TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
+			TopicResponse tro = new TopicResponse("123456",mockTopicText, involvedContacts,mockItemIds);
 			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos","acubancos@gmail.com");
 			try{
 				topicResponseLL.put(tro);
@@ -86,8 +87,9 @@ public class LoginControllerTester extends AbstractTester {
 		String[] mockrelated = {"Arno Grobler","Riding"};
 		String[] mockprocessedDataIds = {"09865","098765"};
 		String[] mockTopicText = {"Horse","Amy Lochner","Racing"};
+		String[] involvedContacts = {"Armand Maree", "Arno Grobler"};
 		String[][][] mockItemIds = null;
-		TopicResponse tro = new TopicResponse("123456",mockTopicText,mockItemIds);
+		TopicResponse tro = new TopicResponse("123456",mockTopicText, involvedContacts,mockItemIds);
 
 		Assert.assertEquals("Topic responses userId does not match",tro.getUserId(),loginController.recieveRequest(tr).getUserId());
 		Assert.assertEquals("Topic responses topicsText do not match",tro.getTopicsText(),loginController.recieveRequest(tr).getTopicsText());

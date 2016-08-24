@@ -206,6 +206,14 @@ public class Topic implements Serializable, Comparable<Topic> {
 		return person;
 	}
 
+	/**
+	* Set the value of person.
+	* @param person Indicates whether this topic is a person.
+	*/
+	public void setIsPerson(boolean person) {
+		this.person = person;
+	}
+
 	/*
 	* Implements Comparable and allows topics to sorted by weight.
 	* @param other The topic this one is compared to.
@@ -227,14 +235,6 @@ public class Topic implements Serializable, Comparable<Topic> {
 		double hours = secs / 3600 - 306816; // hours since 01/01/2005
 		double weight = 100 * hours * processedDataIds.size(); // inverse of hourse * 100 * number of data associated with topic.
 		return weight;
-	}
-
-	/**
-	* Set the value of person.
-	* @param person Indicates whether this topic is a person.
-	*/
-	public void setIsPerson(boolean person) {
-		this.person = person;
 	}
 
 	/**

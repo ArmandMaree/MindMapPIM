@@ -8,6 +8,7 @@ public class PendingTopic {
 	private String topic;
 	private ProcessedData processedData;
 	private List<String> remainingTopics;
+	private boolean person = false;
 
 	public PendingTopic(String topic, ProcessedData processedData, List<String> remainingTopics) {
 		this.topic = topic;
@@ -37,5 +38,21 @@ public class PendingTopic {
 
 	public List<String> getRemainingTopics() {
 		return remainingTopics;
+	}
+
+	/**
+	* Returns the value of person.
+	* @return Indicates whether this topic is a person.
+	*/
+	public boolean isPerson() {
+		return person;
+	}
+
+	/**
+	* Set the value of person.
+	* @param person Indicates whether this topic is a person.
+	*/
+	public void setIsPerson(boolean person) {
+		this.person = person;
 	}
 }

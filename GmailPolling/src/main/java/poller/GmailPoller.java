@@ -549,30 +549,41 @@ public class GmailPoller implements Poller {
 		List<String> involvedContacts = new ArrayList<>();
 
 		for (String contact : email.getHeader("From")) {
-			int pos = contact.indexOf("<");
-			if (pos > 0) {
-				if (contact.charAt(pos - 1) == ' ')
-					pos--;
+			int posStart = 0;
+			int posEnd = contact.indexOf("<");
 
-				contact = contact.substring(0, pos);
+			if (posEnd > 0) {
+				while (contact.charAt(posStart) == ' ' || contact.charAt(posStart) == '\"')
+					posStart++;
 
-				if (!contact.equals(""))
-					involvedContacts.add(contact); 
-			}
-		}
+				while (contact.charAt(posEnd - 1) == ' ' || contact.charAt(posEnd - 1) == '\"')
+					posEnd--;
 
-		for (String contact : email.getHeader("Cc")) {
-			int pos = contact.indexOf("<");
-			if (pos > 0) {
-				if (contact.charAt(pos - 1) == ' ')
-					pos--;
-
-				contact = contact.substring(0, pos);
+				contact = contact.substring(posStart, posEnd);
 
 				if (!contact.equals(""))
 					involvedContacts.add(contact); 
 			}
 		}
+
+		if (email.getHeader("Cc") != null)
+			for (String contact : email.getHeader("Cc")) {
+				int posStart = 0;
+				int posEnd = contact.indexOf("<");
+
+				if (posEnd > 0) {
+					while (contact.charAt(posStart) == ' ' || contact.charAt(posStart) == '\"')
+						posStart++;
+
+					while (contact.charAt(posEnd - 1) == ' ' || contact.charAt(posEnd - 1) == '\"')
+						posEnd--;
+
+					contact = contact.substring(posStart, posEnd);
+
+					if (!contact.equals(""))
+						involvedContacts.add(contact); 
+				}
+			}
 
 		for (String contact : involvedContacts) {
 			System.out.println("Contact: " + contact);

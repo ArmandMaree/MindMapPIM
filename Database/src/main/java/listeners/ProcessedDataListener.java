@@ -67,6 +67,10 @@ public class ProcessedDataListener {
 						List<String> processedDataIds = new ArrayList<>();
 						processedDataIds.add(processedData.getId()); // ids of all topics containing the current topic (only one in this case).
 						topicInRepo = new Topic(processedData.getUserId(), pendingTopic.getTopic(), pendingTopic.getRemainingTopics(), processedDataIds, processedData.getTime());
+
+						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
+							topicInRepo.setIsPerson(true);
+
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
 						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
@@ -75,6 +79,10 @@ public class ProcessedDataListener {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
 						topicInRepo.addProcessedDataId(processedData.getId());
 						topicInRepo.setTime(processedData.getTime());
+						
+						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
+							topicInRepo.setIsPerson(true);
+
 						topicRepository.save(topicInRepo);
 						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
@@ -151,6 +159,15 @@ public class ProcessedDataListener {
 				}
 
 				pt.add(new PendingTopic(topic, processedData, remainingTopics));
+			}
+
+			for (String contact : processedData.getInvolvedContacts()) { // iterate all topics in data
+				if (contact.equals(user.getFirstName()) || contact.equals(user.getLastName()) || (contact.equals(user.getFirstName()) && contact.equals(user.getLastName())))
+					continue;
+
+				PendingTopic pendingTopic = new PendingTopic(contact, processedData, Arrays.asList(processedData.getTopics()));
+				pendingTopic.setIsPerson(true);
+				pt.add(pendingTopic);
 			}
 		}
 		catch (Exception e) { // never crash thread

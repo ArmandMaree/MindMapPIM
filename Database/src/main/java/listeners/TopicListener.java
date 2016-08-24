@@ -82,32 +82,48 @@ public class TopicListener {
 			return;
 		}
 
+
 		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight
 		List<Topic> returnTopics = new ArrayList<>();
+		List<Topic> returnContacts = new ArrayList<Topic>();
 
 		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
 			returnTopics = topics;
 		}
 		else {
-			returnTopics.add(topics.get(0));
+			while (topics.size() > 0 && topics.get(0).isPerson()) {
+				returnContacts.add(topics.get(0));
+				topics.remove(0);
+			}
 
-			for (int i = 1; i < topics.size() && returnTopics.size() < topicRequest.getMaxNumberOfTopics(); i++) { // take the most relevant topics but also try to reduce closely related topics
-				boolean found = false;
+			if (topics.size() != 0) {
+				returnTopics.add(topics.get(0));
 
-				for (Topic returnTopic : returnTopics) {
-					for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
-						if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
-							found = true;
-							break;
-						}
+				for (int i = 1; i < topics.size() && returnTopics.size() < topicRequest.getMaxNumberOfTopics(); i++) { // take the most relevant topics but also try to reduce closely related topics
+					while (topics.size() > 0 && topics.get(0).isPerson()) {
+						returnContacts.add(topics.get(0));
+						topics.remove(0);
 					}
 
-					if (found)
-						break;
-				}
+					if (topics.size() != 0) {
+						boolean found = false;
 
-				if (!found)
-					returnTopics.add(topics.get(i));
+						for (Topic returnTopic : returnTopics) {
+							for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
+								if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
+									found = true;
+									break;
+								}
+							}
+
+							if (found)
+								break;
+						}
+
+						if (!found)
+							returnTopics.add(topics.get(i));
+					}
+				}
 			}
 		}
 
@@ -140,6 +156,8 @@ public class TopicListener {
 		for (int i = 0; i < returnTopics.size(); i++)
 			topicsText[i] = returnTopics.get(i).getTopic();
 
+		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0) ? topicRequest.getMaxNumberOfTopics() : 2), returnContacts.size());
+		String[] involvedContacts = returnContacts.subList(0, involvedContactsSize).toArray(new String[0]);
 		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, null, nodesArr); // create topic response without topics objects
 		System.out.println("Respond: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue

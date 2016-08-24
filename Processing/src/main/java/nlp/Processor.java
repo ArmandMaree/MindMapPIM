@@ -90,9 +90,6 @@ public class Processor implements Runnable {
 			List<String> people = new ArrayList<>();
 			people.addAll(rawData.getInvolvedContacts());
 
-			List<List<String>> topicsAndPeople = nlp.splitNamesAndTopics(topics);
-			topics = topicsAndPeople.get(0);
-			people.addAll(topicsAndPeople.get(1));
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 			processedData.setInvolvedContacts(people.toArray(new String[0]));
 		}

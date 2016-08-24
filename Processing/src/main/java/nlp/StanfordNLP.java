@@ -281,10 +281,8 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		List<String> names = new ArrayList<>();
 
 		for (String word : words) {
-			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word)) {
-				System.out.println("Matched as name: " + word);
+			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word))
 				names.add(word);
-			}
 			else
 				topics.add(word);
 		}
