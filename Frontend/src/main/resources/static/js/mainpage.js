@@ -909,7 +909,7 @@ $(document).ready(function(){
                         // console.log(templist.length)
 
                     }
-
+                    parentlist[selectedID]=-1;
                     network.selectNodes(deletelist);
                     network.deleteSelected();
                 }
