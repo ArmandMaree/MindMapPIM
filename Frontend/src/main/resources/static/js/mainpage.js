@@ -51,6 +51,14 @@ var mocktesting = true;
 */
 var currFramerate = 60;
 /**
+*   @var {String} navbarReloadTextExpanded - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextExpanded ="<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text' style='font-family: 'Pacifico', cursive;'>unclutter</p>";
+/**
+*   @var {String} navbarReloadTextCondensed - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text' style='font-family: 'Pacifico', cursive;'>unclutter</p>";
+/**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
 var shouldRebuild = false;
@@ -87,7 +95,7 @@ function toJSON(obj) {
 */
 $( window ).resize(function() {
     if($(window).width()<=768){
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
@@ -95,7 +103,7 @@ $( window ).resize(function() {
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
 });
 /**
@@ -159,16 +167,16 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "   ME   ",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6',font:'20px Tahoma white'}}},
-                {id: 1, label: "Contacts",font:'20px Tahoma black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
-                {id: 2, label: "Horse",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 3, label: "Amy \n Lochner",font:'20px Tahoma black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 4, label: "COS301",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 5, label: "Fritz \n Solms",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 6, label: "Holiday",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 7, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 8, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 9, label: "Cooking",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
+                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6',font:'20px Raleway white'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
+                {id: 2, label: "  Horse  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 3, label: "  Amy  \n  Lochner  ",font:'20px Raleway black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 4, label: "  COS301  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 5, label: "  Fritz  \n  Solms  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 6, label: "  Holiday  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 7, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 8, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 9, label: "  Cooking  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
             ]
             parentlist =["0","0","0","2","0","4","6","7","2","0"];
             allPimIDlist[9] = [["1","2"],[null]];
@@ -181,8 +189,8 @@ $(document).ready(function(){
             allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
-                {id: 0, label: "   ME   ", color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "Contacts",  color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
+                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black',  color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
 
             ]
         }      
@@ -399,7 +407,7 @@ $(document).ready(function(){
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
-                        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+                        $("#backfromsidebar").html(navbarReloadTextCondensed)
                     }
 
                     $("#facebook").html("");
@@ -545,8 +553,8 @@ $(document).ready(function(){
                             expandlist.push(tempnodelength++);
                             data.nodes.add({
                                 id: nodes.length,
-                                label: topicsall[pos],
-                                font:'20px Tahoma black', 
+                                label:"  "+ topicsall[pos]+"  ",
+                                font:'20px Raleway black', 
                                 color: thiscolour
                             });
                             parentlist.push(selectedID);
@@ -580,8 +588,8 @@ $(document).ready(function(){
 
                         nodes.push({
                             id: nodes.length,
-                            label: topicsall[pos],
-                            font:'20px Tahoma black', 
+                            label:"  "+ topicsall[pos]+"  ",
+                            font:'20px Raleway black', 
                             color: thiscolour
                         })
                         edges.push({
@@ -592,8 +600,8 @@ $(document).ready(function(){
                         if(selectedID==0){
                             data.nodes.add({
                                 id: nodes.length,
-                                label: contactsAll[pos],
-                                font:'20px Tahoma black', 
+                                label:"  "+ contactsAll[pos]+"  ",
+                                font:'20px Raleway black', 
                                 color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                             });
                             parentlist.push(1);
@@ -605,8 +613,8 @@ $(document).ready(function(){
                             });
                             nodes.push({
                                 id: nodes.length,
-                                label: contactsAll[pos],
-                                font:'20px Tahoma black', 
+                                label:"  "+ contactsAll[pos]+"  ",
+                                font:'20px Raleway black', 
                                 color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                             })
                             edges.push({
@@ -700,14 +708,14 @@ $(document).ready(function(){
 
     if($(window).width()<=768)
     {
-         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
     }
     else
     {
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+        $("#backfromsidebar").html(navbarReloadTextExpanded);
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
@@ -893,7 +901,7 @@ $(document).ready(function(){
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
 
-       $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+       $("#backfromsidebar").html(navbarReloadTextCondensed)
     });
     /**
     *	A function that handles the doubleClick event on the BubbleMap
@@ -938,22 +946,7 @@ $(document).ready(function(){
         }
         var node = network.getSelectedNodes();
         selectedID = node;
-        // console.log(selectedID);
-        // console.log(allPimIDlist);
-        // console.log(allPimIDlist[1]);
-        // console.log(allPimIDlist[1][0]);
 
-        // console.log(allPimIDlist);
-        // console.log(allPimIDlist[2]);
-        // console.log(allPimIDlist[2][0]);
-        // for(var i=1;i<allPimIDlist.length;i++){
-        //     for(var j=0;j<allPimIDlist[i][0].length;j++){
-               // console.log(allPimIDlist[i][0][j]);
-        //     }
-        // }
-        // console.log(allPimIDlist[selectedID]);
-        // console.log(allPimIDlist[selectedID][0]);
-        // console.log(allPimIDlist[selectedID][0][1]);
         var uniqueIds = [];
             $.each(allPimIDlist[selectedID][0], function(i, el){
                 if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
@@ -1027,7 +1020,7 @@ function hidesidebar()
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
-   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
+   $("#backfromsidebar").html(navbarReloadTextCondensed);
 }
 /**
 *	A function that is called when a user clicks on the expand bubble option in the context menu
