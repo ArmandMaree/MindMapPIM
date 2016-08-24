@@ -72,11 +72,11 @@ public class TopicResponse implements Serializable {
 	}
 	
 	/**
-	* Set the value of involveContacts.
+	* Set the value of involvedContacts.
 	* @param The array of contacts retrieved from the database in String form.
 	*/
-	public void setInvolvedContacts(String[] involveContacts) {
-		this.involveContacts = involveContacts;
+	public void setInvolvedContacts(String[] involvedContacts) {
+		this.involvedContacts = involvedContacts;
 	}
 
 	/**
