@@ -159,15 +159,16 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "    ME    ", group: 0},
-                {id: 1, label: "Cooking", group: 0},
-                {id: 2, label: "Horse", group: 0},
-                {id: 3, label: "Amy \n Lochner", group: 0},
-                {id: 4, label: "COS301", group: 0},
-                {id: 5, label: "Fritz \n Solms", group: 0},
-                {id: 6, label: "Holiday", group: 0},
-                {id: 7, label: "Arno \n Grobler", group: 0},
-                {id: 8, label: "Arno \n Grobler", group: 0}
+                {id: 0, label: "    ME    ",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "Cooking",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 2, label: "Horse",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 3, label: "Amy \n Lochner",font:'20px Tahoma black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 4, label: "COS301",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 5, label: "Fritz \n Solms",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 6, label: "Holiday",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 7, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 8, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}}
+                // {id: 9, label: "Contacts",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}}
             ]
             parentlist =["0","0","0","2","0","4","6","7","2"];
             allPimIDlist[1] = [["1","2"],[null]];
@@ -283,7 +284,7 @@ $(document).ready(function(){
                     size: 26,
                     color: 'black'
                 },
-                borderWidth: 1
+                borderWidth: 3
             },
             configure:function (option, path) {
               if (path.indexOf('smooth') !== -1 || option === 'smooth') {
@@ -387,6 +388,7 @@ $(document).ready(function(){
             *   A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/user/topic/request', function(serverResponse){
+                console.log("serverResponse.contacts: "+JSON.parse(serverResponse.body).involvedContacts);
                 if(JSON.parse(serverResponse.body).items!=null){
                     console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items;
@@ -476,10 +478,13 @@ $(document).ready(function(){
                     */
                     var JSONServerResponse = JSON.parse(serverResponse.body);
                     /**
-                    *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
+                    *   @var topicsall - an array that contains names for the topics of the items used by the pims.
                     */
                     var topicsall = JSONServerResponse.topicsText;
-
+                    /**
+                    *   @var contactsAll - an array that contains names for the contatcs of the items used by the pims.
+                    */
+                    var contactsAll = JSONServerResponse.involvedContacts;
                     /**
                     *   @var {int} pos - a variable that contains the position
                     */
@@ -489,22 +494,38 @@ $(document).ready(function(){
                     */
                     var branchinglimit = topicsall.length;
                     /**
-                    *   @var thisgroup - ....
+                    *   @var thisgroup - Colour properties for a group of topics
                     */
                     var thisgroup = nodes[selectedID].group;
+                    /**
+                    *   @var thiscolour - ....
+                    */
+                    var thiscolour = {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}};
                     /**
                     *   @var tempnodelength - contains the length of the nodes array
                     */
                     var tempnodelength = parseInt(nodes.length);
+                    var dontConcateAgain =false;
+                    if(topicsall.length<= i && !dontConcateAgain && contactsAll != null){
+                        topicsall = topicsall.concat(contactsAll);
+                        dontConcateAgain=true;
+                        branchinglimit= (topicsall.length + contactsAll.length) ;
+                        if(branchinglimit>4){
+                            branchinglimit=4;
+                        }
+                    }
                     for(var i=0 ;i<branchinglimit;i++){
-                        console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+                            if(Math.abs(topicsall.length-contactsAll.length)<= i){
+                                thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                            }
+                            console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
                             /**
                             *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
                             */
                             var pimSourceIds = JSONServerResponse.pimSourceIds;
 
                             allPimIDlist[nodes.length]=pimSourceIds[i];
-                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
+                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
                         
                         try {
                             console.log("push "+ tempnodelength)
@@ -512,7 +533,8 @@ $(document).ready(function(){
                             data.nodes.add({
                                 id: nodes.length,
                                 label: topicsall[pos],
-                                group: thisgroup
+                                font:'20px Tahoma black', 
+                                color: thiscolour
                             });
                             parentlist.push(selectedID);
                         }
@@ -546,7 +568,8 @@ $(document).ready(function(){
                         nodes.push({
                             id: nodes.length,
                             label: topicsall[pos++],
-                            group: thisgroup
+                            font:'20px Tahoma black', 
+                            color: thiscolour
                         })
                         edges.push({
                             id: edges.length,
