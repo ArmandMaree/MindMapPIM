@@ -4,12 +4,19 @@ jdk:
 
 sudo: required
 
+# safelist
+branches:
+  only:
+  - master
+  - develop
+  - /^support-.*$/
+
 notifications:
   email: false
   slack: 
     rooms:
       - aaan:nPcmtLyPdpi69PCnz3alvwRl#development
-    on_success: always
+    on_success: change
     on_failure: always
 
 services:
