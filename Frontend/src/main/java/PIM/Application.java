@@ -43,7 +43,7 @@ public class Application {
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 	 private final String itemResponseQueueName = "item-response.frontend.rabbit";
-	// private final String settingsResponseQueueName = "edit-user-response.frontend.rabbit";
+	// private final String settingsResponseQueueName = "user-update-response.frontend.rabbit";
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
 		return new LinkedBlockingQueue<>();
@@ -65,7 +65,7 @@ public class Application {
 	}
 
 	// @Bean
-	// LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL() {
+	// LinkedBlockingQueue<UerUpdatResponseIdentified> editUserSettingsResponseLL() {
 	// 	return new LinkedBlockingQueue<>();
 	// }
 

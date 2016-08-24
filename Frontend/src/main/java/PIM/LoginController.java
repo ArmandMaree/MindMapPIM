@@ -42,7 +42,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
 //////////////////
     // @Autowired
     // @Qualifier("editUserSettingsResponseLL")
-    // LinkedBlockingQueue<EditUserSettingsResponse> editUserSettingsResponseLL;
+    // LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
 
 /////////////////////
     @Autowired
@@ -95,24 +95,24 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
 ////////////// AMY
 
-    // @MessageMapping("/usercheck")
-    // @SendTo("/topic/request")
-    // public UserIdentified usercheck(User message) throws Exception {
-    //     System.out.println(message);
-    //     String id = UUID.randomUUID().toString();
-    //     System.out.println("Request id: "+id);
-    //     UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
-    //     rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
-    //     while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-    //         //do nothing for now, maybe sleep a bit in future?
-    //     }
-    //     System.out.println("Found user!");
-    //     UserIdentified user = userCheckResponseLL.poll();
-    //     System.out.println("Found user: "+user);
+    @MessageMapping("/usercheck")
+    @SendTo("/topic/request")
+    public UserIdentified usercheck(User message) throws Exception {
+        System.out.println(message);
+        String id = UUID.randomUUID().toString();
+        System.out.println("Request id: "+id);
+        UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+        rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
+        while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Found user!");
+        UserIdentified user = userCheckResponseLL.poll();
+        System.out.println("Found user: "+user);
 
-    //     Thread.sleep(2000);
-    //     return user;
-    // }
+        Thread.sleep(2000);
+        return user;
+    }
 
     // @MessageMapping("/datasources")
     // @SendTo("/topic/request")

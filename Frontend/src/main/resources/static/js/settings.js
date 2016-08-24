@@ -210,29 +210,29 @@ function checkDatabase()
 		$("#Loading").fadeIn(3000,function(){
 
 		});
-		// var socket = new SockJS('/usercheck');
-		// stompClient = Stomp.over(socket);
-		// stompClient.connect({}, function(frame) {
-		//     console.log('Connected: ' + frame);
-		//     connected = true;
+		var socket = new SockJS('/usercheck');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+		    console.log('Connected: ' + frame);
+		    connected = true;
 			
-		// 	var name= getCookie("name");
-		// 	var surname = getCookie("surname");
-		// 	var email = getCookie("email");
-		// 	console.log("Got cookie: "+ name,surname,email);
-		// 	var usercheck={firstName:name,lastName:surname,gmailId:email};
+			var name= getCookie("name");
+			var surname = getCookie("surname");
+			var email = getCookie("email");
+			console.log("Got cookie: "+ name,surname,email);
+			var usercheck={firstName:name,lastName:surname,gmailId:email};
 			
-		// 	stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-		// 	stompClient.subscribe('/topic/request', function(serverResponse){
-		// 		console.log("subscribing")
-		// 		var jsonresponse = JSON.parse(serverResponse.body);
-		// 		console.log("ServerResponse is : "+ jsonresponse);
-		// 		console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
+			stompClient.subscribe('/topic/request', function(serverResponse){
+				console.log("subscribing")
+				var jsonresponse = JSON.parse(serverResponse.body);
+				console.log("ServerResponse is : "+ jsonresponse);
+				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 		
-		// 		if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
-		// 		{
-		// 			$("#tickGoogle").show();
-		// 		}
+				if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
+				{
+					$("#tickGoogle").show();
+				}
 				//DONT DELETE!!!!!!!!!!!!!!
 
 				// if(jsonresponse.facebookId != null || jsonresponse.facebookId !="")
@@ -243,15 +243,15 @@ function checkDatabase()
 				// {
 				// 	console.log("Jsonresponse error");
 				// }
-				// $("#Loading").fadeOut(1000,function(){
+				$("#Loading").fadeOut(1000,function(){
 
-				// });
-		// 	}, function(error) {
-		//     		// display the error's message header:
-		//     		console.log(error.headers.message);
-	 //  		});
+				});
+			}, function(error) {
+		    		// display the error's message header:
+		    		console.log(error.headers.message);
+	  		});
 			
-		// });
+		});
 		
 }
 
