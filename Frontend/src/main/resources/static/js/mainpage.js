@@ -1,41 +1,41 @@
 /**
-*	@var {String} name - varible to hold where the user is current logged in.
+*   @var {String} name - varible to hold where the user is current logged in.
 */
 var name = "login=";
 /**
-*	@var {Boolean} rightClick - Variable to see where the user is currentluy right clicking
+*   @var {Boolean} rightClick - Variable to see where the user is currentluy right clicking
 */
 var rightClick;
 /**
-*	@var {} ca - Variable to hold all split cookies
+*   @var {} ca - Variable to hold all split cookies
 */
 var ca = document.cookie.split(';');
 /**
-*	@var {String} x - Temp Variable to hold the cookie result 
+*   @var {String} x - Temp Variable to hold the cookie result 
 */
 var x="";
 /**
-*	@var {String} x1 - Temp Variable to hold the cookie result 
+*   @var {String} x1 - Temp Variable to hold the cookie result 
 */
 var x1="";
 /**
-*	@var {} menu - Holds the right click context menu, as to be referenced later
+*   @var {} menu - Holds the right click context menu, as to be referenced later
 */
 var menu;
 /**
-*	@var {int} selectedID - The currently selected nodes ID
+*   @var {int} selectedID - The currently selected nodes ID
 */
 var selectedID;
 /**
-*	@var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
+*   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
 var parentlist =[0];
 /**
-*	@var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
+*   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
 var expandlist = [];
 /**
-*	@var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
+*   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var initialdepth = 2;
 /**
@@ -46,6 +46,10 @@ var flagHasNodesToLoad = false;
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
 var mocktesting = false;
+/**
+*   @var {bool} currFramerate - Stores the current framerate.
+*/
+var currFramerate = 60;
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
@@ -72,14 +76,14 @@ if(x!="1"){
     window.location.assign('/login');
 }
 /**
-*	A function that creates a json string from an object
-*	@param obj An object that needs to be converted into a JSON string
+*   A function that creates a json string from an object
+*   @param obj An object that needs to be converted into a JSON string
 */
 function toJSON(obj) {
     return JSON.stringify(obj, null, 4);
 }
 /**
-*	A JQuery function that allows the sidepanel to be resizeable
+*   A JQuery function that allows the sidepanel to be resizeable
 */
 $( window ).resize(function() {
     if($(window).width()<=768){
@@ -95,38 +99,40 @@ $( window ).resize(function() {
     }
 });
 /**
-*	@var nodes - An array of node objects
+*   @var nodes - An array of node objects
 */
 var nodes;
 /**
-*	@var {} edges - An array of edge objects
+*   @var {} edges - An array of edge objects
 */
 var edges;
 /**
-*	@var {} network - A variable which holds the created network
+*   @var {} network - A variable which holds the created network
 */
 var network;
 /**
-*	Function that is executed when the document has loaded
+*   Function that is executed when the document has loaded
 */
-$(document).ready(function($){
+
+
+$(document).ready(function(){
     /**
     *   A function that hieds the error
     */
     $("#loadingAlertError").hide();  
-	/**
-	*	A function that displays the loading bar
-	*/
+    /**
+    *   A function that displays the loading bar
+    */
     $("#loadingAlert").fadeIn(1000, function() {
         // body...
     });
     /**
-    *	@var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
+    *   @var {String} color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
     */
     var color = 'gray';
     /**
-    *	@var len - 
-    */	
+    *   @var len - 
+    */  
     var len = undefined;
 
     /**
@@ -258,9 +264,9 @@ $(document).ready(function($){
         };
 
         /**
-	    *	@var options - An object that contains all settings for the BubbleMap
-	    */
-       	var options = {
+        *   @var options - An object that contains all settings for the BubbleMap
+        */
+        var options = {
             interaction:{
                 hover: true,
                 hoverConnectedEdges: true,
@@ -279,18 +285,60 @@ $(document).ready(function($){
                 },
                 borderWidth: 1
             },
+            configure:function (option, path) {
+              if (path.indexOf('smooth') !== -1 || option === 'smooth') {
+                return true;
+              }
+              return false;
+            },
             edges: {
                 width: 1
             }
         };
         network = new vis.Network(container, data, options);
+        
+        if(!window.FPSMeter){
+        alert("This test page doesn't seem to include FPSMeter: aborting"); 
+        return;
+        }
+
+
+        
+
+        // Register a progress call-back
+        document.addEventListener('fps',
+            function(evt) {
+                currFramerate = evt.fps
+                // console.log(evt.fps);
+                if(currFramerate<25){
+                    var options = {
+                      "edges": {
+                        "smooth": false
+                        }
+                      }
+                      network.setOptions(options);
+                }else if(currFramerate>40){
+                    var options = {
+                      "edges": {
+                        "smooth": true
+                        }
+                      }
+                      network.setOptions(options);
+                }
+                // console.log("Current framerate: " + evt.fps + " fps");
+            },
+            false);
+
+        // Start FPS analysis, optionnally specifying the rate at which FPS 
+        // are evaluated (in seconds, defaults to 1).
+        FPSMeter.run();
         /**
-        *	@var socket - holds the web socket object
+        *   @var socket - holds the web socket object
         */
-      	var socket = new SockJS('/request');
-      	/**
-      	*	@var stompClient - 
-      	*/
+        var socket = new SockJS('/request');
+        /**
+        *   @var stompClient - 
+        */
       	stompClient = Stomp.over(socket);
       	/**
       	*	A function that connects the stompClient 
@@ -338,7 +386,7 @@ $(document).ready(function($){
             /**
             *   A function that subscribes to a destination that the requests are sent to 
             */
-            stompClient.subscribe('/topic/request', function(serverResponse){
+            stompClient.subscribe('/user/topic/request', function(serverResponse){
                 if(JSON.parse(serverResponse.body).items!=null){
                     console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items;
