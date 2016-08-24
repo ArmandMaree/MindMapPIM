@@ -4,6 +4,13 @@ jdk:
 
 sudo: required
 
+# safelist
+branches:
+  only:
+  - master
+  - develop
+  - /^support-.*$/
+
 notifications:
   email: false
   slack: 
