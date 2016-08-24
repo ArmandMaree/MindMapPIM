@@ -87,7 +87,7 @@ function toJSON(obj) {
 */
 $( window ).resize(function() {
     if($(window).width()<=768){
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
@@ -95,7 +95,7 @@ $( window ).resize(function() {
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
     }
 });
 /**
@@ -399,7 +399,7 @@ $(document).ready(function(){
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
-                        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+                        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
                     }
 
                     $("#facebook").html("");
@@ -700,14 +700,14 @@ $(document).ready(function(){
 
     if($(window).width()<=768)
     {
-         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
     }
     else
     {
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
@@ -893,7 +893,7 @@ $(document).ready(function(){
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
 
-       $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+       $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
     });
     /**
     *	A function that handles the doubleClick event on the BubbleMap
@@ -948,7 +948,7 @@ $(document).ready(function(){
         // console.log(allPimIDlist[2][0]);
         // for(var i=1;i<allPimIDlist.length;i++){
         //     for(var j=0;j<allPimIDlist[i][0].length;j++){
-               console.log(allPimIDlist[i][0][j]);
+               // console.log(allPimIDlist[i][0][j]);
         //     }
         // }
         // console.log(allPimIDlist[selectedID]);
@@ -1027,7 +1027,7 @@ function hidesidebar()
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
-   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>unclutter</p>")
 }
 /**
 *	A function that is called when a user clicks on the expand bubble option in the context menu
