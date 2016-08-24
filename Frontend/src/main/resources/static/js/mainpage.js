@@ -1,3 +1,4 @@
+//mainpage
 /**
 *   @var {String} name - varible to hold where the user is current logged in.
 */
