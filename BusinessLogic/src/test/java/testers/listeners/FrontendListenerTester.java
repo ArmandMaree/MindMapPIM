@@ -62,8 +62,9 @@ public class FrontendListenerTester extends AbstractTester {
 	}
 
 	@After
-	public void tearDown() {
-
+	public void tearDown() throws InterruptedException {
+		while (authCodeQueue.poll(1, TimeUnit.SECONDS) != null);
+		while (userIdentifiedQueue.poll(1, TimeUnit.SECONDS) != null);
 	}
 
 	@Test
@@ -84,11 +85,28 @@ public class FrontendListenerTester extends AbstractTester {
 		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
 		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, firstName, lastName, authCodes);
 		rabbitTemplate.convertAndSend(TestContext.registerBusinessQueueName, userRegistrationIdentified);
-		Thread.sleep(5000);
 
 		AuthCode authCode = authCodeQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failed - authCode is null.", authCode);
 		UserIdentified userIdentified = userIdentifiedQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failed - userIdentified is null.", userIdentified);
+	}
+
+	@Test
+	public void testReceiveUserUpdateRequest() throws InterruptedException {
+		//test without gmail changing
+		String id = UUID.randomUUID().toString();
+		String userId = UUID.randomUUID().toString();
+		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
+		UserUpdateRequestIdentified userUpdateIdentified = new UserUpdateRequestIdentified(id, userId, authCodes);
+		rabbitTemplate.convertAndSend(TestContext.userUpdateBusinessQueueName, userUpdateIdentified);
+
+		AuthCode authCode = authCodeQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failed - authCode is null.", authCode);
+
+		UserIdentified userIdentifiedResponse = userIdentifiedQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - userIdentifiedResponse is null.", userIdentifiedResponse);
+		Assert.assertEquals("Failure - returnIds no not match.", id, userIdentifiedResponse.getReturnId());
+		Assert.assertEquals("Failure - userIds no not match.", userId, userIdentifiedResponse.getUserId());
 	}
 }

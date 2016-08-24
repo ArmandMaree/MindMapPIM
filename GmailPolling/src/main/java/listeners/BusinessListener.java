@@ -23,7 +23,17 @@ public class BusinessListener {
 	private GmailRepository gmailRepository;
 
 	public void receiveAuthCode(AuthCode authCode) {
-		Poller poller = new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId());
-		new Thread(poller).start();
+		PollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
+
+		if (pollingUser == null) {
+			Poller poller = new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId());
+			new Thread(poller).start();
+		}
+		else {
+			if (authCode.getAuthCode() == null || authCode.getAuthCode().equals(""))
+				pollingUser.setRefreshToken(null);
+			else
+				new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId()); // this will update the pollingUser in the repository.
+		}
 	}
 }

@@ -27,6 +27,7 @@ public class TestContext {
 	public final static String topicRequestQueueName = "topic-request.database.rabbit";
 	public final static String userRegisterQueueName = "user-register.database.rabbit";
 	public final static String userCheckQueueName = "user-check.database.rabbit";
+	public final static String userUpdateRequestQueueName = "user-update.database.rabbit";
 
 	// test beans start
 	public final static String topicResponseQueueName = "topic-response.frontend.rabbit";
@@ -34,10 +35,15 @@ public class TestContext {
 	public final static String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
 	public final static String processedDataQueueName = "processed-data.database.rabbit";
+	public final static String userUpdateResponseQueueName = "user-update-response.frontend.rabbit";
 
 	@Autowired
 	private LinkedBlockingQueue<UserIdentified> queue;
 
+	@Autowired
+	private LinkedBlockingQueue<UserUpdateResponseIdentified> userUpdateQueue;
+
+	//user register and user check
 	@Bean
 	LinkedBlockingQueue<UserIdentified> testUserQueueDev() {
 		return new LinkedBlockingQueue<>();
@@ -82,6 +88,42 @@ public class TestContext {
 		queue.put(userIdentified);
 	}
 
+	// user update
+	@Bean
+	LinkedBlockingQueue<UserUpdateResponseIdentified> testUserUpdateQueueDev() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	Queue userUpdateResponseQueue() {
+		return new Queue(userUpdateResponseQueueName, false);
+	}
+
+	@Bean
+	Binding userUpdateResponseBinding(@Qualifier("userUpdateResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(userUpdateResponseQueueName);
+	}
+
+	@Bean
+	public MessageListenerAdapter userUpdateResponseAdapter() {
+		return new MessageListenerAdapter(this, "receiveUserUpdateResponse");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer userUpdateResponseContainer(ConnectionFactory connectionFactory, @Qualifier("userUpdateResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(userUpdateResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	public void receiveUserUpdateResponse(UserUpdateResponseIdentified userUpdateResponseIdentified) throws InterruptedException {
+		System.out.println("Test Context Received: " + userUpdateResponseIdentified);
+		userUpdateQueue.put(userUpdateResponseIdentified);
+	}
+
+	// topic request
 	@Autowired
 	private LinkedBlockingQueue<TopicResponse> topicResponseLinkedQueue;
 
