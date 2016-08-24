@@ -16,17 +16,18 @@ public class TopicResponse implements Serializable {
 
 	private String userId;
 	private String[] topicsText;
+	private String[] involvedContacts;
 	private String[][][] pimSourceIds;
-
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public TopicResponse(String userId, String[] topicsText, String[][][] pimSourceIds) {
+	public TopicResponse(String userId, String[] topicsText,String[] involvedContacts, String[][][] pimSourceIds) {
 		this.userId = userId;
 		this.topicsText = topicsText;
 		this.pimSourceIds = pimSourceIds;
+		this.involvedContacts = involvedContacts;
 	}
 
 	/**
@@ -46,12 +47,13 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
-	* Get the value of topicsTest.
+	* Get the value of topicsText.
 	* @return The array of topics retrieved from the database in String form.
 	*/
 	public String[] getTopicsText() {
 		return topicsText;
 	}
+
 
 	/**
 	* Set the value of topicsText.
@@ -59,6 +61,22 @@ public class TopicResponse implements Serializable {
 	*/
 	public void setTopics(String[] topicsText) {
 		this.topicsText = topicsText;
+	}
+
+	/**
+	* Get the value of involvedContacts.
+	* @return The array of topics retrieved from the database in String form.
+	*/
+	public String[] getInvolvedContacts() {
+		return involvedContacts;
+	}
+	
+	/**
+	* Set the value of involveContacts.
+	* @param The array of contacts retrieved from the database in String form.
+	*/
+	public void setInvolvedContacts(String[] involveContacts) {
+		this.involveContacts = involveContacts;
 	}
 
 	/**
