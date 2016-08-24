@@ -64,7 +64,7 @@ public class ProcessedData implements Serializable {
 	public ProcessedData(RawData rawData, String[] topics) {
 		this.pimSource = rawData.getPimSource();
 		this.userId = rawData.getUserId();
-		this.involvedContacts = rawData.getInvolvedContacts();
+		this.involvedContacts = rawData.getInvolvedContacts().toArray(new String[0]);
 		this.pimItemId = rawData.getPimItemId();
 		this.topics = topics;
 		this.time = rawData.getTime();

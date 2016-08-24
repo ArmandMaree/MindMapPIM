@@ -23,7 +23,7 @@ public class TopicResponse implements Serializable {
 	* @param userId the id of the user the request is for.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
 	*/
-	public TopicResponse(String userId, String[] topicsText,String[] involvedContacts, String[][][] pimSourceIds) {
+	public TopicResponse(String userId, String[] topicsText, String[] involvedContacts, String[][][] pimSourceIds) {
 		this.userId = userId;
 		this.topicsText = topicsText;
 		this.pimSourceIds = pimSourceIds;

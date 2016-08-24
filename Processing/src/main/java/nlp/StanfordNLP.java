@@ -275,4 +275,24 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 
 		return remainingWords;
 	}
+
+	public List<List<String>> splitNamesAndTopics(List<String> words) {
+		List<String> topics = new ArrayList<>();
+		List<String> names = new ArrayList<>();
+
+		for (String word : words) {
+			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word)) {
+				System.out.println("Matched as name: " + word);
+				names.add(word);
+			}
+			else
+				topics.add(word);
+		}
+
+		List<List<String>> topicsAndPeople = new ArrayList<>();
+		topicsAndPeople.add(topics);
+		topicsAndPeople.add(names);
+
+		return topicsAndPeople;
+	}
 }

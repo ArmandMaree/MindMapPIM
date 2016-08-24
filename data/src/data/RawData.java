@@ -1,6 +1,7 @@
 package data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
 * Contains the raw text extracted from some PIM.
@@ -29,7 +30,7 @@ public class RawData implements Serializable {
 	/**
 	* The IDs of other users involved in this specific list of topics.
 	*/
-	private String[] involvedContacts = null;
+	private List<String> involvedContacts = null;
 
 	/**
 	* The ID of the item where the topics was extracted, relevant to the pimSource.
@@ -61,7 +62,7 @@ public class RawData implements Serializable {
 	* @param pimItemId String ID of the item the data was extracted from w.r.t. the PIM.
 	* @param data Array of text that was extracted.
 	*/
-	public RawData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] data, long time) {
+	public RawData(String pimSource, String userId, List<String> involvedContacts, String pimItemId, String[] data, long time) {
 		super();
 		this.pimSource = pimSource;
 		this.userId = userId;
@@ -123,7 +124,7 @@ public class RawData implements Serializable {
 	* Returns value of involvedContacts
 	* @return Array of contacts identified by their ID relevant to the PIM.
 	*/
-	public String[] getInvolvedContacts() {
+	public List<String> getInvolvedContacts() {
 		return involvedContacts;
 	}
 
@@ -131,7 +132,7 @@ public class RawData implements Serializable {
 	* Sets new value of involvedContacts
 	* @param involvedContacts Array of contacts identified by their ID relevant to the PIM.
 	*/
-	public void setInvolvedContacts(String[] involvedContacts) {
+	public void setInvolvedContacts(List<String> involvedContacts) {
 		this.involvedContacts = involvedContacts;
 	}
 

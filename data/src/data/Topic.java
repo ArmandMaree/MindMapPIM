@@ -43,6 +43,11 @@ public class Topic implements Serializable, Comparable<Topic> {
 	*/
 	private long time;
 
+	/**
+	* Indicates whether this topic is a person.
+	*/
+	private boolean person = false;
+
 	public Topic() {
 		super();
 	}
@@ -123,7 +128,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of userId.
-	* @param id ID of the user in database the topic is related to.
+	* @param userId ID of the user in database the topic is related to.
 	*/
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -139,7 +144,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of topic.
-	* @param id The topic's name.
+	* @param topic The topic's name.
 	*/
 	public void setTopic(String topic) {
 		this.topic = topic;
@@ -155,7 +160,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of relatedTopics.
-	* @param id Array of topics that are related.
+	* @param relatedTopics Array of topics that are related.
 	*/
 	public void setRelatedTopics(List<String> relatedTopics) {
 		this.relatedTopics = relatedTopics;
@@ -171,7 +176,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of processedDataIds.
-	* @param id IDs of the ProcessedData in the repository that contains this topic.
+	* @param processedDataIds IDs of the ProcessedData in the repository that contains this topic.
 	*/
 	public void setProcessedDataIds(List<String> processedDataIds) {
 		this.processedDataIds = processedDataIds;
@@ -187,10 +192,49 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of time.
-	* @param id Last time in milliseconds this topic was updated. Usually the current time.
+	* @param time Last time in milliseconds this topic was updated. Usually the current time.
 	*/
 	public void setTime(long time) {
 		this.time = time;
+	}
+
+	/**
+	* Returns the value of person.
+	* @return Indicates whether this topic is a person.
+	*/
+	public boolean isPerson() {
+		return person;
+	}
+
+	/*
+	* Implements Comparable and allows topics to sorted by weight.
+	* @param other The topic this one is compared to.
+	*/
+	public int compareTo(Topic other) {
+		if (getWeight() > other.getWeight())
+			return 1;
+		else if (getWeight() < other.getWeight())
+			return -1;
+		else 
+			return 0;
+	}
+
+	/**
+	* Calculated the weight of the topic at the current moment.
+	*/
+	public double getWeight() {
+		long secs = time / 1000; // seconds between time and current time
+		double hours = secs / 3600 - 306816; // hours since 01/01/2005
+		double weight = 100 * hours * processedDataIds.size(); // inverse of hourse * 100 * number of data associated with topic.
+		return weight;
+	}
+
+	/**
+	* Set the value of person.
+	* @param person Indicates whether this topic is a person.
+	*/
+	public void setIsPerson(boolean person) {
+		this.person = person;
 	}
 
 	/**
@@ -219,28 +263,5 @@ public class Topic implements Serializable, Comparable<Topic> {
 		"}";
 
 		return s;
-	}
-
-	/*
-	* Implements Comparable and allows topics to sorted by weight.
-	* @param other The topic this one is compared to.
-	*/
-	public int compareTo(Topic other) {
-		if (getWeight() > other.getWeight())
-			return 1;
-		else if (getWeight() < other.getWeight())
-			return -1;
-		else 
-			return 0;
-	}
-
-	/**
-	* Calculated the weight of the topic at the current moment.
-	*/
-	public double getWeight() {
-		long secs = time / 1000; // seconds between time and current time
-		double hours = secs / 3600 - 306816; // hours since 01/01/2005
-		double weight = 100 * hours * processedDataIds.size(); // inverse of hourse * 100 * number of data associated with topic.
-		return weight;
 	}
 }

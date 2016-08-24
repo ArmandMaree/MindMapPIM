@@ -2,6 +2,7 @@ package nlp;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -70,7 +71,7 @@ public class Processor implements Runnable {
 	* @return The processed data.
 	*/
 	public ProcessedData process(RawData rawData) {
-		ArrayList<String> topics = new ArrayList<>();
+		List<String> topics = new ArrayList<>();
 		ProcessedData processedData = null;
 
 		if (nlp != null) {
@@ -85,7 +86,15 @@ public class Processor implements Runnable {
 				return null;
 
 			topics = nlp.purge(topics);
+
+			List<String> people = new ArrayList<>();
+			people.addAll(rawData.getInvolvedContacts());
+
+			List<List<String>> topicsAndPeople = nlp.splitNamesAndTopics(topics);
+			topics = topicsAndPeople.get(0);
+			people.addAll(topicsAndPeople.get(1));
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
+			processedData.setInvolvedContacts(people.toArray(new String[0]));
 		}
 		else
 			System.out.println("ERROR: No NaturalLanguageProcessor specified.");

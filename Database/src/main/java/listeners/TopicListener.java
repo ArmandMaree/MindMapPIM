@@ -77,7 +77,7 @@ public class TopicListener {
 		}
 
 		if (topics == null || topics.size() == 0) { // no related topics exist for the given path
-			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null)); // send topic response that contains no topics
+			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null, null)); // send topic response that contains no topics
 			System.out.println("No topics found for user: " + topicRequest.getUserId());
 			return;
 		}
@@ -140,7 +140,7 @@ public class TopicListener {
 		for (int i = 0; i < returnTopics.size(); i++)
 			topicsText[i] = returnTopics.get(i).getTopic();
 
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, nodesArr); // create topic response without topics objects
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, null, nodesArr); // create topic response without topics objects
 		System.out.println("Respond: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}

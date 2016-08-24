@@ -23,4 +23,6 @@ public interface NaturalLanguageProcessor {
 	* @return List of words that does not contain any of the excludedWords and no duplicates.
 	*/
 	public ArrayList<String> purge(List<String> words);
+
+	public List<List<String>> splitNamesAndTopics(List<String> words);
 }

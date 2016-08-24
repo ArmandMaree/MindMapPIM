@@ -546,9 +546,39 @@ public class GmailPoller implements Poller {
 
 		rawDataElements.add(body);
 
-		ArrayList<String> involvedContacts = new ArrayList<>();
-		// involvedContacts.add(email.getHeader("Delivered-To")[0]);
-		RawData rawData = new RawData("Gmail", userEmail, involvedContacts.toArray(new String[0]), msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
+		List<String> involvedContacts = new ArrayList<>();
+
+		for (String contact : email.getHeader("From")) {
+			int pos = contact.indexOf("<");
+			if (pos > 0) {
+				if (contact.charAt(pos - 1) == ' ')
+					pos--;
+
+				contact = contact.substring(0, pos);
+
+				if (!contact.equals(""))
+					involvedContacts.add(contact); 
+			}
+		}
+
+		for (String contact : email.getHeader("Cc")) {
+			int pos = contact.indexOf("<");
+			if (pos > 0) {
+				if (contact.charAt(pos - 1) == ' ')
+					pos--;
+
+				contact = contact.substring(0, pos);
+
+				if (!contact.equals(""))
+					involvedContacts.add(contact); 
+			}
+		}
+
+		for (String contact : involvedContacts) {
+			System.out.println("Contact: " + contact);
+		}
+
+		RawData rawData = new RawData("Gmail", userEmail, involvedContacts, msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
 
 		return rawData;
 	}

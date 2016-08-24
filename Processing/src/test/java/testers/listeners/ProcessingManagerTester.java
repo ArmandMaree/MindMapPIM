@@ -63,7 +63,9 @@ public class ProcessingManagerTester extends AbstractTester {
 	public void testProcess() throws InterruptedException {
 		String pimSource = "Gmail";
 		String userId = "acubencos@gmail.com";
-		String[] involvedContacts = {"Susan", "Steve"};
+		List<String> involvedContacts = new ArrayList<>();
+		involvedContacts.add("Susan Someone");
+		involvedContacts.add("Steve Aoki");
 		String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
 		String[] data = {"Horse photo", "Hey Acuben, here is the photo you wanted."};
 		long time = System.currentTimeMillis();
