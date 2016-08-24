@@ -29,7 +29,7 @@ var selectedID;
 /**
 *   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
-var parentlist =[0];
+var parentlist =[0,0];
 /**
 *   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
@@ -45,7 +45,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = false;
+var mocktesting = true;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -159,19 +159,19 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "    ME    ",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "Cooking",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 0, label: "   ME   ",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6',font:'20px Tahoma white'}}},
+                {id: 1, label: "Contacts",font:'20px Tahoma black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
                 {id: 2, label: "Horse",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
                 {id: 3, label: "Amy \n Lochner",font:'20px Tahoma black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
                 {id: 4, label: "COS301",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
                 {id: 5, label: "Fritz \n Solms",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
                 {id: 6, label: "Holiday",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
                 {id: 7, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 8, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}}
-                // {id: 9, label: "Contacts",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}}
+                {id: 8, label: "Arno \n Grobler",font:'20px Tahoma black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+                {id: 9, label: "Cooking",font:'20px Tahoma black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
             ]
-            parentlist =["0","0","0","2","0","4","6","7","2"];
-            allPimIDlist[1] = [["1","2"],[null]];
+            parentlist =["0","0","0","2","0","4","6","7","2","0"];
+            allPimIDlist[9] = [["1","2"],[null]];
             allPimIDlist[2] = [["3","4"],[null]];
             allPimIDlist[3] = [["5","6"],[null]];
             allPimIDlist[4] = [["7","8"],[null]];
@@ -181,7 +181,9 @@ $(document).ready(function(){
             allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
-                {id: 0, label: "    ME    ", group: 0}
+                {id: 0, label: "   ME   ", color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "Contacts",  color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
+
             ]
         }      
     }else{
@@ -189,7 +191,7 @@ $(document).ready(function(){
         var splitter = tempnodes.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
-            console.log(c);
+            // console.log(c);
             if(c==""|| c=="undefined"){
                 break;
             }
@@ -231,10 +233,11 @@ $(document).ready(function(){
                 {from: 4, to: 0},
                 {from: 7, to: 6},
                 {from: 6, to: 0},
-                {from: 2, to: 8}
+                {from: 2, to: 8},
+                {from: 0, to: 9}
             ]
         }else{
-            edges = []
+            edges = [{from: 0, to: 1},]
         }
     }else{
         edges =[];
@@ -242,7 +245,7 @@ $(document).ready(function(){
         var splitter = tempedges.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
-            console.log(c);
+            // console.log(c);
             if(c=="" || c=="undefined"){
                 break;
             }
@@ -388,9 +391,9 @@ $(document).ready(function(){
             *   A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/user/topic/request', function(serverResponse){
-                console.log("serverResponse.contacts: "+JSON.parse(serverResponse.body).involvedContacts);
+                // console.log("serverResponse.contacts: "+JSON.parse(serverResponse.body).involvedContacts);
                 if(JSON.parse(serverResponse.body).items!=null){
-                    console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
+                    // console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items; 
                     $("#accordion").html(""); 
                     if($(window).width()<=768){
@@ -411,36 +414,36 @@ $(document).ready(function(){
                     if(s!=0)
                         var pathtoselectednode =[];
                     var pathtoselectednodelabels =[]
-                    console.log("s:"+s)
-                    console.log("parentlist "+parentlist)
+                    // console.log("s:"+s)
+                    // console.log("parentlist "+parentlist)
 
                     var dataForSideBar = {
                         "Topic" : nodes[s].label,
                         "Gmail" : []
                     }
-                    console.log("this object: "+JSON.stringify(dataForSideBar))
+                    // console.log("this object: "+JSON.stringify(dataForSideBar))
                     for(var i=0;i<items.length;i++){
                         dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
                     }
 
                     for(var i = s; i > 0; i = parentlist[i]){
-                        console.log(i)
+                        // console.log(i)
                         if(pathtoselectednode.indexOf(i)==-1)
                             pathtoselectednode.push(i);
                         else
                             break;
                     }
 
-                    console.log("PathFrom: " + pathtoselectednode);
+                    // console.log("PathFrom: " + pathtoselectednode);
                     var breadcrumb = '<li>Me</li>';
-                    console.log("pathtoselectednode.length: "+pathtoselectednode.length)
+                    // console.log("pathtoselectednode.length: "+pathtoselectednode.length)
                     for(var i=pathtoselectednode.length-1;i>=0;i--){
                         breadcrumb+='<li>'+nodes[pathtoselectednode[i]].label+'</li>';
-                        console.log(breadcrumb);
+                        // console.log(breadcrumb);
                         // break;
                     }
                     $("#breadcrumb").html(breadcrumb);
-                    console.log(s);
+                    // console.log(s);
 
                     populateSidePanel(s, dataForSideBar);
 
@@ -485,6 +488,7 @@ $(document).ready(function(){
                     *   @var contactsAll - an array that contains names for the contatcs of the items used by the pims.
                     */
                     var contactsAll = JSONServerResponse.involvedContacts;
+
                     /**
                     *   @var {int} pos - a variable that contains the position
                     */
@@ -505,8 +509,10 @@ $(document).ready(function(){
                     *   @var tempnodelength - contains the length of the nodes array
                     */
                     var tempnodelength = parseInt(nodes.length);
+
+                    var refreshContactList =[];
                     var dontConcateAgain =false;
-                    if(topicsall.length<= i && !dontConcateAgain){
+                    if(topicsall.length<= i && !dontConcateAgain && contactsAll!=null && selectedID != 0){
                         topicsall = topicsall.concat(contactsAll);
                         dontConcateAgain=true;
                         branchinglimit= (topicsall.length + contactsAll.length) ;
@@ -514,21 +520,28 @@ $(document).ready(function(){
                             branchinglimit=4;
                         }
                     }
+                    if(selectedID==0){
+                            for(var j=0;j<parentlist.length;j++){
+                                if(parentlist[j] == 1){
+                                    refreshContactList.push(j)
+                                }
+                            }
+                    }
                     for(var i=0 ;i<branchinglimit;i++){
                             if(Math.abs(topicsall.length-contactsAll.length)<= i){
                                 thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
                             }
-                            console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
+                            // console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
                             /**
                             *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
                             */
                             var pimSourceIds = JSONServerResponse.pimSourceIds;
 
                             allPimIDlist[nodes.length]=pimSourceIds[i];
-                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
+                            // console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
                         
                         try {
-                            console.log("push "+ tempnodelength)
+                            // console.log("push "+ tempnodelength)
                             expandlist.push(tempnodelength++);
                             data.nodes.add({
                                 id: nodes.length,
@@ -567,7 +580,7 @@ $(document).ready(function(){
 
                         nodes.push({
                             id: nodes.length,
-                            label: topicsall[pos++],
+                            label: topicsall[pos],
                             font:'20px Tahoma black', 
                             color: thiscolour
                         })
@@ -576,7 +589,62 @@ $(document).ready(function(){
                             from: selectedID,
                             to: nodes.length
                         });
+                        if(selectedID==0){
+                            data.nodes.add({
+                                id: nodes.length,
+                                label: contactsAll[pos],
+                                font:'20px Tahoma black', 
+                                color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                            });
+                            parentlist.push(1);
+                            
+                            data.edges.add({
+                                id: edges.length,
+                                from: 1,
+                                to: nodes.length
+                            });
+                            nodes.push({
+                                id: nodes.length,
+                                label: contactsAll[pos],
+                                font:'20px Tahoma black', 
+                                color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                            })
+                            edges.push({
+                                id: edges.length,
+                                from: 1,
+                                to: nodes.length
+                            });
+                        }
+                        pos++;
                     }
+
+                    for(var j=0;j<refreshContactList.length;j++){
+                        console.log("needs to be deleted: "+ j);
+                        selectedID = refreshContactList[j];
+                        var deletelist =[];
+                        var templist = [];
+                        deletelist.push(selectedID);
+                        templist.push(selectedID);
+                        var count =0;
+                        while(templist.length>0 || count > 10000){
+                            count++;
+                            var parent = templist.pop();
+                            // console.log(parent);
+                            for(var i=0;i<parentlist.length;i++){
+                                // console.log(parentlist[i])
+                                if(parentlist[i] == parent){
+                                    templist.push(i);
+                                    deletelist.push(i);
+                                }
+                            }
+                            // console.log(templist.length)
+
+                        }
+                        parentlist[refreshContactList[j]]=-1;
+                        network.selectNodes(deletelist);
+                        network.deleteSelected();
+                    }
+
                     expandBubble(expandlist.shift());
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -586,7 +654,7 @@ $(document).ready(function(){
                         for(var i=0;i<nodes.length;i++){
                             tempstring+= JSON.stringify(nodes[i])+"%";
                         }
-                        console.log(tempstring);
+                        // console.log(tempstring);
                         document.cookie="nodes="+tempstring;
 
                         var tempstring ="";
@@ -594,8 +662,8 @@ $(document).ready(function(){
                             tempstring+= JSON.stringify(edges[i])+"%";
                         }
                         // tempstring+= JSON.stringify({"id":0,"from":"0","to":1})+"%";
-                        console.log(tempstring);
-                        console.log(edges);
+                        // console.log(tempstring);
+                        // console.log(edges);
                         document.cookie="edges="+tempstring;
                     }else{
                         
@@ -657,7 +725,7 @@ $(document).ready(function(){
     */
     function populateSidePanel(node, array)
     {
-        console.log("node is this: "+node)
+        // console.log("node is this: "+node)
         $("#accordion").html("");
         if(array.Topic != "Contact")
         {
@@ -667,7 +735,7 @@ $(document).ready(function(){
         {
             $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>")
         }
-        console.log("Title: "+$("#sidepanelTitle").text());
+        // console.log("Title: "+$("#sidepanelTitle").text());
         if((array.hasOwnProperty('Name')))
         {
             $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
@@ -737,14 +805,14 @@ $(document).ready(function(){
                 if(selectedID!=0)
                     var pathtoselectednode =[];
                 var pathtoselectednodelabels =[]
-                console.log("selectedID:"+selectedID)
-                console.log("parentlist "+parentlist)
+                // console.log("selectedID:"+selectedID)
+                // console.log("parentlist "+parentlist)
 
                 for(var i = selectedID; i > 0; i = parentlist[i]){
                     pathtoselectednode.push(i);
                 }
 
-                console.log("PathFrom: " + pathtoselectednode);
+                // console.log("PathFrom: " + pathtoselectednode);
                 var pos=0;
                 var branchinglimit = 4;
                 var thisgroup = nodes[selectedID].group;
@@ -752,7 +820,7 @@ $(document).ready(function(){
                    pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
                 }
                 // pathtoselectednodelabels.push()
-                console.log("PathTo: " + pathtoselectednodelabels);
+                // console.log("PathTo: " + pathtoselectednodelabels);
 
                 var excludelist=[]
                 for(var i = 1; i < parentlist.length;i++){
@@ -761,7 +829,7 @@ $(document).ready(function(){
                     }
                 }
 
-                console.log("exclude list:"+excludelist);
+                // console.log("exclude list:"+excludelist);
        
                 if(mocktesting)
                     topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
@@ -806,7 +874,7 @@ $(document).ready(function(){
                         // console.log(templist.length)
 
                     }
-
+                    parentlist[selectedID]=-1;
                     network.selectNodes(deletelist);
                     network.deleteSelected();
                 }
@@ -870,8 +938,8 @@ $(document).ready(function(){
         }
         var node = network.getSelectedNodes();
         selectedID = node;
-        console.log(selectedID);
-        console.log(allPimIDlist);
+        // console.log(selectedID);
+        // console.log(allPimIDlist);
         // console.log(allPimIDlist[1]);
         // console.log(allPimIDlist[1][0]);
 
@@ -880,17 +948,17 @@ $(document).ready(function(){
         // console.log(allPimIDlist[2][0]);
         // for(var i=1;i<allPimIDlist.length;i++){
         //     for(var j=0;j<allPimIDlist[i][0].length;j++){
-        //        console.log(allPimIDlist[i][0][j]);
+               console.log(allPimIDlist[i][0][j]);
         //     }
         // }
-        console.log(allPimIDlist[selectedID]);
-        console.log(allPimIDlist[selectedID][0]);
-        console.log(allPimIDlist[selectedID][0][1]);
+        // console.log(allPimIDlist[selectedID]);
+        // console.log(allPimIDlist[selectedID][0]);
+        // console.log(allPimIDlist[selectedID][0][1]);
         var uniqueIds = [];
             $.each(allPimIDlist[selectedID][0], function(i, el){
                 if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
             });
-            console.log(uniqueIds);
+            // console.log(uniqueIds);
         if(!mocktesting)
             var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
         else
@@ -918,14 +986,14 @@ $(document).ready(function(){
         var e = window.event;
         var posX = e.clientX;
         var posY = e.clientY - $("nav").height();
-        console.log("X: "+ posX);
-        console.log("Y: "+ posY);
-        console.log(network.getNodeAt({"x": posX, "y": posY}));
+        // console.log("X: "+ posX);
+        // console.log("Y: "+ posY);
+        // console.log(network.getNodeAt({"x": posX, "y": posY}));
         selectedID = network.getNodeAt({"x": posX, "y": posY});
         network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
         var node = network.getSelectedNodes();
-        console.log(node);
-            console.log("works on right click");
+        // console.log(node);
+            // console.log("works on right click");
             // $(this).bind("contextmenu", function (e) {
             if(node.length != 0)
             {
@@ -935,7 +1003,7 @@ $(document).ready(function(){
             // });
         //Node is an array of nodes
         rightClick = network.getSelectedNodes();
-        console.log(rightClick);
+        // console.log(rightClick);
 
         if(rightClick.length != 0)
         {
@@ -967,7 +1035,7 @@ function hidesidebar()
 function expandBubble(nextID)
 {
     // var finishedtask=false;
-    console.log("auto expanding: "+nextID)
+    // console.log("auto expanding: "+nextID)
     selectedID = nextID;
     try{
         network.selectNodes([nextID]);
@@ -986,15 +1054,15 @@ function expandBubble(nextID)
     if(selectedID!=0)
         var pathtoselectednode =[];
     var pathtoselectednodelabels =[]
-    console.log("selectedID:"+selectedID)
-    console.log("parentlist "+parentlist)
+    // console.log("selectedID:"+selectedID)
+    // console.log("parentlist "+parentlist)
 
     for(var i = selectedID; i > 0; i = parentlist[i]){
         pathtoselectednode.push(i);
     }
 
-    console.log("PathFrom: " + pathtoselectednode);
-    console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
+    // console.log("PathFrom: " + pathtoselectednode);
+    // console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
     if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
         var pos=0;
         var branchinglimit = 4;
@@ -1003,7 +1071,7 @@ function expandBubble(nextID)
            pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
         }
         // pathtoselectednodelabels.push()
-        console.log("PathTo: " + pathtoselectednodelabels);
+        // console.log("PathTo: " + pathtoselectednodelabels);
 
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
@@ -1012,7 +1080,7 @@ function expandBubble(nextID)
             }
         }
 
-        console.log("exclude list:"+excludelist);
+        // console.log("exclude list:"+excludelist);
        
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
