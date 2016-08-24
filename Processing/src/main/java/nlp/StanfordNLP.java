@@ -21,12 +21,27 @@ import edu.stanford.nlp.dcoref.CorefCoreAnnotations.*;
 *
 * @see <a href="http://nlp.stanford.edu">Stanford NLP</a>
 * @author  Armand Maree
-* @since   2016-07-11
+* @since   1.0.0
 */
 public class StanfordNLP implements NaturalLanguageProcessor {
+	/**
+	* The output device (usually System.out) to which the status and working should be printed to. Use null if no status is needed.
+	*/
 	private PrintWriter out = null;
+
+	/**
+	* The output device (usually a file) to which an XML version of the output can be written to. Use null if no XML output is needed.
+	*/
 	private PrintWriter xmlOut = null;
+
+	/**
+	*
+	*/
 	private StanfordCoreNLP pipeline = null;
+
+	/**
+	* A list of words that should always be excluded.
+	*/
 	private ArrayList<String> excludedWords = new ArrayList<>();
 
 	/**
@@ -77,12 +92,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param text Contains the text that needs to be interpreted.
 	* @return A list of topics discovered in the text.
 	*/
-	public ArrayList<String> getTopics(String text) {
+	public List<String> getTopics(String text) {
 		try {
 			List<CoreMap> sentences = parse(text);
 			// ArrayList<String> topics = getPOS("VB", sentences); // get verbs
 			// topics.addAll(getGroups(sentences)); // get nouns grouped by NamedEntityTagAnnotation
-			ArrayList<String> topics = getGroups(sentences); // get nouns grouped by NamedEntityTagAnnotation
+			List<String> topics = getGroups(sentences); // get nouns grouped by NamedEntityTagAnnotation
 
 			return topics;
 		}
@@ -130,7 +145,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param sentences List of words with their metadata.
 	* @return A list of words at their base form that match the given criteria.
 	*/
-	private ArrayList<String> getPOS(String match, List<CoreMap> sentences) {
+	private List<String> getPOS(String match, List<CoreMap> sentences) {
 		ArrayList<String> words = new ArrayList<>();
 
 		for(CoreMap sentence: sentences) {
@@ -153,7 +168,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param sentences List of words with their metadata.
 	* @return A list of words as they were given form that match the given criteria.
 	*/
-	private ArrayList<CoreLabel> getCore(String match, List<CoreMap> sentences) {
+	private List<CoreLabel> getCore(String match, List<CoreMap> sentences) {
 		ArrayList<CoreLabel> words = new ArrayList<>();
 
 		for(CoreMap sentence: sentences) {
@@ -175,10 +190,10 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param sentences List of words with their metadata.
 	* @return A list of words at their base form that match the given criteria.
 	*/
-	private ArrayList<String> getGroups(List<CoreMap> sentences) {
-		ArrayList<CoreLabel> preGroup = getCore("NN*", sentences);
-		ArrayList<String> groups = new ArrayList<>();
-		ArrayList<CoreLabel> buffer = new ArrayList<>();
+	private List<String> getGroups(List<CoreMap> sentences) {
+		List<CoreLabel> preGroup = getCore("NN*", sentences);
+		List<String> groups = new ArrayList<>();
+		List<CoreLabel> buffer = new ArrayList<>();
 
 		for (CoreLabel token: preGroup) {
 			String ner = token.get(NamedEntityTagAnnotation.class);
@@ -231,7 +246,7 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param buffer The list of words and their metadata.
 	* @return A single String of words seperated by a space.
 	*/
-	private String bufferToString(ArrayList<CoreLabel> buffer) {
+	private String bufferToString(List<CoreLabel> buffer) {
 		String bufferGroup = "";
 
 		if (!buffer.isEmpty()) {
@@ -251,8 +266,8 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	* @param words List containg the words that need to be purged.
 	* @return List of words that does not contain any of the excludedWords and no duplicates.
 	*/
-	public ArrayList<String> purge(List<String> words) {
-		ArrayList<String> remainingWords = new ArrayList<>();
+	public List<String> purge(List<String> words) {
+		List<String> remainingWords = new ArrayList<>();
 		Pattern p = Pattern.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
 		for (String word : words) {
@@ -274,5 +289,27 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		}
 
 		return remainingWords;
+	}
+
+	/**
+	* Takes a list of words and seperates it into names and non-names by using the {@link nlp.NameFinder} class.
+	* @param words The list of words that should be checked.
+	*/
+	public List<List<String>> splitNamesAndTopics(List<String> words) {
+		List<String> topics = new ArrayList<>();
+		List<String> names = new ArrayList<>();
+
+		for (String word : words) {
+			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word))
+				names.add(word);
+			else
+				topics.add(word);
+		}
+
+		List<List<String>> topicsAndPeople = new ArrayList<>();
+		topicsAndPeople.add(topics);
+		topicsAndPeople.add(names);
+
+		return topicsAndPeople;
 	}
 }

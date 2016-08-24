@@ -22,6 +22,12 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	doc {
+		transitive false
+	}
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -30,15 +36,25 @@ dependencies {
 	compile files('../data/data.jar')
 
 	// Spring stuff
-	testCompile("org.springframework.boot:spring-boot-starter-test")
-
-	// MongoDB
-	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
 
 	// Queue messaging stuff
-	compile("org.springframework.boot:spring-boot-starter-amqp")
+	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE")
+
+	// javadoc dependencies
+	doc files("../data/data-javadoc.jar")
+	doc("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
+	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
 }
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.3'
+}
+
+javadoc {
+	source configurations.doc.collect { zipTree(it) }
+	include "**/*.java"
+	options.addStringOption("Xdoclint:none", "-quiet")
+	failOnError = false
+	options.addStringOption("author")
 }

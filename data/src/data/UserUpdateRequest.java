@@ -2,6 +2,12 @@ package data;
 
 import java.io.Serializable;
 
+/**
+* Contains all the information needed to update a User object that was previously persisted.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 public class UserUpdateRequest extends User implements Serializable {
 	private static final long serialVersionUID = 369603720519056L;
 
@@ -18,7 +24,9 @@ public class UserUpdateRequest extends User implements Serializable {
 	}
 
 	/**
-	* Default constructor used when updating.
+	* Constructor that initializes some member variables used for updating.
+	* @param userId ID used in database.
+	* @param authCodes Array of authentication codes for the pollers.
 	*/
 	public UserUpdateRequest(String userId, AuthCode[] authCodes) {
 		super(userId);
@@ -41,6 +49,11 @@ public class UserUpdateRequest extends User implements Serializable {
 		this.authCodes = authCodes;
 	}
 
+	/**
+	* String representation of a UserUpdateRequest used for printing.
+	* @return String representation of a UserUpdateRequest.
+	*/
+	@Override
 	public String toString() {
 		return "UserUpdateRequest {\n" +
 			"\tid: " + getUserId() + ",\n" +

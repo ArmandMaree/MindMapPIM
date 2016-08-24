@@ -4,6 +4,7 @@ import nlp.*;
 import data.*;
 import testers.AbstractTester;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -54,7 +55,11 @@ public class NaturalLanguageProcessorTester extends AbstractTester {
 	public void testGetTopics() throws InterruptedException {
 		String pimSource = "Gmail";
 		String userId = "acubencos@gmail.com";
-		String[] involvedContacts = {"susan@gmail.com", "steve@gmail.com", "thabo@gmail.com", "precious@gmail.com"};
+		List<String> involvedContacts = new ArrayList<>();
+		involvedContacts.add("Susan Someone");
+		involvedContacts.add("Steve Aoki");
+		involvedContacts.add("Armand Maree");
+		involvedContacts.add("Arno Grobler");
 		String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
 		String[] data = {"horse photo", "Hey Acuben, here is the photo you wanted of the horse."};
 		long time = System.currentTimeMillis();

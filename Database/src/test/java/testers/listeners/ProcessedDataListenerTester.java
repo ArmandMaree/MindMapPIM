@@ -91,7 +91,7 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		for (ProcessedData pd : processedData)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
 
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 
 		List<Topic> topicsAfter = topicRepository.findByUserId(acuben.getUserId());
 
@@ -131,5 +131,29 @@ public class ProcessedDataListenerTester extends AbstractTester {
 					break;
 			}
 		}
+	}
+
+	@Test
+	public void testInvolvedContacts() throws InterruptedException {
+		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		userRepository.save(acuben);
+		acuben = userRepository.findByGmailId(acuben.getGmailId());
+		Assert.assertNotNull("Failure - acuben is null.", acuben);
+		List<ProcessedData> processedDataList = new ArrayList<>();
+
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
+
+		for (ProcessedData pd : processedDataList)
+			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
+
+		Thread.sleep(5000);
+
+		List<Topic> topicsAfter = topicRepository.findByUserIdAndPerson(acuben.getUserId(), false);
+		Assert.assertEquals("Failure - topicsAfter is not 5.", 5, topicsAfter.size());
+
+		List<Topic> contactsAfter = topicRepository.findByUserIdAndPerson(acuben.getUserId(), true);
+		Assert.assertEquals("Failure - contactsAfter is not 6.", 6, contactsAfter.size());
 	}
 }

@@ -44,7 +44,6 @@ public class ProcessingManagerTester extends AbstractTester {
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
-
 			setUpDone = true;
 		}
 	}
@@ -52,27 +51,11 @@ public class ProcessingManagerTester extends AbstractTester {
 	@After
 	public void tearDown() {
 		// clean up after each test method
+		while (processedDataQueue.poll(1, TimeUnit.SECONDS) != null);
 	}
 
 	@Test
-	public void testRawDataListener() {
+	public void testProcessingManagerBean() {
 		Assert.assertNotNull("Failure - processingManager is null.", processingManager);
-	}
-
-	@Test
-	public void testProcess() throws InterruptedException {
-		String pimSource = "Gmail";
-		String userId = "acubencos@gmail.com";
-		String[] involvedContacts = {"Susan", "Steve"};
-		String pimItemId = "f65465f46srg44s6r54t06s6s0df4t6dst0";
-		String[] data = {"Horse photo", "Hey Acuben, here is the photo you wanted."};
-		long time = System.currentTimeMillis();
-		RawData rawData = new RawData(pimSource, userId, involvedContacts, pimItemId, data, time);
-		String[] topics = {"horse", "photo", "Acuben"};
-		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
-
-		ProcessedData processedData = processedDataQueue.poll(5, TimeUnit.SECONDS);
-
-		Assert.assertNotNull("Failure - processedData is null.", processedData);
 	}
 }

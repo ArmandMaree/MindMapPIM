@@ -22,33 +22,47 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	doc {
+		transitive false
+	}
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
 	// data jar
-	compile files('../data/data.jar')
+	compile files("../data/data.jar")
 
-	// Spring
-	testCompile("org.springframework.boot:spring-boot-starter-test")
+	// Spring stuff
+	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
 
 	// Gmail API
-	compile 'com.google.api-client:google-api-client:1.22.0'
-	compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
-	compile 'com.google.apis:google-api-services-gmail:v1-rev45-1.22.0'
+	compile("com.google.api-client:google-api-client:1.22.0")
+	compile("com.google.oauth-client:google-oauth-client-jetty:1.22.0")
+	compile("com.google.apis:google-api-services-gmail:v1-rev45-1.22.0")
 
 	// Other used for mail processing
-	compile 'javax.mail:mail:1.5.0-b01'
-	compile 'commons-codec:commons-codec:1.10'
-	compile 'org.jsoup:jsoup:1.9.2'
-
-	// Queue messaging stuff
-	compile("org.springframework.boot:spring-boot-starter-amqp")
+	compile("javax.mail:mail:1.5.0-b01")
+	compile("commons-codec:commons-codec:1.10")
+	compile("org.jsoup:jsoup:1.9.2")
 
 	// MongoDB
-	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE")
+
+	// Queue messaging stuff
+	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE")
+
+	// javadoc dependencies
+	doc files("../data/data-javadoc.jar")
+	doc("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE:sources")
+	doc("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
+	compile("javax.mail:mail:1.5.0-b01:sources")
+	compile("commons-codec:commons-codec:1.10:sources")
+	compile("org.jsoup:jsoup:1.9.2:sources")
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.3'
+	gradleVersion = "2.3"
 }

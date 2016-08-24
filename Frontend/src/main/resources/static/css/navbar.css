@@ -75,6 +75,14 @@
 .navbar-default .navbar-link:hover {
   color: #ffffff;
 }
+#navbartitle{ 
+  /*font-weight: 700 !important; */
+  position: absolute;
+  font-size: 90px !important; 
+  font-family: 'Pacifico', cursive !important;
+  top:-10px;
+  left: 40px;
+}
 
 p{ 
   /*font-weight: 700 !important; */

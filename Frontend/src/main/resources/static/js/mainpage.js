@@ -29,7 +29,7 @@ var selectedID;
 /**
 *   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
-var parentlist =[0];
+var parentlist =[0,0];
 /**
 *   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
@@ -51,7 +51,19 @@ var mocktesting = false;
 */
 var currFramerate = 60;
 /**
+*   @var {String} navbarReloadTextExpanded - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextExpanded ="<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text' style='font-family: 'Pacifico', cursive;'>unclutter</p>";
+/**
+*   @var {String} navbarReloadTextCondensed - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text' style='font-family: 'Pacifico', cursive;'>unclutter</p>";
+/**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
+*/
+var canExpand = false;
+/**
+*   @var {bool} canExpand - Checks whether the mindmap can expand.
 */
 var shouldRebuild = false;
 /**
@@ -87,7 +99,7 @@ function toJSON(obj) {
 */
 $( window ).resize(function() {
     if($(window).width()<=768){
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
@@ -95,7 +107,7 @@ $( window ).resize(function() {
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
 });
 /**
@@ -159,17 +171,18 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "    ME    ", group: 0},
-                {id: 1, label: "Cooking", group: 0},
-                {id: 2, label: "Horse", group: 0},
-                {id: 3, label: "Amy \n Lochner", group: 0},
-                {id: 4, label: "COS301", group: 0},
-                {id: 5, label: "Fritz \n Solms", group: 0},
-                {id: 6, label: "Holiday", group: 0},
-                {id: 7, label: "Arno \n Grobler", group: 0},
-                {id: 8, label: "Arno \n Grobler", group: 0}
+                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+            
+                // {id: 2, label: "Horse", group: 0},
+                // {id: 3, label: "Amy \n Lochner", group: 0},
+                // {id: 4, label: "COS301", group: 0},
+                // {id: 5, label: "Fritz \n Solms", group: 0},
+                // {id: 6, label: "Holiday", group: 0},
+                // {id: 7, label: "Arno \n Grobler", group: 0},
+                // {id: 8, label: "Arno \n Grobler", group: 0}
             ]
-            parentlist =["0","0","0","2","0","4","6","7","2"];
+            // parentlist =["0","0","0","2","0","4","6","7","2"];
             allPimIDlist[1] = [["1","2"],[null]];
             allPimIDlist[2] = [["3","4"],[null]];
             allPimIDlist[3] = [["5","6"],[null]];
@@ -180,7 +193,8 @@ $(document).ready(function(){
             allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
-                {id: 0, label: "    ME    ", group: 0}
+                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             ]
         }      
     }else{
@@ -223,17 +237,18 @@ $(document).ready(function(){
     if(tempedges==""){
         if(mocktesting){
             edges = [
-                {from: 0, to: 1},
-                {from: 2, to: 3},
-                {from: 2, to: 0},
-                {from: 5, to: 4},
-                {from: 4, to: 0},
-                {from: 7, to: 6},
-                {from: 6, to: 0},
-                {from: 2, to: 8}
+                {from: 0, to: 1}
+                // {from: 2, to: 3},
+                // {from: 2, to: 0},
+                // {from: 5, to: 4},
+                // {from: 4, to: 0},
+                // {from: 7, to: 6},
+                // {from: 6, to: 0},
+                // {from: 2, to: 8}
             ]
         }else{
-            edges = []
+            edges = [
+            {from: 1, to: 0}]
         }
     }else{
         edges =[];
@@ -283,7 +298,7 @@ $(document).ready(function(){
                     size: 26,
                     color: 'black'
                 },
-                borderWidth: 1
+                borderWidth: 3
             },
             configure:function (option, path) {
               if (path.indexOf('smooth') !== -1 || option === 'smooth') {
@@ -339,12 +354,12 @@ $(document).ready(function(){
         /**
         *   @var stompClient - 
         */
-      	stompClient = Stomp.over(socket);
-      	/**
-      	*	A function that connects the stompClient 
-      	*/
-      	stompClient.connect({}, function(frame) {
-        	console.log('Connected: ' + frame);
+        stompClient = Stomp.over(socket);
+        /**
+        *   A function that connects the stompClient 
+        */
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
           // var userReg = {};
           // if(gmailUser!=null){
           //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
@@ -356,15 +371,15 @@ $(document).ready(function(){
           //   this.maxNumberOfTopics = maxNumberOfTopics;
 
            /**
-           *	@var {String} name1 - string that contains the userId
+           *    @var {String} name1 - string that contains the userId
            */
             var name1 = "userId=";
             /**
-    		*	@var ca1 - Cookie....
-    		*/
+            *   @var ca1 - Cookie....
+            */
             var ca1 = document.cookie.split(';');
             /**
-            *	@var x1 - ...
+            *   @var x1 - ...
             */
             x1 ="";
             for(var i = 0; i <ca1.length; i++) {
@@ -394,7 +409,7 @@ $(document).ready(function(){
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
-                        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+                        $("#backfromsidebar").html(navbarReloadTextCondensed)
                     }
 
                     $("#facebook").html("");
@@ -446,6 +461,7 @@ $(document).ready(function(){
                         // body...
                     });
                 }else{
+                    canExpand=true;
                     /**
                     *   @var {String} name2 - a variable that contains the data for the last selected node for the cookie
                     */
@@ -479,6 +495,10 @@ $(document).ready(function(){
                     *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
                     */
                     var topicsall = JSONServerResponse.topicsText;
+                    /**
+                    *   @var contactsAll - an array that contains names for the contatcs of the items used by the pims.
+                    */
+                    var contactsAll = JSONServerResponse.involvedContacts;
 
                     /**
                     *   @var {int} pos - a variable that contains the position
@@ -489,72 +509,168 @@ $(document).ready(function(){
                     */
                     var branchinglimit = topicsall.length;
                     /**
-                    *   @var thisgroup - ....
+                    *   @var thiscolour - ....
                     */
-                    var thisgroup = nodes[selectedID].group;
+                    var thiscolour = {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}};
                     /**
                     *   @var tempnodelength - contains the length of the nodes array
                     */
                     var tempnodelength = parseInt(nodes.length);
+                    
+                    var refreshContactList =[];
+                    var dontConcateAgain =false;
+                    if(topicsall.length<= i && !dontConcateAgain && contactsAll!=null && selectedID != 0){
+                        topicsall = topicsall.concat(contactsAll);
+                        dontConcateAgain=true;
+                        branchinglimit= (topicsall.length + contactsAll.length) ;
+                        if(branchinglimit>4){
+                            branchinglimit=4;
+                        }
+                    }
+                    if(selectedID==0){ 
+                        for(var j=0;j<parentlist.length;j++){
+                            if(parentlist[j] == 1){
+                                refreshContactList.push(j);
+                            } 
+                        }
+                    }
+                    // console.log("contactsAll.length:"+contactsAll.length);
+                    if(topicsall != null && topicsall.length >0){
+                        for(var k=0;k<topicsall.length;k++)
+                            topicsall[k] = (topicsall[k]).split(' ').join('  \n  ');
+                    }
+                    if(contactsAll != null && contactsAll.length >0){
+                        for(var k=0;k<contactsAll.length;k++)
+                            contactsAll[k] = (contactsAll[k]).split(' ').join('  \n  ');
+                    }
+
                     for(var i=0 ;i<branchinglimit;i++){
                         console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
-                            /**
-                            *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
-                            */
-                            var pimSourceIds = JSONServerResponse.pimSourceIds;
+                        // if(contactsAll != null&& contactsAll.length >0 && Math.abs(topicsall.length-contactsAll.length)<= i){
+                        //     thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        // }
+                        console.log("contactsAll "+contactsAll); 
+                        console.log("topicsall "+topicsall);
+                        console.log("contactsAll.indexOf("+topicsall[pos]+")="+contactsAll.indexOf(topicsall[pos])); 
+                        if(contactsAll.indexOf(topicsall[pos]) >=0)
+                            thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+ 
+                        /**
+                        *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                        */
+                        var pimSourceIds = JSONServerResponse.pimSourceIds;
 
-                            allPimIDlist[nodes.length]=pimSourceIds[i];
-                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Check here if this works
-                        
-                        try {
-                            console.log("push "+ tempnodelength)
-                            expandlist.push(tempnodelength++);
-                            data.nodes.add({
+                        allPimIDlist[nodes.length]=pimSourceIds[i];
+                        if(topicsall[pos]!="undefined" && topicsall[i]!=undefined){
+                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
+                            try {
+                                console.log("push "+ tempnodelength)
+                                console.log("expand parentlist: "+parentlist)
+                                expandlist.push(tempnodelength++);
+                                console.log("expand list:"+expandlist);
+                                data.nodes.add({
+                                    id: nodes.length,
+                                    label: "  "+topicsall[pos]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: thiscolour
+                                });
+                                parentlist.push(selectedID);
+                            }
+                            catch (err) {
+                                alert(err);
+                                $("#loadingAlert").fadeOut(1000, function() {
+                                    // body...
+                                });
+                                $("#loadingAlertError").fadeIn(1000, function() {
+                                    // body...
+                                });
+                            }
+
+                            try {
+                                data.edges.add({
+                                    id: edges.length,
+                                    from:  nodes.length,
+                                    to: selectedID
+                                });
+                            }
+                            catch (err) {
+                                alert(err);
+                                $("#loadingAlert").fadeOut(1000, function() {
+                                    // body...
+                                });
+                                $("#loadingAlertError").fadeIn(1000, function() {
+                                    // body...
+                                });
+                            }
+
+                            nodes.push({
                                 id: nodes.length,
-                                label: topicsall[pos],
-                                group: thisgroup
-                            });
-                            parentlist.push(selectedID);
-                        }
-                        catch (err) {
-                            alert(err);
-                            $("#loadingAlert").fadeOut(1000, function() {
-                                // body...
-                            });
-                            $("#loadingAlertError").fadeIn(1000, function() {
-                                // body...
-                            });
-                        }
-
-                        try {
-                            data.edges.add({
+                                label: "  "+topicsall[pos]+"  ",
+                                font:'20px Raleway black', 
+                                color: thiscolour
+                            })
+                            edges.push({
                                 id: edges.length,
-                                from: selectedID,
-                                to: nodes.length
+                                from:  nodes.length,
+                                to: selectedID
                             });
+                        
+                            if(selectedID==0  && contactsAll != null && contactsAll.length >0 && i<contactsAll.length && contactsAll[i]!="undefined"){
+                                expandlist.push(tempnodelength++);
+                                data.nodes.add({
+                                    id: nodes.length,
+                                    label:"  "+ contactsAll[i]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                });
+                                parentlist.push(1);
+                                
+                                data.edges.add({
+                                    id: edges.length,
+                                    from: nodes.length,
+                                    to: 1
+                                });
+                                nodes.push({
+                                    id: nodes.length,
+                                    label:"  "+ contactsAll[i]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                })
+                                edges.push({
+                                    id: edges.length,
+                                    from: nodes.length,
+                                    to: 1
+                                });
+                            }
+                            pos++;
                         }
-                        catch (err) {
-                            alert(err);
-                            $("#loadingAlert").fadeOut(1000, function() {
-                                // body...
-                            });
-                            $("#loadingAlertError").fadeIn(1000, function() {
-                                // body...
-                            });
-                        }
-
-                        nodes.push({
-                            id: nodes.length,
-                            label: topicsall[pos++],
-                            group: thisgroup
-                        })
-                        edges.push({
-                            id: edges.length,
-                            from: selectedID,
-                            to: nodes.length
-                        });
                     }
-                    expandBubble(expandlist.shift());
+                    for(var j=0;j<refreshContactList.length;j++){
+                        console.log("needs to be deleted: "+ j);
+                        selectedID = refreshContactList[j];
+                        var deletelist =[];
+                        var templist = [];
+                        deletelist.push(selectedID);
+                        templist.push(selectedID);
+                        var count =0;
+                        while(templist.length>0 || count > 10000){
+                            count++;
+                            var parent = templist.pop();
+                            // console.log(parent);
+                            for(var i=0;i<parentlist.length;i++){
+                                // console.log(parentlist[i])
+                                if(parentlist[i] == parent){
+                                    templist.push(i);
+                                    deletelist.push(i);
+                                }
+                            }
+                            // console.log(templist.length)
+
+                        }
+                        parentlist[refreshContactList[j]]=-1;
+                        network.selectNodes(deletelist);
+                        network.deleteSelected();
+                    }
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
                     });
@@ -578,6 +694,13 @@ $(document).ready(function(){
                         
                     }
                 }
+                // for(var k =0;k<expandlist.length;k++){
+                //     if(parentlist[expandlist[i]]==1){
+                //         console.log("expand found and removed from expand list: "+expandlist[i]);
+                //         expandlist.remove(i);
+                //     }
+                // }
+                expandBubble(expandlist.shift());
             });
             /**    
             *   @var topicRequest -  a JSON oject that contains information for a topic request
@@ -609,28 +732,28 @@ $(document).ready(function(){
 
     if($(window).width()<=768)
     {
-         $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
         $("#settings").html("   Settings");
         $("#logout").html("   Logout");
     }
     else
     {
-        $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
     }
     $("#sidepanel").hide();
     /**
-    *	A function that disables the default event that occurs on rightclick event
+    *   A function that disables the default event that occurs on rightclick event
     */
     document.oncontextmenu = function() {return false;};
 
     /**
-    *	A function that populates the sidepanel with data
-    *	@param node - the node that has been selected
-    *	@param array - contains the data of the selected node
+    *   A function that populates the sidepanel with data
+    *   @param node - the node that has been selected
+    *   @param array - contains the data of the selected node
     */
     function populateSidePanel(node, array)
     {
@@ -687,7 +810,7 @@ $(document).ready(function(){
     }
 
     /**
-    *	@var menu - variable that is assigned the context menu
+    *   @var menu - variable that is assigned the context menu
     */
     menu = new ax5.ui.menu({
         position: "absolute", // default position is "fixed"
@@ -724,17 +847,20 @@ $(document).ready(function(){
                 console.log("PathFrom: " + pathtoselectednode);
                 var pos=0;
                 var branchinglimit = 4;
-                var thisgroup = nodes[selectedID].group;
+                var thiscolor = nodes[selectedID].color;
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
-                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
+                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
                 }
+                console.log(pathtoselectednodelabels);
                 // pathtoselectednodelabels.push()
                 console.log("PathTo: " + pathtoselectednodelabels);
+                if(pathtoselectednodelabels.indexOf("Contacts") >0)
+                    pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
 
                 var excludelist=[]
                 for(var i = 1; i < parentlist.length;i++){
                     if(parentlist[i]==selectedID){
-                        excludelist.push(nodes[i].label.replace("\n"," "));
+                        excludelist.push(nodes[i].label.replace("\n"," ").replace(" ",""));
                     }
                 }
 
@@ -745,7 +871,7 @@ $(document).ready(function(){
                 else
                     topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
-				document.cookie="lastselectednode="+selectedID;
+                document.cookie="lastselectednode="+selectedID;
                 try{
                     stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
                 }catch(err){
@@ -789,10 +915,10 @@ $(document).ready(function(){
                 }
             }
         }
-	});
-	/**
-	*	A function that resets the html for certain divs
-	*/
+    });
+    /**
+    *   A function that resets the html for certain divs
+    */
     network.on("click", function(){
        // console.log("nodes")
        $("#facebook").html("");
@@ -802,10 +928,10 @@ $(document).ready(function(){
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
 
-       $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+       $("#backfromsidebar").html(navbarReloadTextCondensed)
     });
     /**
-    *	A function that handles the doubleClick event on the BubbleMap
+    *   A function that handles the doubleClick event on the BubbleMap
     */
     network.on("doubleClick", function(){
         /**
@@ -860,9 +986,9 @@ $(document).ready(function(){
         //        console.log(allPimIDlist[i][0][j]);
         //     }
         // }
-        console.log(allPimIDlist[selectedID]);
-        console.log(allPimIDlist[selectedID][0]);
-        console.log(allPimIDlist[selectedID][0][1]);
+        // console.log(allPimIDlist[selectedID]);
+        // console.log(allPimIDlist[selectedID][0]);
+        // console.log(allPimIDlist[selectedID][0][1]);
         var uniqueIds = [];
             $.each(allPimIDlist[selectedID][0], function(i, el){
                 if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
@@ -888,9 +1014,9 @@ $(document).ready(function(){
         }
     });
 
-	/**
-	*	A function that handles the rightClick event on the BubbleMap 
-	*/
+    /**
+    *   A function that handles the rightClick event on the BubbleMap 
+    */
     network.on("oncontext", function(){
         var e = window.event;
         var posX = e.clientX;
@@ -902,6 +1028,8 @@ $(document).ready(function(){
         network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
         var node = network.getSelectedNodes();
         console.log(node);
+        console.log(nodes[node].label);
+
             console.log("works on right click");
             // $(this).bind("contextmenu", function (e) {
             if(node.length != 0)
@@ -924,9 +1052,9 @@ $(document).ready(function(){
 
 
 });
-
+// setInterval(function exapndingintervl(){console.log("canExpand "+canExpand);  if(canExpand){console.log("HERE:"+expandlist);expandBubble(expandlist.shift())} }, 500);
 /**
-*	A function that hides the sidebar
+*   A function that hides the sidebar
 */
 function hidesidebar()
 {
@@ -936,10 +1064,10 @@ function hidesidebar()
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
-   $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+   $("#backfromsidebar").html(navbarReloadTextCondensed)
 }
 /**
-*	A function that is called when a user clicks on the expand bubble option in the context menu
+*   A function that is called when a user clicks on the expand bubble option in the context menu
 */
 function expandBubble(nextID)
 {
@@ -967,29 +1095,51 @@ function expandBubble(nextID)
     console.log("parentlist "+parentlist)
 
     for(var i = selectedID; i > 0; i = parentlist[i]){
-        pathtoselectednode.push(i);
+        if(i!=1)
+            pathtoselectednode.push(i);
     }
+    // for(var i=pathtoselectednode.length-1;i>=0;i--){
+    //    pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+    // }
+    // pathtoselectednodelabels.push()
+    // pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
+    // console.log("expand PathTo: " + pathtoselectednodelabels);
 
-    console.log("PathFrom: " + pathtoselectednode);
-    console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
+    console.log("expand PathFrom: " + pathtoselectednode.length+1);
+    console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
     if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
         var pos=0;
         var branchinglimit = 4;
-        var thisgroup = nodes[selectedID].group;
-        for(var i=pathtoselectednode.length-1;i>=0;i--){
-           pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
-        }
-        // pathtoselectednodelabels.push()
-        console.log("PathTo: " + pathtoselectednodelabels);
+        var thiscolor = nodes[selectedID].color;
+
+                        var pathtoselectednodelabels =[]
+                console.log("selectedID:"+selectedID)
+                console.log("parentlist "+parentlist)
+
+                for(var i = selectedID; i > 0; i = parentlist[i]){
+                    pathtoselectednode.push(i);
+                }
+
+                console.log("PathFrom: " + pathtoselectednode);
+                var pos=0;
+                var branchinglimit = 4;
+                var thiscolor = nodes[selectedID].color;
+                for(var i=pathtoselectednode.length-1;i>=0;i--){
+                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+                }
+                console.log(pathtoselectednodelabels);
+                // pathtoselectednodelabels.push()
+                console.log("PathTo: " + pathtoselectednodelabels);
+                pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
 
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
             if(parentlist[i]==selectedID){
-                excludelist.push(nodes[i].label.replace("\n"," "));
+                excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
             }
         }
 
-        console.log("exclude list:"+excludelist);
+        console.log("expand exclude list:"+excludelist);
        
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
@@ -1010,4 +1160,5 @@ function expandBubble(nextID)
     }else{
          network.selectNodes([0]);
     }
+    canExpand=false;
 }

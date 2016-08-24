@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * Waits for messages from the business service.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class BusinessListener {
 	@Autowired
@@ -22,8 +22,12 @@ public class BusinessListener {
 	@Autowired
 	private GmailRepository gmailRepository;
 
+	/**
+	* Receives an AuthCode and starts a poller with the authCode contained in that class.
+	* @param authCode The AuthCode that contains all the information needed to start the poller.
+	*/
 	public void receiveAuthCode(AuthCode authCode) {
-		PollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
+		GmailPollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
 
 		if (pollingUser == null) {
 			Poller poller = new GmailPoller(gmailRepository, rabbitTemplate, authCode.getAuthCode(), authCode.getId());

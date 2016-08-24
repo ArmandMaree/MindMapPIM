@@ -6,10 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import data.*;
 
 /**
-* MongoDB repository for user information.
+* MongoDB repository for {@link data.User} objects.
 *
 * @author  Armand Maree
-* @since   2016-07-16
+* @since   1.0.0
 */
 public interface UserRepository extends MongoRepository<User, String> {
     public List<User> findAll();

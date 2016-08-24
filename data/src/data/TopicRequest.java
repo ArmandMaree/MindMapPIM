@@ -6,21 +6,43 @@ import java.io.Serializable;
 * A request for new topics based on a given path.
 *
 * @author  Armand Maree
-* @since   2016-07-21
+* @since   1.0.0
 */
 public class TopicRequest implements Serializable {
 	private static final long serialVersionUID = 732667706236639L;
 
+	/**
+	* The Id of the user as used by the database.
+	*/
 	private String userId;
+
+	/**
+	* The path that was followed to obtain this node in the mindmap.
+	* <p>
+	*	To get the root node's related topics, make the path null or empty.<br>
+	*	The path will automatically be excluded from the return topics.
+	* </p>
+	*/
 	private String[] path;
+
+	/**
+	* The topics that should be excluded from the topics that will be returned.
+	*/
 	private String[] exclude;
+
+	/**
+	* The maximim number of topics and contacts that may be returned.
+	*/
 	private int maxNumberOfTopics;
 
+	/**
+	* Default constructor.
+	*/
 	public TopicRequest(){
 
 	}
 	/**
-	* Default constructor.
+	* Constructor that initializes some variables.
 	* @param userId the id of the user the request is for.
 	* @param path The array of topics that has to be used to get new topics from.
 	* @param exclude A list of topics that should not be returned.
@@ -59,7 +81,7 @@ public class TopicRequest implements Serializable {
 
 	/**
 	* Set the value of path.
-	* @param The array of topics that must be included in the result topics.
+	* @param path The array of topics that must be included in the result topics.
 	*/
 	public void setPath(String[] path) {
 		this.path = path;
@@ -75,7 +97,7 @@ public class TopicRequest implements Serializable {
 
 	/**
 	* Set the value of exclude.
-	* @param The array of topics that must not be included in the result topics.
+	* @param exclude The array of topics that must not be included in the result topics.
 	*/
 	public void setExclude(String[] exclude) {
 		this.exclude = exclude;

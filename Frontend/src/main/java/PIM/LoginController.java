@@ -177,7 +177,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             // Thread.sleep(2000);
             // this.simpMessagingTemplate.convertAndSend("/queue/chats-" + request.getUserId(), topicResponse);
             return topicResponse;
-        }else{
+        }
+        else{
             String [][][] mockpimIds =  new String[4][2][2];
             mockpimIds[0][0][0] = "1";
             mockpimIds[0][0][1] = "2";
@@ -187,7 +188,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             mockpimIds[2][0][1] = "6";
             mockpimIds[3][0][0] = "7";
             mockpimIds[3][0][1] = "8";
-            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its","Me","Nobody"},mockpimIds);
+            // TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
+            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Horse","cos301","photo","recipe"},new String[]{"Horse","cos301","photo","recipe"},mockpimIds);
             System.out.println(topicResponse);
             // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
             // thread.sleep(2000);

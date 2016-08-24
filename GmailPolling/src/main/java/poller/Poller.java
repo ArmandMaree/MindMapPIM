@@ -4,10 +4,9 @@ import data.*;
 
 /**
 * Basic interface that defines a poller.
-* @see GmailPoller
 *
 * @author  Armand Maree
-* @since   2016-07-11
+* @since   1.0.0
 */
 public interface Poller extends Runnable {
 	/**

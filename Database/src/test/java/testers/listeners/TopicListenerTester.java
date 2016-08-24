@@ -96,14 +96,13 @@ public class TopicListenerTester extends AbstractTester {
 		for (ProcessedData pd : processedData)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
 
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 		String userId = userIdentifiedResponse.getUserId();
 		String[] path = {""};
 		String[] exclude = {""};
 		int maxNumberOfTopics = 4;
 		TopicRequest topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
 		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
-		Thread.sleep(5000);
 
 		TopicResponse topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 
@@ -114,12 +113,49 @@ public class TopicListenerTester extends AbstractTester {
 		path[0] = "horse";
 		topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
 		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
-		Thread.sleep(5000);
 
 		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 		System.out.println("Received: " + topicResponse);
 
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
 		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);	
+	}
+
+	@Test
+	public void testInvolvedContacts() throws InterruptedException {
+		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		UserIdentified userIdentified = new UserIdentified(UUID.randomUUID().toString(), false, acuben);
+		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
+		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
+
+		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
+		List<ProcessedData> processedDataList = new ArrayList<>();
+
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
+
+		for (ProcessedData pd : processedDataList)
+			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
+
+		Thread.sleep(10000);
+		String userId = userIdentifiedResponse.getUserId();
+		String[] path = {""};
+		String[] exclude = {""};
+		int maxNumberOfTopics = 4;
+		TopicRequest topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
+		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
+
+		TopicResponse topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of involvedContacts.", 4, topicResponse.getInvolvedContacts().length);
+
+		path[0] = "horse";
+		topicRequest = new TopicRequest(userId, path, exclude, maxNumberOfTopics);
+		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
+
+		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
+		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of involvedContacts.", 2, topicResponse.getInvolvedContacts().length);
 	}
 }

@@ -58,6 +58,8 @@ public class BusinessListenerTester extends AbstractTester {
 	@Before
 	public void setUp() throws InterruptedException {
 		if (!setUpDone) {
+			while (userUpdateQueue.poll(1, TimeUnit.SECONDS) != null);
+			while (queue.poll(1, TimeUnit.SECONDS) != null);
 			setUpDone = true;
 		}
 
@@ -66,8 +68,7 @@ public class BusinessListenerTester extends AbstractTester {
 
 	@After
 	public void tearDown() throws InterruptedException {
-		while (userUpdateQueue.poll(1, TimeUnit.SECONDS) != null);
-		while (queue.poll(1, TimeUnit.SECONDS) != null);
+
 	}
 
 	@Test
