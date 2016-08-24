@@ -586,6 +586,10 @@ $(document).ready(function(){
                             });
                         }
 
+                        topicsall[pos] = (topicsall[pos]).split(' ').join('  \n  ');
+                        contactsAll[pos] = (contactsAll[pos]).split(' ').join('  \n  ');
+
+
                         nodes.push({
                             id: nodes.length,
                             label:"  "+ topicsall[pos]+"  ",
