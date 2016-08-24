@@ -15,5 +15,6 @@ import data.*;
 */
 public interface TopicRepository extends MongoRepository<Topic, String> {
 	public Topic findByTopicAndUserId(String topic, String userId);
+	public List<Topic> findByUserIdAndPerson(String userId, Boolean person);
 	public List<Topic> findByUserId(String userId);
 }

@@ -73,7 +73,7 @@ public class ProcessedDataListener {
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
-						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						// System.out.println("Added topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 					else {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
@@ -84,7 +84,7 @@ public class ProcessedDataListener {
 							topicInRepo.setIsPerson(true);
 
 						topicRepository.save(topicInRepo);
-						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						// System.out.println("Updated topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 				}
 			}
@@ -110,7 +110,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
+		// System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
 		List<PendingTopic> pt = processProcessedData(processedData);
 
 		for (PendingTopic pendingTopic : pt)
@@ -118,6 +118,7 @@ public class ProcessedDataListener {
 	}
 
 	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
+		// System.out.println("PDL received: " + processedData);
 		List<PendingTopic> pt = new ArrayList<>();
 
 		try {
@@ -147,28 +148,45 @@ public class ProcessedDataListener {
 			processedDataRepository.save(processedData); // persist data
 			processedData = processedDataRepository.findByPimSourceAndPimItemId("Gmail", processedData.getPimItemId());
 
-			for (String topic : processedData.getTopics()) { // iterate all topics in data
-				if (topic.equals(user.getFirstName()) || topic.equals(user.getLastName()) || (topic.equals(user.getFirstName()) && topic.equals(user.getLastName())))
-					continue;
+			if (processedData.getTopics() != null)
+				for (String topic : processedData.getTopics()) { // iterate all topics in data
+					if (topic.equals(user.getFirstName()) || topic.equals(user.getLastName()) || (topic.equals(user.getFirstName()) && topic.equals(user.getLastName())))
+						continue;
 
-				ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
+					ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
 
-				for (String t : processedData.getTopics()) {
-					if (!t.equals(topic))
-						remainingTopics.add(t);
+					for (String t : processedData.getTopics()) {
+						if (!t.equals(topic))
+							remainingTopics.add(t);
+					}
+
+					if (processedData.getInvolvedContacts() != null)
+						for (String contact : processedData.getInvolvedContacts())
+							remainingTopics.add(contact);
+
+					pt.add(new PendingTopic(topic, processedData, remainingTopics));
 				}
 
-				pt.add(new PendingTopic(topic, processedData, remainingTopics));
-			}
+			if (processedData.getInvolvedContacts() != null)
+				for (String contact : processedData.getInvolvedContacts()) { // iterate all topics in data
+					if (contact.equals(user.getFirstName()) || contact.equals(user.getLastName()) || (contact.equals(user.getFirstName()) && contact.equals(user.getLastName())))
+						continue;
 
-			for (String contact : processedData.getInvolvedContacts()) { // iterate all topics in data
-				if (contact.equals(user.getFirstName()) || contact.equals(user.getLastName()) || (contact.equals(user.getFirstName()) && contact.equals(user.getLastName())))
-					continue;
+					ArrayList<String> remainingTopics = new ArrayList<>(); // all contacts excluding the current one
 
-				PendingTopic pendingTopic = new PendingTopic(contact, processedData, Arrays.asList(processedData.getTopics()));
-				pendingTopic.setIsPerson(true);
-				pt.add(pendingTopic);
-			}
+					for (String t : processedData.getInvolvedContacts()) {
+						if (!t.equals(contact))
+							remainingTopics.add(t);
+					}
+
+					if (processedData.getTopics() != null)
+						for (String topic : processedData.getTopics())
+							remainingTopics.add(topic);
+
+					PendingTopic pendingTopic = new PendingTopic(contact, processedData, remainingTopics);
+					pendingTopic.setIsPerson(true);
+					pt.add(pendingTopic);
+				}
 		}
 		catch (Exception e) { // never crash thread
 			e.printStackTrace();

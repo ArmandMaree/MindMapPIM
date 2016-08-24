@@ -259,7 +259,8 @@ public class Topic implements Serializable, Comparable<Topic> {
 				s += "\t\t" + processedDataId + "\n";
 
 			s += "\t]\n" +
-			"\ttime: " + time + "\n" +
+			"\ttime: " + time + ",\n" +
+			"\tisPerson: " + person + "\n" +
 		"}";
 
 		return s;

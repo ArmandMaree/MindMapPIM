@@ -112,11 +112,25 @@ public class TopicResponse implements Serializable {
 				}
 			}
 
+		String c = "";
+
+		if (involvedContacts != null)
+			for (String contact : involvedContacts) {
+				if (c.equals(""))
+					c += contact;
+				else {
+					c += "-" + contact;
+				}
+			}
+		else
+			c = null;
+
 		String p = "" + ((pimSourceIds == null) ? "null" : pimSourceIds.length);
 
 		return "TopicResponse{\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
+			"\tinvolvedContacts: " + c + "\n" +
 			"\tpimSourceIds (numNodes): " + p + "\n" +
 			"}";
 	}

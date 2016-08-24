@@ -46,7 +46,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = true;
+var mocktesting = false;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -537,7 +537,8 @@ $(document).ready(function(){
                             }
                     }
                     for(var i=0 ;i<branchinglimit;i++){
-                            if(Math.abs(topicsall.length-contactsAll.length)<= i){
+                            var contactsAllLength = ((contactsAll == null) ? 0 : contactsAll.length);
+                            if(Math.abs(topicsall.length-contactsAllLength)<= i){
                                 thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
                             }
                             // console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
