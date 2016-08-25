@@ -3,10 +3,10 @@ package data;
 import java.io.Serializable;
 
 /**
-* Used by the RESTController to map JSON objects to. Class contains the authorization code needed to access a user account for a specific PIM.
+* Contains the authorization code needed to access a user account for a specific PIM.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class AuthCode implements Serializable {
 	private static final long serialVersionUID = 7146817820488675L;
@@ -27,7 +27,7 @@ public class AuthCode implements Serializable {
 	private String authCode = "";
 
 	/**
-	* Default empty constructor.
+	* Default constructor.
 	*/
 	public AuthCode() {
 
@@ -35,6 +35,9 @@ public class AuthCode implements Serializable {
 
 	/**
 	* Constructor that sets the authCode
+	* @param id Id used by the PIM source to identify the user.
+	* @param pimSource Name of the PIM.
+	* @param authCode Code used by the poller to start up the process.
 	*/
 	public AuthCode(String id, String pimSource, String authCode) {
 		this.id = id;
@@ -68,7 +71,7 @@ public class AuthCode implements Serializable {
 
 	/**
 	* Return the value of pimSource.
-	* @param Name of the PIM.
+	* @param pimSource Name of the PIM.
 	*/
 	public void setPimSource(String pimSource) {
 		this.pimSource = pimSource;

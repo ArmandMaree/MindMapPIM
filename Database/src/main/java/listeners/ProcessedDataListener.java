@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Scope;
 * Receives processed data from a queue messaging applicatiion and persists it.
 *
 * @author  Armand Maree
-* @since   2016-07-16
+* @since   1.0.0
 */
 public class ProcessedDataListener {
 	@Autowired
@@ -28,13 +28,31 @@ public class ProcessedDataListener {
 	@Autowired
 	private TopicRepository topicRepository;
 
+	/**
+	* A queue that all ProcessedDataListeners share that temporarily stores low priority {@link listeners.PendingTopics} while they wait to be inserted into the database. 
+	*/
 	private static LinkedBlockingQueue<PendingTopic> pendingTopics = new LinkedBlockingQueue<>();
+
+	/**
+	* A queue that all ProcessedDataListeners share that temporarily stores high priority {@link listeners.PendingTopics} while they wait to be inserted into the database. 
+	*/
 	private static LinkedBlockingQueue<PendingTopic> priorityPendingTopics = new LinkedBlockingQueue<>();
+
+	/**
+	* A single thread shared by all ProcessedDataListeners that will add {@link listeners.PendingTopic} objects to the database.
+	*/
 	private static Thread addToDatabaseThread = null;
+
+	/**
+	* Indicates whether the addToDatabaseThread should stop processing.
+	*/
 	private static boolean stop = false;
 
 	/**
 	* Default constructor.
+	* <p>
+	*	This will start the addToDatabaseThread automatically.
+	* </p>
 	*/
 	public ProcessedDataListener() {
 		if (addToDatabaseThread != null)
@@ -94,7 +112,7 @@ public class ProcessedDataListener {
 	}
 
 	/**
-	* Receives processedData and updates the userId then sends the object to the repositry for persistence.
+	* Receives low priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
@@ -106,7 +124,7 @@ public class ProcessedDataListener {
 	}
 
 	/**
-	* Receives processedData and updates the userId then sends the object to the repositry for persistence.
+	* Receives high priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
@@ -117,6 +135,11 @@ public class ProcessedDataListener {
 			priorityPendingTopics.put(pendingTopic);
 	}
 
+	/**
+	* Will break the processedData's topics into smaller topics and create PendingTopics with these smaller topics.
+	* @param processedData The {@link data.ProcessedData} object that has to be processed.
+	* @return A list of smaller topics processed and contained in a {@link java.util.List} of {@link listeners.PendingTopic}.
+	*/
 	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
 		// System.out.println("PDL received: " + processedData);
 		List<PendingTopic> pt = new ArrayList<>();

@@ -10,11 +10,14 @@ import org.springframework.data.annotation.Id;
 * A topic template for NoSQL repositories.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class Topic implements Serializable, Comparable<Topic> {
 	private static final long serialVersionUID = 2698785136676361L;
 
+	/**
+	* The ID of the topic as used by the database.
+	*/
 	@Id
 	private String id;
 
@@ -48,10 +51,17 @@ public class Topic implements Serializable, Comparable<Topic> {
 	*/
 	private boolean person = false;
 
+	/**
+	* Default constructor
+	*/
 	public Topic() {
 		super();
 	}
 
+	/**
+	* Constructor that initializes some member variables.
+	* @param userId ID of the user in database the topic is related to.
+	*/
 	public Topic(String userId) {
 		super();
 		this.userId = userId;
@@ -73,6 +83,10 @@ public class Topic implements Serializable, Comparable<Topic> {
 		this.time = time;
 	}
 	
+	/**
+	* Adds new topics to the already existing topics but does not duplicate topics and inserts them in alphabetical order.
+	* @param newRelatedTopics The new topics that should be added.
+	*/
 	public void addRelatedTopics(List<String> newRelatedTopics) {
 		if (relatedTopics == null)
 			relatedTopics = new ArrayList<>();
@@ -95,16 +109,21 @@ public class Topic implements Serializable, Comparable<Topic> {
 		}
 	}
 
+	/**
+	* Adds new {@link data.ProcessedData} IDs to the already existing processedDataIds but does not duplicate IDs.
+	* @param id The new id that should be added.
+	*/
 	public void addProcessedDataId(String id) {
 		if (processedDataIds == null)
 			processedDataIds = new ArrayList<>();
 		
-		processedDataIds.add(id);
+		if (!processedDataIds.contains(id))
+			processedDataIds.add(id);
 	}
 
 	/**
 	* Returns the value of id.
-	* @return ID of the user in database the topic is related to.
+	* @return The ID of the topic as used by the database.
 	*/
 	public String getId() {
 		return id;
@@ -112,7 +131,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Set the value of id.
-	* @param id ID of the topic in database the topic is related to.
+	* @param id The ID of the topic as used by the database.
 	*/
 	public void setId(String id) {
 		this.id = id;
@@ -229,6 +248,13 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 	/**
 	* Calculated the weight of the topic at the current moment.
+	* <p>
+	*	Algorithm places a lot of weight on the temperal difference between when the topic was last modified and now, but it also takes into concideration the amount of times this topic came up.<br>
+	*	Algorithm:<br>
+	*	weight = 100 * (number of hours between now and 01/01/2005) * (number of times topic came up)
+	* </p>
+	*
+	* @return The weight of this topic in terms of a temperal component and a frequency component.
 	*/
 	public double getWeight() {
 		long secs = time / 1000; // seconds between time and current time
@@ -256,7 +282,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 			"\tprocessedDataIds: [\n";
 
 			for (String processedDataId : processedDataIds)
-				s += "\t\t" + processedDataId + "\n";
+				s += "\t\t" + processedDataId + ",\n";
 
 			s += "\t]\n" +
 			"\ttime: " + time + ",\n" +

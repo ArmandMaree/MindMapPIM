@@ -6,10 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import data.*;
 
 /**
-* MongoDB repository for processed data.
+* MongoDB repository for {@link data.ProcessedData} objects.
 *
 * @author  Armand Maree
-* @since   2016-07-24
+* @since   1.0.0
 */
 public interface PimProcessedDataRepository extends MongoRepository<ProcessedData, String> {
 	public ProcessedData findById(String id);

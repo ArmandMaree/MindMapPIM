@@ -1,39 +1,69 @@
-package data;
+package poller;
 
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 
-public class PollingUser implements Serializable {
+/**
+* The information of a user as used by a PIM {@link poller.Poller}.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
+public class GmailPollingUser implements Serializable {
 	private static final long serialVersionUID = 3213026260976085L;
 
+	/**
+	* Id of the user as used by the database.
+	*/
 	@Id
 	private String id;
+
+	/**
+	* Id of the user as used by the PIM.
+	*/
 	private String userId;
+
+	/**
+	* The refresh token that can be used to generate new access tokens.
+	*/
 	private String refreshToken;
+
+	/**
+	* The email with the smallest date that was proccessed.
+	*/
 	private String earliestEmail;
+
+	/**
+	* The email with the largest date that was processed.
+	*/
 	private String lastEmail;
 
 	/**
-	* Default empty PollingUser constructor
+	* Default constructor
 	*/
-	public PollingUser() {
+	public GmailPollingUser() {
 		super();
 	}
 
 	/**
-	* Default PollingUser constructor
+	* Constructor that initializes some mamber variables.
+	* @param userId Id of the user as used by the PIM.
+	* @param refreshToken The refresh token that can be used to generate new access tokens.
 	*/
-	public PollingUser(String userId, String refreshToken) {
+	public GmailPollingUser(String userId, String refreshToken) {
 		super();
 		this.userId = userId;
 		this.refreshToken = refreshToken;
 	}
 
 	/**
-	* Default PollingUser constructor
+	* Constructor that initializes some mamber variables.
+	* @param id Id of the user as used by the database.
+	* @param userId Id of the user as used by the PIM.
+	* @param refreshToken The refresh token that can be used to generate new access tokens.
 	*/
-	public PollingUser(String id, String userId, String refreshToken) {
+	public GmailPollingUser(String id, String userId, String refreshToken) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -121,8 +151,8 @@ public class PollingUser implements Serializable {
 	}
 
 	/**
-	* Create string representation of PollingUser for printing
-	* @return
+	* Create string representation of PollingUser for printing.
+	* @return String represntation of a PollingUser.
 	*/
 	@Override
 	public String toString() {

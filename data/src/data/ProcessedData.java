@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 * Contains the topics that was extracted from the NaturalLanguageProcessor.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class ProcessedData implements Serializable {
 	private static final long serialVersionUID = 5088477885033031L;
@@ -78,6 +78,7 @@ public class ProcessedData implements Serializable {
 	* @param involvedContacts IDs of the contacts involved.
 	* @param pimItemId ID of the item that the information was extracted from.
 	* @param topics Array of topics extracted.
+	* @param time The time that the item was received by the PIM in milliseconds.
 	*/
 	public ProcessedData(String id, String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] topics, long time) {
 		this.id = id;
@@ -96,6 +97,7 @@ public class ProcessedData implements Serializable {
 	* @param involvedContacts IDs of the contacts involved.
 	* @param pimItemId ID of the item that the information was extracted from.
 	* @param topics Array of topics extracted.
+	* @param time The time that the item was received by the PIM in milliseconds.
 	*/
 	public ProcessedData(String pimSource, String userId, String[] involvedContacts, String pimItemId, String[] topics, long time) {
 		this.pimSource = pimSource;

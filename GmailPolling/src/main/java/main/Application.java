@@ -146,9 +146,9 @@ public class Application implements CommandLineRunner {
 			}
 		}
 
-		List<PollingUser> pollingUsers = gmailRepository.findAll();
+		List<GmailPollingUser> pollingUsers = gmailRepository.findAll();
 
-		for (PollingUser pollingUser : pollingUsers) {
+		for (GmailPollingUser pollingUser : pollingUsers) {
 			GmailPoller poller = new GmailPoller(gmailRepository, rabbitTemplate, null, pollingUser.getUserId());
 			poller.setFirstId(pollingUser.getEarliestEmail());
 			poller.setLastDate(pollingUser.getLastEmail());

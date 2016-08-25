@@ -7,7 +7,7 @@ import java.util.List;
 * Contains the raw text extracted from some PIM.
 *
 * @author  Armand Maree
-* @since   2016-07-14
+* @since   1.0.0
 */
 public class RawData implements Serializable {
 	private static final long serialVersionUID = 0020554067007013L;
@@ -61,6 +61,7 @@ public class RawData implements Serializable {
 	* @param involvedContacts Array of contacts identified by their ID relevant to the PIM.
 	* @param pimItemId String ID of the item the data was extracted from w.r.t. the PIM.
 	* @param data Array of text that was extracted.
+	* @param time The time that the item was received by the PIM in milliseconds.
 	*/
 	public RawData(String pimSource, String userId, List<String> involvedContacts, String pimItemId, String[] data, long time) {
 		super();

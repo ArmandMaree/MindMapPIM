@@ -12,7 +12,7 @@ import data.*;
 * Waits for messages from the frontend and processes them.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class FrontendListener {
 	private final String topicRequestQueueName = "topic-request.database.rabbit";
@@ -49,6 +49,10 @@ public class FrontendListener {
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 	}
 
+	/**
+	* Receives a request to register a user. It will also start any pollers that is specified.
+	* @param userRegistrationIdentified Contains all the information required to register a user.
+	*/
 	public void receiveRegister(UserRegistrationIdentified userRegistrationIdentified) {
 		System.out.println("Received: " + userRegistrationIdentified);
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
@@ -71,6 +75,17 @@ public class FrontendListener {
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
 	}
 
+	/**
+	* Receives a request to update a previously saved user. It will also stop/stop any pollers that are specified.
+	* <p>
+	*	<ul>
+	*		<li>Any fields that does not need to be updated should be null (or -1 for integers).</li>
+	*		<li>If you need to stop a poller, attach a AuthCode for that poller and make the authCode field null.</li>
+	*		<li>To change the account a user is being polled for, attach an AuthCode that had a null authCode field for the old userId and another AuthCode that contains the details for the new  poller.</li>
+	*	</ul>
+	* </p>
+	* @param userUpdateIdentified Contains all the information needed to update a user.
+	*/
 	public void receiveUserUpdate(UserUpdateRequestIdentified userUpdateIdentified) {
 		UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
 
@@ -78,7 +93,9 @@ public class FrontendListener {
 			for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
 				switch (authCode.getPimSource()) {
 					case "Gmail":
-						user.setGmailId(authCode.getId());
+						if (authCode.getAuthCode() != null && !authCode.getAuthCode().equals(""))
+							user.setGmailId(authCode.getId());
+
 						rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
 						break;
 					default:

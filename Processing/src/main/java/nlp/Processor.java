@@ -14,24 +14,45 @@ import data.*;
 import nlp.NaturalLanguageProcessor;
 
 /**
-* Receives raw data and processes it with a NaturalLanguageProcessor.
+* Receives {@link data.RawData} and processes it with a {@link nlp.NaturalLanguageProcessor}.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class Processor implements Runnable {
+	/**
+	* Indicates whether the processor should stop.
+	*/
 	private boolean stop = false;
-	private final int TIMEOUT = 10;
-	private CountDownLatch latch = new CountDownLatch(1);
-	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
-
-	private NaturalLanguageProcessor nlp;
-	private RabbitTemplate rabbitTemplate;
-	private LinkedBlockingQueue<RawData> rawDataQueue;
-	private LinkedBlockingQueue<RawData> priorityRawDataQueue;
 
 	/**
-	* Default constructor.
+	* Name of the queue that {@link data.ProcessedData} should be sent to.
+	*/
+	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
+
+	/**
+	* The {@link nlp.NaturalLanguageProcessor} that should be used.
+	*/
+	private NaturalLanguageProcessor nlp;
+
+	/**
+	* A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	*/
+	private LinkedBlockingQueue<RawData> rawDataQueue;
+
+	/**
+	* A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	*/
+	private LinkedBlockingQueue<RawData> priorityRawDataQueue;
+
+	private RabbitTemplate rabbitTemplate;
+
+	/**
+	* Constructor used by the {@link listeners.ProcessingManager} to initialize some variables.
+	* @param rawDataQueue A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	* @param priorityRawDataQueue A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	* @param rabbitTemplate RabbitMQ template used to send messages with.
+	* @param nlp The {@link nlp.NaturalLanguageProcessor} that should be used.
 	*/
 	public Processor(LinkedBlockingQueue<RawData> rawDataQueue, LinkedBlockingQueue<RawData> priorityRawDataQueue, RabbitTemplate rabbitTemplate, NaturalLanguageProcessor nlp) {
 		this.rawDataQueue = rawDataQueue;
@@ -40,6 +61,12 @@ public class Processor implements Runnable {
 		this.nlp = nlp;
 	}
 
+	/**
+	* Polls the {@link java.util.concurrent.LinkedBlockingQueue}s for new {@link data.RawData} to process.
+	* <p>
+	*	The priority queue will always first be emptied before the low priority queue will be processed. If the priority queue is empty then the low priority queue will be polled for 10 seconds at a time before checking whether it should stop.
+	* </p>
+	*/
 	public void run() {
 		while (!stop) {
 			try {
@@ -66,7 +93,7 @@ public class Processor implements Runnable {
 	}
 
 	/**
-	* Process rawData.
+	* Processes rawData with the {@link nlp.NaturalLanguageProcessor}.
 	* @param rawData The object that has to be processed.
 	* @return The processed data.
 	*/
@@ -76,7 +103,7 @@ public class Processor implements Runnable {
 
 		if (nlp != null) {
 			for (String part : rawData.getData()) {
-				ArrayList<String> topicsIdentified = nlp.getTopics(part);
+				List<String> topicsIdentified = nlp.getTopics(part);
 
 				for (String topic : topicsIdentified)
 					topics.add(topic);
@@ -101,7 +128,8 @@ public class Processor implements Runnable {
 
 	/**
 	* Pushes the ProcessedData to the ProcessedDataQueue.
-	* @param processedData The data that has been processed that needs to be sent to the queue for persistence.
+	* @param processedData The data that has been processed that needs to be sent to the processed data queue for persistence.
+	* @param priority Indicates whether the processedData should be placed on the priority queue or not.
 	*/
 	public void pushToQueue(ProcessedData processedData, boolean priority) {
 		// System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority);
@@ -116,9 +144,5 @@ public class Processor implements Runnable {
 	*/
 	public void stop() {
 		stop = true;
-	}
-
-	public CountDownLatch getLatch() {
-		return latch;
 	}
 }

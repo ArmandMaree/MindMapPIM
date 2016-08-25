@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 * Waits for messages from the business service.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class BusinessListener {
 	private final String userRegisterResponseQueueName = "user-registration-response.frontend.rabbit";
@@ -22,7 +22,7 @@ public class BusinessListener {
 	private final String userUpdateResponseQueueName = "user-update-response.frontend.rabbit";
 
 	@Autowired
-	RabbitTemplate rabbitTemplate;
+	private RabbitTemplate rabbitTemplate;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -33,13 +33,23 @@ public class BusinessListener {
 	@Autowired
 	private TopicRepository topicRepository;
 
+	/**
+	* Receives a request to register a user.
+	* <p>
+	*	<ul>
+	*		<li>If the user is not registered yet then the user will be registered and a {@link data.User} will be returned that contains the same values as the object in the parameter, except the isRegistered member variable will be false and the userId filed will have the ID used in the database.</li>
+	*		<li>If the user is already registered then a {@link data.User} will be returned that contains all the information that is in the database except the isRegistered member variable will be set tpo true.</li>
+	*	</ul>
+	* </p>
+	* @param user Contains all the details of the user.
+	*/
 	public void receiveUserRegister(UserIdentified user) {
 		boolean userAlreadyRegistered = true;
 		User userReturn = userRepository.findByGmailId(user.getGmailId());
 
 		if (userReturn == null) {
 			userAlreadyRegistered = false;
-			User saveUser = user.getUser(true);
+			User saveUser = user;
 			userRepository.save(saveUser);
 			userReturn = userRepository.findByGmailId(saveUser.getGmailId());
 		}

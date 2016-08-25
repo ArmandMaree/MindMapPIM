@@ -5,10 +5,10 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 
 /**
-* A user template for NoSQL repositories.
+* A user that will be saved in a database.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class User implements Serializable {
 	private static final long serialVersionUID = 7823655309489247L;
@@ -50,7 +50,7 @@ public class User implements Serializable {
 	private int branchingFactor = 4;
 
 	/**
-	* Default empty constructor.
+	* Default constructor.
 	*/
     public User() {
     	super();
@@ -58,6 +58,7 @@ public class User implements Serializable {
 
 	/**
 	* Constructor user for updates for user settings.
+	* @param userId ID used in database.
 	*/
 	public User(String userId) {
 		super();
@@ -65,7 +66,7 @@ public class User implements Serializable {
 	}
 
 	/**
-	* Default constructor.
+	* Constructor that initializes some member variables.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
 	* @param gmailId The email address of the user's Gmail account.
@@ -77,7 +78,7 @@ public class User implements Serializable {
     }
 
 	/**
-	* Default constructor.
+	* Constructor that initializes some member variables.
 	* @param userId ID used in database.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.

@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * Waits for messages from the frontend service.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class FrontendListener {
 	private static final String APPLICATION_NAME = "Gmail API";
@@ -53,6 +53,7 @@ public class FrontendListener {
 	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
 
 	private final String itemResponseQueueName = "item-response.frontend.rabbit";
+
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
@@ -69,6 +70,14 @@ public class FrontendListener {
 		}
 	}
 
+	/**
+	* Receives a request for a  list of email.
+	* <p>
+	*	Gets the refresh token for the specific user and uses the Gmail API to retrieve all the requested emails.
+	* </p>
+	* @param itemRequestIdentified Contains all the relevant user information and the IDs of the emails that needs to be retrieved.
+	* @throws IOException Usually if the Gmail API rejects he refresh token.
+	*/
 	public void receiveItemRequest(ItemRequestIdentified itemRequestIdentified) throws IOException {
 		System.out.println("Received: " + itemRequestIdentified);
 		List<String> items = new ArrayList<>();
@@ -130,11 +139,12 @@ public class FrontendListener {
 
 	/**
 	* Build and return an authorized Gmail client service based on an auth code.
+	* @param userEmail The Email address of the user.
 	* @return An authorized Gmail client service
 	* @throws java.io.IOException IOException occurs.
 	*/
 	public Gmail getGmailServiceFromRefreshToken(String userEmail) throws IOException {
-		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+		GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 		if (pollingUser == null) {
 			System.out.println("No user found for email address: " + userEmail);
@@ -160,6 +170,7 @@ public class FrontendListener {
 	/**
 	* Retrieve an email.
 	* @param messageId The ID of the message that should be retrieved.
+	* @param service The service that should be used to retrieve messages with.
 	* @return MimeMessage of the message that corresponds to the given id.
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.

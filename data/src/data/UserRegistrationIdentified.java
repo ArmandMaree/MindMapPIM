@@ -1,10 +1,10 @@
 package data;
 
 /**
-* Used by the RESTController to map JSON objects to. Contains all the information needed to create a User object to be persisted.
+* Contains all the information needed to create a User object to be persisted with an attached returnId.
 *
 * @author  Armand Maree
-* @since   2016-07-26
+* @since   1.0.0
 */
 public class UserRegistrationIdentified extends UserRegistration {
 	private static final long serialVersionUID = 4123426460166654L;
@@ -15,14 +15,16 @@ public class UserRegistrationIdentified extends UserRegistration {
 	private String returnId;
 
 	/**
-	* Default empty UserRegistrationIdentified constructor
+	* Default constructor
 	*/
 	public UserRegistrationIdentified() {
 		super();
 	}
 
 	/**
-	* Default empty UserRegistrationIdentified constructor
+	* Default constructor that initializes some member variables.
+	* @param returnId ID used to identify the original request.
+	* @param userRegistration Contains all the information needed to create a User object to be persisted.
 	*/
 	public UserRegistrationIdentified(String returnId, UserRegistration userRegistration) {
 		super(userRegistration.getFirstName(), userRegistration.getLastName(), userRegistration.getAuthCodes());
@@ -30,7 +32,11 @@ public class UserRegistrationIdentified extends UserRegistration {
 	}
 
 	/**
-	* Default UserRegistrationIdentified constructor
+	* Default constructor that initializes some member variables.
+	* @param returnId ID used to identify the original request.
+	* @param firstName First name of the user.
+	* @param lastName Last name of the user.
+	* @param authCodes Array of authentication codes for the pollers.
 	*/
 	public UserRegistrationIdentified(String returnId, String firstName, String lastName, AuthCode[] authCodes) {
 		super(firstName, lastName, authCodes);
@@ -38,7 +44,7 @@ public class UserRegistrationIdentified extends UserRegistration {
 	}
 
 	/**
-	* Returns value of returnId
+	* Returns value of returnId.
 	* @return ID used to identify the original request.
 	*/
 	public String getReturnId() {
@@ -46,7 +52,7 @@ public class UserRegistrationIdentified extends UserRegistration {
 	}
 
 	/**
-	* Sets new value of returnId
+	* Sets new value of returnId.
 	* @param returnId ID used to identify the original request.
 	*/
 	public void setReturnId(String returnId) {

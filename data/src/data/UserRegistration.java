@@ -3,10 +3,10 @@ package data;
 import java.io.Serializable;
 
 /**
-* Used by the RESTController to map JSON objects to. Contains all the information needed to create a User object to be persisted.
+* Contains all the information needed to create a User object to be persisted.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class UserRegistration implements Serializable {
 	private static final long serialVersionUID = 1167458800068207L;
@@ -27,14 +27,14 @@ public class UserRegistration implements Serializable {
 	private AuthCode[] authCodes;
 
 	/**
-	* Default empty constructor.
+	* Default constructor.
 	*/
 	public UserRegistration() {
 
 	}
 
 	/**
-	* Default constructor.
+	* Constructor that initializes some member variables.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
 	* @param authCodes Array of authentication codes for the pollers.

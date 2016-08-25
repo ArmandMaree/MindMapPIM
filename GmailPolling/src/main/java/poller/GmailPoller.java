@@ -49,8 +49,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.jsoup.safety.Whitelist;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import data.*;
 import repositories.*;
 
@@ -58,7 +56,7 @@ import repositories.*;
 * Uses the Gmail API to retrieve new emails and add them to a queue that lets them be processed.
 *
 * @author  Armand Maree
-* @since   2016-07-11
+* @since   1.0.0
 */
 public class GmailPoller implements Poller {
 	final static String rawDataQueue = "raw-data.processing.rabbit";
@@ -80,7 +78,7 @@ public class GmailPoller implements Poller {
 	private GmailRepository gmailRepository;
 	private String userEmail = "";
 	private boolean processedOldEmails = false;
-	private PollingUser pollingUser;
+	private GmailPollingUser pollingUser;
 	private Properties props;
 	private RabbitTemplate rabbitTemplate;
 	private boolean firstPageDone = false;
@@ -98,8 +96,10 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Constructor that initializes some fields and starts up a Gmail service.
+	* @param gmailRepository The repository where all the users and their refresh tokens are stored.
 	* @param rabbitTemplate Reference to a rabbitTemplate used to communicate with a RabbitMQ server.
 	* @param userAuthCode Authentication code received from the login service.
+	* @param userEmail The email address of the user.
 	*/
 	public GmailPoller(GmailRepository gmailRepository, RabbitTemplate rabbitTemplate, String userAuthCode, String userEmail) {
 		this.gmailRepository = gmailRepository;
@@ -111,7 +111,7 @@ public class GmailPoller implements Poller {
 			if (userAuthCode != null && !userAuthCode.equals(""))
 				service = getGmailServiceFromAuthCode(); // Build a new authorized API client service.
 			else {
-				PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+				GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 				if (pollingUser == null)
 					return;
@@ -127,10 +127,18 @@ public class GmailPoller implements Poller {
 		pollingUser = gmailRepository.findByUserId(userEmail);
 	}
 
+	/**
+	* Set the id of firstId.
+	* @param firstId the most recent email ID that has been received.
+	*/
 	public void setFirstId(String firstId) {
 		this.firstId = firstId;
 	}
 
+	/**
+	* Set the value of lastEmailTimeStampDate.
+	* @param lastEmailTimeStampDate The timestamp of the earliest email that has been received. If this value is "DONE" then it means all old emails have been received already.
+	*/
 	public void setLastDate(String lastEmailTimeStampDate) {
 		if (lastEmailTimeStampDate.equals("DONE"))
 			processedOldEmails = true;
@@ -160,12 +168,12 @@ public class GmailPoller implements Poller {
 		GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
 		Gmail gmail = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
 
-		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+		GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 		if (pollingUser != null)
 			pollingUser.setRefreshToken(refreshToken);
 		else
-			pollingUser = new PollingUser(userEmail, refreshToken);
+			pollingUser = new GmailPollingUser(userEmail, refreshToken);
 
 		gmailRepository.save(pollingUser);
 
@@ -173,12 +181,12 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* Build and return an authorized Gmail client service based on an auth code.
+	* Build and return an authorized Gmail client service based on the refresh token in the {@link repositories.GmailRepository}.
 	* @return An authorized Gmail client service
  	* @throws java.io.IOException IOException occurs.
 	*/
 	public Gmail getGmailServiceFromRefreshToken() throws IOException {
-		PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+		GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "https://bubbles.iminsys.com";
 
@@ -203,7 +211,7 @@ public class GmailPoller implements Poller {
 			return;
 
 		while (!stop) {
-			PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+			GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 			if (pollingUser.getRefreshToken() == null) {
 				System.out.println("Poller stopping.");
@@ -290,7 +298,7 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Gets the date and time of a message and parses it into a simper form.
-	* @param messageId The ID of the message that's date should be returned.
+	* @param email The email that's date should be returned.
 	* @return The date of the email in the form of yyyy/MM/dd, e.g.: 2016/07/30
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
@@ -330,7 +338,7 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Gets the date and time of a message and gets the milliseconds since Epoch.
-	* @param messageId The ID of the message that's date should be returned.
+	* @param email The email that's date should be returned.
 	* @return Milliseconds elapsed since Epoch.
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
@@ -450,7 +458,7 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Get a mime version of a message that has already been retrieved as described by the JavaMail API.
-	* @param message The message that needs to be retrieved.
+	* @param message The message that has been retrieved.
 	* @return MimeMessage that corresponds to the given message.
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
@@ -466,13 +474,13 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Extract the text from and email and parse it as an RawData object.
-	* @param messageId The ID of the message that should be retrieved.
+	* @param msgId The ID of the message has been retrieved.
+	* @param email The email that has been retrieved.
 	* @return Object that contains the details of the email or null if no data is found.
 	* @throws java.io.IOException IOException occurs.
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
 	public RawData getRawData(String msgId, MimeMessage email) throws IOException, MessagingException {
-		// printEmail(service.users().messages().get(userId, messageId).setFormat("full").execute());
 		if (email.getContent() == null)
 			return null;
 
@@ -597,6 +605,7 @@ public class GmailPoller implements Poller {
 	/**
 	* Extracts text from a string even if it contains HTML.
 	* @param bodyS The string that has to be parsed.
+	* @return The text contained in the provided string with HTML stripped away.
 	*/
 	private String extractText(String bodyS) {
 		boolean isHTML = false;
@@ -630,6 +639,13 @@ public class GmailPoller implements Poller {
 		return body;
 	}
 
+	/**
+	* Recursively traverses the {@link org.jsoup.nodes.Element} parsed by JSOUP and extracts the text contained in the specified HTML elements.
+	* @param element The element that has to be traversed. Usually it starts with {@link org.jsoup.nodes.Document}.
+	* @param elementsToProcess A list of elements whos text should be extract.
+	* @return The text contained in the specified elements.
+	* @see <a href="https://jsoup.org/">https://jsoup.org/</a>
+	*/
 	private String extractNodeText(Element element, List<String> elementsToProcess) {
 		if (elementsToProcess.contains(element.tag().getName()))
 			return element.text();
@@ -657,6 +673,10 @@ public class GmailPoller implements Poller {
 		}
 	}
 
+	/**
+	* Prints the email to the screen. Used for debugging.
+	* @param message The email that needs to be printed.
+	*/
 	public void printEmail(MimeMessage message) {
 		System.out.println(message);
 	}

@@ -15,12 +15,15 @@ import data.*;
 import nlp.*;
 
 /**
-* Receives raw data and processes it with a NaturalLanguageProcessor.
+* Receives {@link data.RawData} and adds it to a queue where worker threads will dequeue and process it.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 public class ProcessingManager {
+	/**
+	* Used to save topics in the queue when the server has to shutdown so that they can be resumed when the server starts up again.
+	*/
 	private class ShutDownHookThread extends Thread {
 		private SimpleMessageListenerContainer processingManagerContainer;
 
@@ -53,21 +56,47 @@ public class ProcessingManager {
 		}
 	}
 
-	private int NUM_PROCESSORS = 5;
-	private boolean stop = false;
-	private final int TIMEOUT = 10;
-	private CountDownLatch latch = new CountDownLatch(1);
-	private String processedDataDatabaseQueueName = "processed-data.database.rabbit";
+	/**
+	* Name of the queue that {@link data.RawData} gets sent to. Used in this class to requeue {@link data.RawData} objects that has to be saved due to a server shutdown.
+	*/
 	private final static String rawDataQueueName = "raw-data.processing.rabbit";
-	private NaturalLanguageProcessor nlp;
-	private RabbitTemplate rabbitTemplate;
-	private LinkedBlockingQueue<RawData> rawDataQueue = new LinkedBlockingQueue<>();
-	private LinkedBlockingQueue<RawData> priorityRawDataQueue = new LinkedBlockingQueue<>();
-	private List<Processor> processors = new ArrayList<>();
-	private List<Thread> processorsThreads = new ArrayList<>();
 
 	/**
-	* Default constructor.
+	* Number of worker threads that process topics with the {@link nlp.NaturalLanguageProcessor}.
+	*/
+	private int NUM_PROCESSORS = 5;
+
+	/**
+	* The {@link nlp.NaturalLanguageProcessor} that will be used to analyse the {@link data.RawData}.
+	*/
+	private NaturalLanguageProcessor nlp;
+
+	/**
+	* A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	*/
+	private LinkedBlockingQueue<RawData> rawDataQueue = new LinkedBlockingQueue<>();
+
+	/**
+	* A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	*/
+	private LinkedBlockingQueue<RawData> priorityRawDataQueue = new LinkedBlockingQueue<>();
+
+	/**
+	* A {@link java.util.List} containing all the {@link nlp.Processor} objects that process the {@link data.RawData}.
+	*/
+	private List<Processor> processors = new ArrayList<>();
+
+	/**
+	* A {@link java.util.List} containing all the threads that are running the {@link nlp.Processor} objects.
+	*/
+	private List<Thread> processorsThreads = new ArrayList<>();
+
+	private RabbitTemplate rabbitTemplate;
+
+	/**
+	* Constructor used by the {@link main.Application} to pass all the required beans.
+	* @param naturalLanguageProcessor The {@link nlp.NaturalLanguageProcessor} that should be used.
+	* @param rabbitTemplate RabbitMQ template used to send messages with.
 	*/
 	public ProcessingManager(NaturalLanguageProcessor naturalLanguageProcessor, RabbitTemplate rabbitTemplate) {
 		nlp = naturalLanguageProcessor;
@@ -82,12 +111,20 @@ public class ProcessingManager {
 		}
 	}
 
+	/**
+	* Sets a shutdown hook that will store the messages in the two {@link data.RawData} queues for when the server has to shut down.
+	* @param processingManagerContainer The AMQP container that contains the adapters to this class.
+	*/
 	public void createShutDownHook(SimpleMessageListenerContainer processingManagerContainer) {
 		// Runtime.getRuntime().addShutdownHook(new ShutDownHookThread(processingManagerContainer));
 	}
 
 	/**
-	* Receives a rawData object and sends it to processors.
+	* Receives a rawData object and sends it to a low priority queue for processing.
+	*
+	* <p>
+	*	If the internal queue has 50 items or more, the {@link data.RawData} object will be sent back to the RawData AMQP queue to preserve to the memory this application has.
+	* </p>
 	* @param rawData The rawData object that needs processing.
 	*/
 	public synchronized void receiveRawData(RawData rawData) {
@@ -102,7 +139,15 @@ public class ProcessingManager {
 		catch (InterruptedException ignore) {}
 	}
 
-	public synchronized void receivePriorityRawData(RawData rawData) throws FileNotFoundException {
+	/**
+	* Receives a rawData object and sends it to a high priority queue for processing.
+	*
+	* <p>
+	*	If the internal queue has 50 items or more, the {@link data.RawData} object will be sent back to the RawData AMQP queue to preserve to the memory this application has.
+	* </p>
+	* @param rawData The rawData object that needs processing.
+	*/
+	public synchronized void receivePriorityRawData(RawData rawData) {
 		System.out.println("Received priorityRawData for user: " + rawData.getUserId());
 		try {
 			if (priorityRawDataQueue.size() >= 50) {
