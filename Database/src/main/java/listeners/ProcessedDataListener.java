@@ -73,7 +73,7 @@ public class ProcessedDataListener {
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
-						// System.out.println("Added topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						System.out.println("Added topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 					else {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
@@ -84,7 +84,7 @@ public class ProcessedDataListener {
 							topicInRepo.setIsPerson(true);
 
 						topicRepository.save(topicInRepo);
-						// System.out.println("Updated topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						System.out.println("Updated topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 				}
 			}

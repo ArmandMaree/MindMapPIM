@@ -80,37 +80,33 @@ public class TopicListener {
 			return;
 		}
 
-		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight
+		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight descending
 		List<Topic> returnTopics = new ArrayList<>();
 		List<Topic> returnContacts = new ArrayList<Topic>();
 
 		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
 			for (int i = 0; i < topics.size(); i++) {
-				while (topics.size() > i && topics.get(i).isPerson()) {
-					returnContacts.add(topics.get(i));
-					topics.remove(i);
-				}
-				
-				if (topics.size() > i)
-					returnTopics.add(topics.get(i));
+				while (topics.size() > i && topics.get(i).isPerson())
+					returnContacts.add(topics.remove(i));
 			}
+
+			returnTopics = topics;
 		}
 		else {
-			while (topics.size() > 0 && topics.get(0).isPerson()) {
-				returnContacts.add(topics.get(0));
-				topics.remove(0);
-			}
+			while (topics.size() > 0 && topics.get(0).isPerson())
+				returnContacts.add(topics.remove(0));
 
 			if (topics.size() != 0) {
 				returnTopics.add(topics.get(0));
 
-				for (int i = 1; i < topics.size() && returnTopics.size() < topicRequest.getMaxNumberOfTopics() && returnContacts.size() < topicRequest.getMaxNumberOfTopics(); i++) { // take the most relevant topics but also try to reduce closely related topics
-					while (topics.size() > i && topics.get(i).isPerson()) {
-						returnContacts.add(topics.get(i));
-						topics.remove(i);
+				for (int i = 1; i < topics.size() && (returnTopics.size() < topicRequest.getMaxNumberOfTopics() || returnContacts.size() < topicRequest.getMaxNumberOfTopics()); i++) { // take the most relevant topics but also try to reduce closely related topics
+					while (returnContacts.size() < topicRequest.getMaxNumberOfTopics() && topics.size() > i && topics.get(i).isPerson()) {
+						returnContacts.add(topics.remove(i));
+						// System.out.println("Topic[" + i + "]: " + topics.get(i).getTopic() + " is a person.");
 					}
 
-					if (topics.size() > i && returnTopics.size() < topicRequest.getMaxNumberOfTopics()) {
+					if (topics.size() > i && returnTopics.size() < topicRequest.getMaxNumberOfTopics() && !topics.get(i).isPerson()) {
+						// System.out.println("Topic[" + i + "]: " + topics.get(i).getTopic() + " is not a person.");
 						boolean found = false;
 
 						for (Topic returnTopic : returnTopics) {
