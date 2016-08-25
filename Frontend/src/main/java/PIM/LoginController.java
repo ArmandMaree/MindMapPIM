@@ -75,7 +75,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
 				//do nothing for now, maybe sleep a bit in future?
             }
-    		User user = userRegistrationResponseLL.poll().getUser(true);
+    		User user = userRegistrationResponseLL.poll();
             System.out.println(user);
             // Thread.sleep(2000);
             return new ServerResponse(user.getUserId());
