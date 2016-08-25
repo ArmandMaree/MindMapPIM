@@ -1,4 +1,3 @@
-//mainpage
 /**
 *   @var {String} name - varible to hold where the user is current logged in.
 */
@@ -61,6 +60,10 @@ var navbarReloadTextExpanded ="<a class='navbar-brand' href='#'><img alt='Brand'
 var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text' style='font-family: 'Pacifico', cursive;'>unclutter</p>";
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
+*/
+var canExpand = false;
+/**
+*   @var {bool} canExpand - Checks whether the mindmap can expand.
 */
 var shouldRebuild = false;
 /**
@@ -168,31 +171,30 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6',font:'20px Raleway white'}}},
-                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
-            //     {id: 2, label: "  Horse  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-            //     {id: 3, label: "  Amy  \n  Lochner  ",font:'20px Raleway black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-            //     {id: 4, label: "  COS301  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-            //     {id: 5, label: "  Fritz  \n  Solms  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-            //     {id: 6, label: "  Holiday  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-            //     {id: 7, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-            //     {id: 8, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-            //     {id: 9, label: "  Cooking  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
+                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+            
+                // {id: 2, label: "Horse", group: 0},
+                // {id: 3, label: "Amy \n Lochner", group: 0},
+                // {id: 4, label: "COS301", group: 0},
+                // {id: 5, label: "Fritz \n Solms", group: 0},
+                // {id: 6, label: "Holiday", group: 0},
+                // {id: 7, label: "Arno \n Grobler", group: 0},
+                // {id: 8, label: "Arno \n Grobler", group: 0}
             ]
-            // parentlist =["0","0","0","2","0","4","6","7","2","0"];
-
-            // allPimIDlist[9] = [["1","2"],[null]];
-            // allPimIDlist[2] = [["3","4"],[null]];
-            // allPimIDlist[3] = [["5","6"],[null]];
-            // allPimIDlist[4] = [["7","8"],[null]];
-            // allPimIDlist[5] = [["7","8"],[null]];
-            // allPimIDlist[6] = [["1","2"],[null]];
-            // allPimIDlist[7] = [["3","4"],[null]];
-            // allPimIDlist[8] = [["5","6"],[null]];
+            // parentlist =["0","0","0","2","0","4","6","7","2"];
+            allPimIDlist[1] = [["1","2"],[null]];
+            allPimIDlist[2] = [["3","4"],[null]];
+            allPimIDlist[3] = [["5","6"],[null]];
+            allPimIDlist[4] = [["7","8"],[null]];
+            allPimIDlist[5] = [["7","8"],[null]];
+            allPimIDlist[6] = [["1","2"],[null]];
+            allPimIDlist[7] = [["3","4"],[null]];
+            allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             ]
         }      
     }else{
@@ -200,7 +202,7 @@ $(document).ready(function(){
         var splitter = tempnodes.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
-            // console.log(c);
+            console.log(c);
             if(c==""|| c=="undefined"){
                 break;
             }
@@ -235,18 +237,18 @@ $(document).ready(function(){
     if(tempedges==""){
         if(mocktesting){
             edges = [
-                {from: 0, to: 1},
+                {from: 0, to: 1}
                 // {from: 2, to: 3},
                 // {from: 2, to: 0},
                 // {from: 5, to: 4},
                 // {from: 4, to: 0},
                 // {from: 7, to: 6},
                 // {from: 6, to: 0},
-                // {from: 2, to: 8},
-                // {from: 0, to: 9}
+                // {from: 2, to: 8}
             ]
         }else{
-            edges = [{from: 0, to: 1},]
+            edges = [
+            {from: 1, to: 0}]
         }
     }else{
         edges =[];
@@ -254,7 +256,7 @@ $(document).ready(function(){
         var splitter = tempedges.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
-            // console.log(c);
+            console.log(c);
             if(c=="" || c=="undefined"){
                 break;
             }
@@ -352,12 +354,12 @@ $(document).ready(function(){
         /**
         *   @var stompClient - 
         */
-      	stompClient = Stomp.over(socket);
-      	/**
-      	*	A function that connects the stompClient 
-      	*/
-      	stompClient.connect({}, function(frame) {
-        	console.log('Connected: ' + frame);
+        stompClient = Stomp.over(socket);
+        /**
+        *   A function that connects the stompClient 
+        */
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
           // var userReg = {};
           // if(gmailUser!=null){
           //   userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
@@ -369,15 +371,15 @@ $(document).ready(function(){
           //   this.maxNumberOfTopics = maxNumberOfTopics;
 
            /**
-           *	@var {String} name1 - string that contains the userId
+           *    @var {String} name1 - string that contains the userId
            */
             var name1 = "userId=";
             /**
-    		*	@var ca1 - Cookie....
-    		*/
+            *   @var ca1 - Cookie....
+            */
             var ca1 = document.cookie.split(';');
             /**
-            *	@var x1 - ...
+            *   @var x1 - ...
             */
             x1 ="";
             for(var i = 0; i <ca1.length; i++) {
@@ -400,10 +402,9 @@ $(document).ready(function(){
             *   A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/user/topic/request', function(serverResponse){
-                // console.log("serverResponse.contacts: "+JSON.parse(serverResponse.body).involvedContacts);
                 if(JSON.parse(serverResponse.body).items!=null){
-                    // console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
-                    var items = JSON.parse(serverResponse.body).items; 
+                    console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
+                    var items = JSON.parse(serverResponse.body).items;
                     $("#accordion").html(""); 
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
@@ -423,36 +424,36 @@ $(document).ready(function(){
                     if(s!=0)
                         var pathtoselectednode =[];
                     var pathtoselectednodelabels =[]
-                    // console.log("s:"+s)
-                    // console.log("parentlist "+parentlist)
+                    console.log("s:"+s)
+                    console.log("parentlist "+parentlist)
 
                     var dataForSideBar = {
                         "Topic" : nodes[s].label,
                         "Gmail" : []
                     }
-                    // console.log("this object: "+JSON.stringify(dataForSideBar))
+                    console.log("this object: "+JSON.stringify(dataForSideBar))
                     for(var i=0;i<items.length;i++){
                         dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
                     }
 
                     for(var i = s; i > 0; i = parentlist[i]){
-                        // console.log(i)
+                        console.log(i)
                         if(pathtoselectednode.indexOf(i)==-1)
                             pathtoselectednode.push(i);
                         else
                             break;
                     }
 
-                    // console.log("PathFrom: " + pathtoselectednode);
+                    console.log("PathFrom: " + pathtoselectednode);
                     var breadcrumb = '<li>Me</li>';
-                    // console.log("pathtoselectednode.length: "+pathtoselectednode.length)
+                    console.log("pathtoselectednode.length: "+pathtoselectednode.length)
                     for(var i=pathtoselectednode.length-1;i>=0;i--){
                         breadcrumb+='<li>'+nodes[pathtoselectednode[i]].label+'</li>';
-                        // console.log(breadcrumb);
+                        console.log(breadcrumb);
                         // break;
                     }
                     $("#breadcrumb").html(breadcrumb);
-                    // console.log(s);
+                    console.log(s);
 
                     populateSidePanel(s, dataForSideBar);
 
@@ -460,6 +461,7 @@ $(document).ready(function(){
                         // body...
                     });
                 }else{
+                    canExpand=true;
                     /**
                     *   @var {String} name2 - a variable that contains the data for the last selected node for the cookie
                     */
@@ -490,7 +492,7 @@ $(document).ready(function(){
                     */
                     var JSONServerResponse = JSON.parse(serverResponse.body);
                     /**
-                    *   @var topicsall - an array that contains names for the topics of the items used by the pims.
+                    *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
                     */
                     var topicsall = JSONServerResponse.topicsText;
                     /**
@@ -507,10 +509,6 @@ $(document).ready(function(){
                     */
                     var branchinglimit = topicsall.length;
                     /**
-                    *   @var thisgroup - Colour properties for a group of topics
-                    */
-                    // var thisgroup = nodes[selectedID].group;
-                    /**
                     *   @var thiscolour - ....
                     */
                     var thiscolour = {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}};
@@ -518,7 +516,7 @@ $(document).ready(function(){
                     *   @var tempnodelength - contains the length of the nodes array
                     */
                     var tempnodelength = parseInt(nodes.length);
-
+                    
                     var refreshContactList =[];
                     var dontConcateAgain =false;
                     if(topicsall.length<= i && !dontConcateAgain && contactsAll!=null && selectedID != 0){
@@ -529,112 +527,124 @@ $(document).ready(function(){
                             branchinglimit=4;
                         }
                     }
-                    if(selectedID==0){
-                            for(var j=0;j<parentlist.length;j++){
-                                if(parentlist[j] == 1){
-                                    refreshContactList.push(j)
-                                }
-                            }
-                    }
-                    for(var i=0 ;i<branchinglimit;i++){
-                        if(contactsAll != null && Math.abs(topicsall.length-contactsAll.length)<= i){
-                            thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                    if(selectedID==0){ 
+                        for(var j=0;j<parentlist.length;j++){
+                            if(parentlist[j] == 1){
+                                refreshContactList.push(j);
+                            } 
                         }
-                        // console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
+                    }
+                    // console.log("contactsAll.length:"+contactsAll.length);
+                    if(topicsall != null && topicsall.length >0){
+                        for(var k=0;k<topicsall.length;k++)
+                            topicsall[k] = (topicsall[k]).split(' ').join('  \n  ');
+                    }
+                    if(contactsAll != null && contactsAll.length >0){
+                        for(var k=0;k<contactsAll.length;k++)
+                            contactsAll[k] = (contactsAll[k]).split(' ').join('  \n  ');
+                    }
+
+                    for(var i=0 ;i<branchinglimit;i++){
+                        console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
+                        // if(contactsAll != null&& contactsAll.length >0 && Math.abs(topicsall.length-contactsAll.length)<= i){
+                        //     thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        // }
+                        console.log("contactsAll "+contactsAll); 
+                        console.log("topicsall "+topicsall);
+                        console.log("contactsAll.indexOf("+topicsall[pos]+")="+contactsAll.indexOf(topicsall[pos])); 
+                        if(contactsAll.indexOf(topicsall[pos]) >=0)
+                            thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+ 
                         /**
                         *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
                         */
                         var pimSourceIds = JSONServerResponse.pimSourceIds;
 
                         allPimIDlist[nodes.length]=pimSourceIds[i];
-                        // console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
-                        
-                        try {
-                            // console.log("push "+ tempnodelength)
-                            expandlist.push(tempnodelength++);
-                            data.nodes.add({
-                                id: nodes.length,
-                                label:"  "+ topicsall[pos]+"  ",
-                                font:'20px Raleway black', 
-                                color: thiscolour
-                            });
-                            parentlist.push(selectedID);
-                        }
-                        catch (err) {
-                            alert(err);
-                            $("#loadingAlert").fadeOut(1000, function() {
-                                // body...
-                            });
-                            $("#loadingAlertError").fadeIn(1000, function() {
-                                // body...
-                            });
-                        }
+                        if(topicsall[pos]!="undefined" && topicsall[i]!=undefined){
+                            console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
+                            try {
+                                console.log("push "+ tempnodelength)
+                                console.log("expand parentlist: "+parentlist)
+                                expandlist.push(tempnodelength++);
+                                console.log("expand list:"+expandlist);
+                                data.nodes.add({
+                                    id: nodes.length,
+                                    label: "  "+topicsall[pos]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: thiscolour
+                                });
+                                parentlist.push(selectedID);
+                            }
+                            catch (err) {
+                                alert(err);
+                                $("#loadingAlert").fadeOut(1000, function() {
+                                    // body...
+                                });
+                                $("#loadingAlertError").fadeIn(1000, function() {
+                                    // body...
+                                });
+                            }
 
-                        try {
-                            data.edges.add({
-                                id: edges.length,
-                                from: selectedID,
-                                to: nodes.length
-                            });
-                        }
-                        catch (err) {
-                            alert(err);
-                            $("#loadingAlert").fadeOut(1000, function() {
-                                // body...
-                            });
-                            $("#loadingAlertError").fadeIn(1000, function() {
-                                // body...
-                            });
-                        }
+                            try {
+                                data.edges.add({
+                                    id: edges.length,
+                                    from:  nodes.length,
+                                    to: selectedID
+                                });
+                            }
+                            catch (err) {
+                                alert(err);
+                                $("#loadingAlert").fadeOut(1000, function() {
+                                    // body...
+                                });
+                                $("#loadingAlertError").fadeIn(1000, function() {
+                                    // body...
+                                });
+                            }
 
-                        topicsall[pos] = (topicsall[pos]).split(' ').join('  \n  ');
-                        if(contactsAll != null){
-                            contactsAll[pos] = (contactsAll[pos]).split(' ').join('  \n  ');
-                        }
-
-
-                        nodes.push({
-                            id: nodes.length,
-                            label:"  "+ topicsall[pos]+"  ",
-                            font:'20px Raleway black', 
-                            color: thiscolour
-                        })
-                        edges.push({
-                            id: edges.length,
-                            from: selectedID,
-                            to: nodes.length
-                        });
-                        if(selectedID==0 && contactsAll != null){
-                            data.nodes.add({
-                                id: nodes.length,
-                                label:"  "+ contactsAll[pos]+"  ",
-                                font:'20px Raleway black', 
-                                color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
-                            });
-                            parentlist.push(1);
-                            
-                            data.edges.add({
-                                id: edges.length,
-                                from: 1,
-                                to: nodes.length
-                            });
                             nodes.push({
                                 id: nodes.length,
-                                label:"  "+ contactsAll[pos]+"  ",
+                                label: "  "+topicsall[pos]+"  ",
                                 font:'20px Raleway black', 
-                                color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                color: thiscolour
                             })
                             edges.push({
                                 id: edges.length,
-                                from: 1,
-                                to: nodes.length
+                                from:  nodes.length,
+                                to: selectedID
                             });
+                        
+                            if(selectedID==0  && contactsAll != null && contactsAll.length >0 && i<contactsAll.length && contactsAll[i]!="undefined"){
+                                expandlist.push(tempnodelength++);
+                                data.nodes.add({
+                                    id: nodes.length,
+                                    label:"  "+ contactsAll[i]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                });
+                                parentlist.push(1);
+                                
+                                data.edges.add({
+                                    id: edges.length,
+                                    from: nodes.length,
+                                    to: 1
+                                });
+                                nodes.push({
+                                    id: nodes.length,
+                                    label:"  "+ contactsAll[i]+"  ",
+                                    font:'20px Raleway black', 
+                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                })
+                                edges.push({
+                                    id: edges.length,
+                                    from: nodes.length,
+                                    to: 1
+                                });
+                            }
+                            pos++;
                         }
-                        pos++;
-                        console.log(edges)
-                        console.log(data.edges)
                     }
-
                     for(var j=0;j<refreshContactList.length;j++){
                         console.log("needs to be deleted: "+ j);
                         selectedID = refreshContactList[j];
@@ -661,8 +671,6 @@ $(document).ready(function(){
                         network.selectNodes(deletelist);
                         network.deleteSelected();
                     }
-
-                    expandBubble(expandlist.shift());
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
                     });
@@ -671,7 +679,7 @@ $(document).ready(function(){
                         for(var i=0;i<nodes.length;i++){
                             tempstring+= JSON.stringify(nodes[i])+"%";
                         }
-                        // console.log(tempstring);
+                        console.log(tempstring);
                         document.cookie="nodes="+tempstring;
 
                         var tempstring ="";
@@ -679,13 +687,20 @@ $(document).ready(function(){
                             tempstring+= JSON.stringify(edges[i])+"%";
                         }
                         // tempstring+= JSON.stringify({"id":0,"from":"0","to":1})+"%";
-                        // console.log(tempstring);
-                        // console.log(edges);
+                        console.log(tempstring);
+                        console.log(edges);
                         document.cookie="edges="+tempstring;
                     }else{
                         
                     }
                 }
+                // for(var k =0;k<expandlist.length;k++){
+                //     if(parentlist[expandlist[i]]==1){
+                //         console.log("expand found and removed from expand list: "+expandlist[i]);
+                //         expandlist.remove(i);
+                //     }
+                // }
+                expandBubble(expandlist.shift());
             });
             /**    
             *   @var topicRequest -  a JSON oject that contains information for a topic request
@@ -724,25 +739,25 @@ $(document).ready(function(){
     }
     else
     {
-        $("#backfromsidebar").html(navbarReloadTextExpanded);
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
         $("#help").html("");
         $("#settings").html("");
         $("#logout").html("");
     }
     $("#sidepanel").hide();
     /**
-    *	A function that disables the default event that occurs on rightclick event
+    *   A function that disables the default event that occurs on rightclick event
     */
     document.oncontextmenu = function() {return false;};
 
     /**
-    *	A function that populates the sidepanel with data
-    *	@param node - the node that has been selected
-    *	@param array - contains the data of the selected node
+    *   A function that populates the sidepanel with data
+    *   @param node - the node that has been selected
+    *   @param array - contains the data of the selected node
     */
     function populateSidePanel(node, array)
     {
-        // console.log("node is this: "+node)
+        console.log("node is this: "+node)
         $("#accordion").html("");
         if(array.Topic != "Contact")
         {
@@ -752,7 +767,7 @@ $(document).ready(function(){
         {
             $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>")
         }
-        // console.log("Title: "+$("#sidepanelTitle").text());
+        console.log("Title: "+$("#sidepanelTitle").text());
         if((array.hasOwnProperty('Name')))
         {
             $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
@@ -795,7 +810,7 @@ $(document).ready(function(){
     }
 
     /**
-    *	@var menu - variable that is assigned the context menu
+    *   @var menu - variable that is assigned the context menu
     */
     menu = new ax5.ui.menu({
         position: "absolute", // default position is "fixed"
@@ -822,38 +837,41 @@ $(document).ready(function(){
                 if(selectedID!=0)
                     var pathtoselectednode =[];
                 var pathtoselectednodelabels =[]
-                // console.log("selectedID:"+selectedID)
-                // console.log("parentlist "+parentlist)
+                console.log("selectedID:"+selectedID)
+                console.log("parentlist "+parentlist)
 
                 for(var i = selectedID; i > 0; i = parentlist[i]){
                     pathtoselectednode.push(i);
                 }
 
-                // console.log("PathFrom: " + pathtoselectednode);
+                console.log("PathFrom: " + pathtoselectednode);
                 var pos=0;
                 var branchinglimit = 4;
-                // var thisgroup = nodes[selectedID].group;
+                var thiscolor = nodes[selectedID].color;
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
-                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
+                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
                 }
+                console.log(pathtoselectednodelabels);
                 // pathtoselectednodelabels.push()
-                // console.log("PathTo: " + pathtoselectednodelabels);
+                console.log("PathTo: " + pathtoselectednodelabels);
+                if(pathtoselectednodelabels.indexOf("Contacts") >0)
+                    pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
 
                 var excludelist=[]
                 for(var i = 1; i < parentlist.length;i++){
                     if(parentlist[i]==selectedID){
-                        excludelist.push(nodes[i].label.replace("\n"," "));
+                        excludelist.push(nodes[i].label.replace("\n"," ").replace(" ",""));
                     }
                 }
 
-                // console.log("exclude list:"+excludelist);
+                console.log("exclude list:"+excludelist);
        
                 if(mocktesting)
                     topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
                 else
                     topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
 
-				document.cookie="lastselectednode="+selectedID;
+                document.cookie="lastselectednode="+selectedID;
                 try{
                     stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
                 }catch(err){
@@ -891,16 +909,16 @@ $(document).ready(function(){
                         // console.log(templist.length)
 
                     }
-                    parentlist[selectedID]=-1;
+
                     network.selectNodes(deletelist);
                     network.deleteSelected();
                 }
             }
         }
-	});
-	/**
-	*	A function that resets the html for certain divs
-	*/
+    });
+    /**
+    *   A function that resets the html for certain divs
+    */
     network.on("click", function(){
        // console.log("nodes")
        $("#facebook").html("");
@@ -913,7 +931,7 @@ $(document).ready(function(){
        $("#backfromsidebar").html(navbarReloadTextCondensed)
     });
     /**
-    *	A function that handles the doubleClick event on the BubbleMap
+    *   A function that handles the doubleClick event on the BubbleMap
     */
     network.on("doubleClick", function(){
         /**
@@ -955,12 +973,27 @@ $(document).ready(function(){
         }
         var node = network.getSelectedNodes();
         selectedID = node;
+        console.log(selectedID);
+        console.log(allPimIDlist);
+        // console.log(allPimIDlist[1]);
+        // console.log(allPimIDlist[1][0]);
 
+        // console.log(allPimIDlist);
+        // console.log(allPimIDlist[2]);
+        // console.log(allPimIDlist[2][0]);
+        // for(var i=1;i<allPimIDlist.length;i++){
+        //     for(var j=0;j<allPimIDlist[i][0].length;j++){
+        //        console.log(allPimIDlist[i][0][j]);
+        //     }
+        // }
+        // console.log(allPimIDlist[selectedID]);
+        // console.log(allPimIDlist[selectedID][0]);
+        // console.log(allPimIDlist[selectedID][0][1]);
         var uniqueIds = [];
             $.each(allPimIDlist[selectedID][0], function(i, el){
                 if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
             });
-            // console.log(uniqueIds);
+            console.log(uniqueIds);
         if(!mocktesting)
             var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
         else
@@ -981,22 +1014,23 @@ $(document).ready(function(){
         }
     });
 
-	/**
-	*	A function that handles the rightClick event on the BubbleMap 
-	*/
+    /**
+    *   A function that handles the rightClick event on the BubbleMap 
+    */
     network.on("oncontext", function(){
         var e = window.event;
         var posX = e.clientX;
         var posY = e.clientY - $("nav").height();
-        // console.log("X: "+ posX);
-        // console.log("Y: "+ posY);
-        // console.log(network.getNodeAt({"x": posX, "y": posY}));
+        console.log("X: "+ posX);
+        console.log("Y: "+ posY);
+        console.log(network.getNodeAt({"x": posX, "y": posY}));
         selectedID = network.getNodeAt({"x": posX, "y": posY});
         network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
         var node = network.getSelectedNodes();
         console.log(node);
-        console.log(parentlist);
-            // console.log("works on right click");
+        console.log(nodes[node].label);
+
+            console.log("works on right click");
             // $(this).bind("contextmenu", function (e) {
             if(node.length != 0)
             {
@@ -1006,7 +1040,7 @@ $(document).ready(function(){
             // });
         //Node is an array of nodes
         rightClick = network.getSelectedNodes();
-        // console.log(rightClick);
+        console.log(rightClick);
 
         if(rightClick.length != 0)
         {
@@ -1018,9 +1052,9 @@ $(document).ready(function(){
 
 
 });
-
+// setInterval(function exapndingintervl(){console.log("canExpand "+canExpand);  if(canExpand){console.log("HERE:"+expandlist);expandBubble(expandlist.shift())} }, 500);
 /**
-*	A function that hides the sidebar
+*   A function that hides the sidebar
 */
 function hidesidebar()
 {
@@ -1030,10 +1064,10 @@ function hidesidebar()
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
-   $("#backfromsidebar").html(navbarReloadTextCondensed);
+   $("#backfromsidebar").html(navbarReloadTextCondensed)
 }
 /**
-*	A function that is called when a user clicks on the expand bubble option in the context menu
+*   A function that is called when a user clicks on the expand bubble option in the context menu
 */
 function expandBubble(nextID)
 {
@@ -1057,33 +1091,55 @@ function expandBubble(nextID)
     if(selectedID!=0)
         var pathtoselectednode =[];
     var pathtoselectednodelabels =[]
-    // console.log("selectedID:"+selectedID)
-    // console.log("parentlist "+parentlist)
+    console.log("selectedID:"+selectedID)
+    console.log("parentlist "+parentlist)
 
     for(var i = selectedID; i > 0; i = parentlist[i]){
-        pathtoselectednode.push(i);
+        if(i!=1)
+            pathtoselectednode.push(i);
     }
+    // for(var i=pathtoselectednode.length-1;i>=0;i--){
+    //    pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+    // }
+    // pathtoselectednodelabels.push()
+    // pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
+    // console.log("expand PathTo: " + pathtoselectednodelabels);
 
-    // console.log("PathFrom: " + pathtoselectednode);
-    // console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
+    console.log("expand PathFrom: " + pathtoselectednode.length+1);
+    console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
         var pos=0;
         var branchinglimit = 4;
-        // var thisgroup = nodes[selectedID].group;
-        for(var i=pathtoselectednode.length-1;i>=0;i--){
-           pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
-        }
-        // pathtoselectednodelabels.push()
-        console.log("PathTo: " + pathtoselectednodelabels);
+        var thiscolor = nodes[selectedID].color;
+
+                        var pathtoselectednodelabels =[]
+                console.log("selectedID:"+selectedID)
+                console.log("parentlist "+parentlist)
+
+                for(var i = selectedID; i > 0; i = parentlist[i]){
+                    pathtoselectednode.push(i);
+                }
+
+                console.log("PathFrom: " + pathtoselectednode);
+                var pos=0;
+                var branchinglimit = 4;
+                var thiscolor = nodes[selectedID].color;
+                for(var i=pathtoselectednode.length-1;i>=0;i--){
+                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+                }
+                console.log(pathtoselectednodelabels);
+                // pathtoselectednodelabels.push()
+                console.log("PathTo: " + pathtoselectednodelabels);
+                pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
 
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
             if(parentlist[i]==selectedID){
-                excludelist.push(nodes[i].label.replace("\n"," "));
+                excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
             }
         }
 
-        // console.log("exclude list:"+excludelist);
+        console.log("expand exclude list:"+excludelist);
        
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
@@ -1104,4 +1160,5 @@ function expandBubble(nextID)
     }else{
          network.selectNodes([0]);
     }
+    canExpand=false;
 }

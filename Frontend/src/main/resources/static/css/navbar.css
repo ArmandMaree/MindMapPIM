@@ -75,7 +75,7 @@
 .navbar-default .navbar-link:hover {
   color: #ffffff;
 }
-p{ 
+#navbartitle{ 
   /*font-weight: 700 !important; */
   position: absolute;
   font-size: 90px !important; 
