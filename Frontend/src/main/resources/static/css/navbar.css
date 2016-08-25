@@ -76,6 +76,7 @@
   color: #ffffff;
 }
 #navbartitle{ 
+<<<<<<< 12cace1bb25a56048167cff3ec5e0fa89a0113ba
   /*font-weight: 700 !important; */
   position: absolute;
   font-size: 90px !important; 
@@ -85,6 +86,8 @@
 }
 
 p{ 
+=======
+>>>>>>> 6f56e15d5384c9a6dcef7cf8d3390b693f4133cc
   /*font-weight: 700 !important; */
   position: absolute;
   font-size: 90px !important; 
