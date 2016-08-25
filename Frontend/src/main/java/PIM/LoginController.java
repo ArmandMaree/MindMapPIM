@@ -187,7 +187,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             mockpimIds[2][0][1] = "6";
             mockpimIds[3][0][0] = "7";
             mockpimIds[3][0][1] = "8";
-            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
+            // TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
+            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Horse","cos301","photo","recipe"},null,mockpimIds);
             System.out.println(topicResponse);
             // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
             // thread.sleep(2000);

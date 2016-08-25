@@ -170,29 +170,29 @@ $(document).ready(function(){
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6',font:'20px Raleway white'}}},
                 {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
-                {id: 2, label: "  Horse  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 3, label: "  Amy  \n  Lochner  ",font:'20px Raleway black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 4, label: "  COS301  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 5, label: "  Fritz  \n  Solms  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 6, label: "  Holiday  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 7, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 8, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
-                {id: 9, label: "  Cooking  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
+            //     {id: 2, label: "  Horse  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            //     {id: 3, label: "  Amy  \n  Lochner  ",font:'20px Raleway black', color:{background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+            //     {id: 4, label: "  COS301  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            //     {id: 5, label: "  Fritz  \n  Solms  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+            //     {id: 6, label: "  Holiday  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            //     {id: 7, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+            //     {id: 8, label: "  Arno  \n  Grobler  ",font:'20px Raleway black', color: {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}}},
+            //     {id: 9, label: "  Cooking  ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
             ]
-            parentlist =["0","0","0","2","0","4","6","7","2","0"];
-            allPimIDlist[9] = [["1","2"],[null]];
-            allPimIDlist[2] = [["3","4"],[null]];
-            allPimIDlist[3] = [["5","6"],[null]];
-            allPimIDlist[4] = [["7","8"],[null]];
-            allPimIDlist[5] = [["7","8"],[null]];
-            allPimIDlist[6] = [["1","2"],[null]];
-            allPimIDlist[7] = [["3","4"],[null]];
-            allPimIDlist[8] = [["5","6"],[null]];
+            // parentlist =["0","0","0","2","0","4","6","7","2","0"];
+
+            // allPimIDlist[9] = [["1","2"],[null]];
+            // allPimIDlist[2] = [["3","4"],[null]];
+            // allPimIDlist[3] = [["5","6"],[null]];
+            // allPimIDlist[4] = [["7","8"],[null]];
+            // allPimIDlist[5] = [["7","8"],[null]];
+            // allPimIDlist[6] = [["1","2"],[null]];
+            // allPimIDlist[7] = [["3","4"],[null]];
+            // allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "  Contacts  ",font:'20px Raleway black',  color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}}
-
+                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}},
             ]
         }      
     }else{
@@ -236,14 +236,14 @@ $(document).ready(function(){
         if(mocktesting){
             edges = [
                 {from: 0, to: 1},
-                {from: 2, to: 3},
-                {from: 2, to: 0},
-                {from: 5, to: 4},
-                {from: 4, to: 0},
-                {from: 7, to: 6},
-                {from: 6, to: 0},
-                {from: 2, to: 8},
-                {from: 0, to: 9}
+                // {from: 2, to: 3},
+                // {from: 2, to: 0},
+                // {from: 5, to: 4},
+                // {from: 4, to: 0},
+                // {from: 7, to: 6},
+                // {from: 6, to: 0},
+                // {from: 2, to: 8},
+                // {from: 0, to: 9}
             ]
         }else{
             edges = [{from: 0, to: 1},]
@@ -509,7 +509,7 @@ $(document).ready(function(){
                     /**
                     *   @var thisgroup - Colour properties for a group of topics
                     */
-                    var thisgroup = nodes[selectedID].group;
+                    // var thisgroup = nodes[selectedID].group;
                     /**
                     *   @var thiscolour - ....
                     */
@@ -537,18 +537,17 @@ $(document).ready(function(){
                             }
                     }
                     for(var i=0 ;i<branchinglimit;i++){
-                            var contactsAllLength = ((contactsAll == null) ? 0 : contactsAll.length);
-                            if(Math.abs(topicsall.length-contactsAllLength)<= i){
-                                thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
-                            }
-                            // console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
-                            /**
-                            *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
-                            */
-                            var pimSourceIds = JSONServerResponse.pimSourceIds;
+                        if(contactsAll != null && Math.abs(topicsall.length-contactsAll.length)<= i){
+                            thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        }
+                        // console.log("topicsall length:" +topicsall.length + "topicsall i:"+topicsall[i]);
+                        /**
+                        *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
+                        */
+                        var pimSourceIds = JSONServerResponse.pimSourceIds;
 
-                            allPimIDlist[nodes.length]=pimSourceIds[i];
-                            // console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
+                        allPimIDlist[nodes.length]=pimSourceIds[i];
+                        // console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
                         
                         try {
                             // console.log("push "+ tempnodelength)
@@ -589,7 +588,9 @@ $(document).ready(function(){
                         }
 
                         topicsall[pos] = (topicsall[pos]).split(' ').join('  \n  ');
-                        contactsAll[pos] = (contactsAll[pos]).split(' ').join('  \n  ');
+                        if(contactsAll != null){
+                            contactsAll[pos] = (contactsAll[pos]).split(' ').join('  \n  ');
+                        }
 
 
                         nodes.push({
@@ -603,7 +604,7 @@ $(document).ready(function(){
                             from: selectedID,
                             to: nodes.length
                         });
-                        if(selectedID==0){
+                        if(selectedID==0 && contactsAll != null){
                             data.nodes.add({
                                 id: nodes.length,
                                 label:"  "+ contactsAll[pos]+"  ",
@@ -630,6 +631,8 @@ $(document).ready(function(){
                             });
                         }
                         pos++;
+                        console.log(edges)
+                        console.log(data.edges)
                     }
 
                     for(var j=0;j<refreshContactList.length;j++){
@@ -829,7 +832,7 @@ $(document).ready(function(){
                 // console.log("PathFrom: " + pathtoselectednode);
                 var pos=0;
                 var branchinglimit = 4;
-                var thisgroup = nodes[selectedID].group;
+                // var thisgroup = nodes[selectedID].group;
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
                    pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
                 }
@@ -991,7 +994,8 @@ $(document).ready(function(){
         selectedID = network.getNodeAt({"x": posX, "y": posY});
         network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
         var node = network.getSelectedNodes();
-        // console.log(node);
+        console.log(node);
+        console.log(parentlist);
             // console.log("works on right click");
             // $(this).bind("contextmenu", function (e) {
             if(node.length != 0)
@@ -1034,7 +1038,7 @@ function hidesidebar()
 function expandBubble(nextID)
 {
     // var finishedtask=false;
-    // console.log("auto expanding: "+nextID)
+    console.log("auto expanding: "+nextID)
     selectedID = nextID;
     try{
         network.selectNodes([nextID]);
@@ -1062,15 +1066,15 @@ function expandBubble(nextID)
 
     // console.log("PathFrom: " + pathtoselectednode);
     // console.log("pathtoselectednode.length+1:"+(pathtoselectednode.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
-        var thisgroup = nodes[selectedID].group;
+        // var thisgroup = nodes[selectedID].group;
         for(var i=pathtoselectednode.length-1;i>=0;i--){
            pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace("\n"," "));
         }
         // pathtoselectednodelabels.push()
-        // console.log("PathTo: " + pathtoselectednodelabels);
+        console.log("PathTo: " + pathtoselectednodelabels);
 
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
