@@ -78,10 +78,10 @@ public class BusinessListener {
 			if (userIdentified.getTheme() != null)
 				userInRepo.setTheme(userIdentified.getTheme());
 
-			if (userIdentified.getInitialDepth() != userInRepo.getInitialDepth())
+			if (userIdentified.getInitialDepth() != userInRepo.getInitialDepth() && userIdentified.getInitialDepth() != -1)
 				userInRepo.setInitialDepth(userIdentified.getInitialDepth());
 
-			if (userIdentified.getBranchingFactor() != userInRepo.getBranchingFactor())
+			if (userIdentified.getBranchingFactor() != userInRepo.getBranchingFactor() && userIdentified.getBranchingFactor() != -1)
 				userInRepo.setBranchingFactor(userIdentified.getBranchingFactor());
 
 			userRepository.save(userInRepo);
