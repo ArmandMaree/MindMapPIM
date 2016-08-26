@@ -9,7 +9,8 @@ branches:
   only:
   - master
   - develop
-  - /^support-.*$/
+  - /^support.*$/
+  - /^feature/bug.*$/
 
 notifications:
   email: false
