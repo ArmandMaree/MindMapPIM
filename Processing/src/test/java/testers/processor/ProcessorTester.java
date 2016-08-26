@@ -27,8 +27,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 * @since 2016-07-25
 */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = testers.listeners.TestContext.class)
-public class ProcessorTester implements AbstractTester {
+@ContextConfiguration(classes = testers.processor.TestContext.class)
+public class ProcessorTester extends AbstractTester {
 	private final static String rawDataQueue = "raw-data.processing.rabbit";
 	private final static String priorityRawDataQueue = "priority-raw-data.processing.rabbit";
 	private boolean setUpDone = false;
@@ -50,7 +50,7 @@ public class ProcessorTester implements AbstractTester {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 		// clean up after each test method
 		while (processedDataQueue.poll(1, TimeUnit.SECONDS) != null);
 	}
@@ -69,6 +69,7 @@ public class ProcessorTester implements AbstractTester {
 		List<String> topics = new ArrayList<>();
 		topics.add("horse");
 		topics.add("photo");
+		topics.add("Acuben");
 		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
 		ProcessedData processedData = processedDataQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
@@ -76,10 +77,10 @@ public class ProcessorTester implements AbstractTester {
 		Assert.assertEquals("Failure - correct amount of topics not retreived.", topics.size(), processedData.getTopics().length);
 
 		for (String t : processedData.getTopics())
-			Assert.assertTrue("Failure - topic \"" + t "\" should not be in the list.", topics.contains(t));
+			Assert.assertTrue("Failure - topic \"" + t + "\" should not be in the list.", topics.contains(t));
 
 		rabbitTemplate.convertAndSend(priorityRawDataQueue, rawData);
-		processedData = processedDataQueue.poll(5, TimeUnit.SECONDS);
+		processedData = processedDataQueue.poll(10, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
 	}
 }

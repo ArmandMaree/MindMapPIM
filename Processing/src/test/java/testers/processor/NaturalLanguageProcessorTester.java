@@ -68,10 +68,10 @@ public class NaturalLanguageProcessorTester extends AbstractTester {
 		Assert.assertNotNull("Failure - NLP is null.", nlp);
 
 		Processor processor = new Processor(null, null, null, nlp);
-		ArrayList<String> topics = new ArrayList<>();
-		
+		List<String> topics = new ArrayList<>();
+
 		for (String part : rawData.getData()) {
-			ArrayList<String> topicsIdentified = nlp.getTopics(part);
+			List<String> topicsIdentified = nlp.getTopics(part);
 
 			if (topicsIdentified == null)
 				continue;
