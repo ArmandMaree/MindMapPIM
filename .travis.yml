@@ -13,11 +13,11 @@ branches:
 
 notifications:
   email: false
-  slack: 
+  slack:
     rooms:
       - aaan:nPcmtLyPdpi69PCnz3alvwRl#development
     on_success: change
-    on_failure: always
+    on_failure: change
 
 services:
   - rabbitmq
