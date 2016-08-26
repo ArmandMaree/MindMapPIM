@@ -10,7 +10,7 @@ var googleUser;
 * 	@var {} authCodes - ....
 */ 
 var authCodes = [];
-/**
+/** 
 * 	@var {} gmailUser - The object that contains all information about the signed-in Gmail user
 */
 var gmailUser= null;
