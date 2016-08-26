@@ -71,7 +71,7 @@ public class ProcessorTester extends AbstractTester {
 		topics.add("photo");
 		topics.add("Acuben");
 		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
-		ProcessedData processedData = processedDataQueue.poll(5, TimeUnit.SECONDS);
+		ProcessedData processedData = processedDataQueue.poll(10, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
 
 		Assert.assertEquals("Failure - correct amount of topics not retreived.", topics.size(), processedData.getTopics().length);
