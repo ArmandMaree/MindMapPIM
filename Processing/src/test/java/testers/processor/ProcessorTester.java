@@ -52,7 +52,7 @@ public class ProcessorTester extends AbstractTester {
 	@After
 	public void tearDown() throws InterruptedException {
 		// clean up after each test method
-		while (processedDataQueue.poll(1, TimeUnit.SECONDS) != null);
+		while (processedDataQueue.poll(5, TimeUnit.SECONDS) != null);
 	}
 
 	@Test
@@ -71,6 +71,7 @@ public class ProcessorTester extends AbstractTester {
 		topics.add("photo");
 		topics.add("Acuben");
 		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+		Thread.sleep(10000);
 		ProcessedData processedData = processedDataQueue.poll(10, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
 
