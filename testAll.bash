@@ -1,0 +1,10 @@
+cd BusinessLogic/;
+./gradlew test;
+cd ../Database/;
+./gradlew test;
+cd ../Frontend/;
+./gradlew test;
+cd ../GmailPolling/;
+./gradlew test;
+cd ../Processing/;
+./gradlew test;
