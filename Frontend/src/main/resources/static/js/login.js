@@ -82,7 +82,7 @@ var sendUserReg = function(){
 				// if (stompClient != null) {
 		  //           stompClient.disconnect();
 		  //       }
-				window.location.assign('/mainpage');
+				window.location.assign('/help');
 			}, function(error) {
 		    		// display the error's message header:
 		    		console.log(error.headers.message);
@@ -296,7 +296,7 @@ function loadXMLDoc(){
 				// 	// body...
 				// });
 				if(jsonresponse.isRegistered){
-					window.location.assign('/mainpage');
+					window.location.assign('/');
 				}else{
 					$("#cssload-pgloading").hide();
 					$("#loadingAlert").fadeOut(1000, function() {
@@ -444,7 +444,7 @@ function sendUserObjectForFacebook(response)
 				// 	// body...
 				// });
 				if(jsonresponse.isRegistered){
-					window.location.assign('/mainpage');
+					window.location.assign('/');
 				}else{
 					$("#cssload-pgloading").hide();
 					$("#loadingAlert").fadeOut(1000, function() {

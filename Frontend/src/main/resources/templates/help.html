@@ -1,86 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" manifest="/cache.manifest">
   <head>
+      <title>Welcome</title>
       <meta http-equiv="Content-Type" content="text/html;a charset=UTF-8"></meta>
-      <meta name="theme-color" content="#0f4d71"></meta>
+      <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+      <link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" />  
+      <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
+      <link href="/css/help.css" rel="stylesheet"></link>
+      <script src="https://code.jquery.com/jquery-1.12.3.min.js" type="text/javascript" ></script>
+      <script src="/js/jquery-2.1.0.min.js"></script>
+      <script src="/js/help.js"></script>
+      <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+      <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+      <script src="/bootstrap/js/bootstrap.min.js"></script> 
+      <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway" rel="stylesheet"></link>
 
-        <title>PIM</title>
-        <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css" />
-        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
-        <link rel="stylesheet" href="/css/mainpage.css"/>
-        <link href="/css/vis.css" rel="stylesheet" type="text/css"/>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
-        <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.min.js"></script>
-        <script src="/js/jquery-2.1.0.min.js"></script>
-        <script src="/js/mainpage.js"></script>
-        <script src="/bootstrap/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/js/vis.js"></script><style type="text/css"></style>
-        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        
-        <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
-        <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
-
-
-        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-            <script>
-            $(function() {  
-              $( "#sidepanel" ).resizable({ handles: 'w' });
-            });
-            var handles = $( ".selector" ).resizable( "option", "handles" );
-            //setter
-            $( ".selector" ).resizable( "option", "handles", 'w' );
-          </script>
+      
+      
+      <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"></link>
+      <link rel="icon" href="/images/favicon.ico" type="image/x-icon"></link>
   </head>
   <body>
-        <nav id="nav" class="navbar navbar-default">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">
-                <img alt="Brand" style="width:30px;height:30px" src="/images/bubblelogo.png"/>
-              </a>
-              <p class="navbar-text">PIM</p>
+        <div id="centreText1" style="position:fixed">
+          <p style="color:white;font-size:10vw;text-align: center;font-family:'Raleway';">
+            Hi
+          </p>
+        </div>
+
+        <div id="centreText2" style="position:fixed;">
+          <p style="color:white;font-size:4vh;text-align: center;font-family:'Raleway';">
+            While we get things ready for you <br /> 
+            why dont you look at what you are in for? 
+          </p>
+        </div>
+
+        <div id="centreText4" style="position:fixed;">
+          <p style="color:white;font-size:5vh;text-align: center;font-family:'Pacifico';">
+            unclutter
+          </p>
+        </div>
+<!--         <div id="outline">
+
+        </div> -->
+        <div id="centreText3" style="position:fixed;">
+          <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+              <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+              <li data-target="#myCarousel" data-slide-to="1"></li>
+              <li data-target="#myCarousel" data-slide-to="2"></li>
+              <li data-target="#myCarousel" data-slide-to="3"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+              <div class="item active">
+                <img src="/images/wiggle.gif" alt="Movement"></img>
+                <div class="carousel-caption" style="color:white">
+                  <h2 style="font-family:'Pacifico';">Movement</h2>
+                  <h4>Click and drag on any bubble to move it. Move the whole Bubble Map by dragging the background. You can also zoom in and out by scrolling the mouse wheel.</h4>
+                </div>
+              </div>
+
+              <div class="item"> 
+                <img src="/images/expand.gif" alt="Expanding"></img>
+                <div class="carousel-caption" style="color:white">
+                  <h2 style="font-family:'Pacifico';">Expanding</h2>
+                  <h4>Right click on any bubble that you want to expand and select "Expand Bubble". This will pop up more topics relevant to you.</h4>
+                </div>
+              </div>
+
+              <div class="item">
+                <img src="/images/delete.gif" alt="Delete"></img>
+                <div class="carousel-caption" style="color:white">
+                  <h2 style="font-family:'Pacifico';">Delete</h2>
+                  <h4>Right click on any bubble that you want to delete and select "Delete Bubble".</h4>
+                </div>
+              </div>
+
+              <div class="item">
+                <img src="/images/showsidebar.gif" alt="Information"></img>
+                <div class="carousel-caption">
+                  <h2 style="font-family:'Pacifico';">More Information</h2>
+                  <h4>Double click on a bubble to show you more information about that bubble. This includes emails and facebook posts related to that bubble.</h4>
+                </div>
+              </div>
+
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-             
-             <!--  <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Search"/>
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </form> -->
-              <ul class="nav navbar-nav navbar-right">
-              <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign"></span></a></li>
-              <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
-                  <ul id="dropMenu" class="dropdown-menu">
-                    <li><a href="#">Set branch factor</a></li>
-                    <li><a href="#">Set depth limit</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Reset graph</a></li>
-                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-remove-circle"></span> Clear graph</a></li>
-                    
-                    <li role="separator" class="divider"></li>
-                    <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
-                    <!-- <li><a href="#">Separated link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">One more separated link</a></li> -->
-                  </ul>
-                </li>
-                <li><a href="#" title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span></a></li>
-              </ul>
-            </div><!-- /.navbar-collapse -->
-          </div><!-- /.container-fluid -->
-        </nav>
-        </body>
-        </html>
+            <!-- Left and right controls -->
+            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="color:white"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="color:white"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </div>
+        <button id="skip" type="button" class="btn btn-warning" onclick="window.location.assign('/')" style="bottom: 0; right: 0; position: fixed; margin: 25px;position:fixed">  We're Ready <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> </button>
+
+
+  </body>
+</html>

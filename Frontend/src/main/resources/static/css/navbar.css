@@ -76,6 +76,15 @@
   color: #ffffff;
 }
 
+p{ 
+  /*font-weight: 700 !important; */
+  position: absolute;
+  font-size: 90px !important; 
+  font-family: 'Pacifico', cursive !important;
+  top:-10px;
+  left: 40px;
+}
+
 @media (max-width: 700px) {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
     color: #d9d9d9;
