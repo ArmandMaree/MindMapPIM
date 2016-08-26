@@ -19,9 +19,6 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import repositories.*;
 import data.*;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 @Configuration
 public class TestContext {
 	public final static String topicRequestQueueName = "topic-request.database.rabbit";

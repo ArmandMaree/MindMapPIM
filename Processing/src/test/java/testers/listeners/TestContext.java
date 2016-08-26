@@ -5,6 +5,7 @@ import data.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.*;
 
 import org.springframework.beans.factory.annotation.*;
@@ -18,6 +19,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
+@Configuration
 public class TestContext {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 

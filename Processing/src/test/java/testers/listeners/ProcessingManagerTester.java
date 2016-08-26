@@ -49,7 +49,7 @@ public class ProcessingManagerTester extends AbstractTester {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 		// clean up after each test method
 		while (processedDataQueue.poll(1, TimeUnit.SECONDS) != null);
 	}

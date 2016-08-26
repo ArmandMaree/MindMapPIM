@@ -38,16 +38,12 @@ dependencies {
 	// Spring
 	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
 
-	// MongoDB
-	compile("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE")
-
 	// Stanford CoreNLP and Parser
 	compile("edu.stanford.nlp:stanford-corenlp:3.6.0")
 	compile("edu.stanford.nlp:stanford-corenlp:3.6.0:models")
 
 	// Queue messaging stuff
 	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE")
-
 
 	// javadoc dependencies
 	doc files("../data/data-javadoc.jar")
