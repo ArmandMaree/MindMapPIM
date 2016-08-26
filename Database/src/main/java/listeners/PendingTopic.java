@@ -29,7 +29,6 @@ public class PendingTopic {
 	* The topics contained in the {@link data.ProcessedData} member variable, but it excludes the topic contained in the topic member variable.
 	*/
 	private List<String> remainingTopics;
-	private boolean person = false;
 
 	/**
 	* Indicates whether this topic is a contact or not.

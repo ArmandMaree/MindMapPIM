@@ -82,7 +82,7 @@ var sendUserReg = function(){
 				// if (stompClient != null) {
 		  //           stompClient.disconnect();
 		  //       }
-				window.location.assign('/');
+				window.location.assign('/help');
 			}, function(error) {
 		    		// display the error's message header:
 		    		console.log(error.headers.message);
