@@ -71,7 +71,6 @@ public class ProcessorTester extends AbstractTester {
 		topics.add("photo");
 		topics.add("Acuben");
 		rabbitTemplate.convertAndSend(rawDataQueue, rawData);
-		Thread.sleep(10000);
 		ProcessedData processedData = processedDataQueue.poll(10, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
 

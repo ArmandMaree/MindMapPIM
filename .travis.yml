@@ -10,7 +10,6 @@ branches:
   - master
   - develop
   - /^support.*$/
-  - /^feature/bug.*$/
 
 notifications:
   email: false
@@ -41,6 +40,4 @@ script:
   - cd ../Frontend/
   - ./gradlew test
   - cd ../GmailPolling/
-  - ./gradlew test
-  - cd ../Processing/
   - ./gradlew test
