@@ -217,7 +217,7 @@ public class User implements Serializable {
 	* Sets new value of isActive.
 	* @param isActive True or False indicating is the user is active or not.
 	*/
-	public void setBranchingFactor(Boolean isActive) {
+	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
 
