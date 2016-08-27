@@ -44,7 +44,7 @@ public class Application implements CommandLineRunner {
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String userRegisterQueueName = "user-register.database.rabbit";
 	private final String userCheckQueueName = "user-check.database.rabbit";
-	private final String userUpdateQueueName = "user-update.database.rabbit";
+	private final String userUpdateQueueName = "user-update-request.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
