@@ -40,9 +40,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 //////////////////
-    // @Autowired
-    // @Qualifier("editUserSettingsResponseLL")
-    // LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
+    @Autowired
+    @Qualifier("editUserSettingsResponseLL")
+    LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
 
 /////////////////////
     @Autowired
@@ -96,7 +96,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
 ////////////// AMY
 
     @MessageMapping("/usercheck")
-    @SendTo("/topic/request")
+    @SendToUser("/topic/request")
     public UserIdentified usercheck(User message) throws Exception {
         System.out.println(message);
         String id = UUID.randomUUID().toString();
@@ -110,44 +110,112 @@ public class LoginController extends WebMvcConfigurerAdapter {
         UserIdentified user = userCheckResponseLL.poll();
         System.out.println("Found user: "+user);
 
-        Thread.sleep(2000);
         return user;
     }
 
-    // @MessageMapping("/datasources")
+    @MessageMapping("/datasources")
+    @SendToUser("/topic/request")
+    public UserUpdateResponseIdentified sendNewDataSources(UpdateSources message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        if(message.getUserId() == null)
+            System.out.println("No userId");
+        else
+            System.out.println("User id: "+message.getUserId());
+        if(message.getAuthcodes() == null)
+            System.out.println("No authcodes");
+
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),message.getAuthcodes());
+        //System.out.println("Java auth codes length:"+ message.getAuthcodes().length);
+        request.setTheme(null);
+        request.setInitialDepth(-1);
+        request.setBranchingFactor(-1);
+        System.out.println(request);
+        rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        System.out.println("Update data sourcesresponse:" +response);
+        return response;
+    }
+
+    @MessageMapping("/theme")
     // @SendTo("/topic/request")
-    // public EditUserSettingsResponse sendNewDataSources(UserRegistrationIdentified message) throws Exception {
-    //     String id = UUID.randomUUID().toString();
-    //     message.setId(id);
-    //     System.out.println(message);
-    //     rabbitTemplate.convertAndSend("register.business.rabbit",message);
-    //     while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
-    //         //do nothing for now, maybe sleep a bit in future?
-    //     }
-    //     EditUserSettingsResponse response = editUserSettingsResponseLL.poll();
-    //     System.out.println(response);
-    //     Thread.sleep(2000);
-    //     return response;
-    // }
+    @SendToUser("/topic/request")
+    public UserUpdateResponseIdentified editTheme(Theme message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        request.setTheme(message.getTheme());
+        request.setInitialDepth(-1);
+        request.setBranchingFactor(-1);
+        System.out.println(request);
+ 
+        rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Received response!");
+        UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
+        System.out.println("Settings response: " +response.getCode());
 
-    // @MessageMapping("/theme")
-    // @SendTo("/settings/request")
-    // public EditSettingsResponse editTheme (EdiThemeRequest message) throws Exception {
-    //     System.out.println(message);
-    //     String id = UUID.randomUUID().toString();
-    //     message.setReturnId(id);
+        return response;
+    }
+    @MessageMapping("/mapsettings")
+    // @SendTo("/topic/request")
+    @SendToUser("/topic/request")
+    public UserUpdateResponseIdentified editTheme (MapSettings message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        request.setInitialDepth(message.getInitialDepth());
+        request.setBranchingFactor(message.getInitialBranchFactor());
+        
+        System.out.println(request);
+        
+        rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+       System.out.println("After send");
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Received request with id: " +id);
+        UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
+        System.out.println("Settings response: " +response);
 
-    //     rabbitTemplate.convertAndSend("settings.database.rabbit",message);
-    //     while(editSourcesResponseLL.peek()==null || !id.equals(editSourcesResponseLL.peek().getReturnId())){
-    //         //do nothing for now, maybe sleep a bit in future?
-    //     }
-    //     System.out.println("Received response!");
-    //     EditSettingsResponse response = editSourcesResponseLL.poll();
-    //     System.out.println("Settings response: " +resonse);
+        return response;
+    }
 
-    //     Thread.sleep(2000);
-    //     return response;
-    // }
+    @MessageMapping("/deactivate")
+    // @SendTo("/topic/request")
+    @SendToUser("/topic/request")
+    public UserUpdateResponseIdentified deactivateAccount (Deactivate message) throws Exception {
+        String id = UUID.randomUUID().toString();
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        request.setInitialDepth(-1);
+        request.setBranchingFactor(-1);
+        request.setIsActive(message.getIsActive());
+        
+        System.out.println(request);
+        
+        rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+       System.out.println("After send");
+        while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
+            //do nothing for now, maybe sleep a bit in future?
+        }
+        System.out.println("Received request with id: " +id);
+        UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
+        System.out.println("Settings response: " +response);
+
+        return response;
+    }
 
 /////////////////
     public ServerResponse userchecktest(User message) throws Exception {
@@ -166,7 +234,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
-        if(!request.getUserId().contains("mocktesting")){
+        // if(!request.getUserId().contains("mocktesting")){
             rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
                 //do nothing for now, maybe sleep a bit in future?
@@ -177,22 +245,23 @@ public class LoginController extends WebMvcConfigurerAdapter {
             // Thread.sleep(2000);
             // this.simpMessagingTemplate.convertAndSend("/queue/chats-" + request.getUserId(), topicResponse);
             return topicResponse;
-        }else{
-            String [][][] mockpimIds =  new String[4][2][2];
-            mockpimIds[0][0][0] = "1";
-            mockpimIds[0][0][1] = "2";
-            mockpimIds[1][0][0] = "3";
-            mockpimIds[1][0][1] = "4";
-            mockpimIds[2][0][0] = "5";
-            mockpimIds[2][0][1] = "6";
-            mockpimIds[3][0][0] = "7";
-            mockpimIds[3][0][1] = "8";
-            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its","Me","Nobody"},mockpimIds);
-            System.out.println(topicResponse);
-            // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
-            // thread.sleep(2000);
-            return topicResponse;
-        }
+        // }else{
+        //     String [][][] mockpimIds =  new String[4][2][2];
+        //     mockpimIds[0][0][0] = "1";
+        //     mockpimIds[0][0][1] = "2";
+        //     mockpimIds[1][0][0] = "3";
+        //     mockpimIds[1][0][1] = "4";
+        //     mockpimIds[2][0][0] = "5";
+        //     mockpimIds[2][0][1] = "6";
+        //     mockpimIds[3][0][0] = "7";
+        //     mockpimIds[3][0][1] = "8";
+        //     //TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its","Me","Nobody"},mockpimIds);
+        //    // System.out.println(topicResponse);
+        //     // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
+        //     // thread.sleep(2000);
+        //     // return topicResponse;
+            
+        // }
     }
 
     @MessageMapping("/gmailItems")
@@ -265,12 +334,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
     }
 ///////////////
-    //  public void receiveEditSettingsResponse(EditUserSettingsResponse response) {
-    //     try {
-    //         editUserSettingsResponseLL.put(response);
-    //     }
-    //     catch (InterruptedException ie){}
-    // }
+     public void receiveEditSettingsResponse(UserUpdateResponseIdentified response) {
+        try {
+            editUserSettingsResponseLL.put(response);
+        }
+        catch (InterruptedException ie){}
+    }
 
 ///////////////////
     @RequestMapping(value="/login", method=RequestMethod.GET)

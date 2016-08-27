@@ -24,6 +24,11 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/request").setAllowedOrigins("*").withSockJS();
 		registry.addEndpoint("/gmailItems").setAllowedOrigins("*").withSockJS();
 		registry.addEndpoint("/usercheck").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/theme").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/mapsettings").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/datasources").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/deactivate").setAllowedOrigins("*").withSockJS();
+		
 	}
 
 }

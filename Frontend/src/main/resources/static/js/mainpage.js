@@ -39,6 +39,10 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
+*   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
+*/
+var branchingFactor = 4;
+/**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
 var flagHasNodesToLoad = false;
@@ -116,6 +120,39 @@ var network;
 
 
 $(document).ready(function(){
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length,c.length);
+            }
+        }
+        return "";
+    }
+    if(getCookie("branch") != "")
+        var branchingFactor = getCookie("branch");
+    if(getCookie("depth") != "")
+        var initialdepth = getCookie("depth");
+    var nav=getCookie("nav");
+    var map=getCookie("map");
+    var sidepanel=getCookie("sidepanel");
+    if(nav!= "")
+        $("#nav").css("backgroundColor",nav+" !important");
+    if(map!= "")
+        $("#mynetwork").css("backgroundColor", map+" !important");
+    if(sidepanel!= "")
+    {
+        $("#sidepanel").css("backgroundColor",sidepanel);
+        $("#sidepanelTitle").css("backgroundColor",nav);
+        $(".panel-group").css("backgroundColor",nav);
+         $(".breadcrumb").css("backgroundColor",nav);
+        // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
+    }
     /**
     *   A function that hieds the error
     */

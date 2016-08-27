@@ -37,7 +37,7 @@ public class User implements Serializable {
 	/**
 	* An array that contains the theme for various sections of the website.
 	*/
-	private String[] theme = {"#0f4d71", "#ffffff"};
+	private String[] theme = {"#0f4d71", "#ffffff","#0f4d71"};
 
 	/**
 	* The depth to which the graph should expand to when the mainpage loads.
@@ -48,6 +48,10 @@ public class User implements Serializable {
 	* How many nodes should be retrieved when a node is expanded.
 	*/
 	private int branchingFactor = 4;
+	/**
+	* Specifies if the user has deregistered their account or not.
+	*/
+	private Boolean isActive = true;
 
 	/**
 	* Default empty constructor.
@@ -200,6 +204,21 @@ public class User implements Serializable {
 	*/
 	public void setBranchingFactor(int branchingFactor) {
 		this.branchingFactor = branchingFactor;
+	}
+	/**
+	* Returns value of isActive.
+	* @return True or False indicating if the user is active or not
+	*/
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	/**
+	* Sets new value of isActive.
+	* @param isActive True or False indicating is the user is active or not.
+	*/
+	public void setBranchingFactor(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	/**
