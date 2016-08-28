@@ -85,6 +85,8 @@ public class GmailPoller implements Poller {
 	private RabbitTemplate rabbitTemplate;
 	private boolean firstPageDone = false;
 	private boolean oldDone = false;
+	private long maxEmails = 200;
+	private long currNumEmails = 0;
 
 	static {
 		try {
@@ -203,10 +205,15 @@ public class GmailPoller implements Poller {
 			return;
 
 		while (!stop) {
+			if (currNumEmails >= maxEmails && maxEmails != -1){
+				System.out.println("Max emails reached for user: " + userEmail);
+				return;
+			}
+
 			PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 			if (pollingUser.getRefreshToken() == null) {
-				System.out.println("Poller stopping.");
+				System.out.println("Poller stopping for user: " + userEmail);
 				return;
 			}
 			else
@@ -232,7 +239,7 @@ public class GmailPoller implements Poller {
 			GmailBatchMessages gbm = listNewMessages(null);
 
 			while (gbm != null) {
-				if (tmpFirst == null)
+				if (tmpFirst == null) 
 					tmpFirst = gbm.messages.get(0).getId();
 
 				for (Message message : gbm.messages) {
@@ -250,6 +257,7 @@ public class GmailPoller implements Poller {
 					}
 
 					RawData rawData = getRawData(message.getId(), mimeMessage);
+					currNumEmails++;
 
 					if (rawData != null)
 						addToQueue(rawData);
