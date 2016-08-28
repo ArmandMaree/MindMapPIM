@@ -50,7 +50,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = false;
+var mocktesting = true;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -1000,7 +1000,18 @@ $(document).ready(function(){
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
 
-       $("#backfromsidebar").html(navbarReloadTextCondensed)
+        if($(window).width()<=768){
+            $("#backfromsidebar").html(navbarReloadTextCondensed)
+            $("#help").html("   Help");
+            $("#settings").html("   Settings");
+            $("#logout").html("   Logout");
+        }else{
+            $("#help").html("");
+            $("#settings").html("");
+            $("#logout").html("");
+            $("#backfromsidebar").html(navbarReloadTextExpanded)
+        }
+
     });
     /**
     *   A function that handles the doubleClick event on the BubbleMap
@@ -1256,4 +1267,38 @@ function expandBubble(nextID)
          network.selectNodes([0]);
     }
     canExpand=false;
+}
+
+function refreshGraph(){
+    while(parentlist.indexOf(0)>=0){
+        var i = parentlist.indexOf(0);
+        if(parentlist[i]==0){
+            selectedID = i;
+            if(selectedID!=0 && i != 1){
+                // parentlist =[0,0,0,2,0,4,0,6,2];
+                var deletelist =[]
+                var templist = []
+                deletelist.push(selectedID);
+                templist.push(selectedID);
+                var count =0;
+                while(templist.length>0 || count > 10000){
+                    count++;
+                    var parent = templist.pop();
+                    // console.log(parent);
+                    for(var i=0;i<parentlist.length;i++){
+                        // console.log(parentlist[i])
+                        if(parentlist[i] == parent){
+                            templist.push(i);
+                            deletelist.push(i);
+                        }
+                    }
+                    // console.log(templist.length)
+
+                }
+                parentlist[selectedID]=-1;
+                network.selectNodes(deletelist);
+                network.deleteSelected();
+            }
+        }
+    }
 }
