@@ -76,7 +76,7 @@
                     <li><a href="#">Set branch factor</a></li>
                     <li><a href="#">Set depth limit</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a onclick="refreshGraph()"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Reset graph</a></li>                 
+                    <li><a onclick="refreshGraph()"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Refresh graph</a></li>                 
                     <li role="separator" class="divider"></li>
                     <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
                   </ul>
@@ -103,6 +103,10 @@
         <div class="alert alert-success" id="loadingAlert" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
           <!-- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> -->
           <strong>Loading...</strong>    
+        </div>
+        <div class="alert alert-warning" id="loadingAlertWarning" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Warning...</strong>    
         </div>
         <div class="alert alert-danger" id="loadingAlertError" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
