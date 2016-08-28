@@ -72,6 +72,7 @@ public class FrontendListener {
 	}
 
 	public void receiveUserUpdate(UserUpdateRequestIdentified userUpdateIdentified) {
+		System.out.println("Received: " + userUpdateIdentified);
 		UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
 
 		if (userUpdateIdentified.getAuthCodes() != null) {
@@ -79,6 +80,7 @@ public class FrontendListener {
 				switch (authCode.getPimSource()) {
 					case "Gmail":
 						user.setGmailId(authCode.getId());
+						System.out.println("Send to gmail: " + authCode);
 						rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
 						break;
 					default:
@@ -88,6 +90,7 @@ public class FrontendListener {
 			}
 		}
 
+		System.out.println("Send to DB: " + user);
 		rabbitTemplate.convertAndSend(userUpdateQueueName, user);
 	}
 }

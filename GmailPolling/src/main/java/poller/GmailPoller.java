@@ -216,7 +216,7 @@ public class GmailPoller implements Poller {
 			oldDone = true;
 
 			try {
-				java.lang.Thread.sleep(10000);
+				java.lang.Thread.sleep(60 * 1000);
 			}
 			catch (InterruptedException ignore) {}
 		}
