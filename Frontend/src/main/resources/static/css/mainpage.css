@@ -22,6 +22,7 @@ body
     color: #34a8d2!important;
     font: 10pt arial;
     background-color:  #2d415c!important;
+    overflow: hidden;
 }
 
 #mynetwork {
