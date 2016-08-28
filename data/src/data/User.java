@@ -80,8 +80,11 @@ public class User implements Serializable {
 		this.gmailId = other.gmailId;
 		this.firstName = other.firstName;
 		
-		for (int i = 0; i < theme.length; i++)
-			this.theme[i] = other.theme[i];
+		if (other.theme != null)
+			for (int i = 0; i < theme.length; i++)
+				this.theme[i] = other.theme[i];
+		else
+			theme = null;
 
 		this.initialDepth = other.initialDepth;
 		this.branchingFactor = other.branchingFactor;
