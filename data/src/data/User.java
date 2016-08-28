@@ -48,6 +48,7 @@ public class User implements Serializable {
 	* How many nodes should be retrieved when a node is expanded.
 	*/
 	private int branchingFactor = 4;
+
 	/**
 	* Specifies if the user has deregistered their account or not.
 	*/
@@ -227,11 +228,14 @@ public class User implements Serializable {
 	*/
     @Override
     public String toString() {
-        return "User{\n" +
-			"\tid=" + userId + ",\n" +
-			"\tfirstName=" + firstName  + ",\n" +
-			"\tlastName=" + lastName + ",\n" +
-			"\tgmailId=" + gmailId + "\n" +
+        return "User {\n" +
+			"\tid:" + userId + ",\n" +
+			"\tfirstName:" + firstName  + ",\n" +
+			"\tlastName:" + lastName + ",\n" +
+			"\tgmailId:" + gmailId + "\n" +
+			"\tinitialDepth:" + initialDepth + "\n" +
+			"\tbranchingFactor:" + branchingFactor + "\n" +
+			"\tisActive:" + isActive + "\n" +
 		"}";
     }
 }
