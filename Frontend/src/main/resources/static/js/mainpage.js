@@ -120,6 +120,7 @@ var network;
 
 
 $(document).ready(function(){
+    // alert("Hey");
     function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
@@ -134,10 +135,30 @@ $(document).ready(function(){
         }
         return "";
     }
-    if(getCookie("branch") != "")
+    if(getCookie("branch")!= "")
+    {
         var branchingFactor = getCookie("branch");
+        $("#Branchrange").html(getCookie("branch"));
+        $("#brange").attr("value",getCookie("branch"));
+    }
+    else
+    {
+        $("#Branchrange").html("4");
+        $("#brange").attr("value","4");
+    }
+    
     if(getCookie("depth") != "")
+    {
         var initialdepth = getCookie("depth");
+        $("#Depthrange").html(getCookie("depth"));
+        $("#drange").attr("value",getCookie("depth"));
+    }
+    else
+    {
+        $("#Depthrange").html("2");
+        $("#drange").attr("value","2");
+    }
+
     var nav=getCookie("nav");
     var map=getCookie("map");
     var sidepanel=getCookie("sidepanel");
@@ -686,7 +707,10 @@ $(document).ready(function(){
     *	A function that disables the default event that occurs on rightclick event
     */
     document.oncontextmenu = function() {return false;};
-
+    function showValue(newValue)
+    {
+        document.getElementById("range").innerHTML=newValue;
+    }
     /**
     *	A function that populates the sidepanel with data
     *	@param node - the node that has been selected
@@ -997,6 +1021,29 @@ function hidesidebar()
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
    $("#backfromsidebar").html("<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;left:-0px;padding:5px' src='/images/bubblelogo.png'/></a><p class='navbar-text'>PIM</p>")
+}
+// $(".dropdown").click(function(event)
+// {
+//     event.stopPropagation();
+// });
+function keepOpen()
+{
+    // $(".dropdown").show();
+    // console.log("Here");
+}
+function showBranchValue(newValue)
+{
+  // alert("Here");
+  document.getElementById("Branchrange").innerHTML=newValue;
+  branchingFactor = newValue;
+  // keepOpen();
+}
+function showDepthValue(newValue)
+{
+  // alert("Here");
+  document.getElementById("Depthrange").innerHTML=newValue;
+  initialdepth = newValue;
+  // keepOpen();
 }
 /**
 *	A function that is called when a user clicks on the expand bubble option in the context menu

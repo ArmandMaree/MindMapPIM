@@ -95,6 +95,8 @@ function logout()
     //     }
 
     // });
-    setTimeout(function(){ document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";window.location.assign('/'); }, 4000);
+    console.log("Logout");
+    document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    window.location.assign('/');
 
 }

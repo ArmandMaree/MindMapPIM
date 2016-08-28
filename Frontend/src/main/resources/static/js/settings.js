@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	alert("Here!");
+	// alert("Here Tonight!");
 	 document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	 document.cookie = "G_ENABLED_IDPS=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	$("#theme").hide();
@@ -184,8 +184,8 @@ $("#saveTheme").on("click",
 
 $("#deactivateAccount").on("click", function(){
 	var deactivate = {
-		userId="",
-		isActive=false
+		userId:"",
+		isActive:false
 	};
 	console.log("Deactivate Account: " + JSON.stringify(deactivate));
 
