@@ -3,3 +3,4 @@ build/*
 javadoc/
 .gradle/
 all.tar.gz
+data-javadoc.jar
