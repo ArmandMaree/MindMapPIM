@@ -30,7 +30,7 @@ var selectedID;
 /**
 *   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
-var parentlist =[0,0];
+var parentlist =["-1","-1"];
 /**
 *   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
@@ -72,7 +72,7 @@ var canExpand = false;
 */
 var shouldRebuild = false;
 /**
-*   @var {} allPimIDlist - List to hold all the processed item ID's, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
+*   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
 var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
@@ -197,9 +197,13 @@ $(document).ready(function(){
         // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
     }
     /**
-    *   A function that hieds the error
+    *   A function that hides the error
     */
     $("#loadingAlertError").hide();  
+    /**
+    *   A function that hides the warning
+    */
+    $("#loadingAlertWarning").hide();  
     /**
     *   A function that displays the loading bar
     */
@@ -264,9 +268,13 @@ $(document).ready(function(){
                 {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
                 {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             ]
-        }      
+        }
+        document.cookie="lastrefreshtime="+ Date.now();
+
     }else{
         nodes =[];
+        // nodes.push( {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}})
+        // nodes.push({id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}})
         var splitter = tempnodes.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
@@ -320,7 +328,7 @@ $(document).ready(function(){
         }
     }else{
         edges =[];
-        edges.push({id:0,from:"0",to:1});
+        edges.push({from: 1, to: 0});
         var splitter = tempedges.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
@@ -329,10 +337,36 @@ $(document).ready(function(){
                 break;
             }
             tempedges = JSON.parse(c);
-            tempedges.id +=1;
+            tempedges = {id: tempedges.id, from: (tempedges.from -1) , to: tempedges.to}
+            // tempedges.id +=1;
             edges.push(tempedges);
         }
     }
+
+    /**
+   *    @var {String} name1 - string that contains the userId
+   */
+    var name1 = "parentlist=";
+    /**
+    *   @var ca1 - Cookie....
+    */
+    var ca1 = document.cookie.split(';');
+    /**
+    *   @var tempparent - ...
+    */
+    tempparent ="";
+    for(var i = 0; i <ca1.length; i++) {
+        var c = ca1[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name1) == 0) {
+            tempparent = c.substring(name1.length,c.length);
+        }
+    }
+    if(tempparent!="")
+        parentlist =tempparent;
+
 
         /**
           * @var container - A variable that holds the html element that contains the BubbleMap
@@ -486,18 +520,18 @@ $(document).ready(function(){
                     $("#twitter").html("");
                     $("#linkedIn").html("");
                     $("#sidepanelTitle").html("");
-                    var s = network.getSelectedNodes();
+                    var selectedID = network.getSelectedNodes();
                     $("#sidepanel").show();
 
                     var pathtoselectednode=[];
-                    if(s!=0)
+                    if(selectedID!=0)
                         var pathtoselectednode =[];
                     var pathtoselectednodelabels =[]
-                    console.log("s:"+s)
+                    console.log("selectedID:"+selectedID)
                     console.log("parentlist "+parentlist)
 
                     var dataForSideBar = {
-                        "Topic" : nodes[s].label,
+                        "Topic" : nodes[selectedID].label,
                         "Gmail" : []
                     }
                     console.log("this object: "+JSON.stringify(dataForSideBar))
@@ -505,7 +539,7 @@ $(document).ready(function(){
                         dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
                     }
 
-                    for(var i = s; i > 0; i = parentlist[i]){
+                    for(var i = selectedID; i > 0; i = parentlist[i]){
                         console.log(i)
                         if(pathtoselectednode.indexOf(i)==-1)
                             pathtoselectednode.push(i);
@@ -522,9 +556,9 @@ $(document).ready(function(){
                         // break;
                     }
                     $("#breadcrumb").html(breadcrumb);
-                    console.log(s);
+                    console.log(selectedID);
 
-                    populateSidePanel(s, dataForSideBar);
+                    populateSidePanel(selectedID, dataForSideBar);
 
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -692,7 +726,7 @@ $(document).ready(function(){
                                     font:'20px Raleway black', 
                                     color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                                 });
-                                parentlist.push(1);
+                                parentlist.push("1");
                                 
                                 data.edges.add({
                                     id: edges.length,
@@ -759,6 +793,8 @@ $(document).ready(function(){
                         console.log(tempstring);
                         console.log(edges);
                         document.cookie="edges="+tempstring;
+                        document.cookie="parentlist="+ parentlist;
+
                     }else{
                         
                     }
@@ -960,7 +996,7 @@ $(document).ready(function(){
             }
 
             if(this.label=="Remove Bubble"){
-                if(selectedID!=0){
+                if(selectedID!=0 &&  selectedID!=1){
                     // parentlist =[0,0,0,2,0,4,0,6,2];
                     var deletelist =[]
                     var templist = []
@@ -984,6 +1020,8 @@ $(document).ready(function(){
                     parentlist[selectedID]=-1;
                     network.selectNodes(deletelist);
                     network.deleteSelected();
+                }else{
+                    refreshGraph();
                 }
             }
         }
@@ -1183,12 +1221,7 @@ function expandBubble(nextID)
     try{
         network.selectNodes([nextID]);
     }catch(err){
-        $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-        });
-        $("#loadingAlertError").fadeIn(1000, function() {
-        });
-        $("#loadingAlertError").html("Error: No topics were returned. Please reload and try again.")
+
     }
     // $("#loadingAlert").fadeIn(1000, function() {
     //     // body...
@@ -1270,10 +1303,19 @@ function expandBubble(nextID)
 }
 
 function refreshGraph(){
-    while(parentlist.indexOf(0)>=0){
-        var i = parentlist.indexOf(0);
-        if(parentlist[i]==0){
-            selectedID = i;
+    $("#loadingAlertWarning").fadeOut(1000, function() {
+                // body...
+    });
+    parentlist[0] ="-1";
+    parentlist[1] ="-1";
+    console.log(parentlist);
+    console.log(parentlist.indexOf("0"));
+
+    while(parentlist.indexOf("0")!=-1){
+        var i = parentlist.indexOf("0");
+        console.log(i);
+        if(parentlist[i]=="0"){
+            var selectedID = i;
             if(selectedID!=0 && i != 1){
                 // parentlist =[0,0,0,2,0,4,0,6,2];
                 var deletelist =[]
@@ -1295,10 +1337,80 @@ function refreshGraph(){
                     // console.log(templist.length)
 
                 }
-                parentlist[selectedID]=-1;
+                parentlist[selectedID]="-1";
                 network.selectNodes(deletelist);
                 network.deleteSelected();
             }
         }
     }
+    selectedID ="0";
+    document.cookie="lastselectednode="+selectedID;
+    parentlist[0] ="-1";
+    parentlist[1] ="-1";
+
+    if(mocktesting)
+        topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
+    else
+        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+    if(!flagHasNodesToLoad){
+        try{
+            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+        }catch(err){
+            $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+            });
+            $("#loadingAlertError").fadeIn(1000, function() {
+            });
+            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        }
+        /**
+        *   A function that displays the loading bar
+        */
+        $("#loadingAlert").fadeIn(1000, function() {
+            // body...
+        });
+    }
+
+    document.cookie="lastrefreshtime="+ Date.now();
+
+
 }
+
+setInterval(function(){ 
+   /**
+   *    @var {String} name1 - string that contains the last refresh time
+   */
+    var name1 = "lastrefreshtime=";
+    /**
+    *   @var ca1 - Cookie....
+    */
+    var ca1 = document.cookie.split(';');
+    /**
+    *   @var datenow - ...
+    */
+    var datenow ="";
+    for(var i = 0; i <ca1.length; i++) {
+        var c = ca1[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name1) == 0) {
+            datenow = c.substring(name1.length,c.length);
+        }
+    }
+    console.log(Date.now()-datenow);
+    if(Date.now()-datenow > 60000){
+        $("#loadingAlert").fadeOut(1000, function() {
+                // body...
+        });
+        /**
+        *   A function that displays the loading bar
+        */
+        $("#loadingAlertWarning").fadeIn(1000, function() {
+            // body...
+        });
+        $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
+    }
+
+
+}, 1000);
