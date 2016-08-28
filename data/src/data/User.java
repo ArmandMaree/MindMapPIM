@@ -16,18 +16,18 @@ public class User implements Serializable {
 	/**
 	* ID used in database.
 	*/
-    @Id
-    private String userId;
+	@Id
+	private String userId;
 
 	/**
 	* First name of the user.
 	*/
-    private String firstName;
+	private String firstName;
 
 	/**
 	* Last name of the user.
 	*/
-    private String lastName;
+	private String lastName;
 
 	/**
 	* The email address of the user's Gmail account.
@@ -57,8 +57,8 @@ public class User implements Serializable {
 	/**
 	* Default empty constructor.
 	*/
-    public User() {
-    	super();
+	public User() {
+		super();
 	}
 
 	/**
@@ -70,16 +70,35 @@ public class User implements Serializable {
 	}
 
 	/**
+	* Copy constructor.
+	*/
+	public User(User other) {
+		super();
+		this.userId = other.userId;
+		this.firstName = other.firstName;
+		this.lastName = other.lastName;
+		this.gmailId = other.gmailId;
+		this.firstName = other.firstName;
+		
+		for (int i = 0; i < theme.length; i++)
+			this.theme[i] = other.theme[i];
+
+		this.initialDepth = other.initialDepth;
+		this.branchingFactor = other.branchingFactor;
+		this.isActive = other.isActive;
+	}
+
+	/**
 	* Default constructor.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
 	* @param gmailId The email address of the user's Gmail account.
 	*/
-    public User(String firstName, String lastName, String gmailId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+	public User(String firstName, String lastName, String gmailId) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.gmailId = gmailId;
-    }
+	}
 
 	/**
 	* Default constructor.
@@ -226,9 +245,9 @@ public class User implements Serializable {
 	* Returns a string representation of a user used for printing.
 	* @return User as a string.
 	*/
-    @Override
-    public String toString() {
-        return "User {\n" +
+	@Override
+	public String toString() {
+		return "User {\n" +
 			"\tid:" + userId + ",\n" +
 			"\tfirstName:" + firstName  + ",\n" +
 			"\tlastName:" + lastName + ",\n" +
@@ -237,5 +256,5 @@ public class User implements Serializable {
 			"\tbranchingFactor:" + branchingFactor + "\n" +
 			"\tisActive:" + isActive + "\n" +
 		"}";
-    }
+	}
 }

@@ -32,7 +32,7 @@ public class UserIdentified extends User {
 	* Constructor to build from given user.
 	*/
 	public UserIdentified(String returnId, boolean isRegistered, User user) {
-		super(user.getUserId(), user.getFirstName(), user.getLastName(), user.getGmailId());
+		super(user);
 		this.returnId = returnId;
 		this.isRegistered = isRegistered;
 	}
@@ -108,6 +108,9 @@ public class UserIdentified extends User {
 		"\tfirstName: " + getFirstName()  + ",\n" +
 		"\tlastName: " + getLastName() + ",\n" +
 		"\tgmailId: " + getGmailId() + "\n" +
+		"\tinitialDepth:" + getInitialDepth() + "\n" +
+		"\tbranchingFactor:" + getBranchingFactor() + "\n" +
+		"\tisActive:" + getIsActive() + "\n" +
 		"}";
 	}
 }
