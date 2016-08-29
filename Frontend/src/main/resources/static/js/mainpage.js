@@ -40,9 +40,14 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
+<<<<<<< HEAD
 *   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var branchingFactor = 4;
+
+*   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
+*/
+var initialbranching = 4;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
