@@ -30,7 +30,7 @@ var selectedID;
 /**
 *   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
-var parentlist =[0,0];
+var parentlist =["-1","-1"];
 /**
 *   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
@@ -40,9 +40,14 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
+<<<<<<< HEAD
 *   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var branchingFactor = 4;
+
+*   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
+*/
+var initialbranching = 4;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
@@ -50,7 +55,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = false;
+var mocktesting = true;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -72,7 +77,7 @@ var canExpand = false;
 */
 var shouldRebuild = false;
 /**
-*   @var {} allPimIDlist - List to hold all the processed item ID's, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
+*   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
 var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
@@ -106,8 +111,16 @@ $( window ).resize(function() {
     if($(window).width()<=768){
         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
         $("#settings").html("   Settings");
+        $("#settings").css('font-family','Raleway');
+        $("#settings").css('font-size','14pt');
+
         $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
     }else{
         $("#help").html("");
         $("#settings").html("");
@@ -195,11 +208,34 @@ $(document).ready(function(){
         $(".panel-group").css("backgroundColor",nav);
          $(".breadcrumb").css("backgroundColor",nav);
         // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
+
+    if($(window).width()<=768){
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
+        $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
+        $("#settings").html("   Settings");
+        $("#settings").css('font-family','Raleway');
+        $("#settings").css('font-size','14pt');
+
+        $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
+    }else{
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
     /**
-    *   A function that hieds the error
+    *   A function that hides the error
     */
     $("#loadingAlertError").hide();  
+    /**
+    *   A function that hides the warning
+    */
+    $("#loadingAlertWarning").hide();  
     /**
     *   A function that displays the loading bar
     */
@@ -264,9 +300,13 @@ $(document).ready(function(){
                 {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
                 {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             ]
-        }      
+        }
+        document.cookie="lastrefreshtime="+ Date.now();
+
     }else{
         nodes =[];
+        // nodes.push( {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}})
+        // nodes.push({id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}})
         var splitter = tempnodes.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
@@ -320,7 +360,7 @@ $(document).ready(function(){
         }
     }else{
         edges =[];
-        edges.push({id:0,from:"0",to:1});
+        edges.push({from: 1, to: 0});
         var splitter = tempedges.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
@@ -329,10 +369,36 @@ $(document).ready(function(){
                 break;
             }
             tempedges = JSON.parse(c);
-            tempedges.id +=1;
+            tempedges = {id: tempedges.id, from: (tempedges.from-1) , to: tempedges.to}
+            // tempedges.id +=1;
             edges.push(tempedges);
         }
     }
+
+    /**
+   *    @var {String} name1 - string that contains the userId
+   */
+    var name1 = "parentlist=";
+    /**
+    *   @var ca1 - Cookie....
+    */
+    var ca1 = document.cookie.split(';');
+    /**
+    *   @var tempparent - ...
+    */
+    tempparent ="";
+    for(var i = 0; i <ca1.length; i++) {
+        var c = ca1[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name1) == 0) {
+            tempparent = c.substring(name1.length,c.length);
+        }
+    }
+    if(tempparent!="")
+        parentlist =tempparent.split(',');
+
 
         /**
           * @var container - A variable that holds the html element that contains the BubbleMap
@@ -486,18 +552,18 @@ $(document).ready(function(){
                     $("#twitter").html("");
                     $("#linkedIn").html("");
                     $("#sidepanelTitle").html("");
-                    var s = network.getSelectedNodes();
+                    var selectedID = network.getSelectedNodes();
                     $("#sidepanel").show();
 
                     var pathtoselectednode=[];
-                    if(s!=0)
+                    if(selectedID!=0)
                         var pathtoselectednode =[];
                     var pathtoselectednodelabels =[]
-                    console.log("s:"+s)
+                    console.log("selectedID:"+selectedID)
                     console.log("parentlist "+parentlist)
 
                     var dataForSideBar = {
-                        "Topic" : nodes[s].label,
+                        "Topic" : nodes[selectedID].label,
                         "Gmail" : []
                     }
                     console.log("this object: "+JSON.stringify(dataForSideBar))
@@ -505,7 +571,7 @@ $(document).ready(function(){
                         dataForSideBar.Gmail.push({"subject": "" , "data" :items[i]})
                     }
 
-                    for(var i = s; i > 0; i = parentlist[i]){
+                    for(var i = selectedID; i > 0; i = parentlist[i]){
                         console.log(i)
                         if(pathtoselectednode.indexOf(i)==-1)
                             pathtoselectednode.push(i);
@@ -522,9 +588,9 @@ $(document).ready(function(){
                         // break;
                     }
                     $("#breadcrumb").html(breadcrumb);
-                    console.log(s);
+                    console.log(selectedID);
 
-                    populateSidePanel(s, dataForSideBar);
+                    populateSidePanel(selectedID, dataForSideBar);
 
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -592,7 +658,7 @@ $(document).ready(function(){
                         topicsall = topicsall.concat(contactsAll);
                         dontConcateAgain=true;
                         branchinglimit= (topicsall.length + contactsAll.length) ;
-                        if(branchinglimit>4){
+                        if(branchinglimit>initialbranching){
                             branchinglimit=4;
                         }
                     }
@@ -692,7 +758,7 @@ $(document).ready(function(){
                                     font:'20px Raleway black', 
                                     color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                                 });
-                                parentlist.push(1);
+                                parentlist.push("1");
                                 
                                 data.edges.add({
                                     id: edges.length,
@@ -744,6 +810,9 @@ $(document).ready(function(){
                         // body...
                     });
                     if(shouldRebuild){
+                        document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
                         var tempstring ="";
                         for(var i=0;i<nodes.length;i++){
                             tempstring+= JSON.stringify(nodes[i])+"%";
@@ -759,8 +828,12 @@ $(document).ready(function(){
                         console.log(tempstring);
                         console.log(edges);
                         document.cookie="edges="+tempstring;
+                        document.cookie="parentlist="+ parentlist;
+
                     }else{
-                        
+                        document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
                     }
                 }
                 // for(var k =0;k<expandlist.length;k++){
@@ -775,9 +848,9 @@ $(document).ready(function(){
             *   @var topicRequest -  a JSON oject that contains information for a topic request
             */
             if(mocktesting)
-                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
+                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
             else
-                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
             if(!flagHasNodesToLoad){
                 try{
                     stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
@@ -939,9 +1012,9 @@ $(document).ready(function(){
                 console.log("exclude list:"+excludelist);
        
                 if(mocktesting)
-                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
                 else
-                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
 
                 document.cookie="lastselectednode="+selectedID;
                 try{
@@ -960,31 +1033,7 @@ $(document).ready(function(){
             }
 
             if(this.label=="Remove Bubble"){
-                if(selectedID!=0){
-                    // parentlist =[0,0,0,2,0,4,0,6,2];
-                    var deletelist =[]
-                    var templist = []
-                    deletelist.push(selectedID);
-                    templist.push(selectedID);
-                    var count =0;
-                    while(templist.length>0 || count > 10000){
-                        count++;
-                        var parent = templist.pop();
-                        // console.log(parent);
-                        for(var i=0;i<parentlist.length;i++){
-                            // console.log(parentlist[i])
-                            if(parentlist[i] == parent){
-                                templist.push(i);
-                                deletelist.push(i);
-                            }
-                        }
-                        // console.log(templist.length)
-
-                    }
-                    parentlist[selectedID]=-1;
-                    network.selectNodes(deletelist);
-                    network.deleteSelected();
-                }
+                deleteBranch(selectedID)
             }
         }
     });
@@ -1000,7 +1049,26 @@ $(document).ready(function(){
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
 
-       $("#backfromsidebar").html(navbarReloadTextCondensed)
+        if($(window).width()<=768){
+            $("#backfromsidebar").html(navbarReloadTextCondensed)
+            $("#help").html("   Help");
+            $("#help").css('font-family','Raleway');
+            $("#help").css('font-size','14pt');
+
+            $("#settings").html("   Settings");
+            $("#settings").css('font-family','Raleway');
+            $("#settings").css('font-size','14pt');
+
+            $("#logout").html("   Logout");
+            $("#logout").css('font-family','Raleway');
+            $("#logout").css('font-size','14pt');
+        }else{
+            $("#help").html("");
+            $("#settings").html("");
+            $("#logout").html("");
+            $("#backfromsidebar").html(navbarReloadTextExpanded)
+        }
+
     });
     /**
     *   A function that handles the doubleClick event on the BubbleMap
@@ -1172,12 +1240,7 @@ function expandBubble(nextID)
     try{
         network.selectNodes([nextID]);
     }catch(err){
-        $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-        });
-        $("#loadingAlertError").fadeIn(1000, function() {
-        });
-        $("#loadingAlertError").html("Error: No topics were returned. Please reload and try again.")
+
     }
     // $("#loadingAlert").fadeIn(1000, function() {
     //     // body...
@@ -1202,7 +1265,7 @@ function expandBubble(nextID)
 
     console.log("expand PathFrom: " + pathtoselectednode.length+1);
     console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
         var thiscolor = nodes[selectedID].color;
@@ -1237,9 +1300,9 @@ function expandBubble(nextID)
         console.log("expand exclude list:"+excludelist);
        
         if(mocktesting)
-            topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+            topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
         else
-            topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+            topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
         
         document.cookie="lastselectednode="+selectedID;
         try{
@@ -1256,4 +1319,141 @@ function expandBubble(nextID)
          network.selectNodes([0]);
     }
     canExpand=false;
+}
+
+function refreshGraph(){
+    $("#loadingAlertWarning").fadeOut(1000, function() {
+                // body...
+    });
+
+    deleteBranch("0");   
+    document.cookie="lastrefreshtime="+ Date.now();
+
+
+}
+
+setInterval(function(){ 
+    if(shouldRebuild){
+       /**
+       *    @var {String} name1 - string that contains the last refresh time
+       */
+        var name1 = "lastrefreshtime=";
+        /**
+        *   @var ca1 - Cookie....
+        */
+        var ca1 = document.cookie.split(';');
+        /**
+        *   @var datenow - ...
+        */
+        var datenow ="";
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                datenow = c.substring(name1.length,c.length);
+            }
+        }
+        // console.log(Date.now()-datenow);
+        if(Date.now()-datenow > 60000){
+            $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+            });
+            /**
+            *   A function that displays the loading bar
+            */
+            $("#loadingAlertWarning").fadeIn(1000, function() {
+                // body...
+            });
+            $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
+        }
+    }
+
+
+}, 1000);
+
+function deleteBranch(selectedID){
+    if(selectedID!=0 &&  selectedID!=1){
+        // parentlist =[0,0,0,2,0,4,0,6,2];
+        var deletelist =[]
+        var templist = []
+        deletelist.push(selectedID);
+        templist.push(selectedID);
+        var count =0;
+        while(templist.length>0 || count > 10000){
+            count++;
+            var parent = templist.pop();
+            for(var i=0;i<parentlist.length;i++){
+                if(parentlist[i] == parent){
+                    templist.push(i);
+                    deletelist.push(i);
+                }
+            }
+        }
+        parentlist[selectedID]=-1;
+        network.selectNodes(deletelist);
+        network.deleteSelected();
+    }else{
+        parentlist[0] = -1;
+        parentlist[1] = -1;
+
+        for(var i=0;i<parentlist.length;i++){
+            console.log(parentlist[i]);
+            if(parentlist[i]=="0" || parentlist[i]=="1"  ){
+                deleteBranch(i);
+            }
+        }
+       
+       // var tempparentdeleted = parentlist.indexOf("0";
+       //  console.log(tempparentdeleted)
+       //  console.log(parentlist);
+       //  parentlist[Number(tempparentdeleted)] = -1;
+        // console.log(tempparentdeleted+" "+ parentlist[tempparentdeleted]+" "+parentlist);
+
+        // document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        // document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        selectedID ="0";
+        document.cookie="lastselectednode="+selectedID;
+        
+
+        nodes = [
+            {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+        ]
+
+        edges = [
+            {from: 1, to: 0}
+        ]
+
+        parentlist[0] = 0;
+        parentlist[1] = 0;
+
+        // if(mocktesting)
+        //     topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        // else
+        //     topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        // // if(!flagHasNodesToLoad){
+        //     try{
+        //         console.log("sending!")
+        //         stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+        //     }catch(err){
+        //         $("#loadingAlert").fadeOut(1000, function() {
+        //         // body...
+        //         });
+        //         $("#loadingAlertError").fadeIn(1000, function() {
+        //         });
+        //         $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        //     }
+        //     /**
+        //     *   A function that displays the loading bar
+        //     */
+        //     $("#loadingAlert").fadeIn(1000, function() {
+        //         // body...
+        //     });
+
+        
+
+    }
 }
