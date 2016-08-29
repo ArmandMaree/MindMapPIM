@@ -53,6 +53,10 @@ public class BusinessListener {
 			userRepository.save(saveUser);
 			userReturn = userRepository.findByGmailId(saveUser.getGmailId());
 		}
+		else if (!userReturn.getIsActive()) {
+			userReturn.setIsActive(true);
+			userRepository.save(userReturn);
+		}
 
 		user = new UserIdentified(user.getReturnId(), userAlreadyRegistered, userReturn);
 		System.out.println("Respond: " + user);
@@ -62,7 +66,7 @@ public class BusinessListener {
 	public void receiveCheckIfRegistered(UserIdentified user) {
 		User userReturn = userRepository.findByGmailId(user.getGmailId());
 
-		if (userReturn == null)
+		if (userReturn == null || !userReturn.getIsActive())
 			user.setIsRegistered(false);
 		else
 			user = new UserIdentified(user.getReturnId(), true, userReturn);
@@ -88,11 +92,14 @@ public class BusinessListener {
 			if (userIdentified.getTheme() != null)
 				userInRepo.setTheme(userIdentified.getTheme());
 
-			if (userIdentified.getInitialDepth() != userInRepo.getInitialDepth())
+			if (userIdentified.getInitialDepth() != userInRepo.getInitialDepth() && userIdentified.getInitialDepth() != -1)
 				userInRepo.setInitialDepth(userIdentified.getInitialDepth());
 
-			if (userIdentified.getBranchingFactor() != userInRepo.getBranchingFactor())
+			if (userIdentified.getBranchingFactor() != userInRepo.getBranchingFactor() && userIdentified.getBranchingFactor() != -1)
 				userInRepo.setBranchingFactor(userIdentified.getBranchingFactor());
+
+			if (userIdentified.getIsActive() != userInRepo.getIsActive())
+				userInRepo.setIsActive(userIdentified.getIsActive());
 
 			userRepository.save(userInRepo);
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.SUCCESS);

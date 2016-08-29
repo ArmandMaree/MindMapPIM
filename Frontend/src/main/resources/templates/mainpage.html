@@ -71,13 +71,20 @@
               <ul class="nav navbar-nav navbar-right">
               <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign" id="help"></span></a></li>
               <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"  id="settings"></span></a>
+                  <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"  id="settings"></span></a>
                   <ul id="dropMenu" class="dropdown-menu">
-                    <li><a href="#">Set branch factor</a></li>
-                    <li><a href="#">Set depth limit</a></li>
+                    <li><a>Set branch factor</a></li>
+                    <!-- style="color:black;text-align:center;" --> 
+                    <li style="color:black;text-align:center;" id="Branchrange"></li>
+                    <li id="stop"><input id="brange" style="padding:5px;" type="range" min="1" max="10" value="1" step="1" onchange="showBranchValue(this.value);keepOpen()" /></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Reset graph</a></li>
-                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-remove-circle"></span> Clear graph</a></li>
+                    <li><a >Set depth limit</a></li>
+                    <li style="color:black;text-align:center;" id="Depthrange"></li>
+                    <li id="stop"><input style="padding:5px;" id="drange" type="range" min="1" max="7" value="1" step="1" onchange="showDepthValue(this.value);keepOpen()" />
+                      </li>
+                    <li role="separator" class="divider"></li>
+                    <li><a><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Reset graph</a></li>
+                    <li><a><span  style="font-size:10pt" class="glyphicon glyphicon-remove-circle"></span> Clear graph</a></li>
                     
                     <li role="separator" class="divider"></li>
                     <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>

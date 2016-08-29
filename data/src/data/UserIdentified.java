@@ -43,7 +43,7 @@ public class UserIdentified extends User {
 	* @param user The user this class must extend (do a deep copy).
 	*/
 	public UserIdentified(String returnId, boolean isRegistered, User user) {
-		super(user.getUserId(), user.getFirstName(), user.getLastName(), user.getGmailId());
+		super(user);
 		this.returnId = returnId;
 		this.isRegistered = isRegistered;
 	}
@@ -101,12 +101,15 @@ public class UserIdentified extends User {
 	@Override
 	public String toString() {
 		return "UserIdentified {\n" +
-			"\treturnId: " + returnId + ",\n" +
-			"\tisRegistered: " + isRegistered + ",\n" +
-			"\tid: " + getUserId() + ",\n" +
-			"\tfirstName: " + getFirstName()  + ",\n" +
-			"\tlastName: " + getLastName() + ",\n" +
-			"\tgmailId: " + getGmailId() + "\n" +
+		"\treturnId: " + returnId + ",\n" +
+		"\tisRegistered: " + isRegistered + ",\n" +
+		"\tid: " + getUserId() + ",\n" +
+		"\tfirstName: " + getFirstName()  + ",\n" +
+		"\tlastName: " + getLastName() + ",\n" +
+		"\tgmailId: " + getGmailId() + "\n" +
+		"\tinitialDepth:" + getInitialDepth() + "\n" +
+		"\tbranchingFactor:" + getBranchingFactor() + "\n" +
+		"\tisActive:" + getIsActive() + "\n" +
 		"}";
 	}
 }

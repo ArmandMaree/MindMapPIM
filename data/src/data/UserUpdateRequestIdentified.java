@@ -61,6 +61,9 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 			"\tfirstName: " + getFirstName()  + ",\n" +
 			"\tlastName: " + getLastName() + ",\n" +
 			"\tgmailId: " + getGmailId() + "\n" +
+			"\tinitialDepth:" + getInitialDepth() + "\n" +
+			"\tbranchingFactor:" + getBranchingFactor() + "\n" +
+			"\tisActive:" + getIsActive() + "\n" +
 			"\tauthCodes size: " + ((getAuthCodes() == null) ? "null" : getAuthCodes().length) + "\n" +
 		"}";
 	}

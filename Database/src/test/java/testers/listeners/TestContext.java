@@ -24,7 +24,7 @@ public class TestContext {
 	public final static String topicRequestQueueName = "topic-request.database.rabbit";
 	public final static String userRegisterQueueName = "user-register.database.rabbit";
 	public final static String userCheckQueueName = "user-check.database.rabbit";
-	public final static String userUpdateRequestQueueName = "user-update.database.rabbit";
+	public final static String userUpdateRequestQueueName = "user-update-request.database.rabbit";
 
 	// test beans start
 	public final static String topicResponseQueueName = "topic-response.frontend.rabbit";

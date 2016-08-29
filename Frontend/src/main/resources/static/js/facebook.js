@@ -18,18 +18,21 @@ var AuthResponse;
 	if (response.status === 'connected')
 	{
 		var accessToken = response.authResponse.accessToken;
+		AuthResponse=response;
 		// console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
 		testAPI();
-		return;
+		return true;
 	}
 	else if (response.status === 'not_authorized')
 	{
 	  console.log("status = not_authorized");
+	  return false;
 	}
 	else
 	{
 	   console.log("status = something else");
+	   return false;
 	}
 }
 
@@ -37,22 +40,23 @@ var AuthResponse;
 *	This function is called when a client clicks on the Facebook button to login or signup
 *	It prompts the user to log in to Facebook through the Facebook login dialogue
 */
-function onFacebookLogin()
-{
-  console.log("onFacebookLogin");
-  FB.login(function(response) {
-	if (response.authResponse) {
-	  AuthResponse = response.authResponse;
-	  console.log(response.authResponse);
+// function onFacebookLogin()
+// {
+//   console.log("onFacebookLogin");
+//   FB.login(function(response) {
+// 	if (response.authResponse) {
+// 	  AuthResponse = response.authResponse;
+// 	  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"Facebook","authCode":AuthResponse.accessToken}
+// 	  console.log(response.authResponse);
 	
-	  showtick();
-	}
-	FB.getLoginStatus(function(response) {
-	  statusChangeCallback(response);
-	  return;
-	});
-  });
-}
+// 	  showtick();
+// 	}
+// 	FB.getLoginStatus(function(response) {
+// 	  statusChangeCallback(response);
+// 		return ;	
+// 	});
+//   });
+// }
 
 /**
 *	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook
@@ -115,7 +119,6 @@ return;
 */
 function onSuccessFacebook(response) {
 	console.log("Success: " + response.authResponse);
-  	getResponse(response);
   	return true;
   
 }

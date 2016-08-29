@@ -40,6 +40,10 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
+*   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
+*/
+var branchingFactor = 4;
+/**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
 var flagHasNodesToLoad = false;
@@ -129,6 +133,60 @@ var network;
 
 
 $(document).ready(function(){
+    // alert("Hey");
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length,c.length);
+            }
+        }
+        return "";
+    }
+    if(getCookie("branch")!= "")
+    {
+        var branchingFactor = getCookie("branch");
+        $("#Branchrange").html(getCookie("branch"));
+        $("#brange").attr("value",getCookie("branch"));
+    }
+    else
+    {
+        $("#Branchrange").html("4");
+        $("#brange").attr("value","4");
+    }
+    
+    if(getCookie("depth") != "")
+    {
+        var initialdepth = getCookie("depth");
+        $("#Depthrange").html(getCookie("depth"));
+        $("#drange").attr("value",getCookie("depth"));
+    }
+    else
+    {
+        $("#Depthrange").html("2");
+        $("#drange").attr("value","2");
+    }
+
+    var nav=getCookie("nav");
+    var map=getCookie("map");
+    var sidepanel=getCookie("sidepanel");
+    if(nav!= "")
+        $("#nav").css("backgroundColor",nav+" !important");
+    if(map!= "")
+        $("#mynetwork").css("backgroundColor", map+" !important");
+    if(sidepanel!= "")
+    {
+        $("#sidepanel").css("backgroundColor",sidepanel);
+        $("#sidepanelTitle").css("backgroundColor",nav);
+        $(".panel-group").css("backgroundColor",nav);
+         $(".breadcrumb").css("backgroundColor",nav);
+        // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
+    }
     /**
     *   A function that hieds the error
     */
@@ -403,6 +461,7 @@ $(document).ready(function(){
             *   A function that subscribes to a destination that the requests are sent to 
             */
             stompClient.subscribe('/user/topic/request', function(serverResponse){
+                console.log("serverResponse.contacts: "+JSON.parse(serverResponse.body).involvedContacts);
                 if(JSON.parse(serverResponse.body).items!=null){
                     console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items;
@@ -493,7 +552,7 @@ $(document).ready(function(){
                     */
                     var JSONServerResponse = JSON.parse(serverResponse.body);
                     /**
-                    *   @var topicsall - an array that contains ids for the ids of the items used by the pims.
+                    *   @var topicsall - an array that contains names for the topics of the items used by the pims.
                     */
                     var topicsall = JSONServerResponse.topicsText;
                     /**
@@ -750,7 +809,10 @@ $(document).ready(function(){
     *   A function that disables the default event that occurs on rightclick event
     */
     document.oncontextmenu = function() {return false;};
-
+    function showValue(newValue)
+    {
+        document.getElementById("range").innerHTML=newValue;
+    }
     /**
     *   A function that populates the sidepanel with data
     *   @param node - the node that has been selected
@@ -1066,6 +1128,29 @@ function hidesidebar()
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
    $("#backfromsidebar").html(navbarReloadTextCondensed)
+}
+// $(".dropdown").click(function(event)
+// {
+//     event.stopPropagation();
+// });
+function keepOpen()
+{
+    // $(".dropdown").show();
+    // console.log("Here");
+}
+function showBranchValue(newValue)
+{
+  // alert("Here");
+  document.getElementById("Branchrange").innerHTML=newValue;
+  branchingFactor = newValue;
+  // keepOpen();
+}
+function showDepthValue(newValue)
+{
+  // alert("Here");
+  document.getElementById("Depthrange").innerHTML=newValue;
+  initialdepth = newValue;
+  // keepOpen();
 }
 /**
 *   A function that is called when a user clicks on the expand bubble option in the context menu

@@ -22,7 +22,7 @@ var connected = false;
 *	Function that prevents auto sign in for Gmail
 */
 window.onbeforeunload = function(e){
-  gapi.auth2.getAuthInstance().signOut();
+   gapi.auth2.getAuthInstance().signOut();
 };
 /**
  * Starts the log in process by calling the google api.
@@ -89,68 +89,15 @@ var sendUserReg = function(){
 	// 	    		console.log(error.headers.message);
 	//   			});
 	//   	}, 3000);
-	getGmailResponse(gmailUser,authCodes[2]);
-	});
+	
+	// });
 
 }
 /**
  * A function that checks where any sign in activity for Google has happened and responds.
  * @param {boolean} val - true if a sign in has occured.
  */
-var signinChanged = function (val) {
-  console.log('Signin state changed to ', val);
-  if(val === true){
-	 $("#googleLogin").animate({
-		  top: '100px',
-		  opacity: '0.0'
 
-	  });
-	  $("#facebookLogin").animate({
-		  top: '100px',
-		  opacity: '0.0'
-
-	  });
-	  $("#tos").animate({
-		  top: '100px',
-		  opacity: '0.0'
-
-	  });
-	  $("#tos2").animate({
-		  top: '100px',
-		  opacity: '0.0'
-
-	  });
-	  $("#web").animate({
-		  top: '100px',
-		  opacity: '0.0'
-
-	  });
-	  $("#tos").hide();
-	  $("#tos2").hide();
-	  $("#web").hide();
-
-	  $("#avatar").delay("slow").animate({
-		  top: '70px',
-		  opacity: '0.3'
-
-	  });
-	  $("#welcome").show();
-	  $("#welcome").delay(1000).animate({
-		  opacity: '1'
-	  });
-	  $('#avatar').fadeOut(0, function() {
-		  $('#avatar').fadeIn(0);
-		  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-		  $('#avatar').css("background-size","cover");
-		  $('#avatar').css("opacity","1");
-	  });
-	  $("#continue").show();
-	  $("#continue").delay(2000).animate({
-		  opacity: '1'
-	  });
-	  document.cookie = "login=1";
-  }
-};
 /**
  * A function that checks if the user is already logged in to Google or if the user has just logged in and responds
  */
@@ -171,12 +118,10 @@ var refreshValues = function() {
 var onSuccess = function(user) {
 	gmailUser = user;
 	console.log('Signed in as ' + user.getBasicProfile().getName());
-	//Create cookie
-	  document.cookie = "name="+gmailUser.wc.Za;
-	  document.cookie ="surname="+gmailUser.wc.Na;
-	  document.cookie= "email="+user.getBasicProfile().getEmail();
+	//Create cooki
+	  document.cookie= "googleUser="+user.getBasicProfile().getEmail();
 	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
-	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
+	//document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
 /**
  * A Google callback function when a request has failed.
@@ -190,7 +135,7 @@ var onFailure = function(error) {
  */
 function googleretrieve(){
 
-  // var auth2 = gapi.auth2.getAuthInstance();
+   var auth2 = gapi.auth2.getAuthInstance();
   auth2.grantOfflineAccess({'approval_prompt': 'force', 'redirect_uri': 'postmessage'}).then(signInCallback);
 
 }
@@ -200,14 +145,28 @@ function googleretrieve(){
  */
   function signInCallback(authResult) {
 	if (authResult['code']) {
+		console.log("authResult:" +JSON.stringify(authResult));
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
-	  $('#nextButton').show();
-	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
-	  authCodes.push(gmailAuthCode);
+	  var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"Gmail",authCode:authResult['code']}
+	  UpdateSourcesObject.authcodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 
 	} else {
 	  	console.log("An error occurred!");
 	}
   }
+  function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length,c.length);
+        }
+    }
+    return "";
+}

@@ -41,6 +41,9 @@ public class LoginControllerTester extends AbstractTester {
 	@Autowired
 	LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
 
+	@Autowired
+	LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
+
 	// @Autowired
 	// LinkedBlockingQueue<UserIdentified> TopicResponse;
 

@@ -16,18 +16,18 @@ public class User implements Serializable {
 	/**
 	* ID used in database.
 	*/
-    @Id
-    private String userId;
+	@Id
+	private String userId;
 
 	/**
 	* First name of the user.
 	*/
-    private String firstName;
+	private String firstName;
 
 	/**
 	* Last name of the user.
 	*/
-    private String lastName;
+	private String lastName;
 
 	/**
 	* The email address of the user's Gmail account.
@@ -37,7 +37,7 @@ public class User implements Serializable {
 	/**
 	* An array that contains the theme for various sections of the website.
 	*/
-	private String[] theme = {"#0f4d71", "#ffffff"};
+	private String[] theme = {"#0f4d71", "#ffffff","#0f4d71"};
 
 	/**
 	* The depth to which the graph should expand to when the mainpage loads.
@@ -50,10 +50,15 @@ public class User implements Serializable {
 	private int branchingFactor = 4;
 
 	/**
-	* Default constructor.
+	* Specifies if the user has deregistered their account or not.
 	*/
-    public User() {
-    	super();
+	private Boolean isActive = true;
+
+	/**
+	* Default empty constructor.
+	*/
+	public User() {
+		super();
 	}
 
 	/**
@@ -66,16 +71,38 @@ public class User implements Serializable {
 	}
 
 	/**
-	* Constructor that initializes some member variables.
+	* Copy constructor.
+	*/
+	public User(User other) {
+		super();
+		this.userId = other.userId;
+		this.firstName = other.firstName;
+		this.lastName = other.lastName;
+		this.gmailId = other.gmailId;
+		this.firstName = other.firstName;
+		
+		if (other.theme != null)
+			for (int i = 0; i < theme.length; i++)
+				this.theme[i] = other.theme[i];
+		else
+			theme = null;
+
+		this.initialDepth = other.initialDepth;
+		this.branchingFactor = other.branchingFactor;
+		this.isActive = other.isActive;
+	}
+
+	/**
+	* Default constructor.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
 	* @param gmailId The email address of the user's Gmail account.
 	*/
-    public User(String firstName, String lastName, String gmailId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+	public User(String firstName, String lastName, String gmailId) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.gmailId = gmailId;
-    }
+	}
 
 	/**
 	* Constructor that initializes some member variables.
@@ -202,18 +229,36 @@ public class User implements Serializable {
 	public void setBranchingFactor(int branchingFactor) {
 		this.branchingFactor = branchingFactor;
 	}
+	/**
+	* Returns value of isActive.
+	* @return True or False indicating if the user is active or not
+	*/
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	/**
+	* Sets new value of isActive.
+	* @param isActive True or False indicating is the user is active or not.
+	*/
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	/**
 	* Returns a string representation of a user used for printing.
 	* @return User as a string.
 	*/
-    @Override
-    public String toString() {
-        return "User{\n" +
-			"\tid=" + userId + ",\n" +
-			"\tfirstName=" + firstName  + ",\n" +
-			"\tlastName=" + lastName + ",\n" +
-			"\tgmailId=" + gmailId + "\n" +
+	@Override
+	public String toString() {
+		return "User {\n" +
+			"\tid:" + userId + ",\n" +
+			"\tfirstName:" + firstName  + ",\n" +
+			"\tlastName:" + lastName + ",\n" +
+			"\tgmailId:" + gmailId + "\n" +
+			"\tinitialDepth:" + initialDepth + "\n" +
+			"\tbranchingFactor:" + branchingFactor + "\n" +
+			"\tisActive:" + isActive + "\n" +
 		"}";
-    }
+	}
 }
