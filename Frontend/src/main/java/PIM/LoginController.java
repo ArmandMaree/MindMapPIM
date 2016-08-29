@@ -63,10 +63,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public String showLogin() {
         return "mainpage";
     }
-
+ 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
-    public ServerResponse accessTokenSend(UserRegistration message) throws Exception {
+    public UserIdentified accessTokenSend(UserRegistration message) throws Exception {
 		String id = UUID.randomUUID().toString();
         if(message.getAuthCodes()[0].getAuthCode()!=null){
     		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, message);
@@ -75,10 +75,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
             while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
 				//do nothing for now, maybe sleep a bit in future?
             }
-    		User user = userRegistrationResponseLL.poll();
-            System.out.println(user);
+    		UserIdentified user = userRegistrationResponseLL.poll();
+            System.out.println(user); 
             // Thread.sleep(2000);
-            return new ServerResponse(user.getUserId());
+            return user;
         }else{
             System.out.println(message);
             UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName(),message.getAuthCodes()[0].getId());
@@ -90,7 +90,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             System.out.println(user);
 
             // Thread.sleep(2000);
-            return new ServerResponse(user.getIsRegistered(),user.getUserId());
+            return user;
         }
     }
 ////////////// AMY

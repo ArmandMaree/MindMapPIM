@@ -40,10 +40,6 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
-*   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
-*/
-var branchingFactor = 4;
-/**
 *   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
 */
 var initialbranching = 4;
