@@ -1,11 +1,12 @@
 $(document).ready(function(){
-	// alert("Here Tonight!");
+	alert("Here Tonight!");
 	 document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	 document.cookie = "G_ENABLED_IDPS=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	$("#theme").hide();
 	$("#userPreferences").hide();
 	$("#Saved").hide();
 	$("#Error").hide();
+	// $("settings").show();
 	/**
 	*	This function adds/removes the css class active for the selected tab
 	*/
@@ -24,6 +25,7 @@ $(document).ready(function(){
 			$("#ques").html("");
 			$("#googlesigninButton").attr("onclick","checkGoogle()");
 			$("#facebooksignin").attr("onclick","checkFacebook()");
+			alert("Ajax success!");
 		}
 
 	});

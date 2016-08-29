@@ -286,12 +286,21 @@ function loadXMLDoc(){
 			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
 
 			document.cookie="GmailId="+gmailUser.getBasicProfile().getEmail();
-			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-			stompClient.subscribe('/topic/greetings', function(serverResponse){
+			stompClient.send("/app/usercheck", {}, JSON.stringify(userReg));
+			stompClient.subscribe('/user/topic/request', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+jsonresponse);
+				console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
+				console.log("ServerResponse is : "+jsonresponse.userId);
+				
+				document.cookie = "nav="+jsonresponse.theme[0];
+				document.cookie = "map="+jsonresponse.theme[1];
+				document.cookie = "sidepanel="+jsonresponse.theme[2];
+				document.cookie = "branch="+jsonresponse.branchingFactor;
+				document.cookie = "depth="+jsonresponse.initialDepth;
+
 				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-				document.cookie="userId="+jsonresponse.content;
+
+				document.cookie="userId="+jsonresponse.userId;
 				// $("#loadingAlert").fadeOut(1000, function() {
 				// 	// body...
 				// });

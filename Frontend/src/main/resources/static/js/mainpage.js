@@ -78,6 +78,8 @@ var shouldRebuild = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
+
+var nodePosition =0;
 var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
@@ -638,7 +640,7 @@ $(document).ready(function(){
                     /**
                     *   @var {int} pos - a variable that contains the position
                     */
-                    var pos=0;
+                    nodePosition=0;
                     /**
                     *   @var {int} branchinglimit - contains the length of the topicsall array
                     */
@@ -686,8 +688,8 @@ $(document).ready(function(){
                         // }
                         console.log("contactsAll "+contactsAll); 
                         console.log("topicsall "+topicsall);
-                        console.log("contactsAll.indexOf("+topicsall[pos]+")="+contactsAll.indexOf(topicsall[pos])); 
-                        if(contactsAll.indexOf(topicsall[pos]) >=0)
+                        console.log("contactsAll.indexOf("+topicsall[nodePosition]+")="+contactsAll.indexOf(topicsall[nodePosition])); 
+                        if(contactsAll.indexOf(topicsall[nodePosition]) >=0)
                             thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
  
                         /**
@@ -696,7 +698,7 @@ $(document).ready(function(){
                         var pimSourceIds = JSONServerResponse.pimSourceIds;
 
                         allPimIDlist[nodes.length]=pimSourceIds[i];
-                        if(topicsall[pos]!="undefined" && topicsall[i]!=undefined){
+                        if(topicsall[nodePosition]!="undefined" && topicsall[i]!=undefined){
                             console.log("allPimIDlist for "+nodes.length+": "+allPimIDlist[nodes.length]);
                             try {
                                 console.log("push "+ tempnodelength)
@@ -705,7 +707,7 @@ $(document).ready(function(){
                                 console.log("expand list:"+expandlist);
                                 data.nodes.add({
                                     id: nodes.length,
-                                    label: "  "+topicsall[pos]+"  ",
+                                    label: "  "+topicsall[nodePosition]+"  ",
                                     font:'20px Raleway black', 
                                     color: thiscolour
                                 });
@@ -740,7 +742,7 @@ $(document).ready(function(){
 
                             nodes.push({
                                 id: nodes.length,
-                                label: "  "+topicsall[pos]+"  ",
+                                label: "  "+topicsall[nodePosition]+"  ",
                                 font:'20px Raleway black', 
                                 color: thiscolour
                             })
@@ -777,7 +779,7 @@ $(document).ready(function(){
                                     to: 1
                                 });
                             }
-                            pos++;
+                            nodePosition++;
                         }
                     }
                     for(var j=0;j<refreshContactList.length;j++){
@@ -844,15 +846,29 @@ $(document).ready(function(){
                 //         expandlist.remove(i);
                 //     }
                 // }
+                console.log()
                 expandBubble(expandlist.shift());
             });
+            var excludelist =[]
+            for(var i = 1; i < parentlist.length;i++){
+                if(parentlist[i]==selectedID){
+                    try{
+                        excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
+                    }catch(err){
+
+                    }
+                }
+            }
+
+            console.log("exclude list:"+excludelist);
+
             /**    
             *   @var topicRequest -  a JSON oject that contains information for a topic request
             */
             if(mocktesting)
-                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};
             else
-                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+                topicRequest = {userId: x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};
             if(!flagHasNodesToLoad){
                 try{
                     stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
@@ -1274,27 +1290,31 @@ function expandBubble(nextID)
     if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
+        console.log("pooooo "+selectedID);
+        console.log("pooooo "+nodes);
+
+        console.log("pooooo "+parentlist)
         var thiscolor = nodes[selectedID].color;
 
-                        var pathtoselectednodelabels =[]
-                console.log("selectedID:"+selectedID)
-                console.log("parentlist "+parentlist)
+        var pathtoselectednodelabels =[]
+        console.log("selectedID:"+selectedID)
+        console.log("parentlist "+parentlist)
 
-                for(var i = selectedID; i > 0; i = parentlist[i]){
-                    pathtoselectednode.push(i);
-                }
+        for(var i = selectedID; i > 0; i = parentlist[i]){
+            pathtoselectednode.push(i);
+        }
 
-                console.log("PathFrom: " + pathtoselectednode);
-                var pos=0;
-                var branchinglimit = 4;
-                var thiscolor = nodes[selectedID].color;
-                for(var i=pathtoselectednode.length-1;i>=0;i--){
-                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
-                }
-                console.log(pathtoselectednodelabels);
-                // pathtoselectednodelabels.push()
-                console.log("PathTo: " + pathtoselectednodelabels);
-                pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
+        console.log("PathFrom: " + pathtoselectednode);
+        var pos=0;
+        var branchinglimit = 4;
+        var thiscolor = nodes[selectedID].color;
+        for(var i=pathtoselectednode.length-1;i>=0;i--){
+           pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+        }
+        console.log(pathtoselectednodelabels);
+        // pathtoselectednodelabels.push()
+        console.log("PathTo: " + pathtoselectednodelabels);
+        pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
 
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
@@ -1427,7 +1447,7 @@ function deleteBranch(selectedID){
         selectedID ="0";
         document.cookie="lastselectednode="+selectedID;
         
-
+        nodePosition =0;
         nodes = [
             {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
             {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
@@ -1436,14 +1456,29 @@ function deleteBranch(selectedID){
         edges = [
             {from: 1, to: 0}
         ]
+        expandlist = [];
+        parentlist = ["-1","-1"];
+        var excludelist =[]
+        for(var i = 1; i < parentlist.length;i++){
+            if(parentlist[i]==selectedID){
+                try{
+                    excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
+                }catch(err){
+
+                }
+            }
+        }
 
         parentlist[0] = 0;
         parentlist[1] = 0;
 
+
+        console.log("exclude list:"+excludelist);
+
         if(mocktesting)
-            topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+            topicRequest = {userId: "mocktesting"+x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};
         else
-            topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+            topicRequest = {userId: x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};
         // if(!flagHasNodesToLoad){
             try{
                 console.log("sending!")
