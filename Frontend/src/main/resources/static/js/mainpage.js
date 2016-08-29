@@ -30,7 +30,7 @@ var selectedID;
 /**
 *   @var {int} parentlist - List to hold all the parent nodes, if you want to find the parent of node 1 for example, indice the array at [1] to find the parent.
 */
-var parentlist =["-1","-1"];
+var parentlist =[0,0];
 /**
 *   @var {int} expandlist - Temporary array to hold all the nodes that need to be exapanded next
 */
@@ -39,6 +39,10 @@ var expandlist = [];
 *   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var initialdepth = 2;
+/**
+*   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
+*/
+var initialbranching = 4;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
@@ -102,8 +106,16 @@ $( window ).resize(function() {
     if($(window).width()<=768){
         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
         $("#settings").html("   Settings");
+        $("#settings").css('font-family','Raleway');
+        $("#settings").css('font-size','14pt');
+
         $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
     }else{
         $("#help").html("");
         $("#settings").html("");
@@ -129,6 +141,25 @@ var network;
 
 
 $(document).ready(function(){
+    if($(window).width()<=768){
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
+        $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
+        $("#settings").html("   Settings");
+        $("#settings").css('font-family','Raleway');
+        $("#settings").css('font-size','14pt');
+
+        $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
+    }else{
+        $("#help").html("");
+        $("#settings").html("");
+        $("#logout").html("");
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
+    }
     /**
     *   A function that hides the error
     */
@@ -270,7 +301,7 @@ $(document).ready(function(){
                 break;
             }
             tempedges = JSON.parse(c);
-            tempedges = {id: tempedges.id, from: (tempedges.from -1) , to: tempedges.to}
+            tempedges = {id: tempedges.id, from: (tempedges.from-1) , to: tempedges.to}
             // tempedges.id +=1;
             edges.push(tempedges);
         }
@@ -298,7 +329,7 @@ $(document).ready(function(){
         }
     }
     if(tempparent!="")
-        parentlist =tempparent;
+        parentlist =tempparent.split(',');
 
 
         /**
@@ -558,7 +589,7 @@ $(document).ready(function(){
                         topicsall = topicsall.concat(contactsAll);
                         dontConcateAgain=true;
                         branchinglimit= (topicsall.length + contactsAll.length) ;
-                        if(branchinglimit>4){
+                        if(branchinglimit>initialbranching){
                             branchinglimit=4;
                         }
                     }
@@ -710,6 +741,9 @@ $(document).ready(function(){
                         // body...
                     });
                     if(shouldRebuild){
+                        document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
                         var tempstring ="";
                         for(var i=0;i<nodes.length;i++){
                             tempstring+= JSON.stringify(nodes[i])+"%";
@@ -728,7 +762,9 @@ $(document).ready(function(){
                         document.cookie="parentlist="+ parentlist;
 
                     }else{
-                        
+                        document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
                     }
                 }
                 // for(var k =0;k<expandlist.length;k++){
@@ -743,9 +779,9 @@ $(document).ready(function(){
             *   @var topicRequest -  a JSON oject that contains information for a topic request
             */
             if(mocktesting)
-                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
+                topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
             else
-                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
+                topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
             if(!flagHasNodesToLoad){
                 try{
                     stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
@@ -904,9 +940,9 @@ $(document).ready(function(){
                 console.log("exclude list:"+excludelist);
        
                 if(mocktesting)
-                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
                 else
-                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
 
                 document.cookie="lastselectednode="+selectedID;
                 try{
@@ -925,33 +961,7 @@ $(document).ready(function(){
             }
 
             if(this.label=="Remove Bubble"){
-                if(selectedID!=0 &&  selectedID!=1){
-                    // parentlist =[0,0,0,2,0,4,0,6,2];
-                    var deletelist =[]
-                    var templist = []
-                    deletelist.push(selectedID);
-                    templist.push(selectedID);
-                    var count =0;
-                    while(templist.length>0 || count > 10000){
-                        count++;
-                        var parent = templist.pop();
-                        // console.log(parent);
-                        for(var i=0;i<parentlist.length;i++){
-                            // console.log(parentlist[i])
-                            if(parentlist[i] == parent){
-                                templist.push(i);
-                                deletelist.push(i);
-                            }
-                        }
-                        // console.log(templist.length)
-
-                    }
-                    parentlist[selectedID]=-1;
-                    network.selectNodes(deletelist);
-                    network.deleteSelected();
-                }else{
-                    refreshGraph();
-                }
+                deleteBranch(selectedID)
             }
         }
     });
@@ -970,8 +980,16 @@ $(document).ready(function(){
         if($(window).width()<=768){
             $("#backfromsidebar").html(navbarReloadTextCondensed)
             $("#help").html("   Help");
+            $("#help").css('font-family','Raleway');
+            $("#help").css('font-size','14pt');
+
             $("#settings").html("   Settings");
+            $("#settings").css('font-family','Raleway');
+            $("#settings").css('font-size','14pt');
+
             $("#logout").html("   Logout");
+            $("#logout").css('font-family','Raleway');
+            $("#logout").css('font-size','14pt');
         }else{
             $("#help").html("");
             $("#settings").html("");
@@ -1152,7 +1170,7 @@ function expandBubble(nextID)
 
     console.log("expand PathFrom: " + pathtoselectednode.length+1);
     console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad && !mocktesting){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
         var thiscolor = nodes[selectedID].color;
@@ -1187,9 +1205,9 @@ function expandBubble(nextID)
         console.log("expand exclude list:"+excludelist);
        
         if(mocktesting)
-            topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+            topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
         else
-            topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:4};
+            topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
         
         document.cookie="lastselectednode="+selectedID;
         try{
@@ -1212,111 +1230,135 @@ function refreshGraph(){
     $("#loadingAlertWarning").fadeOut(1000, function() {
                 // body...
     });
-    parentlist[0] ="-1";
-    parentlist[1] ="-1";
-    console.log(parentlist);
-    console.log(parentlist.indexOf("0"));
 
-    while(parentlist.indexOf("0")!=-1){
-        var i = parentlist.indexOf("0");
-        console.log(i);
-        if(parentlist[i]=="0"){
-            var selectedID = i;
-            if(selectedID!=0 && i != 1){
-                // parentlist =[0,0,0,2,0,4,0,6,2];
-                var deletelist =[]
-                var templist = []
-                deletelist.push(selectedID);
-                templist.push(selectedID);
-                var count =0;
-                while(templist.length>0 || count > 10000){
-                    count++;
-                    var parent = templist.pop();
-                    // console.log(parent);
-                    for(var i=0;i<parentlist.length;i++){
-                        // console.log(parentlist[i])
-                        if(parentlist[i] == parent){
-                            templist.push(i);
-                            deletelist.push(i);
-                        }
-                    }
-                    // console.log(templist.length)
-
-                }
-                parentlist[selectedID]="-1";
-                network.selectNodes(deletelist);
-                network.deleteSelected();
-            }
-        }
-    }
-    selectedID ="0";
-    document.cookie="lastselectednode="+selectedID;
-    parentlist[0] ="-1";
-    parentlist[1] ="-1";
-
-    if(mocktesting)
-        topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:4};
-    else
-        topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:4};
-    if(!flagHasNodesToLoad){
-        try{
-            stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-        }catch(err){
-            $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-            });
-            $("#loadingAlertError").fadeIn(1000, function() {
-            });
-            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
-        }
-        /**
-        *   A function that displays the loading bar
-        */
-        $("#loadingAlert").fadeIn(1000, function() {
-            // body...
-        });
-    }
-
+    deleteBranch("0");   
     document.cookie="lastrefreshtime="+ Date.now();
 
 
 }
 
 setInterval(function(){ 
-   /**
-   *    @var {String} name1 - string that contains the last refresh time
-   */
-    var name1 = "lastrefreshtime=";
-    /**
-    *   @var ca1 - Cookie....
-    */
-    var ca1 = document.cookie.split(';');
-    /**
-    *   @var datenow - ...
-    */
-    var datenow ="";
-    for(var i = 0; i <ca1.length; i++) {
-        var c = ca1[i];
-        while (c.charAt(0)==' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name1) == 0) {
-            datenow = c.substring(name1.length,c.length);
-        }
-    }
-    console.log(Date.now()-datenow);
-    if(Date.now()-datenow > 60000){
-        $("#loadingAlert").fadeOut(1000, function() {
-                // body...
-        });
+    if(shouldRebuild){
+       /**
+       *    @var {String} name1 - string that contains the last refresh time
+       */
+        var name1 = "lastrefreshtime=";
         /**
-        *   A function that displays the loading bar
+        *   @var ca1 - Cookie....
         */
-        $("#loadingAlertWarning").fadeIn(1000, function() {
-            // body...
-        });
-        $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
+        var ca1 = document.cookie.split(';');
+        /**
+        *   @var datenow - ...
+        */
+        var datenow ="";
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                datenow = c.substring(name1.length,c.length);
+            }
+        }
+        // console.log(Date.now()-datenow);
+        if(Date.now()-datenow > 60000){
+            $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+            });
+            /**
+            *   A function that displays the loading bar
+            */
+            $("#loadingAlertWarning").fadeIn(1000, function() {
+                // body...
+            });
+            $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
+        }
     }
 
 
 }, 1000);
+
+function deleteBranch(selectedID){
+    if(selectedID!=0 &&  selectedID!=1){
+        // parentlist =[0,0,0,2,0,4,0,6,2];
+        var deletelist =[]
+        var templist = []
+        deletelist.push(selectedID);
+        templist.push(selectedID);
+        var count =0;
+        while(templist.length>0 || count > 10000){
+            count++;
+            var parent = templist.pop();
+            for(var i=0;i<parentlist.length;i++){
+                if(parentlist[i] == parent){
+                    templist.push(i);
+                    deletelist.push(i);
+                }
+            }
+        }
+        parentlist[selectedID]=-1;
+        network.selectNodes(deletelist);
+        network.deleteSelected();
+    }else{
+        parentlist[0] = -1;
+        parentlist[1] = -1;
+
+        for(var i=0;i<parentlist.length;i++){
+            console.log(parentlist[i]);
+            if(parentlist[i]=="0" || parentlist[i]=="1"  ){
+                deleteBranch(i);
+            }
+        }
+       
+       // var tempparentdeleted = parentlist.indexOf("0";
+       //  console.log(tempparentdeleted)
+       //  console.log(parentlist);
+       //  parentlist[Number(tempparentdeleted)] = -1;
+        // console.log(tempparentdeleted+" "+ parentlist[tempparentdeleted]+" "+parentlist);
+
+        // document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        // document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        selectedID ="0";
+        document.cookie="lastselectednode="+selectedID;
+        
+
+        nodes = [
+            {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+        ]
+
+        edges = [
+            {from: 1, to: 0}
+        ]
+
+        parentlist[0] = 0;
+        parentlist[1] = 0;
+
+        // if(mocktesting)
+        //     topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        // else
+        //     topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        // // if(!flagHasNodesToLoad){
+        //     try{
+        //         console.log("sending!")
+        //         stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+        //     }catch(err){
+        //         $("#loadingAlert").fadeOut(1000, function() {
+        //         // body...
+        //         });
+        //         $("#loadingAlertError").fadeIn(1000, function() {
+        //         });
+        //         $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        //     }
+        //     /**
+        //     *   A function that displays the loading bar
+        //     */
+        //     $("#loadingAlert").fadeIn(1000, function() {
+        //         // body...
+        //     });
+
+        
+
+    }
+}
