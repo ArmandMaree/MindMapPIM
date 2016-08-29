@@ -40,11 +40,10 @@ var expandlist = [];
 */
 var initialdepth = 2;
 /**
-<<<<<<< HEAD
 *   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
 var branchingFactor = 4;
-
+/**
 *   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
 */
 var initialbranching = 4;
@@ -55,7 +54,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = true;
+var mocktesting = false;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -207,6 +206,7 @@ $(document).ready(function(){
         $("#sidepanelTitle").css("backgroundColor",nav);
         $(".panel-group").css("backgroundColor",nav);
          $(".breadcrumb").css("backgroundColor",nav);
+     }
         // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
 
     if($(window).width()<=768){
@@ -803,8 +803,10 @@ $(document).ready(function(){
 
                         }
                         parentlist[refreshContactList[j]]=-1;
-                        network.selectNodes(deletelist);
-                        network.deleteSelected();
+                        try{
+                            network.selectNodes(deletelist);
+                            network.deleteSelected();
+                        }catch(err){}
                     }
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -998,14 +1000,19 @@ $(document).ready(function(){
                 }
                 console.log(pathtoselectednodelabels);
                 // pathtoselectednodelabels.push()
-                console.log("PathTo: " + pathtoselectednodelabels);
-                if(pathtoselectednodelabels.indexOf("Contacts") >0)
+                if(pathtoselectednodelabels.indexOf("Contacts") >=0){
                     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
+                    console.log("PathTo: " + pathtoselectednodelabels);
+                }
 
                 var excludelist=[]
                 for(var i = 1; i < parentlist.length;i++){
                     if(parentlist[i]==selectedID){
-                        excludelist.push(nodes[i].label.replace("\n"," ").replace(" ",""));
+                        try{
+                            excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
+                        }catch(err){
+
+                        }
                     }
                 }
 
@@ -1189,7 +1196,6 @@ $(document).ready(function(){
         }
 
     });
-
 
 });
 // setInterval(function exapndingintervl(){console.log("canExpand "+canExpand);  if(canExpand){console.log("HERE:"+expandlist);expandBubble(expandlist.shift())} }, 500);
@@ -1392,8 +1398,11 @@ function deleteBranch(selectedID){
             }
         }
         parentlist[selectedID]=-1;
+        
         network.selectNodes(deletelist);
         network.deleteSelected();
+
+
     }else{
         parentlist[0] = -1;
         parentlist[1] = -1;
@@ -1408,12 +1417,13 @@ function deleteBranch(selectedID){
        // var tempparentdeleted = parentlist.indexOf("0";
        //  console.log(tempparentdeleted)
        //  console.log(parentlist);
-       //  parentlist[Number(tempparentdeleted)] = -1;
+        // parentlist[Number(tempparentdeleted)] = -1;
         // console.log(tempparentdeleted+" "+ parentlist[tempparentdeleted]+" "+parentlist);
 
         // document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         // document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-        document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+
+        // document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         selectedID ="0";
         document.cookie="lastselectednode="+selectedID;
         
@@ -1430,28 +1440,28 @@ function deleteBranch(selectedID){
         parentlist[0] = 0;
         parentlist[1] = 0;
 
-        // if(mocktesting)
-        //     topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
-        // else
-        //     topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
-        // // if(!flagHasNodesToLoad){
-        //     try{
-        //         console.log("sending!")
-        //         stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-        //     }catch(err){
-        //         $("#loadingAlert").fadeOut(1000, function() {
-        //         // body...
-        //         });
-        //         $("#loadingAlertError").fadeIn(1000, function() {
-        //         });
-        //         $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
-        //     }
-        //     /**
-        //     *   A function that displays the loading bar
-        //     */
-        //     $("#loadingAlert").fadeIn(1000, function() {
-        //         // body...
-        //     });
+        if(mocktesting)
+            topicRequest = {userId: "mocktesting"+x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        else
+            topicRequest = {userId: x1, path:[], exclude:[], maxNumberOfTopics:initialbranching};
+        // if(!flagHasNodesToLoad){
+            try{
+                console.log("sending!")
+                stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+            }catch(err){
+                $("#loadingAlert").fadeOut(1000, function() {
+                // body...
+                });
+                $("#loadingAlertError").fadeIn(1000, function() {
+                });
+                $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+            }
+            /**
+            *   A function that displays the loading bar
+            */
+            $("#loadingAlert").fadeIn(1000, function() {
+                // body...
+            });
 
         
 
