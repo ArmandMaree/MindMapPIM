@@ -37,7 +37,7 @@ public class User implements Serializable {
 	/**
 	* An array that contains the theme for various sections of the website.
 	*/
-	private String[] theme = {"#0f4d71", "#ffffff","#0f4d71"};
+	private String[] theme = {"#0f4d71", "#ffffff","rgba(255,255,255,0.8)"};
 
 	/**
 	* The depth to which the graph should expand to when the mainpage loads.
