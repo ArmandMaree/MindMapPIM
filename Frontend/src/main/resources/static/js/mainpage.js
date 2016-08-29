@@ -74,6 +74,8 @@ var shouldRebuild = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
+var nodecolor= 'white'
+var fontcolor= 'black'
 
 var nodePosition =0;
 var allPimIDlist = new Array();
@@ -193,6 +195,15 @@ $(document).ready(function(){
 
     var nav=getCookie("nav");
     var map=getCookie("map");
+    nodecolor= 'white'
+    fontcolor= 'black'
+    console.log("colour:"+map)
+    if(map=='#1E2019'){
+        console.log("colour yes!")
+        nodecolor = '#1E2019';
+        fontcolor= 'white'
+
+    }
     var sidepanel=getCookie("sidepanel");
     if(nav!= "")
         $("#nav").css("backgroundColor",nav+" !important");
@@ -273,8 +284,8 @@ $(document).ready(function(){
     if(tempnodes==""){
         if(mocktesting){
             nodes = [
-                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+                {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             
                 // {id: 2, label: "Horse", group: 0},
                 // {id: 3, label: "Amy \n Lochner", group: 0},
@@ -295,16 +306,16 @@ $(document).ready(function(){
             allPimIDlist[8] = [["5","6"],[null]];
         }else{
             nodes = [
-                {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-                {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+                {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+                {id: 1, label: "  Contacts  ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
             ]
         }
         document.cookie="lastrefreshtime="+ Date.now();
 
     }else{
         nodes =[];
-        // nodes.push( {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}})
-        // nodes.push({id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}})
+        // nodes.push( {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}})
+        // nodes.push({id: 1, label: "  Contacts  ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}})
         var splitter = tempnodes.split('%');
         for(var i = 0; i <splitter.length; i++) {
             var c = splitter[i];
@@ -409,13 +420,6 @@ $(document).ready(function(){
            nodes: new vis.DataSet(nodes),
            edges: new vis.DataSet(edges)
         };
-        var nodecolor= '#7FBEEB'
-        var fontcolor= 'black'
-        if(map=='#1E2019'){
-            nodecolor = '#1E2019';
-            fontcolor= 'white'
-
-        }
         /**
         *   @var options - An object that contains all settings for the BubbleMap
         */
@@ -650,7 +654,7 @@ $(document).ready(function(){
                     /**
                     *   @var thiscolour - ....
                     */
-                    var thiscolour = {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}};
+                    var thiscolour = {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}};
                     /**
                     *   @var tempnodelength - contains the length of the nodes array
                     */
@@ -686,13 +690,13 @@ $(document).ready(function(){
                     for(var i=0 ;i<branchinglimit;i++){
                         console.log("NodeLength: " + nodes.length + "          selectedID: "+selectedID)
                         // if(contactsAll != null&& contactsAll.length >0 && Math.abs(topicsall.length-contactsAll.length)<= i){
-                        //     thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        //     thiscolour = {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
                         // }
                         console.log("contactsAll "+contactsAll); 
                         console.log("topicsall "+topicsall);
                         console.log("contactsAll.indexOf("+topicsall[nodePosition]+")="+contactsAll.indexOf(topicsall[nodePosition])); 
                         if(contactsAll.indexOf(topicsall[nodePosition]) >=0)
-                            thiscolour = {background:'white', border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                            thiscolour = {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
  
                         /**
                         *   @var pimSourceIds - an array that contains all topics in the JSONServerResponse variable
@@ -710,7 +714,7 @@ $(document).ready(function(){
                                 data.nodes.add({
                                     id: nodes.length,
                                     label: "  "+topicsall[nodePosition]+"  ",
-                                    font:'20px Raleway black', 
+                                    font:'20px Raleway '+fontcolor, 
                                     color: thiscolour
                                 });
                                 parentlist.push(selectedID);
@@ -745,7 +749,7 @@ $(document).ready(function(){
                             nodes.push({
                                 id: nodes.length,
                                 label: "  "+topicsall[nodePosition]+"  ",
-                                font:'20px Raleway black', 
+                                font:'20px Raleway '+fontcolor, 
                                 color: thiscolour
                             })
                             edges.push({
@@ -759,8 +763,8 @@ $(document).ready(function(){
                                 data.nodes.add({
                                     id: nodes.length,
                                     label:"  "+ contactsAll[i]+"  ",
-                                    font:'20px Raleway black', 
-                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                    font:'20px Raleway '+fontcolor, 
+                                    color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                                 });
                                 parentlist.push("1");
                                 
@@ -772,8 +776,8 @@ $(document).ready(function(){
                                 nodes.push({
                                     id: nodes.length,
                                     label:"  "+ contactsAll[i]+"  ",
-                                    font:'20px Raleway black', 
-                                    color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
+                                    font:'20px Raleway '+fontcolor, 
+                                    color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                                 })
                                 edges.push({
                                     id: edges.length,
@@ -1451,8 +1455,8 @@ function deleteBranch(selectedID){
         
         nodePosition =0;
         nodes = [
-            {id: 0, label: "   ME   ",font:'20px Raleway black', color: {background:'white', border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
-            {id: 1, label: "  Contacts  ",font:'20px Raleway black', color: {background:'white', border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
+            {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
+            {id: 1, label: "  Contacts  ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}}
         ]
 
         edges = [
