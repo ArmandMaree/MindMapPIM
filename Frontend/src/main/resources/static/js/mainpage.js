@@ -409,7 +409,13 @@ $(document).ready(function(){
            nodes: new vis.DataSet(nodes),
            edges: new vis.DataSet(edges)
         };
+        var nodecolor= '#7FBEEB'
+        var fontcolor= 'black'
+        if(map=='#1E2019'){
+            nodecolor = '#1E2019';
+            fontcolor= 'white'
 
+        }
         /**
         *   @var options - An object that contains all settings for the BubbleMap
         */
@@ -425,10 +431,10 @@ $(document).ready(function(){
             nodes: {
                 shape: 'circle',
                 size: 50,
-                color: '#7FBEEB ', //rgb(102,167,188)',
+                color: nodecolor, //rgb(102,167,188)',
                 font: {
                     size: 26,
-                    color: 'black'
+                    color: fontcolor
                 },
                 borderWidth: 3
             },
