@@ -1,5 +1,7 @@
 $(document).ready(function(){
-	alert("Here Tonight!");
+	// alert("Here Tonight!");
+	var navcolour = getCookie("nav");
+	$("#nav").css("backgroundColor",navcolour);
 	 document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	 document.cookie = "G_ENABLED_IDPS=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	$("#theme").hide();
@@ -25,8 +27,8 @@ $(document).ready(function(){
 			$("#ques").html("");
 			$("#googlesigninButton").attr("onclick","checkGoogle()");
 			$("#facebooksignin").attr("onclick","checkFacebook()");
-			alert("Ajax success!");
-		}
+			// alert("Ajax success!");
+		} 
 
 	});
 	$("#Loading").fadeIn(1000,function(){
@@ -123,14 +125,19 @@ $("ul li").on("click",function(){
 	{
 		$("#nav").css("backgroundColor",value);
 		themeObject.theme[0]=value;
+		$("#navColour").css("backgroundColor",value);
 	}
 	else if(component == "map")
 	{
 		themeObject.theme[1] = value;
+		$("#bubbleSpaceColour").css("backgroundColor", value);
 	}
 	else if(component == "panel")
 	{
 		themeObject.theme[2] =value;
+		// if(value!= "#ffffff")
+			
+		$("#sidePanelColour").css("backgroundColor", value);
 	}
 	console.log(themeObject);
 });

@@ -38,11 +38,11 @@ var expandlist = [];
 /**
 *   @var {int} initialdepth - The intial depth that the graph needs to expand to when the user loads the page
 */
-var initialdepth = 2;
+var initialdepth ;
 /**
 *   @var {int} initialbranching - The branching depth that the graph needs to expand to when the user loads the page
 */
-var initialbranching = 4;
+var initialbranching;
 /**
 *   @var {bool} flagHasNodesToLoad - Checks whether there is old nodes to load from cache and if it should request some more
 */
@@ -169,7 +169,7 @@ $(document).ready(function(){
     }
     if(getCookie("branch")!= "")
     {
-        var branchingFactor = getCookie("branch");
+        var initialbranching = getCookie("branch");
         $("#Branchrange").html(getCookie("branch"));
         $("#brange").attr("value",getCookie("branch"));
     }
@@ -1237,7 +1237,7 @@ function showBranchValue(newValue)
 {
   // alert("Here");
   document.getElementById("Branchrange").innerHTML=newValue;
-  branchingFactor = newValue;
+  initialbranching = newValue;
   // keepOpen();
 }
 function showDepthValue(newValue)
