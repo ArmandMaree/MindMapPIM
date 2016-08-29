@@ -116,7 +116,7 @@ public class Processor implements Runnable {
 
 			List<String> people = new ArrayList<>();
 			people.addAll(rawData.getInvolvedContacts());
-
+			people = nlp.purge(people);
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 			processedData.setInvolvedContacts(people.toArray(new String[0]));
 		}

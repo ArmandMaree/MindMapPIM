@@ -56,8 +56,16 @@ public class TopicListener {
 		List<Topic> topics = new ArrayList<>(); // topics that need to be returned.
 
 		// finds the topics related to the node specified in path
-		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) // if a path is not specified
+		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) { // if a path is not specified
 			topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
+			List<String> excludeList = Arrays.asList(topicRequest.getExclude());
+
+			for (int i = 0; i < topics.size(); i++)
+				if (excludeList.contains(topics.get(i).getTopic())) {
+					topics.remove(i);
+					i--;
+				}
+		}
 		else { // a path is specified
 			for (int i = 0; i < topicRequest.getPath().length; i++) { // iterate all nodes in path
 				String pathTopic = topicRequest.getPath()[i]; // current node in path

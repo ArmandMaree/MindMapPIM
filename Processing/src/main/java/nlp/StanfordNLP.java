@@ -5,6 +5,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
 import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.util.*;
 import edu.stanford.nlp.ling.*;
@@ -73,18 +78,40 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	private void init(Properties props) {
 		pipeline = new StanfordCoreNLP(props);
 
-		excludedWords.add("dear");
-		excludedWords.add("kind");
-		excludedWords.add("fwd");
-		excludedWords.add("regards");
-		excludedWords.add("hi");
-		excludedWords.add("hello");
-		excludedWords.add("re");
-		excludedWords.add("lot");
-		excludedWords.add("unsubscribe");
-		excludedWords.add("time");
-		excludedWords.add("email");
-		excludedWords.add("html");
+		try {
+			FileInputStream fis = new FileInputStream("/home/armand/gradle/exclude/armand.txt");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+			String line;
+
+			while ((line = reader.readLine()) != null)
+				if (!line.equals("") && !excludedWords.contains(line))
+					excludedWords.add(line);
+
+			reader.close();
+
+			fis = new FileInputStream("/home/armand/gradle/exclude/arno.txt");
+			reader = new BufferedReader(new InputStreamReader(fis));
+
+			while ((line = reader.readLine()) != null)
+				if (!line.equals("") && !excludedWords.contains(line))
+					excludedWords.add(line);
+
+			reader.close();
+
+			fis = new FileInputStream("/home/armand/gradle/exclude/amy.txt");
+			reader = new BufferedReader(new InputStreamReader(fis));
+
+			while ((line = reader.readLine()) != null)
+				if (!line.equals("") && !excludedWords.contains(line))
+					excludedWords.add(line);
+
+			reader.close();
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		System.out.println(excludedWords.size() + " excluded words.");
 	}
 
 	/**
@@ -268,12 +295,12 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 	*/
 	public List<String> purge(List<String> words) {
 		List<String> remainingWords = new ArrayList<>();
-		Pattern p = Pattern.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+		Pattern p = Pattern.compile("^.*[^a-zA-Z0-9\\s]+.*$");
 
 		for (String word : words) {
 			Matcher m = p.matcher(word);
 
-			if (word.length() > 1 && !word.startsWith("http") && !word.startsWith("<") && !m.matches() && !excludedWords.contains(word.toLowerCase())) {
+			if (word.length() > 1 && !m.matches() && !excludedWords.contains(word.toLowerCase())) {
 				boolean found = false;
 
 				for (String topic : remainingWords) {

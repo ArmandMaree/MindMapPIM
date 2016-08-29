@@ -91,7 +91,7 @@ public class ProcessedDataListener {
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
-						System.out.println("Added topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 					else {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
@@ -102,7 +102,7 @@ public class ProcessedDataListener {
 							topicInRepo.setIsPerson(true);
 
 						topicRepository.save(topicInRepo);
-						System.out.println("Updated topic: " + topicInRepo + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
+						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 				}
 			}
@@ -173,7 +173,7 @@ public class ProcessedDataListener {
 
 			if (processedData.getTopics() != null)
 				for (String topic : processedData.getTopics()) { // iterate all topics in data
-					if (topic.equals(user.getFirstName()) || topic.equals(user.getLastName()) || (topic.equals(user.getFirstName()) && topic.equals(user.getLastName())))
+					if (topic.contains(user.getFirstName()) || topic.contains(user.getLastName()))
 						continue;
 
 					ArrayList<String> remainingTopics = new ArrayList<>(); // all topics excluding the current one
@@ -192,7 +192,7 @@ public class ProcessedDataListener {
 
 			if (processedData.getInvolvedContacts() != null)
 				for (String contact : processedData.getInvolvedContacts()) { // iterate all topics in data
-					if (contact.equals(user.getFirstName()) || contact.equals(user.getLastName()) || (contact.equals(user.getFirstName()) && contact.equals(user.getLastName())))
+					if (contact.contains(user.getFirstName()) || contact.contains(user.getLastName()))
 						continue;
 
 					ArrayList<String> remainingTopics = new ArrayList<>(); // all contacts excluding the current one
