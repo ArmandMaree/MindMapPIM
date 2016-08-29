@@ -218,7 +218,7 @@ public class GmailPoller implements Poller {
 				return;
 			}
 
-			PollingUser pollingUser = gmailRepository.findByUserId(userEmail);
+			GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 
 			if (pollingUser.getRefreshToken() == null) {
 				System.out.println("Poller stopping for user: " + userEmail);

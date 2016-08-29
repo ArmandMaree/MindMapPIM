@@ -234,7 +234,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
-        // if(!request.getUserId().contains("mocktesting")){
+        if(!request.getUserId().contains("mocktesting")){
             rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
                 //do nothing for now, maybe sleep a bit in future?
