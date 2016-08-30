@@ -1,3 +1,37 @@
+/**
+*   @var {String} navbarReloadTextExpanded - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextExpanded ="<a class='navbar-brand' href='#'><img alt='Brand' style='width:30px;height:30px' src='/images/bubblelogo3.png' onmouseover='hover(this);' onmouseout='unhover(this);'/></a><p class='navbar-text' id='navbartitle'><span id='navbartitle' style='font-family: 'Pacifico', cursive;'>unclutter</span></p>";
+/**
+*   @var {String} navbarReloadTextCondensed - Hold the text that updates whether the side bar should have an expanded default look or the condensed look for mobiles.
+*/
+var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand' style='position:fixed;width:30px;height:30px;top:16px;padding:5px' src='/images/bubblelogo3.png' onmouseover='hover(this);' onmouseout='unhover(this);'/></a><p id='navbartitle' class='navbar-text' ><span id='navbartitle' style='font-family: 'Pacifico', cursive;'>unclutter</span></p>";
+/**
+*   A function that changes the brands icon on hover
+*/
+function hover(element) {
+    element.setAttribute('src', '/images/bubblelogo.png');
+}
+function unhover(element) {
+    element.setAttribute('src', '/images/bubblelogo3.png');
+}
+
+$( window ).resize(function() {
+    if($(window).width()<=768){
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
+        $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
+        $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
+    }else{
+        $("#help").html("");
+        $("#logout").html("");
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
+    }
+});
 $(document).ready(function(){
 	// alert("Here Tonight!");
 	var navcolour = getCookie("nav");
@@ -15,7 +49,7 @@ $(document).ready(function(){
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
 		$(this).addClass("active");
-		
+		 
 	});
 
 	$.ajax({
@@ -36,6 +70,21 @@ $(document).ready(function(){
 	});
 	$("#oauth2relay298397952").hide();
 	// $("#spinner").value = 4
+
+	if($(window).width()<=768){
+        $("#backfromsidebar").html(navbarReloadTextCondensed)
+        $("#help").html("   Help");
+        $("#help").css('font-family','Raleway');
+        $("#help").css('font-size','14pt');
+
+        $("#logout").html("   Logout");
+        $("#logout").css('font-family','Raleway');
+        $("#logout").css('font-size','14pt');
+    }else{
+        $("#help").html("");
+        $("#logout").html("");
+        $("#backfromsidebar").html(navbarReloadTextExpanded)
+    }
 	checkDatabase();
 	
 	/**
