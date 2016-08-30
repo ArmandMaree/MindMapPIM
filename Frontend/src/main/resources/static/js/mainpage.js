@@ -153,8 +153,6 @@ var network;
 */
 
 
-$(document).ready(function(){
-    // alert("Hey");
     function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
@@ -169,6 +167,8 @@ $(document).ready(function(){
         }
         return "";
     }
+$(document).ready(function(){
+    // alert("Hey");
     if(getCookie("branch")!= "")
     {
         var initialbranching = getCookie("branch");
@@ -867,7 +867,7 @@ $(document).ready(function(){
             }
 
             console.log("exclude list:"+excludelist);
-
+            initialbranching = getCookie("branch");
             /**    
             *   @var topicRequest -  a JSON oject that contains information for a topic request
             */
@@ -1039,7 +1039,7 @@ $(document).ready(function(){
                 }
 
                 console.log("exclude list:"+excludelist);
-       
+                initialbranching = getCookie("branch");
                 if(mocktesting)
                     topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
                 else
@@ -1142,8 +1142,8 @@ $(document).ready(function(){
         }
         var node = network.getSelectedNodes();
         selectedID = node;
-        console.log(selectedID);
-        console.log(allPimIDlist);
+        console.log("dbl "+selectedID);
+        console.log("dbl "+allPimIDlist);
         // console.log(allPimIDlist[1]);
         // console.log(allPimIDlist[1][0]);
 
@@ -1155,14 +1155,14 @@ $(document).ready(function(){
         //        console.log(allPimIDlist[i][0][j]);
         //     }
         // }
-        // console.log(allPimIDlist[selectedID]);
+        console.log("dbl "+allPimIDlist[selectedID]);
         // console.log(allPimIDlist[selectedID][0]);
         // console.log(allPimIDlist[selectedID][0][1]);
         var uniqueIds = [];
             $.each(allPimIDlist[selectedID][0], function(i, el){
                 if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
             });
-            console.log(uniqueIds);
+            console.log("dbl "+uniqueIds);
         if(!mocktesting)
             var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
         else
@@ -1171,6 +1171,7 @@ $(document).ready(function(){
         *   A function that sends the gmailItemRequest object through the websocket in order to make the request
         */
         // setTimeout(function(){
+        console.log("dbl "+gmailItemRequest)
         try{
             stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
         }catch(err){
@@ -1268,7 +1269,7 @@ function expandBubble(nextID)
     try{
         network.selectNodes([nextID]);
     }catch(err){
-
+        console.log("expand "+err)
     }
     // $("#loadingAlert").fadeIn(1000, function() {
     //     // body...
@@ -1290,10 +1291,11 @@ function expandBubble(nextID)
     // pathtoselectednodelabels.push()
     // pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
     // console.log("expand PathTo: " + pathtoselectednodelabels);
-
-    console.log("expand PathFrom: " + pathtoselectednode.length+1);
+    initialdepth = getCookie("depth");
+    console.log("expand:"+ initialdepth)
+    console.log("expand PathFrom: " + (pathtoselectednode.length+1));
     console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
-    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
+    if((pathtoselectednode.length+1)<=2 && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
         console.log("pooooo "+selectedID);
@@ -1330,7 +1332,7 @@ function expandBubble(nextID)
         }
 
         console.log("expand exclude list:"+excludelist);
-       
+        initialbranching = getCookie("branch");
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
         else
@@ -1480,7 +1482,7 @@ function deleteBranch(selectedID){
 
 
         console.log("exclude list:"+excludelist);
-
+        initialbranching = getCookie("branch");
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};
         else
