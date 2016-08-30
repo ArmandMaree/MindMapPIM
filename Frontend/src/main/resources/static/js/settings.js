@@ -68,9 +68,9 @@ $(document).ready(function(){
 			}
 		});
 
-	$("#navColour").css("backgroundColor","#ffffff");
-	$("#bubbleSpaceColour").css("backgroundColor","#ffffff");
-	$("#sidePanelColour").css("backgroundColor","#ffffff");
+	$("#navColour").css("backgroundColor",getCookie("nav"));
+	$("#bubbleSpaceColour").css("backgroundColor",getCookie("map"));
+	$("#sidePanelColour").css("backgroundColor",getCookie("sidepanel"));
 
   	/**
   	*	This function sets up the first number spinner
@@ -136,7 +136,7 @@ $("ul li").on("click",function(){
 	{
 		themeObject.theme[2] =value;
 		// if(value!= "#ffffff")
-			
+
 		$("#sidePanelColour").css("backgroundColor", value);
 	}
 	console.log(themeObject);
