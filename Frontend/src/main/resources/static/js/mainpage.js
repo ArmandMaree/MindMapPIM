@@ -50,7 +50,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = false;
+var mocktesting = true;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
