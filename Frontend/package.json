@@ -1,0 +1,10 @@
+{
+  "name": "myCssTardis",
+  "description": "Is awesome",
+  "version": "0.0.2",
+  "devDependencies": {
+    "dalek-browser-chrome": "0.0.11",
+    "dalek-reporter-html": "0.0.4",
+    "dalekjs": "0.0.9"
+  }
+}

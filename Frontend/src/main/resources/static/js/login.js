@@ -1,13 +1,17 @@
 /**
-*	@var {} auth2 - The sign-in object
+*	@var {String} force_prompt - whether or not the google api should retrieve a refresh token
+*/
+var force_prompt = 'force'
+/**
+*	@var {Obj} auth2 - The sign-in object
 */
 var auth2; 
 /**
-* 	@var {} googleUser - The current user
+* 	@var {Obj} googleUser - The current user
 */
 var googleUser;
 /**
-* 	@var {} authCodes - ....
+* 	@var {Obj[]} authCodes - Array to hold all of the authCodes
 */ 
 var authCodes = [];
 /** 
@@ -169,11 +173,14 @@ var refreshValues = function() {
  */
 var onSuccess = function(user) {
 	gmailUser = user;
-	console.log('Signed in as ' + user.getBasicProfile().getName());
+	console.log('Signed in as ' + user.w3.ig);
+	console.log(user)
+	console.log(user.w3.ig)
+	// console.log(gapi.auth2.getToken())
 	//Create cookie
-	  document.cookie = "name="+gmailUser.wc.Za;
-	  document.cookie ="surname="+gmailUser.wc.Na;
-	  document.cookie= "email="+user.getBasicProfile().getEmail();
+	document.cookie = "name="+gmailUser.w3.ofa;
+	document.cookie ="surname="+gmailUser.w3.wea;
+	document.cookie= "email="+gmailUser.w3.U3;
 	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
 	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
  };
@@ -189,8 +196,7 @@ var onFailure = function(error) {
  */
 function googleretrieve(){
 
-  // var auth2 = gapi.auth2.getAuthInstance();
-  auth2.grantOfflineAccess({'approval_prompt': 'force', 'redirect_uri': 'postmessage'}).then(signInCallback);
+  auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
 
 }
 /**
@@ -283,23 +289,23 @@ function loadXMLDoc(){
 		    connected = true;
 			
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
-			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"gmail",authCode:null}]};
+		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"Gmail",authCode:null}]};
 
-			document.cookie="userpimID="+gmailUser.getBasicProfile().getEmail();
-			stompClient.subscribe('/topic/greetings', function(serverResponse){
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
-				console.log("ServerResponse is : "+jsonresponse.userId);
+		document.cookie="GmailId="+gmailUser.w3.U3;
+		stompClient.subscribe('/topic/greetings', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
+			console.log("ServerResponse is : "+jsonresponse.userId);
 				
-				document.cookie = "nav="+jsonresponse.theme[0];
-				document.cookie = "map="+jsonresponse.theme[1];
-				document.cookie = "sidepanel="+jsonresponse.theme[2];
-				document.cookie = "branch="+jsonresponse.branchingFactor;
-				document.cookie = "depth="+jsonresponse.initialDepth;
+			document.cookie = "nav="+jsonresponse.theme[0];
+			document.cookie = "map="+jsonresponse.theme[1];
+			document.cookie = "sidepanel="+jsonresponse.theme[2];
+			document.cookie = "branch="+jsonresponse.branchingFactor;
+			document.cookie = "depth="+jsonresponse.initialDepth;
 
-				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 
-				document.cookie="userId="+jsonresponse.userId;
+			document.cookie="userId="+jsonresponse.userId;
 				// $("#loadingAlert").fadeOut(1000, function() {
 				// 	// body...
 				// });
