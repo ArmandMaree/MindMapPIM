@@ -83,7 +83,7 @@ public class GmailPoller implements Poller {
 	private RabbitTemplate rabbitTemplate;
 	private boolean firstPageDone = false;
 	private boolean oldDone = false;
-	private long maxEmails = 200;
+	private long maxEmails = 50;
 	private long currNumEmails = 0;
 
 	static {

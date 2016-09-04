@@ -88,12 +88,15 @@ public class FrontendListener {
 			return;
 
 		for (String itemId : itemRequestIdentified.getItemIds()) {
+			String plainText = "";
+			String htmlText = "";
+			String body = "";
+
 			try {
 				MimeMessage email = getMimeMessage(getMessage(itemId, service));
-				String body = "";
 
 				if (email.getContent() instanceof String) {
-					body += (String)email.getContent();
+					plainText += (String)email.getContent();
 				}
 				else if (email.getContent() instanceof MimeMultipart) {
 					MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
@@ -119,15 +122,25 @@ public class FrontendListener {
 								if (!((String)mimeBodyPart.getContent()).equals("")) {
 									String tmpBody = (String)mimeBodyPart.getContent() + "\n";
 
-									if (!body.contains(tmpBody))
+									if (!body.contains(tmpBody)) {
 										body += tmpBody;
+
+										if (mimeBodyPart.isMimeType("text/plain"))
+											plainText += tmpBody;
+										else
+											htmlText += tmpBody;
+									}
 								}
 							}
 						}
 					}
 				}
 
-				items.add(body);
+				if (!htmlText.equals(""))
+					items.add(htmlText);
+				else
+					items.add(plainText);
+
 			}
 			catch (Exception ignore) {}
 		}
