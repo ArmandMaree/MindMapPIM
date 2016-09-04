@@ -8,14 +8,14 @@ buildscript {
 	}
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "spring-boot"
 
 jar {
-	baseName = 'gmailpoller-service'
-	version =  '0.1.0'
+	baseName = "facebook-service"
+	version =  "0.1.0"
 }
 
 repositories {
@@ -37,30 +37,25 @@ dependencies {
 
 	// Spring stuff
 	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
+	compile("org.springframework.boot:spring-boot-starter:1.4.0.RELEASE")
 
-	// Gmail API
-	compile("com.google.api-client:google-api-client:1.22.0")
-	compile("com.google.oauth-client:google-oauth-client-jetty:1.22.0")
-	compile("com.google.apis:google-api-services-gmail:v1-rev45-1.22.0")
+	// Facebook API
+	compile("org.springframework.social:spring-social-core:1.1.4.RELEASE")
+	compile("org.springframework.social:spring-social-facebook:2.0.3.RELEASE")
 
-	// Other used for mail processing
-	compile("javax.mail:mail:1.5.0-b01")
-	compile("commons-codec:commons-codec:1.10")
-	compile("org.jsoup:jsoup:1.9.2")
-
-	// MongoDB
-	compile("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE")
+	// FasterXML
+	compile("com.fasterxml.jackson.core:jackson-databind:2.8.1")
+	compile("com.fasterxml.jackson.core:jackson-annotations:2.8.1")
+	compile("com.fasterxml.jackson.core:jackson-core:2.8.1")
 
 	// Queue messaging stuff
 	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE")
 
 	// javadoc dependencies
 	doc files("../data/data-javadoc.jar")
-	doc("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE:sources")
 	doc("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
-	compile("javax.mail:mail:1.5.0-b01:sources")
-	compile("commons-codec:commons-codec:1.10:sources")
-	compile("org.jsoup:jsoup:1.9.2:sources")
+	doc("org.springframework.social:spring-social-core:1.1.4.RELEASE:sources")
+	doc("org.springframework.social:spring-social-facebook:2.0.3.RELEASE:sources")
 }
 
 task wrapper(type: Wrapper) {
