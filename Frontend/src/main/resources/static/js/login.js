@@ -432,7 +432,7 @@ function onFacebookLogin()
 
 function sendUserObjectForFacebook(response)
 {
-	var socket = new SockJS('/usercheck');
+	var socket = new SockJS('/hello');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({}, function(frame) {
 		    console.log('Connected: ' + frame);
@@ -449,7 +449,7 @@ function sendUserObjectForFacebook(response)
 			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
 
 
-			stompClient.subscribe('/topic/greetings', function(serverResponse){
+			stompClient.subscribe('user/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("ServerResponse is : "+jsonresponse);
 				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
