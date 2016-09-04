@@ -1,6 +1,8 @@
 package data;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.data.annotation.Id;
 
@@ -30,14 +32,14 @@ public class User implements Serializable {
 	private String lastName;
 
 	/**
-	* The email address of the user's Gmail account.
-	*/
-	private String gmailId = null;
-
-	/**
 	* An array that contains the theme for various sections of the website.
 	*/
 	private String[] theme = {"#0f4d71", "#ffffff","rgba(255,255,255,0.8)"};
+
+	/**
+	* Key-value pair of IDs of the user on various PIM platforms.
+	*/
+	private List<PimId> pimIds = new ArrayList<>();
 
 	/**
 	* The depth to which the graph should expand to when the mainpage loads.
@@ -72,20 +74,23 @@ public class User implements Serializable {
 
 	/**
 	* Copy constructor.
+	* @param other The User where the values should be copied from.
 	*/
 	public User(User other) {
 		super();
 		this.userId = other.userId;
 		this.firstName = other.firstName;
 		this.lastName = other.lastName;
-		this.gmailId = other.gmailId;
 		this.firstName = other.firstName;
-		
+
 		if (other.theme != null)
 			for (int i = 0; i < theme.length; i++)
 				this.theme[i] = other.theme[i];
 		else
 			theme = null;
+
+		for (int i = 0; i < other.pimIds.size(); i++)
+			pimIds.add(new PimId(other.pimIds.get(i).pim, other.pimIds.get(i).uId));
 
 		this.initialDepth = other.initialDepth;
 		this.branchingFactor = other.branchingFactor;
@@ -96,12 +101,10 @@ public class User implements Serializable {
 	* Default constructor.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
-	* @param gmailId The email address of the user's Gmail account.
 	*/
-	public User(String firstName, String lastName, String gmailId) {
+	public User(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.gmailId = gmailId;
 	}
 
 	/**
@@ -109,13 +112,11 @@ public class User implements Serializable {
 	* @param userId ID used in database.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
-	* @param gmailId The email address of the user's Gmail account.
 	*/
-	public User(String userId, String firstName, String lastName, String gmailId) {
+	public User(String userId, String firstName, String lastName) {
 		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.gmailId = gmailId;
 	}
 
 	/**
@@ -167,19 +168,63 @@ public class User implements Serializable {
 	}
 
 	/**
-	* Returns value of gmailId.
-	* @return The email address of the user's Gmail account.
+	* Returns value of pimIds.
+	* @return Key-value pair of IDs of the user on various PIM platforms.
 	*/
-	public String getGmailId() {
-		return gmailId;
+	public List<PimId> getPimIds() {
+		return pimIds;
 	}
 
 	/**
-	* Sets new value of gmailId.
-	* @param gmailId The email address of the user's Gmail account.
+	* Returns uId of the specified PIM.
+	* <p>
+	*	Will return NULL if the specified PIM does not exist.
+	* </p>
+	* @param pim The PIM whos ID is requested.
+	* @return The ID of the specified PIM
 	*/
-	public void setGmailId(String gmailId) {
-		this.gmailId = gmailId;
+	public String getPimId(String pim) {
+		for (PimId pimId : pimIds)
+			if (pimId.pim.equals(pim))
+				return pimId.uId;
+
+		return null;
+	}
+
+	/**
+	* Removes a PimId from the list of PimIds if it exists.
+	* @param _pim The name of the PIM that should be removed.
+	*/
+	public void removePimId(String _pim) {
+		for (int i = 0; i < pimIds.size(); i++)
+			if (pimIds.get(i).pim.equals(_pim))
+				pimIds.remove(i);
+	}
+
+	/**
+	* Adds the ID of a new pim to the list of IDs.
+	* <p>
+	*	Note: Duplicates are not allowed. If a new ID is specified for an existing PIM the old ID will be overwritten.
+	* </p>
+	* @param _pim The PIM (key) that the uId is associated with.
+	* @param uId The uId of the user at the specified PIM.
+	*/
+	public void addPimId(String _pim, String uId) {
+		for (PimId pimId : pimIds)
+			if (pimId.pim.equals(_pim)) {
+				pimId.uId = uId;
+				return;
+			}
+
+		pimIds.add(new PimId(_pim, uId));
+	}
+
+	/**
+	* Sets value of pimIds.
+	* @param pimIds Key-value pair of IDs of the user on various PIM platforms.
+	*/
+	public void setPimIds(List<PimId> pimIds) {
+		this.pimIds = pimIds;
 	}
 
 	/**
@@ -251,11 +296,16 @@ public class User implements Serializable {
 	*/
 	@Override
 	public String toString() {
+		String u = "";
+
+		for (PimId pimId : pimIds)
+			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+
 		return "User {\n" +
 			"\tid:" + userId + ",\n" +
 			"\tfirstName:" + firstName  + ",\n" +
 			"\tlastName:" + lastName + ",\n" +
-			"\tgmailId:" + gmailId + "\n" +
+			"\tids: {\n" + u + "\n\t}\n" +
 			"\tinitialDepth:" + initialDepth + "\n" +
 			"\tbranchingFactor:" + branchingFactor + "\n" +
 			"\tisActive:" + isActive + "\n" +

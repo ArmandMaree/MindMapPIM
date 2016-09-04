@@ -47,9 +47,10 @@ public class UserRepositoryTester extends AbstractTester {
 
 	@Test
 	public void testSaveAndRetrieve() throws InterruptedException {
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		User acuben = new User("Acuben", "Cos");
+		acuben.addPimId("gmail", "acubencos@gmail.com");
 		userRepository.save(acuben);
-		User retrieve = userRepository.findByGmailId(acuben.getGmailId());
+		User retrieve = userRepository.findByPimId("gmail", acuben.getPimId("gmail"));
 		Assert.assertNotNull("FAILURE - user not saved.", retrieve);
 		Assert.assertNotNull("FAILURE - saved user has no ID.", retrieve.getUserId());
 	}

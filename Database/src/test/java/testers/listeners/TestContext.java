@@ -81,7 +81,6 @@ public class TestContext {
 	}
 
 	public void receiveUserRegistrationResponse(UserIdentified userIdentified) throws InterruptedException {
-		System.out.println("Test Context Received: " + userIdentified);
 		queue.put(userIdentified);
 	}
 
@@ -116,7 +115,6 @@ public class TestContext {
 	}
 
 	public void receiveUserUpdateResponse(UserUpdateResponseIdentified userUpdateResponseIdentified) throws InterruptedException {
-		System.out.println("Test Context Received: " + userUpdateResponseIdentified);
 		userUpdateQueue.put(userUpdateResponseIdentified);
 	}
 
@@ -154,7 +152,6 @@ public class TestContext {
 	}
 
 	public void receiveTopicResponseResponse(TopicResponse topicResponse) throws InterruptedException {
-		System.out.println("Test Context Received: " + topicResponse);
 		topicResponseLinkedQueue.put(topicResponse);
 	}
 	// test beans end

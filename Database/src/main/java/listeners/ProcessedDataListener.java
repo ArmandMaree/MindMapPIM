@@ -29,12 +29,12 @@ public class ProcessedDataListener {
 	private TopicRepository topicRepository;
 
 	/**
-	* A queue that all ProcessedDataListeners share that temporarily stores low priority {@link listeners.PendingTopics} while they wait to be inserted into the database. 
+	* A queue that all ProcessedDataListeners share that temporarily stores low priority {@link listeners.PendingTopics} while they wait to be inserted into the database.
 	*/
 	private static LinkedBlockingQueue<PendingTopic> pendingTopics = new LinkedBlockingQueue<>();
 
 	/**
-	* A queue that all ProcessedDataListeners share that temporarily stores high priority {@link listeners.PendingTopics} while they wait to be inserted into the database. 
+	* A queue that all ProcessedDataListeners share that temporarily stores high priority {@link listeners.PendingTopics} while they wait to be inserted into the database.
 	*/
 	private static LinkedBlockingQueue<PendingTopic> priorityPendingTopics = new LinkedBlockingQueue<>();
 
@@ -79,6 +79,7 @@ public class ProcessedDataListener {
 					}
 
 					ProcessedData processedData = pendingTopic.getProcessedData();
+					// System.out.println("Persisting: " + pendingTopic);
 					Topic topicInRepo = topicRepository.findByTopicAndUserId(pendingTopic.getTopic(), processedData.getUserId());
 
 					if (topicInRepo == null) { // topic not in db yet
@@ -97,7 +98,7 @@ public class ProcessedDataListener {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
 						topicInRepo.addProcessedDataId(processedData.getId());
 						topicInRepo.setTime(processedData.getTime());
-						
+
 						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
 							topicInRepo.setIsPerson(true);
 
@@ -119,7 +120,7 @@ public class ProcessedDataListener {
 		// System.out.println("Received processedData for user: " + processedData.getUserId());
 		List<PendingTopic> pt = processProcessedData(processedData);
 
-		for (PendingTopic pendingTopic : pt)	
+		for (PendingTopic pendingTopic : pt)
 			pendingTopics.put(pendingTopic);
 	}
 
@@ -141,24 +142,14 @@ public class ProcessedDataListener {
 	* @return A list of smaller topics processed and contained in a {@link java.util.List} of {@link listeners.PendingTopic}.
 	*/
 	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
-		// System.out.println("PDL received: " + processedData);
 		List<PendingTopic> pt = new ArrayList<>();
 
 		try {
-			User user = null;
+			User user = userRepository.findByPimId(processedData.getPimSource(), processedData.getUserId());
+			processedData.setUserId(user.getUserId());
 
-			switch (processedData.getPimSource()) {
-				case "Gmail": // data comes from gmail
-					user = userRepository.findByGmailId(processedData.getUserId());
-
-					if (user == null) // no user exists with this gmail id
-						return pt;
-
-					processedData.setUserId(user.getUserId());
-					break;
-				default: // don't know where the data comes from.
-					return pt;
-			}
+			if (user == null) // no user exists with this gmail id
+				return pt;
 
 			List<String> cleanedTopics = new ArrayList<>();
 
@@ -169,7 +160,7 @@ public class ProcessedDataListener {
 
 			processedData.setTopics(cleanedTopics.toArray(new String[0]));
 			processedDataRepository.save(processedData); // persist data
-			processedData = processedDataRepository.findByPimSourceAndPimItemId("Gmail", processedData.getPimItemId());
+			processedData = processedDataRepository.findByPimSourceAndPimItemId(processedData.getPimSource(), processedData.getPimItemId());
 
 			if (processedData.getTopics() != null)
 				for (String topic : processedData.getTopics()) { // iterate all topics in data

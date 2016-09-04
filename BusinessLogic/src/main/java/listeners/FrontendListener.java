@@ -18,7 +18,6 @@ public class FrontendListener {
 	private final String topicRequestQueueName = "topic-request.database.rabbit";
 	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
-	private final String authCodeQueueName = "auth-code.gmail.rabbit";
 	private final String userUpdateQueueName = "user-update-request.database.rabbit";
 
 	@Autowired
@@ -58,18 +57,11 @@ public class FrontendListener {
 		if (userRegistrationIdentified == null || userRegistrationIdentified.getAuthCodes() == null)
 			return;
 
-		UserIdentified user = new UserIdentified(userRegistrationIdentified.getReturnId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName(), null);
+		UserIdentified user = new UserIdentified(userRegistrationIdentified.getReturnId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName());
 
 		for (AuthCode authCode : userRegistrationIdentified.getAuthCodes()) {
-			switch (authCode.getPimSource()) {
-				case "Gmail":
-					user.setGmailId(authCode.getId());
-					rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
-					break;
-				default:
-					System.out.println("Unknown PIM Source: " + authCode.getPimSource());
-					break;
-			}
+			user.addPimId(authCode.getPimSource(), authCode.getId());
+			rabbitTemplate.convertAndSend("auth-code." + authCode.getPimSource() + ".rabbit", authCode);
 		}
 
 		rabbitTemplate.convertAndSend(userRegisterDatabaseQueueName, user);
@@ -92,18 +84,11 @@ public class FrontendListener {
 
 		if (userUpdateIdentified.getAuthCodes() != null) {
 			for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
-				switch (authCode.getPimSource()) {
-					case "Gmail":
-						if (authCode.getAuthCode() != null && !authCode.getAuthCode().equals(""))
-							user.setGmailId(authCode.getId());
-							
-						System.out.println("Send to gmail: " + authCode);
-						rabbitTemplate.convertAndSend(authCodeQueueName, authCode);
-						break;
-					default:
-						System.out.println("Unknown PIM Source: " + authCode.getPimSource());
-						break;
-				}
+				if (authCode.getAuthCode() != null && !authCode.getAuthCode().equals(""))
+					user.addPimId(authCode.getPimSource(), authCode.getId());
+
+				rabbitTemplate.convertAndSend("auth-code." + authCode.getPimSource() + ".rabbit", authCode);
+				System.out.println("Sent to " + authCode.getAuthCode() + " poller: " + authCode);
 			}
 		}
 

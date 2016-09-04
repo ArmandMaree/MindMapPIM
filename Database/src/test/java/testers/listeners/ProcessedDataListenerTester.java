@@ -46,11 +46,12 @@ public class ProcessedDataListenerTester extends AbstractTester {
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
-			userRepository.deleteAll();
-			processedDataRepository.deleteAll();
-			topicRepository.deleteAll();
 			setUpDone = true;
 		}
+
+		userRepository.deleteAll();
+		processedDataRepository.deleteAll();
+		topicRepository.deleteAll();
 	}
 
 	@After
@@ -60,9 +61,10 @@ public class ProcessedDataListenerTester extends AbstractTester {
 
 	@Test
 	public void testReceiveProcessedData() throws InterruptedException {
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		User acuben = new User("Acuben", "Cos");
+		acuben.addPimId("gmail", "acubencos@gmail.com");
 		userRepository.save(acuben);
-		acuben = userRepository.findByGmailId(acuben.getGmailId());
+		acuben = userRepository.findByPimId("gmail", acuben.getPimId("gmail"));
 
 		Assert.assertNotNull("Failure - acuben is null.", acuben);
 
@@ -82,7 +84,7 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		};
 
 		for (String[] ts : processedDataTopics)
-			processedData.add(new ProcessedData("Gmail", acuben.getGmailId(), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
+			processedData.add(new ProcessedData("gmail", acuben.getPimId("gmail"), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
 
 		List<Topic> topicsBefore = topicRepository.findByUserId(acuben.getUserId());
 
@@ -94,7 +96,6 @@ public class ProcessedDataListenerTester extends AbstractTester {
 		Thread.sleep(10000);
 
 		List<Topic> topicsAfter = topicRepository.findByUserId(acuben.getUserId());
-
 		Assert.assertEquals("Failure - topicsAfter is not 10.", 10, topicsAfter.size());
 
 		for (Topic topic : topicsAfter) {
@@ -135,15 +136,16 @@ public class ProcessedDataListenerTester extends AbstractTester {
 
 	@Test
 	public void testInvolvedContacts() throws InterruptedException {
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		User acuben = new User("Acuben", "Cos");
+		acuben.addPimId("gmail", "acubencos@gmail.com");
 		userRepository.save(acuben);
-		acuben = userRepository.findByGmailId(acuben.getGmailId());
+		acuben = userRepository.findByPimId("gmail", acuben.getPimId("gmail"));
 		Assert.assertNotNull("Failure - acuben is null.", acuben);
 		List<ProcessedData> processedDataList = new ArrayList<>();
 
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
 
 		for (ProcessedData pd : processedDataList)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);

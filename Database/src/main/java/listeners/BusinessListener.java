@@ -45,13 +45,26 @@ public class BusinessListener {
 	*/
 	public void receiveUserRegister(UserIdentified user) {
 		boolean userAlreadyRegistered = true;
-		User userReturn = userRepository.findByGmailId(user.getGmailId());
+		User userReturn = null;
+
+		for (PimId pimId : user.getPimIds()) {
+			userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
+
+			if (userReturn != null)
+				break;
+		}
 
 		if (userReturn == null) {
 			userAlreadyRegistered = false;
 			User saveUser = user;
 			userRepository.save(saveUser);
-			userReturn = userRepository.findByGmailId(saveUser.getGmailId());
+
+			for (PimId pimId : user.getPimIds()) {
+				userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
+
+				if (userReturn != null)
+					break;
+			}
 		}
 		else if (!userReturn.getIsActive()) {
 			userReturn.setIsActive(true);
@@ -59,35 +72,42 @@ public class BusinessListener {
 		}
 
 		user = new UserIdentified(user.getReturnId(), userAlreadyRegistered, userReturn);
-		System.out.println("Respond: " + user);
+		System.out.println("Respond from register: " + user);
 		rabbitTemplate.convertAndSend(userRegisterResponseQueueName, user);
 	}
 
 	public void receiveCheckIfRegistered(UserIdentified user) {
-		User userReturn = userRepository.findByGmailId(user.getGmailId());
+		User userReturn = null;
+
+		for (PimId pimId : user.getPimIds()) {
+			userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
+
+			if (userReturn != null)
+				break;
+		}
 
 		if (userReturn == null || !userReturn.getIsActive())
 			user.setIsRegistered(false);
 		else
 			user = new UserIdentified(user.getReturnId(), true, userReturn);
 
-		System.out.println("Respond: " + user);
+		System.out.println("Respond from check: " + user);
 		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);
 	}
 
 	public void receiveUserUpdate(UserIdentified userIdentified) {
-		System.out.println("Received: " + userIdentified);
 		User userInRepo = userRepository.findByUserId(userIdentified.getUserId());
 		UserUpdateResponseIdentified userUpdateResponseIdentified = new UserUpdateResponseIdentified(userIdentified.getReturnId());
 
 		if (userInRepo == null)
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.USER_NOT_FOUND);
 		else {
-			if (userIdentified.getGmailId() != null)
-				if (userIdentified.getGmailId().equals(""))
-					userInRepo.setGmailId(null);
-				else
-					userInRepo.setGmailId(userIdentified.getGmailId());
+			if (userIdentified.getPimIds() != null)
+				for (PimId pimId : userIdentified.getPimIds())
+					if (pimId.uId.equals("")) // remove pimId from user
+						userInRepo.removePimId(pimId.uId);
+					else // update pimID
+						userInRepo.addPimId(pimId.pim, pimId.uId);
 
 			if (userIdentified.getTheme() != null)
 				userInRepo.setTheme(userIdentified.getTheme());
@@ -105,7 +125,7 @@ public class BusinessListener {
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.SUCCESS);
 		}
 
-		System.out.println("Respond: " + userUpdateResponseIdentified);
+		System.out.println("Respond from update: " + userUpdateResponseIdentified);
 		rabbitTemplate.convertAndSend(userUpdateResponseQueueName, userUpdateResponseIdentified);
 	}
 }

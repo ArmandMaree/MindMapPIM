@@ -55,11 +55,12 @@ public class TopicListenerTester extends AbstractTester {
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
-			userRepository.deleteAll();
-			processedDataRepository.deleteAll();
-			topicRepository.deleteAll();
 			setUpDone = true;
 		}
+
+		userRepository.deleteAll();
+		processedDataRepository.deleteAll();
+		topicRepository.deleteAll();
 	}
 
 	@After
@@ -69,7 +70,8 @@ public class TopicListenerTester extends AbstractTester {
 
 	@Test
 	public void testReceiveTopicRequest() throws InterruptedException {
-		User user = new User("Acuben", "Cos", "acubencos@gmail.com");
+		User user = new User("Acuben", "Cos");
+		user.addPimId("gmail", "acubencos@gmail.com");
 		UserIdentified userIdentified = new UserIdentified(UUID.randomUUID().toString(), false, user);
 		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
 		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
@@ -91,7 +93,7 @@ public class TopicListenerTester extends AbstractTester {
 		};
 
 		for (String[] ts : processedDataTopics)
-			processedData.add(new ProcessedData("Gmail", "acubencos@gmail.com", null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
+			processedData.add(new ProcessedData("gmail", user.getPimId("gmail"), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
 
 		for (ProcessedData pd : processedData)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
@@ -115,15 +117,15 @@ public class TopicListenerTester extends AbstractTester {
 		rabbitTemplate.convertAndSend("topic-request.database.rabbit", topicRequest);
 
 		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
-		System.out.println("Received: " + topicResponse);
 
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
-		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);	
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);
 	}
 
 	@Test
 	public void testInvolvedContacts() throws InterruptedException {
-		User acuben = new User("Acuben", "Cos", "acubencos@gmail.com");
+		User acuben = new User("Acuben", "Cos");
+		acuben.addPimId("gmail", "acubencos@gmail.com");
 		UserIdentified userIdentified = new UserIdentified(UUID.randomUUID().toString(), false, acuben);
 		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
 		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
@@ -131,9 +133,9 @@ public class TopicListenerTester extends AbstractTester {
 		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
 		List<ProcessedData> processedDataList = new ArrayList<>();
 
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getGmailId(), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
 
 		for (ProcessedData pd : processedDataList)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);

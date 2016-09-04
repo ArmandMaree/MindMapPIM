@@ -1,6 +1,10 @@
 package data;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 /**
 * Contains all the information needed to update a User object that was previously persisted with an attached returnId.
@@ -10,7 +14,7 @@ import java.io.Serializable;
 */
 public class UserUpdateRequestIdentified extends UserUpdateRequest implements Serializable {
 	private static final long serialVersionUID = 4129067728810262L;
-	
+
 	/**
 	* ID used to identify the original request.
 	*/
@@ -55,12 +59,17 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 	* @return String representation of a UserUpdateRequestIdentified.
 	*/
 	public String toString() {
+		String u = "";
+
+		for (PimId pimId : getPimIds())
+			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+
 		return "UserUpdateRequestIdentified {\n" +
 			"\treturn: " + returnId + ",\n" +
 			"\tid: " + getUserId() + ",\n" +
 			"\tfirstName: " + getFirstName()  + ",\n" +
 			"\tlastName: " + getLastName() + ",\n" +
-			"\tgmailId: " + getGmailId() + "\n" +
+			"\tids: {\n" + u + "\t}\n" +
 			"\tinitialDepth:" + getInitialDepth() + "\n" +
 			"\tbranchingFactor:" + getBranchingFactor() + "\n" +
 			"\tisActive:" + getIsActive() + "\n" +
