@@ -3,3 +3,4 @@ build/
 .gradle/
 javadoc/
 all.tar.gz
+node_modules
