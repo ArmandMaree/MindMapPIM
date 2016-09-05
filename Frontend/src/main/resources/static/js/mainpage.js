@@ -981,6 +981,20 @@ $(document).ready(function(){
         //     }
         // }
 
+       
+        // $("#accordion").html("");
+        // if(array.Topic != "Contact")
+        // {
+        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        // if((array.hasOwnProperty('LinkedIn')))
+        // {
+        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
+        //     {
+        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
+        //     }
+        // }
+
 
     }
 
