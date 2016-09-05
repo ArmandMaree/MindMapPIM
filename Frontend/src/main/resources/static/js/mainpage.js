@@ -926,54 +926,40 @@ $(document).ready(function(){
     */
     function populateSidePanel(node, array)
     {
-        console.log("node is this: "+node)
-        $("#accordion").html("");
-        if(array.Topic != "Contact")
+        // console.log("node is this: "+node)
+        var title = array[0].charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
+        var id = "#"+array[0];
+        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+array[0]+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        if(array[0] == "facebook")
         {
-            $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+            // https://www.facebook.com/userId/posts/postid
+            for(var i = 1 ; i < array.length; i++ )
+            {
+                $(id).append("<div class='fb-post'  data-width='500'data-href='https://www.facebook.com/"+getCookie("facebookId")+"/posts/"+array[i]+"'></div>");
+            }
         }
         else
         {
-            $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>")
-        }
-        console.log("Title: "+$("#sidepanelTitle").text());
-        if((array.hasOwnProperty('Name')))
-        {
-            $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title">Details</h3></div><div id="collapse1" class="panel-collapse collapse"><div id="details" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-            $("#details").html("Email Address: " + array.emailAddress);
-        }
-        if((array.hasOwnProperty('Facebook')))
-        {
-            $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">Facebook</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="facebook" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-            for(var i = 0 ; i < array.Facebook.length; i++ )
+            
+            for(var i = 1 ; i < array.length; i++ )
             {
-                $("#facebook").append("<div>"+array.Facebook[i]+"</div>");
+                $(id).append("<div>"+array[i]+"</div>");
             }
         }
-        if((array.hasOwnProperty('Gmail')))
-        {
-            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title">Gmail</h3></div><div id="collapse3" class="panel-collapse collapse"><div id="gmail" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-            for(var i = 0 ; i < array.Gmail.length; i++ )
-            {
-                $("#gmail").append("<div class='email panel'><h3>"+array.Gmail[i].subject +"</h3><br />"+array.Gmail[i].data+"</div>");
-            }
-        }
-        if((array.hasOwnProperty('Twitter')))
-        {
-            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title">Twitter</h3></div><div id="collapse4" class="panel-collapse collapse"><div id="twitter" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-            for(var i = 0 ; i < array.Twitter.length; i++ )
-            {
-                $("#twitter").html("<div>"+array.Twitter.data+"</div>");
-            }
-        }
-        if((array.hasOwnProperty('LinkedIn')))
-        {
-            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-            for(var i = 0 ; i < array.LinkedIn.length; i++ )
-            {
-                $("#linkedIn").html("<div>"+array[i].data+"</div>");
-            }
-        }
+
+       
+        // $("#accordion").html("");
+        // if(array.Topic != "Contact")
+        // {
+        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        // if((array.hasOwnProperty('LinkedIn')))
+        // {
+        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
+        //     {
+        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
+        //     }
+        // }
 
 
     }
@@ -1103,6 +1089,10 @@ $(document).ready(function(){
     *   A function that handles the doubleClick event on the BubbleMap
     */
     network.on("doubleClick", function(){
+
+        $("#accordion").html("");
+        
+        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         /**
         *   A function that displays the loading bar
         */
