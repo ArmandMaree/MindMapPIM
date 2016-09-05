@@ -444,7 +444,7 @@ function sendUserObjectForFacebook(response)
 
 			document.cookie = "name="+fname;
 	  		document.cookie ="surname="+lname;
-	  		document.cookie= "userid="+ AuthResponse.userID;
+	  		document.cookie= "facebookId="+ AuthResponse.userID;
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
 			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
 
