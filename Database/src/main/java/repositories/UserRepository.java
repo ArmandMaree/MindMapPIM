@@ -18,6 +18,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     public List<User> findByFirstName(String firstName);
     public List<User> findByLastName(String lastName);
 	
-	@Query("{'$and':[{'pimIds.pim': 'gmail'}, {'pimIds.uId': 'acubencos@gmail.com'}]}")
+	@Query("{'$and':[{'pimIds.pim': ?0}, {'pimIds.uId': ?1}]}")
 	public User findByPimId(String pim, String id);
 }

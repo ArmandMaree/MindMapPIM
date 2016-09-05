@@ -72,6 +72,7 @@ public class TopicListenerTester extends AbstractTester {
 	public void testReceiveTopicRequest() throws InterruptedException {
 		User user = new User("Acuben", "Cos");
 		user.addPimId("gmail", "acubencos@gmail.com");
+		user.addPimId("facebook", "acubenfacebook");
 		UserIdentified userIdentified = new UserIdentified(UUID.randomUUID().toString(), false, user);
 		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
 		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
@@ -94,6 +95,8 @@ public class TopicListenerTester extends AbstractTester {
 
 		for (String[] ts : processedDataTopics)
 			processedData.add(new ProcessedData("gmail", user.getPimId("gmail"), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
+
+		processedData.add(new ProcessedData("facebook", user.getPimId("facebook"), null, UUID.randomUUID().toString(), processedDataTopics[1], System.currentTimeMillis()));
 
 		for (ProcessedData pd : processedData)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
@@ -133,9 +136,9 @@ public class TopicListenerTester extends AbstractTester {
 		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
 		List<ProcessedData> processedDataList = new ArrayList<>();
 
-		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
-		processedDataList.add(new ProcessedData("Gmail", acuben.getPimId("gmail"), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Armand Maree", "Danielle Stuart"}, UUID.randomUUID().toString(), new String[]{"horse", "beast"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Amy Lochner", "Arno Grobler"}, UUID.randomUUID().toString(), new String[]{"computer", "ladder"}, System.currentTimeMillis()));
+		processedDataList.add(new ProcessedData("gmail", acuben.getPimId("gmail"), new String[]{"Koos van der Merwe", "Steve Aoki"}, UUID.randomUUID().toString(), new String[]{"horse", "glasses"}, System.currentTimeMillis()));
 
 		for (ProcessedData pd : processedDataList)
 			rabbitTemplate.convertAndSend(processedDataQueueName, pd);

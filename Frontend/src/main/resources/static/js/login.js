@@ -202,7 +202,7 @@ function googleretrieve(){
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
 	  $('#nextButton').show();
-	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
+	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 
@@ -283,7 +283,7 @@ function loadXMLDoc(){
 		    connected = true;
 			
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
-			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
+			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"gmail",authCode:null}]};
 
 			document.cookie="userpimID="+gmailUser.getBasicProfile().getEmail();
 			stompClient.subscribe('/topic/greetings', function(serverResponse){
@@ -440,7 +440,7 @@ function sendUserObjectForFacebook(response)
 	  		document.cookie ="surname="+lname;
 	  		document.cookie= "userid="+ AuthResponse.userID;
 			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
-			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"Facebook",authCode:AuthResponse.accessToken}]};
+			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
 
 
 			stompClient.subscribe('/topic/greetings', function(serverResponse){

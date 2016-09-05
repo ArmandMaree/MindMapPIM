@@ -146,6 +146,10 @@ public class ProcessedDataListener {
 
 		try {
 			User user = userRepository.findByPimId(processedData.getPimSource(), processedData.getUserId());
+			
+			if (user == null)
+				return pt;
+
 			processedData.setUserId(user.getUserId());
 
 			if (user == null) // no user exists with this gmail id

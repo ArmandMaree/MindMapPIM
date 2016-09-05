@@ -129,45 +129,43 @@ public class TopicResponse implements Serializable {
 
 		String p = "";
 
-		if (pimSourceIds != null) {
-			if (pimSourceIds.length != 0) {
-				for (int i = 0; i < pimSourceIds.length; i++) {
-					p += "\t\t[" + i + "]:\t";
+		if (pimSourceIds != null && pimSourceIds.length != 0) {
+			for (int i = 0; i < pimSourceIds.length; i++) { // iterate nodes
+				p += "\t\t[" + i + "]:";
 
-					if (pimSourceIds[i] != null) {
-						if (pimSourceIds[i].length != 0) {
-							p += "Gmail: ";
-
-							if (pimSourceIds[i][0] != null) {
-								p += "[";
-
-								for (String s : pimSourceIds[i][0]) {
-									p += s + ",";		
-								}
-
-								p += "]\n";
-							}
+				if (pimSourceIds[i] != null && pimSourceIds[i].length != 0) {
+					for (int j = 0; j < pimSourceIds[i].length; j++) { // iterate pims
+						if (pimSourceIds[i] != null && pimSourceIds[i].length != 0) {
+							if (j == 0)
+								p += "\t[";
 							else
-								p += "null\n";
+								p += "\t\t\t[";
+
+							for (int k = 0; k < pimSourceIds[i][j].length; k++) { // iterate ids
+								if (k != 0)
+									p += "," + pimSourceIds[i][j][k];
+								else
+									p += pimSourceIds[i][j][k];
+							}
+
+							p += "]\n";
 						}
 						else
-							p += "No PIMs - empty\n";
+							p += "null or empty\n";
 					}
-					else
-						p += "No PIMs - null\n";
 				}
+				else
+					p += "null or empty\n";
 			}
-			else
-				p = "empty";
 		}
 		else
-			p = "null";
+			p = "null or empty";
 
 		return "TopicResponse {\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
 			"\tinvolvedContacts: " + c + "\n" +
-			"\tpimSourceIds:\n" + p + "\n" +
-			"}";
+			"\tpimSourceIds: {\n" + p + "\n\t}\n" +
+		"}";
 	}
 }
