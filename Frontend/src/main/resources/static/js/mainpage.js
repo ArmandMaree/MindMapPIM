@@ -296,14 +296,14 @@ $(document).ready(function(){
                 // {id: 8, label: "Arno \n Grobler", group: 0}
             ]
             // parentlist =["0","0","0","2","0","4","6","7","2"];
-            allPimIDlist[1] = [["1","2"],[null]];
-            allPimIDlist[2] = [["3","4"],[null]];
-            allPimIDlist[3] = [["5","6"],[null]];
-            allPimIDlist[4] = [["7","8"],[null]];
-            allPimIDlist[5] = [["7","8"],[null]];
-            allPimIDlist[6] = [["1","2"],[null]];
-            allPimIDlist[7] = [["3","4"],[null]];
-            allPimIDlist[8] = [["5","6"],[null]];
+            allPimIDlist[1] = [["gmail","1","2"],["facebook","9","10"]];
+            allPimIDlist[2] = [["gmail","3","4"],["facebook","9","10"]];
+            allPimIDlist[3] = [["gmail","5","6"],["facebook","10","9"]];
+            allPimIDlist[4] = [["gmail","7","8"],["facebook","10","9"]];
+            allPimIDlist[5] = [["gmail","7","8"],["facebook","10","9"]];
+            allPimIDlist[6] = [["gmail","1","2"],["facebook","10","9"]];
+            allPimIDlist[7] = [["gmail","3","4"],["facebook","10","9"]];
+            allPimIDlist[8] = [["gmail","5","6"],["facebook","10","9"]];
         }else{
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
@@ -1109,19 +1109,20 @@ $(document).ready(function(){
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
-        var name1 = "GmailId=";
+        for(var i=0;i<)
+        var name1 = "userpimID=";
         /**
         *   @var ca1 - Cookie....
         */
         var ca1 = document.cookie.split(';');
-        var gmailID ="";
+        var ID ="";
         for(var i = 0; i <ca1.length; i++) {
             var c = ca1[i];
             while (c.charAt(0)==' ') {
                 c = c.substring(1);
             }
             if (c.indexOf(name1) == 0) {
-                gmailID = c.substring(name1.length,c.length);
+                ID = c.substring(name1.length,c.length);
             }
         }
 
@@ -1144,43 +1145,35 @@ $(document).ready(function(){
         selectedID = node;
         console.log("dbl "+selectedID);
         console.log("dbl "+allPimIDlist);
-        // console.log(allPimIDlist[1]);
-        // console.log(allPimIDlist[1][0]);
 
-        // console.log(allPimIDlist);
-        // console.log(allPimIDlist[2]);
-        // console.log(allPimIDlist[2][0]);
-        // for(var i=1;i<allPimIDlist.length;i++){
-        //     for(var j=0;j<allPimIDlist[i][0].length;j++){
-        //        console.log(allPimIDlist[i][0][j]);
-        //     }
-        // }
         console.log("dbl "+allPimIDlist[selectedID]);
         // console.log(allPimIDlist[selectedID][0]);
         // console.log(allPimIDlist[selectedID][0][1]);
-        var uniqueIds = [];
-            $.each(allPimIDlist[selectedID][0], function(i, el){
-                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
-            });
-            console.log("dbl "+uniqueIds);
-        if(!mocktesting)
-            var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
-        else
-            var gmailItemRequest = {itemIds:uniqueIds,userId:"mocktesting"+gmailID};
-        /**
-        *   A function that sends the gmailItemRequest object through the websocket in order to make the request
-        */
-        // setTimeout(function(){
-        console.log("dbl "+gmailItemRequest)
-        try{
-            stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
-        }catch(err){
-            $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-            });
-            $("#loadingAlertError").fadeIn(1000, function() {
-            });
-            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        for(var i=0;i<allPimIDlist[selectedID].length;i++){
+            var uniqueIds = [];
+                $.each(allPimIDlist[selectedID][i], function(j, el){
+                    if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
+                });
+                console.log("dbl "+uniqueIds);
+            if(!mocktesting)
+                var itemRequest = {itemIds:uniqueIds,userId:ID};
+            else
+                var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
+            /**
+            *   A function that sends the itemRequest object through the websocket in order to make the request
+            */
+            // setTimeout(function(){
+            console.log("dbl "+itemRequest)
+            try{
+                stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
+            }catch(err){
+                $("#loadingAlert").fadeOut(1000, function() {
+                // body...
+                });
+                $("#loadingAlertError").fadeIn(1000, function() {
+                });
+                $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+            }
         }
     });
 

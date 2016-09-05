@@ -73,7 +73,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             System.out.println(userRegistrationIdentified);
             rabbitTemplate.convertAndSend("register.business.rabbit",userRegistrationIdentified);
             while(userRegistrationResponseLL.peek()==null || !id.equals(userRegistrationResponseLL.peek().getReturnId())){
-				//do nothing for now, maybe sleep a bit in future?
+				Thread.sleep(1000);
             }
     		UserIdentified user = userRegistrationResponseLL.poll();
             System.out.println(user); 
@@ -84,7 +84,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName(),message.getAuthCodes()[0].getId());
             rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
             while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-                //do nothing for now, maybe sleep a bit in future?
+                Thread.sleep(1000);
             }
             UserIdentified user = userCheckResponseLL.poll();
             System.out.println(user);
@@ -104,7 +104,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
         rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
         while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         System.out.println("Found user!");
         UserIdentified user = userCheckResponseLL.poll();
@@ -133,7 +133,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
 
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
         System.out.println("Update data sourcesresponse:" +response);
@@ -153,7 +153,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
  
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         System.out.println("Received response!");
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
@@ -178,7 +178,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
        System.out.println("After send");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
@@ -205,7 +205,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
        System.out.println("After send");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
@@ -223,7 +223,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
         rabbitTemplate.convertAndSend("user-check.database.rabbit",userRegistrationIdentified);
         while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-            //do nothing for now, maybe sleep a bit in future?
+            Thread.sleep(1000);
         }
         UserIdentified user = userCheckResponseLL.poll();
         // Thread.sleep(2000);
@@ -237,7 +237,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         if(!request.getUserId().contains("mocktesting")){
             rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
-                //do nothing for now, maybe sleep a bit in future?
+                Thread.sleep(1000);
             }
  
     		TopicResponse topicResponse = topicResponseLL.poll();
@@ -248,14 +248,25 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         else{
             String [][][] mockpimIds =  new String[4][2][2];
-            mockpimIds[0][0][0] = "1";
-            mockpimIds[0][0][1] = "2";
-            mockpimIds[1][0][0] = "3";
-            mockpimIds[1][0][1] = "4";
-            mockpimIds[2][0][0] = "5";
-            mockpimIds[2][0][1] = "6";
-            mockpimIds[3][0][0] = "7";
-            mockpimIds[3][0][1] = "8";
+            mockpimIds[0][0][0] = "gmail";
+            mockpimIds[0][0][1] = "1";
+            mockpimIds[0][0][2] = "2";
+            mockpimIds[0][1][0] = "facebook";
+            mockpimIds[0][1][1] = "9";
+
+            mockpimIds[1][0][0] = "gmail";
+            mockpimIds[1][0][1] = "3";
+            mockpimIds[1][0][2] = "4";
+            mockpimIds[1][1][0] = "facebook";
+            mockpimIds[1][1][1] = "9";
+            
+            mockpimIds[2][0][0] = "gmail";
+            mockpimIds[2][0][1] = "5";
+            mockpimIds[2][0][2] = "6";
+            
+            mockpimIds[3][0][0] = "gmail";
+            mockpimIds[3][0][1] = "7";
+            mockpimIds[3][0][2] = "8";
             // TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
             TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Horse","cos301","photo","recipe"},new String[]{"Horse","cos301","photo","recipe"},mockpimIds);
             System.out.println(topicResponse);
@@ -265,16 +276,17 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
     }
 
-    @MessageMapping("/gmailItems")
+    @MessageMapping("/items")
     @SendToUser("/topic/request")
-    public ItemResponse recieveItemRequest(GmailItemRequest request) throws Exception {
+    public ItemResponse recieveItemRequest(ItemRequest request) throws Exception {
         if(!request.getUserId().contains("mocktesting")){
             String id = UUID.randomUUID().toString();
             ItemRequestIdentified  itemRequestIdentified = new ItemRequestIdentified(id,request.getItemIds(),request.getUserId());
             System.out.println(itemRequestIdentified);
-            rabbitTemplate.convertAndSend("item-request.gmail.rabbit",itemRequestIdentified);
+            System.out.println("Sent to "+ "item-request."+request.getItemIds()[0]+".rabbit");
+            rabbitTemplate.convertAndSend("item-request."+request.getItemIds()[0]+".rabbit",itemRequestIdentified);
             while(itemResponseLL.peek()==null || !id.equals(itemResponseLL.peek().getReturnId())){//wait for itemResponseLL for new topics with user ID
-                //do nothing for now, maybe sleep a bit in future?
+                Thread.sleep(1000);
             }
 
             ItemResponseIdentified itemResponse = itemResponseLL.poll();
@@ -286,7 +298,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }else{
             System.out.println(request);
             String [] itemresponse = new String[2];
-            for(int i=0;i<request.getItemIds().length;i++){
+            for(int i=1;i<request.getItemIds().length;i++){
                 switch (request.getItemIds()[i]) {
                     case "1": itemresponse[i] = "Hey Acuban\n How is the weather?";break;
                     case "2": itemresponse[i] = "Reminder about school fees";break;
