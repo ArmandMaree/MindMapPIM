@@ -88,6 +88,11 @@ public class FrontendListener {
 			return;
 
 		for (String itemId : itemRequestIdentified.getItemIds()) {
+			if (items.size() == 0) {
+				items.add(itemId);
+				continue;
+			}
+			
 			try {
 				MimeMessage email = getMimeMessage(getMessage(itemId, service));
 				String body = "";

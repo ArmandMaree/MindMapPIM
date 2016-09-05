@@ -165,7 +165,7 @@ public class TopicResponse implements Serializable {
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
 			"\tinvolvedContacts: " + c + "\n" +
-			"\tpimSourceIds: {\n" + p + "\n\t}\n" +
+			"\tpimSourceIds: {\n" + p + "\t}\n" +
 		"}";
 	}
 }
