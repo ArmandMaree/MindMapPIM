@@ -929,23 +929,23 @@ $(document).ready(function(){
         // console.log("node is this: "+node)
         var title = array[0].charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
         var id = "#"+array[0];
-        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+array[0]+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-        if(array[0] == "facebook")
+        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+title+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        for(var i = 1 ; i < array.length; i++ )
         {
-            // https://www.facebook.com/userId/posts/postid
-            for(var i = 1 ; i < array.length; i++ )
-            {
-                $(id).append("<div class='fb-post'  data-width='500'data-href='https://www.facebook.com/"+getCookie("facebookId")+"/posts/"+array[i]+"'></div>");
-            }
+            $(id).append("<div>"+array[i]+"</div>");
         }
-        else
-        {
+        // if(array[0] == "facebook")
+        // {
+        //     // https://www.facebook.com/userId/posts/postid
+        //     for(var i = 1 ; i < array.length; i++ )
+        //     {
+        //         $(id).append("<div class='fb-post'  data-width='500'data-href='https://www.facebook.com/"+getCookie("facebookId")+"/posts/"+array[i]+"'></div>");
+        //     }
+        // }
+        // else
+        // {
             
-            for(var i = 1 ; i < array.length; i++ )
-            {
-                $(id).append("<div>"+array[i]+"</div>");
-            }
-        }
+        // }
 
        
         // $("#accordion").html("");
