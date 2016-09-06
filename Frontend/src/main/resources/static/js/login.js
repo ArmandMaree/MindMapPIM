@@ -415,7 +415,7 @@ var FacebookUser;
 *	This function is called when a client clicks on the Facebook button to login or signup
 *	It prompts the user to log in to Facebook through the Facebook login dialogue
 */
-var  fuid = "";
+var  facebookId = "";
 var fAT = "";
 function onFacebookLogin()
 {
@@ -424,10 +424,10 @@ function onFacebookLogin()
 	if (response.authResponse) {
 	  console.log("Auth response:");
 	  AuthResponse = response;
-	  document.cookie = "fuid="+ response.authResponse.userID;
+	  document.cookie = "facebookId="+ response.authResponse.userID;
 	  document.cookie = "fAT="+ response.authResponse.accessToken;
-	  alert(fuid)
-	  alert(fAT)
+	  // alert(fuid)
+	  // alert(fAT)
 	  console.log(response.authResponse);
 	  showtick();
 	}
@@ -468,8 +468,8 @@ function sendUserObjectForFacebook()
 	//   		console.log("hello: "+JSON.stringify(AuthResponse))
 	// 		// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 	// 		var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
-			authCodes.push({id:getCookie("fuid"),pimSource:"facebook",authCode:getCookie("fAT")});
-			alert(JSON.stringify({id:getCookie("fuid"),pimSource:"facebook",authCode:getCookie("fAT")}))
+			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")});
+			alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
 			// stompClient.subscribe('user/topic/greetings', function(serverResponse){
 			// 	var jsonresponse = JSON.parse(serverResponse.body);
 			// 	console.log("ServerResponse is : "+jsonresponse);
