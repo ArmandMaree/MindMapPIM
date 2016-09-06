@@ -6,11 +6,13 @@
     margin-top: 0;
     vertical-align: center;
 }
-/*.navbar-text
+iframe
 {
-    font-size: 18pt !important;
-    padding-left: 0 !important;
-}*/
+  border: none;
+  overflow: hidden;
+  width : 500px;
+  height: 500px;
+}
 .email
 {
     background-color: white !important;
