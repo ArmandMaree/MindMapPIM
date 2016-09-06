@@ -81,7 +81,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return user;
         }else{
             System.out.println(message);
-            UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName(),message.getAuthCodes()[0].getId());
+            UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName());
             rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
             while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
                 Thread.sleep(1000);

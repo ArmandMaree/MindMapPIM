@@ -61,7 +61,7 @@ public class LoginControllerTester extends AbstractTester {
 			String[] involvedContacts = {"Armand Maree", "Arno Grobler"};
 			String[][][] mockItemIds = null;
 			TopicResponse tro = new TopicResponse("123456",mockTopicText, involvedContacts,mockItemIds);
-			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos","acubancos@gmail.com");
+			UserIdentified ui = new UserIdentified("123456",true, "Acuban","Cos");
 			try{
 				topicResponseLL.put(tro);
 				userCheckResponseLL.put(ui);

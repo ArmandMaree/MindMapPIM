@@ -72,7 +72,7 @@ var sendUserReg = function(){
 	    connected = true;
 	  	var userReg = {};
 	  	if(gmailUser!=null){
-			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+			userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:authCodes};
 			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
 	  	// setTimeout(function(){
@@ -181,8 +181,8 @@ var onSuccess = function(user) {
 	document.cookie = "name="+gmailUser.w3.ofa;
 	document.cookie ="surname="+gmailUser.w3.wea;
 	document.cookie= "email="+gmailUser.w3.U3;
-	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
-	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
+	  console.log(gmailUser.w3.ofa+","+ gmailUser.w3.wea);
+	document.getElementById('welcome').innerHTML += ", " + user.w3.ig;
  };
 /**
  * A Google callback function when a request has failed.
@@ -208,7 +208,7 @@ function googleretrieve(){
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
 	  $('#nextButton').show();
-	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"gmail",authCode:authResult['code']}
+	  var gmailAuthCode = {id:gmailUser.w3.U3,pimSource:"gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 
@@ -288,7 +288,7 @@ function loadXMLDoc(){
 		    console.log('Connected: ' + frame);
 		    connected = true;
 			
-			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+			// var usercheck={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"Gmail",authCode:null}]};
 
 		document.cookie="GmailId="+gmailUser.w3.U3;
@@ -445,7 +445,7 @@ function sendUserObjectForFacebook(response)
 			document.cookie = "name="+fname;
 	  		document.cookie ="surname="+lname;
 	  		document.cookie= "facebookId="+ AuthResponse.userID;
-			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
+			// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
 
 

@@ -1099,23 +1099,6 @@ $(document).ready(function(){
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
-        for(var i=0;i<)
-        var name1 = "userpimID=";
-        /**
-        *   @var ca1 - Cookie....
-        */
-        var ca1 = document.cookie.split(';');
-        var ID ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                ID = c.substring(name1.length,c.length);
-            }
-        }
-
         var name1 = "lastselectednode=";
         /**
         *   @var ca1 - Cookie....
