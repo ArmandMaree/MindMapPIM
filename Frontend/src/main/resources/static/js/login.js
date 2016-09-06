@@ -426,6 +426,7 @@ function onFacebookLogin()
 	  AuthResponse = response;
 	  document.cookie = "facebookId="+ response.authResponse.userID;
 	  document.cookie = "fAT="+ response.authResponse.accessToken;
+	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
 	  // alert(fuid)
 	  // alert(fAT)
 	  console.log(response.authResponse);
@@ -468,8 +469,8 @@ function sendUserObjectForFacebook()
 	//   		console.log("hello: "+JSON.stringify(AuthResponse))
 	// 		// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 	// 		var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
-			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")});
-			alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
+			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
+			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
 			// stompClient.subscribe('user/topic/greetings', function(serverResponse){
 			// 	var jsonresponse = JSON.parse(serverResponse.body);
 			// 	console.log("ServerResponse is : "+jsonresponse);

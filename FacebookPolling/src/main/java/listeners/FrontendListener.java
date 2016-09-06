@@ -45,6 +45,9 @@ public class FrontendListener {
 			else
 				userId = itemRequestIdentified.getUserId();
 
+			if (itemId.contains("_"))
+				itemId = itemId.substring(itemId.indexOf("_") + 1, itemId.length());
+
 			items.add("<iframe class=\"facebook-iframe\" src=\"https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/" + userId + "/posts/" + itemId + "/&amp;width=500\"></iframe>");
 		}
 
