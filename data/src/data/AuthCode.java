@@ -27,6 +27,11 @@ public class AuthCode implements Serializable {
 	private String authCode = "";
 
 	/**
+	* Used by the pollers to know how long an access token is valid.
+	*/
+	private long expireTime = -1;
+
+	/**
 	* Default constructor.
 	*/
 	public AuthCode() {
@@ -94,6 +99,22 @@ public class AuthCode implements Serializable {
 	}
 
 	/**
+	* Getter to return the expireTime.
+	* @return Used by the pollers to know how long an access token is valid.
+	*/
+	public long getExpireTime() {
+		return expireTime;
+	}
+
+	/**
+	* Set the value of expireTime.
+	* @param expireTime Used by the pollers to know how long an access token is valid.
+	*/
+	public void setExpireTime(long expireTime) {
+		this.expireTime = expireTime;
+	}
+
+	/**
 	* String representation of AuthCode used for printing.
 	* @return AuthCode in string form.
 	*/
@@ -103,6 +124,7 @@ public class AuthCode implements Serializable {
 			"\tid: " + id + "\n" +
 			"\tpimSource: " + pimSource + "\n" +
 			"\tauthCode: " + authCode + "\n" +
+			"\texpireTime: " + expireTime + "\n" +
 		"}";
 	}
 }

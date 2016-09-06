@@ -28,6 +28,8 @@ import listeners.*;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	private final String authCodeQueueName = "auth-code.facebook.rabbit";
+	private final String itemRequestQueueName = "item-request.facebook.rabbit";
+
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -35,6 +37,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Queue authCodeQueue() {
 		return new Queue(authCodeQueueName, false);
+	}
+
+	@Bean
+	Queue itemRequestQueue() {
+		return new Queue(itemRequestQueueName, false);
 	}
 
 	@Bean
@@ -48,13 +55,28 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding itemRequestBinding(@Qualifier("itemRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(itemRequestQueueName);
+	}
+
+	@Bean
 	public BusinessListener businessListener() {
 		return new BusinessListener();
 	}
 
 	@Bean
+	public FrontendListener frontendListener() {
+		return new FrontendListener();
+	}
+
+	@Bean
 	public MessageListenerAdapter authCodeAdapter(BusinessListener businessListener) {
 		return new MessageListenerAdapter(businessListener, "receiveAuthCode");
+	}
+
+	@Bean
+	public MessageListenerAdapter itemRequestAdapter(FrontendListener frontendListener) {
+		return new MessageListenerAdapter(frontendListener, "receiveItemRequest");
 	}
 
 	@Bean
@@ -66,13 +88,21 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
+	@Bean
+	public SimpleMessageListenerContainer itemRequestContainer(ConnectionFactory connectionFactory, @Qualifier("itemRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(itemRequestQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		FacebookPoller facebookPoller = new FacebookPoller(rabbitTemplate, "EAAO8gzzg6H0BAGlPaPlBm3eRXCTJQfZBCh6t2InLMW87gXUuDyAu5JFiyQKIBd3wobfZB5keG1cw5r3l6tqIN7qJ2TvXFf4xLKWrSkwdYgxAIjwvEyokYAL8Lmc3fE7K5X15mHLYfA36JY4hYL2pbXTMwX9MvJNhLsN3pUzgZDZD", System.currentTimeMillis() - 100);
-		new Thread(facebookPoller).start();
+
 	}
 }

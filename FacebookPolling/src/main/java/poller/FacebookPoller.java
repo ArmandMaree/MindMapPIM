@@ -23,7 +23,7 @@ import data.*;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class FacebookPoller implements Runnable {
+public class FacebookPoller implements Runnable, Poller {
 	private RabbitTemplate rabbitTemplate;
 	private final static String rawDataQueue = "raw-data.processing.rabbit";
 	private long expireTime;
@@ -35,11 +35,11 @@ public class FacebookPoller implements Runnable {
 	private int LIMIT = 25;
 	private String userId;
 
-	public FacebookPoller(RabbitTemplate rabbitTemplate, String authCode, long expireTime) {
+	public FacebookPoller(RabbitTemplate rabbitTemplate, String authCode, long expireTime, String userId) {
 		this.rabbitTemplate = rabbitTemplate;
 		service = getService(authCode);
 		this.expireTime = expireTime;
-		userId = service.userOperations().getUserProfile().getId();
+		this.userId = userId;
 	}
 
 	public Facebook getService(String authCode) {
@@ -78,7 +78,7 @@ public class FacebookPoller implements Runnable {
 		while (feed != null && offset < 200) {
 			for (Post post : feed) {
 				RawData rawData = getRawData(post);
-				sendToQueue(rawData);
+				addToQueue(rawData);
 			}
 
 			if (feed.getNextPage() == null)
@@ -101,7 +101,7 @@ public class FacebookPoller implements Runnable {
 		return rawData;
 	}
 
-	public void sendToQueue(RawData rawData) {
+	public void addToQueue(RawData rawData) {
 		try {
 				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
 

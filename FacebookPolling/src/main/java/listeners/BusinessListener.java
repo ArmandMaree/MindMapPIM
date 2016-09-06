@@ -23,6 +23,7 @@ public class BusinessListener {
 	* @param authCode The AuthCode that contains all the information needed to start the poller.
 	*/
 	public void receiveAuthCode(AuthCode authCode) {
-		
+		FacebookPoller poller = new FacebookPoller(rabbitTemplate, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+		new Thread(poller).start();
 	}
 }
