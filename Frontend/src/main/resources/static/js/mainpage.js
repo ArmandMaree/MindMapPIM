@@ -50,7 +50,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = true;
+var mocktesting = false;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -559,7 +559,7 @@ $(document).ready(function(){
                     $("#gmail").html("");
                     $("#twitter").html("");
                     $("#linkedIn").html("");
-                    $("#sidepanelTitle").html("");
+                    // $("#sidepanelTitle").html("");
                     var selectedID = network.getSelectedNodes();
                     $("#sidepanel").show();
 
@@ -598,7 +598,7 @@ $(document).ready(function(){
                     $("#breadcrumb").html(breadcrumb);
                     console.log(selectedID);
 
-                    populateSidePanel(selectedID, dataForSideBar);
+                    populateSidePanel(items);
 
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -924,15 +924,17 @@ $(document).ready(function(){
     *   @param node - the node that has been selected
     *   @param array - contains the data of the selected node
     */
-    function populateSidePanel(node, array)
+    function populateSidePanel(array)
     {
         // console.log("node is this: "+node)
-        var title = array[0].charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
+        var t = array[0];
+        console.log(array)
+        var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
         var id = "#"+array[0];
         $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+title+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
         for(var i = 1 ; i < array.length; i++ )
         {
-            $(id).append("<div>"+array[i]+"</div>");
+            $(id).append("<div class='email panel'>"+array[i]+"</div>");
         }
         // if(array[0] == "facebook")
         // {
@@ -1092,7 +1094,6 @@ $(document).ready(function(){
 
         $("#accordion").html("");
         
-        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         /**
         *   A function that displays the loading bar
         */
@@ -1115,6 +1116,7 @@ $(document).ready(function(){
             }
         }
         var node = network.getSelectedNodes();
+        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         selectedID = node;
         console.log("dbl "+selectedID);
         console.log("dbl "+allPimIDlist);
@@ -1127,6 +1129,8 @@ $(document).ready(function(){
                 $.each(allPimIDlist[selectedID][i], function(j, el){
                     if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
                 });
+                // alert(allPimIDlist[selectedID][i][0]+"Id")
+                var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
                 console.log("dbl "+uniqueIds);
             if(!mocktesting)
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
