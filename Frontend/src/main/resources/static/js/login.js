@@ -434,7 +434,7 @@ function onFacebookLogin()
 	FB.getLoginStatus(function(response) {
 	  statusChangeCallback(response);
 	});
-  });
+  }, {scope: 'user_posts'});
 }
 function getCookie(cname) {
         var name = cname + "=";

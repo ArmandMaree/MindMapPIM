@@ -39,7 +39,7 @@ public class FrontendListener {
 			String userId;
 
 			if (itemId.contains(":")) {
-				userId = itemId.substring(itemId.indexOf(":"), itemId.length());
+				userId = itemId.substring(itemId.indexOf(":") + 1, itemId.length());
 				itemId = itemId.substring(0, itemId.indexOf(":"));
 			}
 			else

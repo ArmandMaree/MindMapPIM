@@ -34,11 +34,12 @@ public class FacebookPoller implements Runnable, Poller {
 	private int offset = 0;
 	private int LIMIT = 25;
 	private String userId;
+	private String lastId = "";
 
 	public FacebookPoller(RabbitTemplate rabbitTemplate, String authCode, long expireTime, String userId) {
 		this.rabbitTemplate = rabbitTemplate;
 		service = getService(authCode);
-		this.expireTime = expireTime;
+		this.expireTime = expireTime + System.currentTimeMillis() / 1000;
 		this.userId = userId;
 	}
 
@@ -52,7 +53,7 @@ public class FacebookPoller implements Runnable, Poller {
 	public void run() {
 		while (!stop) {
 			try {
-				if (expireTime <= System.currentTimeMillis()) {
+				if (expireTime <= System.currentTimeMillis()  / 1000) {
 					System.out.println("STOPPED");
 					return;
 				}
@@ -74,14 +75,30 @@ public class FacebookPoller implements Runnable, Poller {
 		System.out.println("Polling");
 		PagedList<Post> feed = service.feedOperations().getFeed(new PagingParameters(null, null, null, null));
 		System.out.println(feed.size());
+		boolean set = false;
+		boolean broke = false;;
 
 		while (feed != null && offset < 200) {
 			for (Post post : feed) {
+				if (post.getId().equals(lastId)) {
+					broke = true;
+					break;
+				}
+
+				if (!set) {
+					lastId = post.getId(); 
+					set = true;
+				}
+
 				RawData rawData = getRawData(post);
+
+				if (rawData == null)
+					continue;
+				
 				addToQueue(rawData);
 			}
 
-			if (feed.getNextPage() == null)
+			if (feed.getNextPage() == null || broke)
 				feed = null;
 			else
 				feed = service.feedOperations().getFeed(feed.getNextPage());
@@ -94,16 +111,33 @@ public class FacebookPoller implements Runnable, Poller {
 	}
 
 	public RawData getRawData(Post post) {
+		if (post.getMessage() == null || post.getMessage().length() == 0)
+			return null;
+		else
+			System.out.println("Post from: " + post.getFrom().getId());
+		
 		List<String> text = new ArrayList<>();
+		List<String> contacts = new ArrayList<>();
 		text.add(post.getMessage());
 
-		RawData rawData = new RawData("facebook", userId, null, post.getId(), text.toArray(new String[0]), post.getCreatedTime().getTime());
+		String postId;
+
+		if (post.getFrom().getId().equals(userId))
+			postId = post.getId();
+		else {
+			contacts.add(post.getFrom().getName());
+			postId = post.getId() + ":" + post.getFrom().getId();
+		}
+
+
+		RawData rawData = new RawData("facebook", userId, null, postId, text.toArray(new String[0]), post.getCreatedTime().getTime());
+		rawData.setInvolvedContacts(contacts);
 		return rawData;
 	}
 
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
+				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " firstPageDone: " + firstPageDone);
 
 				if (!firstPageDone || oldDone)
 					rabbitTemplate.convertAndSend("priority-" + rawDataQueue, rawData);

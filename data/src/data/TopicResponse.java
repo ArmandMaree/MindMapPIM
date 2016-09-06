@@ -151,15 +151,15 @@ public class TopicResponse implements Serializable {
 							p += "]\n";
 						}
 						else
-							p += "null or empty\n";
+							p += "\t\tnull or empty\n";
 					}
 				}
 				else
-					p += "null or empty\n";
+					p += "\t\tnull or empty\n";
 			}
 		}
 		else
-			p = "null or empty";
+			p = "\t\tnull or empty\n";
 
 		return "TopicResponse {\n" +
 			"\tuserId: " + userId + "\n" +

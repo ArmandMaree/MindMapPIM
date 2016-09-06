@@ -50,6 +50,20 @@ public class AuthCode implements Serializable {
 		this.authCode = authCode;
 	}
 
+	/**
+	* Constructor that sets the authCode
+	* @param id Id used by the PIM source to identify the user.
+	* @param pimSource Name of the PIM.
+	* @param authCode Code used by the poller to start up the process.
+	* @param expireTime Used by the pollers to know how long an access token is valid.
+	*/
+	public AuthCode(String id, String pimSource, String authCode, long expireTime) {
+		this.id = id;
+		this.pimSource = pimSource;
+		this.authCode = authCode;
+		this.expireTime = expireTime;
+	}
+
 	/*
 	* Returns the value of id.
 	* @return Id used by the PIM source to identify the user.
@@ -121,8 +135,8 @@ public class AuthCode implements Serializable {
 	@Override
 	public String toString() {
 		return "AuthCode {\n" +
-			"\tid: " + id + "\n" +
 			"\tpimSource: " + pimSource + "\n" +
+			"\tid: " + id + "\n" +
 			"\tauthCode: " + authCode + "\n" +
 			"\texpireTime: " + expireTime + "\n" +
 		"}";
