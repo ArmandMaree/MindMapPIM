@@ -56,7 +56,7 @@ public class ItemResponse implements Serializable {
 	@Override
 	public String toString() {
 		return "ItemResponse {\n" +
-			"\titems size: \n" + items.length + "\n" +
+			"\titems size: " + items.length + "\n" +
 		"}";
 	}
 }

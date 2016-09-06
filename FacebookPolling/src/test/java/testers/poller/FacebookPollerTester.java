@@ -1,6 +1,6 @@
 package testers.poller;
 
-import poller.GmailPoller;
+import poller.FacebookPoller;
 import testers.AbstractTester;
 
 import org.junit.After;
@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)
-public class GmailPollerTester extends AbstractTester {
+public class FacebookPollerTester extends AbstractTester {
 	private boolean setUpDone = false;
 
 	@Before
