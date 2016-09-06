@@ -5,7 +5,7 @@ import testers.AbstractTester;
 import data.*;
 
 import java.util.UUID;
-import java.util.TimeUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.After;
@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 /**
 * Unit test methods for the FacebookPoller.
 *
@@ -37,7 +38,7 @@ public class FrontendListenerTester extends AbstractTester {
 
 	@Autowired
 	@Qualifier("itemResponseQueueLLBean")
-	LinkedBlockingQueue itemResponseQueue;
+	LinkedBlockingQueue<ItemResponseIdentified> itemResponseQueue;
 
 	@Before
 	public void setUp() {
@@ -53,10 +54,23 @@ public class FrontendListenerTester extends AbstractTester {
 
 	@Test
 	public void testReceiveItemRequest() throws InterruptedException { // manual test
-		String[] itemIds = {UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
-		ItemRequestIdentified itemRequestIdentified = new ItemRequestIdentified(UUID.randomUUID().toString(), itemIds, "acubencos@gmail.com");
+		String userId = "acubencos@gmail.com";
+		String[] itemIds = {"facebook", UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
+		ItemRequestIdentified itemRequestIdentified = new ItemRequestIdentified(UUID.randomUUID().toString(), itemIds, userId);
 
 		rabbitTemplate.convertAndSend(itemRequestQueueName, itemRequestIdentified);
 		ItemResponseIdentified itemResponseIdentified = itemResponseQueue.poll(5, TimeUnit.SECONDS);
+		System.out.println("Received: " + itemResponseIdentified);
+		Assert.assertNotNull("Failure - itemResponseIdentified is null.", itemResponseIdentified);
+		Assert.assertEquals("Failure - itemResponseIdentified did not return the correct amount of items", itemIds.length, itemResponseIdentified.getItems().length);
+
+		for (int i = 0; i < itemResponseIdentified.getItems().length; i++) {
+			String testString = "<iframe class=\"facebook-iframe\" src=\"https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/" + userId + "/posts/" + itemIds[i] + "/&amp;width=500\"></iframe>";
+
+			if (i == 0)
+				testString = "facebook";
+
+			Assert.assertEquals("Failure - itemResponseIdentified item[" + i + "] does not contain the correct item.", testString, itemResponseIdentified.getItems()[i]);
+		}
 	}
 }

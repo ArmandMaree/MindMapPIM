@@ -16,7 +16,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import repositories.*;
 import data.*;
 
 import java.util.concurrent.locks.Lock;
@@ -51,7 +50,7 @@ public class TestContext {
 	}
 
 	@Bean
-	public MessageListenerAdapter itemResponseAdapter(FrontendListener frontendListener) {
+	public MessageListenerAdapter itemResponseAdapter() {
 		return new MessageListenerAdapter(this, "receiveItemResponse");
 	}
 
