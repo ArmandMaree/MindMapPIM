@@ -9,5 +9,7 @@ cd ../Frontend;
 ./upload.bash;
 cd ../GmailPolling;
 ./upload.bash;
+cd ../FacebookPolling;
+./upload.bash;
 cd ../Processing;
 ./upload.bash;

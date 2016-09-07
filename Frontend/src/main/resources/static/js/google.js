@@ -148,7 +148,7 @@ function googleretrieve(){
 		console.log("authResult:" +JSON.stringify(authResult));
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
-	  var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"Gmail",authCode:authResult['code']}
+	  var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"gmail",authCode:authResult['code']}
 	  UpdateSourcesObject.authcodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 

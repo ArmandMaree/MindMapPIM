@@ -1,13 +1,17 @@
 /**
-*	@var {} auth2 - The sign-in object
+*	@var {String} force_prompt - whether or not the google api should retrieve a refresh token
+*/
+var force_prompt = 'force'
+/**
+*	@var {Obj} auth2 - The sign-in object
 */
 var auth2; 
 /**
-* 	@var {} googleUser - The current user
+* 	@var {Obj} googleUser - The current user
 */
 var googleUser;
 /**
-* 	@var {} authCodes - ....
+* 	@var {Obj[]} authCodes - Array to hold all of the authCodes
 */ 
 var authCodes = [];
 /** 
@@ -58,6 +62,7 @@ var initSigninV2 = function() {
  * Function to send a User Registration Object through to the frontend application
  */
 var sendUserReg = function(){
+	sendUserObjectForFacebook();
 	$("#loadingAlert").fadeIn(1000, function() {
 		// body...
 	});
@@ -68,7 +73,7 @@ var sendUserReg = function(){
 	    connected = true;
 	  	var userReg = {};
 	  	if(gmailUser!=null){
-			userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
+			userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:authCodes};
 			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
 	  	// setTimeout(function(){
@@ -169,13 +174,16 @@ var refreshValues = function() {
  */
 var onSuccess = function(user) {
 	gmailUser = user;
-	console.log('Signed in as ' + user.getBasicProfile().getName());
+	console.log('Signed in as ' + user.w3.ig);
+	console.log(user)
+	console.log(user.w3.ig)
+	// console.log(gapi.auth2.getToken())
 	//Create cookie
-	  document.cookie = "name="+gmailUser.wc.Za;
-	  document.cookie ="surname="+gmailUser.wc.Na;
-	  document.cookie= "email="+user.getBasicProfile().getEmail();
-	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
-	document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
+	document.cookie = "name="+gmailUser.w3.ofa;
+	document.cookie ="surname="+gmailUser.w3.wea;
+	document.cookie= "email="+gmailUser.w3.U3;
+	  console.log(gmailUser.w3.ofa+","+ gmailUser.w3.wea);
+	document.getElementById('welcome').innerHTML += ", " + user.w3.ig;
  };
 /**
  * A Google callback function when a request has failed.
@@ -189,8 +197,7 @@ var onFailure = function(error) {
  */
 function googleretrieve(){
 
-  // var auth2 = gapi.auth2.getAuthInstance();
-  auth2.grantOfflineAccess({'approval_prompt': 'force', 'redirect_uri': 'postmessage'}).then(signInCallback);
+  auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
 
 }
 /**
@@ -202,7 +209,7 @@ function googleretrieve(){
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
 	  $('#nextButton').show();
-	  var gmailAuthCode = {id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:authResult['code']}
+	  var gmailAuthCode = {id:gmailUser.w3.U3,pimSource:"gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
 	  console.log("added new AuthCode");
 
@@ -282,24 +289,24 @@ function loadXMLDoc(){
 		    console.log('Connected: ' + frame);
 		    connected = true;
 			
-			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
-			var userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:[{id:gmailUser.getBasicProfile().getEmail(),pimSource:"Gmail",authCode:null}]};
+			// var usercheck={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
+		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"Gmail",authCode:null}]};
 
-			document.cookie="GmailId="+gmailUser.getBasicProfile().getEmail();
-			stompClient.subscribe('/topic/greetings', function(serverResponse){
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
-				console.log("ServerResponse is : "+jsonresponse.userId);
+		document.cookie="gmailId="+gmailUser.w3.U3;
+		stompClient.subscribe('/topic/greetings', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
+			console.log("ServerResponse is : "+jsonresponse.userId);
 				
-				document.cookie = "nav="+jsonresponse.theme[0];
-				document.cookie = "map="+jsonresponse.theme[1];
-				document.cookie = "sidepanel="+jsonresponse.theme[2];
-				document.cookie = "branch="+jsonresponse.branchingFactor;
-				document.cookie = "depth="+jsonresponse.initialDepth;
+			document.cookie = "nav="+jsonresponse.theme[0];
+			document.cookie = "map="+jsonresponse.theme[1];
+			document.cookie = "sidepanel="+jsonresponse.theme[2];
+			document.cookie = "branch="+jsonresponse.branchingFactor;
+			document.cookie = "depth="+jsonresponse.initialDepth;
 
-				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 
-				document.cookie="userId="+jsonresponse.userId;
+			document.cookie="userId="+jsonresponse.userId;
 				// $("#loadingAlert").fadeOut(1000, function() {
 				// 	// body...
 				// });
@@ -408,6 +415,8 @@ var FacebookUser;
 *	This function is called when a client clicks on the Facebook button to login or signup
 *	It prompts the user to log in to Facebook through the Facebook login dialogue
 */
+var  facebookId = "";
+var fAT = "";
 function onFacebookLogin()
 {
   console.log("onFacebookLogin");
@@ -415,70 +424,91 @@ function onFacebookLogin()
 	if (response.authResponse) {
 	  console.log("Auth response:");
 	  AuthResponse = response;
+	  document.cookie = "facebookId="+ response.authResponse.userID;
+	  document.cookie = "fAT="+ response.authResponse.accessToken;
+	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
+	  // alert(fuid)
+	  // alert(fAT)
+	  // alert(response.authResponse.expiresIn)
 	  console.log(response.authResponse);
 	  showtick();
 	}
 	FB.getLoginStatus(function(response) {
 	  statusChangeCallback(response);
 	});
-  });
+  }, {scope: 'user_posts'});
 }
-
-function sendUserObjectForFacebook(response)
+function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length,c.length);
+            }
+        }
+        return "";
+    }
+function sendUserObjectForFacebook()
 {
-	var socket = new SockJS('/hello');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
-			var name = FacebookUser.name
-			var fullName = name.split(" ");
-			var fname = fullName[0];
-			var lname = fullName[fullName.length-1];
+	// var socket = new SockJS('/hello');
+	// 	stompClient = Stomp.over(socket);
+	// 	stompClient.connect({}, function(frame) {
+	// 	    console.log('Connected: ' + frame);
+	// 	    connected = true;
+	// 		var name = FacebookUser.name
+	// 		var fullName = name.split(" ");
+	// 		var fname = fullName[0];
+	// 		var lname = fullName[fullName.length-1];
 
-			document.cookie = "name="+fname;
-	  		document.cookie ="surname="+lname;
-	  		document.cookie= "facebookId="+ AuthResponse.userID;
-			// var usercheck={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,gmailId:gmailUser.getBasicProfile().getEmail()};
-			var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"Facebook",authCode:AuthResponse.accessToken}]};
+	// 		document.cookie = "name="+fname;
+	//   		document.cookie ="surname="+lname;
+	//   		document.cookie= "facebookId="+ AuthResponse.userID;
+	//   		console.log("hello: "+JSON.stringify(AuthResponse))
+	// 		// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
+	// 		var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
+			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")}));
+			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
+			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
+			// stompClient.subscribe('user/topic/greetings', function(serverResponse){
+			// 	var jsonresponse = JSON.parse(serverResponse.body);
+			// 	console.log("ServerResponse is : "+jsonresponse);
+			// 	console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
+			// 	document.cookie = "nav="+jsonresponse.theme[0];
+			// 	document.cookie = "map="+jsonresponse.theme[1];
+			// 	document.cookie = "sidepanel="+jsonresponse.theme[2];
+			// 	document.cookie = "branch="+jsonresponse.branchingFactor;
+			// 	document.cookie = "depth="+jsonresponse.initialDepth;
 
-
-			stompClient.subscribe('user/topic/greetings', function(serverResponse){
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+jsonresponse);
-				console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-				document.cookie = "nav="+jsonresponse.theme[0];
-				document.cookie = "map="+jsonresponse.theme[1];
-				document.cookie = "sidepanel="+jsonresponse.theme[2];
-				document.cookie = "branch="+jsonresponse.branchingFactor;
-				document.cookie = "depth="+jsonresponse.initialDepth;
-
-				if(jsonresponse.isRegistered){
-					window.location.assign('/');
-				}else{
-					$("#cssload-pgloading").hide();
-					$("#loadingAlert").fadeOut(1000, function() {
-						// body...
-					});
-					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.onreadystatechange=function(){
-						if (xmlhttp.readyState==4 && xmlhttp.status==200){
-							document.getElementById("container").innerHTML=xmlhttp.responseText;
-						}
-					}
-					xmlhttp.open("GET","ajax/selectdata.html");
-					xmlhttp.send();
-					var filename;
-					// if (stompClient != null) {
-		   //              stompClient.disconnect();
-		   //          }
-				}
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
-			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-		});
+		// 		if(jsonresponse.isRegistered){
+		// 			window.location.assign('/');
+		// 		}else{
+		// 			$("#cssload-pgloading").hide();
+		// 			$("#loadingAlert").fadeOut(1000, function() {
+		// 				// body...
+		// 			});
+		// 			var xmlhttp=new XMLHttpRequest();
+		// 			xmlhttp.onreadystatechange=function(){
+		// 				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		// 					document.getElementById("container").innerHTML=xmlhttp.responseText;
+		// 				}
+		// 			}
+		// 			xmlhttp.open("GET","ajax/selectdata.html");
+		// 			xmlhttp.send();
+		// 			var filename;
+		// 			// if (stompClient != null) {
+		//    //              stompClient.disconnect();
+		//    //          }
+		// 		}
+		// 	}, function(error) {
+		//     		// display the error's message header:
+		//     		console.log(error.headers.message);
+	 //  		});
+		// 	stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+		// });
 }
 /**
 *	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook

@@ -443,7 +443,7 @@ function checkGoogle()
 		//startApp();
 		//gapi.auth2.getAuthInstance().signOut();
 		var gmailEmail = getCookie("email");
-		var gmailAuthCode = {id:gmailEmail,pimSource:"Gmail",authCode:""};
+		var gmailAuthCode = {id:gmailEmail,pimSource:"gmail",authCode:""};
 		UpdateSourcesObject.authcodes.push(gmailAuthCode);
 		console.log("GmailAuthCode: " + JSON.stringify(gmailAuthCode));
 
@@ -474,7 +474,7 @@ function checkGoogle()
 					//refreshValues();
 
 					// if(gmailUser != null)
-					// 	var gmailAuthCode = {id:gmailUser.wc.hg,pimSource:"Gmail",authCode:gmailUser.hg.access_token};
+					// 	var gmailAuthCode = {id:gmailUser.wc.hg,pimSource:"gmail",authCode:gmailUser.hg.access_token};
 					// console.log(gmailAuthCode);
 					// UpdateSourcesObject.authcodes.push(gmailAuthCode);
 			 		$("#Loading").fadeOut(1000, function(){}); 	
@@ -496,7 +496,7 @@ function checkFacebook()
 		//Unselect it
 		console.log("Facebook is selected!");
 		var userId = getCookie("userIdFaceebook");
-		var facebookAuthCode = {id:AuthResponse.userID,pimSource:"Facebook",authCode:null}
+		var facebookAuthCode = {id:AuthResponse.userID,pimSource:"facebook",authCode:null}
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);
 	}
@@ -510,7 +510,7 @@ function checkFacebook()
 		  FB.login(function(response) {
 			if (response.authResponse) {
 			   AuthResponse = response.authResponse;
-			  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"Facebook","authCode":AuthResponse.accessToken};
+			  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"facebook","authCode":AuthResponse.accessToken};
 			  console.log(response.authResponse);
 			
 			  showtick();

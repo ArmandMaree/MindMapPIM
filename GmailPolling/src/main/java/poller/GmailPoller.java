@@ -156,7 +156,7 @@ public class GmailPoller implements Poller {
 	*/
 	public Gmail getGmailServiceFromAuthCode() throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
@@ -190,7 +190,7 @@ public class GmailPoller implements Poller {
 	public Gmail getGmailServiceFromRefreshToken() throws IOException {
 		GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
@@ -247,7 +247,7 @@ public class GmailPoller implements Poller {
 			GmailBatchMessages gbm = listNewMessages(null);
 
 			while (gbm != null) {
-				if (tmpFirst == null) 
+				if (tmpFirst == null)
 					tmpFirst = gbm.messages.get(0).getId();
 
 				for (Message message : gbm.messages) {
@@ -578,7 +578,7 @@ public class GmailPoller implements Poller {
 				contact = contact.substring(posStart, posEnd);
 
 				if (!contact.equals(""))
-					involvedContacts.add(contact); 
+					involvedContacts.add(contact);
 			}
 		}
 
@@ -597,7 +597,7 @@ public class GmailPoller implements Poller {
 					contact = contact.substring(posStart, posEnd);
 
 					if (!contact.equals(""))
-						involvedContacts.add(contact); 
+						involvedContacts.add(contact);
 				}
 			}
 
@@ -605,7 +605,7 @@ public class GmailPoller implements Poller {
 			System.out.println("Contact: " + contact);
 		}
 
-		RawData rawData = new RawData("Gmail", userEmail, involvedContacts, msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
+		RawData rawData = new RawData("gmail", userEmail, involvedContacts, msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
 
 		return rawData;
 	}
@@ -641,7 +641,7 @@ public class GmailPoller implements Poller {
 
 		if (extracted.length() != 0 && !body.contains(extracted))
 			body += extracted + "\n";
-	
+
 		body = body.replaceAll("[\\t\\n\\r]"," ");
 		body = body.replaceAll("[\\s]+", " ");
 		return body;

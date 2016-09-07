@@ -1,5 +1,10 @@
 package data;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
+
 /**
 * A user that will be saved in a database plus an attached returnId.
 *
@@ -54,10 +59,9 @@ public class UserIdentified extends User {
 	* @param isRegistered Indicates whether the user is registered already.
 	* @param firstName First name of the user.
 	* @param lastName Last name of the user.
-	* @param gmailId The email address of the user's Gmail account.
 	*/
-	public UserIdentified(String returnId, boolean isRegistered, String firstName, String lastName, String gmailId) {
-		super(firstName, lastName, gmailId);
+	public UserIdentified(String returnId, boolean isRegistered, String firstName, String lastName) {
+		super(firstName, lastName);
 		this.returnId = returnId;
 		this.isRegistered = isRegistered;
 	}
@@ -100,13 +104,18 @@ public class UserIdentified extends User {
 	*/
 	@Override
 	public String toString() {
+		String u = "";
+
+		for (PimId pimId : getPimIds())
+			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+
 		return "UserIdentified {\n" +
 		"\treturnId: " + returnId + ",\n" +
 		"\tisRegistered: " + isRegistered + ",\n" +
 		"\tid: " + getUserId() + ",\n" +
 		"\tfirstName: " + getFirstName()  + ",\n" +
 		"\tlastName: " + getLastName() + ",\n" +
-		"\tgmailId: " + getGmailId() + "\n" +
+		"\tids: {\n" + u + "\n\t}\n" +
 		"\tinitialDepth:" + getInitialDepth() + "\n" +
 		"\tbranchingFactor:" + getBranchingFactor() + "\n" +
 		"\tisActive:" + getIsActive() + "\n" +

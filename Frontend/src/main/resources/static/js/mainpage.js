@@ -50,7 +50,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = false;
+var mocktesting = true;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -296,14 +296,14 @@ $(document).ready(function(){
                 // {id: 8, label: "Arno \n Grobler", group: 0}
             ]
             // parentlist =["0","0","0","2","0","4","6","7","2"];
-            allPimIDlist[1] = [["1","2"],[null]];
-            allPimIDlist[2] = [["3","4"],[null]];
-            allPimIDlist[3] = [["5","6"],[null]];
-            allPimIDlist[4] = [["7","8"],[null]];
-            allPimIDlist[5] = [["7","8"],[null]];
-            allPimIDlist[6] = [["1","2"],[null]];
-            allPimIDlist[7] = [["3","4"],[null]];
-            allPimIDlist[8] = [["5","6"],[null]];
+            allPimIDlist[1] = [["gmail","1","2"],["facebook","9","10"]];
+            allPimIDlist[2] = [["gmail","3","4"],["facebook","9","10"]];
+            allPimIDlist[3] = [["gmail","5","6"],["facebook","10","9"]];
+            allPimIDlist[4] = [["gmail","7","8"],["facebook","10","9"]];
+            allPimIDlist[5] = [["gmail","7","8"],["facebook","10","9"]];
+            allPimIDlist[6] = [["gmail","1","2"],["facebook","10","9"]];
+            allPimIDlist[7] = [["gmail","3","4"],["facebook","10","9"]];
+            allPimIDlist[8] = [["gmail","5","6"],["facebook","10","9"]];
         }else{
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
@@ -548,18 +548,17 @@ $(document).ready(function(){
                 if(JSON.parse(serverResponse.body).items!=null){
                     console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items;
-                    $("#accordion").html(""); 
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
                         $("#backfromsidebar").html(navbarReloadTextCondensed)
                     }
 
-                    $("#facebook").html("");
-                    $("#gmail").html("");
-                    $("#twitter").html("");
-                    $("#linkedIn").html("");
-                    $("#sidepanelTitle").html("");
+                    // $("#facebook").html("");
+                    // $("#gmail").html("");
+                    // $("#twitter").html("");
+                    // $("#linkedIn").html("");
+                    // $("#sidepanelTitle").html("");
                     var selectedID = network.getSelectedNodes();
                     $("#sidepanel").show();
 
@@ -598,7 +597,7 @@ $(document).ready(function(){
                     $("#breadcrumb").html(breadcrumb);
                     console.log(selectedID);
 
-                    populateSidePanel(selectedID, dataForSideBar);
+                    populateSidePanel(items);
 
                     $("#loadingAlert").fadeOut(1000, function() {
                         // body...
@@ -924,12 +923,18 @@ $(document).ready(function(){
     *   @param node - the node that has been selected
     *   @param array - contains the data of the selected node
     */
-    function populateSidePanel(node, array)
+    function populateSidePanel(array)
     {
         // console.log("node is this: "+node)
-        var title = array[0].charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
+        // alert("refreshing now")
+        var t = array[0];
+        console.log(array)
+        var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
         var id = "#"+array[0];
-        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+title+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        // alert(array.size)
+        // alert(array.length)
+        if(array.length >1)
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
         for(var i = 1 ; i < array.length; i++ )
         {
             $(id).append("<div>"+array[i]+"</div>");
@@ -945,6 +950,35 @@ $(document).ready(function(){
         // else
         // {
             
+        // }
+        // }
+
+       
+        // $("#accordion").html("");
+        // if(array.Topic != "Contact")
+        // {
+        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        // if((array.hasOwnProperty('LinkedIn')))
+        // {
+        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
+        //     {
+        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
+        //     }
+        // }
+
+       
+        // $("#accordion").html("");
+        // if(array.Topic != "Contact")
+        // {
+        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        // if((array.hasOwnProperty('LinkedIn')))
+        // {
+        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
+        //     {
+        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
+        //     }
         // }
 
        
@@ -1091,30 +1125,17 @@ $(document).ready(function(){
     network.on("doubleClick", function(){
 
         $("#accordion").html("");
+        $("#facebook").html("");
+        $("#gmail").html("");
+        $("#twitter").html("");
+        $("#linkedIn").html("");
         
-        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         /**
         *   A function that displays the loading bar
         */
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
-        var name1 = "GmailId=";
-        /**
-        *   @var ca1 - Cookie....
-        */
-        var ca1 = document.cookie.split(';');
-        var gmailID ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                gmailID = c.substring(name1.length,c.length);
-            }
-        }
-
         var name1 = "lastselectednode=";
         /**
         *   @var ca1 - Cookie....
@@ -1131,46 +1152,41 @@ $(document).ready(function(){
             }
         }
         var node = network.getSelectedNodes();
+        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         selectedID = node;
         console.log("dbl "+selectedID);
         console.log("dbl "+allPimIDlist);
-        // console.log(allPimIDlist[1]);
-        // console.log(allPimIDlist[1][0]);
 
-        // console.log(allPimIDlist);
-        // console.log(allPimIDlist[2]);
-        // console.log(allPimIDlist[2][0]);
-        // for(var i=1;i<allPimIDlist.length;i++){
-        //     for(var j=0;j<allPimIDlist[i][0].length;j++){
-        //        console.log(allPimIDlist[i][0][j]);
-        //     }
-        // }
         console.log("dbl "+allPimIDlist[selectedID]);
         // console.log(allPimIDlist[selectedID][0]);
         // console.log(allPimIDlist[selectedID][0][1]);
-        var uniqueIds = [];
-            $.each(allPimIDlist[selectedID][0], function(i, el){
-                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
-            });
-            console.log("dbl "+uniqueIds);
-        if(!mocktesting)
-            var gmailItemRequest = {itemIds:uniqueIds,userId:gmailID};
-        else
-            var gmailItemRequest = {itemIds:uniqueIds,userId:"mocktesting"+gmailID};
-        /**
-        *   A function that sends the gmailItemRequest object through the websocket in order to make the request
-        */
-        // setTimeout(function(){
-        console.log("dbl "+gmailItemRequest)
-        try{
-            stompClient.send("/app/gmailItems", {}, JSON.stringify(gmailItemRequest));
-        }catch(err){
-            $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-            });
-            $("#loadingAlertError").fadeIn(1000, function() {
-            });
-            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+        for(var i=0;i<allPimIDlist[selectedID].length;i++){
+            var uniqueIds = [];
+                $.each(allPimIDlist[selectedID][i], function(j, el){
+                    if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
+                });
+                // alert(allPimIDlist[selectedID][i][0]+"Id")
+                var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+                console.log("dbl "+uniqueIds);
+            if(!mocktesting)
+                var itemRequest = {itemIds:uniqueIds,userId:ID};
+            else
+                var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
+            /**
+            *   A function that sends the itemRequest object through the websocket in order to make the request
+            */
+            // setTimeout(function(){
+            console.log("dbl "+itemRequest)
+            try{
+                stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
+            }catch(err){
+                $("#loadingAlert").fadeOut(1000, function() {
+                // body...
+                });
+                $("#loadingAlertError").fadeIn(1000, function() {
+                });
+                $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+            }
         }
     });
 

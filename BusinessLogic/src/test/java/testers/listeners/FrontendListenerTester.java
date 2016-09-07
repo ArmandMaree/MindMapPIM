@@ -82,7 +82,7 @@ public class FrontendListenerTester extends AbstractTester {
 		String id = UUID.randomUUID().toString();
 		String firstName = "Acuben";
 		String lastName = "Cos";
-		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
+		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "gmail", UUID.randomUUID().toString())};
 		UserRegistrationIdentified userRegistrationIdentified = new UserRegistrationIdentified(id, firstName, lastName, authCodes);
 		rabbitTemplate.convertAndSend(TestContext.registerBusinessQueueName, userRegistrationIdentified);
 
@@ -97,7 +97,7 @@ public class FrontendListenerTester extends AbstractTester {
 		//test without gmail changing
 		String id = UUID.randomUUID().toString();
 		String userId = UUID.randomUUID().toString();
-		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "Gmail", UUID.randomUUID().toString())};
+		AuthCode[] authCodes = {new AuthCode("acubencos@gmail.com", "gmail", UUID.randomUUID().toString())};
 		UserUpdateRequestIdentified userUpdateIdentified = new UserUpdateRequestIdentified(id, userId, authCodes);
 		rabbitTemplate.convertAndSend(TestContext.userUpdateBusinessQueueName, userUpdateIdentified);
 

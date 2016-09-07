@@ -52,7 +52,6 @@ public class TopicListener {
 	* @param topicRequest Request for topics dequeued form messaging application.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) {
-		System.out.println("Received: " + topicRequest);
 		List<Topic> topics = new ArrayList<>(); // topics that need to be returned.
 
 		// finds the topics related to the node specified in path
@@ -149,54 +148,61 @@ public class TopicListener {
 		}
 
 		// PIM IDs of each of the topics that will be returned
-		List<String[][]> nodes = new ArrayList<>();
+		List<List<List<String>>> nodes = new ArrayList<>();
+		User user = userRepository.findByUserId(topicRequest.getUserId());
 
 		for (Topic topic : returnTopics) {
-			List<String[]> pims  = new ArrayList<>();
-			List<String> gmailIds  = new ArrayList<>();
+			List<List<String>> nodeIds = new ArrayList<>();
+
+			for (PimId pimId : user.getPimIds()) {
+				List<String> ids = new ArrayList<>();
+				ids.add(pimId.pim);
+				nodeIds.add(ids);
+			}
 
 			for (String processedDataId : topic.getProcessedDataIds()) {
 				ProcessedData pd = processedDataRepository.findById(processedDataId);
 
-				if (pd != null)
-					switch (pd.getPimSource()) {
-						case "Gmail":
-							gmailIds.add(pd.getPimItemId());
-							break;
-						default:
-							break;
+				for (int i = 0; i < nodeIds.size(); i++) {
+					String pSource = nodeIds.get(i).get(0);
+
+					if (pSource.equals(pd.getPimSource())) {
+						nodeIds.get(i).add(pd.getPimItemId());
+						break;
 					}
+				}
 			}
 
-			pims.add(gmailIds.toArray(new String[0]));
-			//facebook stuff here
-			nodes.add(pims.toArray(new String[0][0]));
+			nodes.add(nodeIds);
 		}
 
 		// PIM IDs of each of the contacts that will be returned
 		for (Topic topic : returnContacts) {
-			List<String[]> pims  = new ArrayList<>();
-			List<String> gmailIds  = new ArrayList<>();
+			List<List<String>> nodeIds = new ArrayList<>();
+
+			for (PimId pimId : user.getPimIds()) {
+				List<String> ids = new ArrayList<>();
+				ids.add(pimId.pim);
+				nodeIds.add(ids);
+			}
 
 			for (String processedDataId : topic.getProcessedDataIds()) {
 				ProcessedData pd = processedDataRepository.findById(processedDataId);
 
-				if (pd != null)
-					switch (pd.getPimSource()) {
-						case "Gmail":
-							gmailIds.add(pd.getPimItemId());
-							break;
-						default:
-							break;
+				for (int i = 0; i < nodeIds.size(); i++) {
+					String pSource = nodeIds.get(i).get(0);
+
+					if (pSource.equals(pd.getPimSource())) {
+						nodeIds.get(i).add(pd.getPimItemId());
+						break;
 					}
+				}
 			}
 
-			pims.add(gmailIds.toArray(new String[0]));
-			//facebook stuff here
-			nodes.add(pims.toArray(new String[0][0]));
+			nodes.add(nodeIds);
 		}
 
-		String[][][] nodesArr = nodes.toArray(new String[0][0][0]);
+		String[][][] nodesArr = listToArray3D(nodes);
 		String[] topicsText = new String[returnTopics.size()];
 
 		// gets the text of the topics to be returned
@@ -211,7 +217,23 @@ public class TopicListener {
 			involvedContacts[i] = returnContacts.get(i).getTopic();
 
 		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, involvedContacts, nodesArr); // create topic response without topics objects
-		System.out.println("Respond: " + topicResponse);
+		System.out.println("Respond from topicListener: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
+	}
+
+	private String[][][] listToArray3D(List<List<List<String>>> list) {
+		List<String[][]> tmp3d = new ArrayList<>();
+
+		for (List<List<String>> d2 : list) {
+			List<String[]> tmp2d = new ArrayList<>();
+
+			for (List<String> d1 : d2)
+				tmp2d.add(d1.toArray(new String[0]));
+		
+			tmp3d.add(tmp2d.toArray(new String[0][0]));
+		}
+
+		return tmp3d.toArray(new String[0][0][0]);
+
 	}
 }

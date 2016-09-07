@@ -2,6 +2,7 @@ package repositories;
 
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import data.*;
 
@@ -16,5 +17,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     public User findByUserId(String userId);
     public List<User> findByFirstName(String firstName);
     public List<User> findByLastName(String lastName);
-	public User findByGmailId(String gmailId);
+	
+	@Query("{'$and':[{'pimIds.pim': ?0}, {'pimIds.uId': ?1}]}")
+	public User findByPimId(String pim, String id);
 }

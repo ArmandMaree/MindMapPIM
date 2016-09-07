@@ -65,9 +65,9 @@ public class ItemRequestIdentified extends ItemRequest implements Serializable {
 				i += ",\n\t\t" + id;
 		}
 
-		return "ItemRequest {\n" +
+		return "ItemRequestIdentified {\n" +
 			"\treturnId: " + returnId + ",\n" +
-			"\tuserId: [\n" + getUserId() + "\n" +
+			"\tuserId: " + getUserId() + "\n" +
 			"\titemids: [\n" + i + "\n" +
 			"\t]\n" +
 		"}";

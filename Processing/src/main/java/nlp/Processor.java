@@ -88,7 +88,9 @@ public class Processor implements Runnable {
 
 				pushToQueue(processedData, priority);
 			}
-			catch (Exception ignore) {}
+			catch (Exception ignore) {
+				ignore.printStackTrace();
+			}
 		}
 	}
 
@@ -115,8 +117,12 @@ public class Processor implements Runnable {
 			topics = nlp.purge(topics);
 
 			List<String> people = new ArrayList<>();
-			people.addAll(rawData.getInvolvedContacts());
-			people = nlp.purge(people);
+
+			if (rawData.getInvolvedContacts() != null) {
+				people.addAll(rawData.getInvolvedContacts());
+				people = nlp.purge(people);
+			}
+			
 			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
 			processedData.setInvolvedContacts(people.toArray(new String[0]));
 		}
@@ -132,7 +138,7 @@ public class Processor implements Runnable {
 	* @param priority Indicates whether the processedData should be placed on the priority queue or not.
 	*/
 	public void pushToQueue(ProcessedData processedData, boolean priority) {
-		// System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority);
+		System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority + "  " + processedData);
 		if (priority)
         	rabbitTemplate.convertAndSend("priority-" + processedDataDatabaseQueueName, processedData);
 		else

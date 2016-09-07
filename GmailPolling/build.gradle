@@ -66,3 +66,11 @@ dependencies {
 task wrapper(type: Wrapper) {
 	gradleVersion = "2.3"
 }
+
+javadoc {
+	source configurations.doc.collect { zipTree(it) }
+	include "**/*.java"
+	options.addStringOption("Xdoclint:none", "-quiet")
+	failOnError = false
+	options.addStringOption("author")
+}

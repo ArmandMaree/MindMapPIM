@@ -88,15 +88,17 @@ public class FrontendListener {
 			return;
 
 		for (String itemId : itemRequestIdentified.getItemIds()) {
-			String plainText = "";
-			String htmlText = "";
-			String body = "";
-
+			if (items.size() == 0) {
+				items.add(itemId);
+				continue;
+			}
+			
 			try {
 				MimeMessage email = getMimeMessage(getMessage(itemId, service));
+				String body = "";
 
 				if (email.getContent() instanceof String) {
-					plainText += (String)email.getContent();
+					body += (String)email.getContent();
 				}
 				else if (email.getContent() instanceof MimeMultipart) {
 					MimeMultipart emailMultiPart = (MimeMultipart) email.getContent();
@@ -122,25 +124,15 @@ public class FrontendListener {
 								if (!((String)mimeBodyPart.getContent()).equals("")) {
 									String tmpBody = (String)mimeBodyPart.getContent() + "\n";
 
-									if (!body.contains(tmpBody)) {
+									if (!body.contains(tmpBody))
 										body += tmpBody;
-
-										if (mimeBodyPart.isMimeType("text/plain"))
-											plainText += tmpBody;
-										else
-											htmlText += tmpBody;
-									}
 								}
 							}
 						}
 					}
 				}
 
-				if (!htmlText.equals(""))
-					items.add(htmlText);
-				else
-					items.add(plainText);
-
+				items.add(body);
 			}
 			catch (Exception ignore) {}
 		}
@@ -165,7 +157,7 @@ public class FrontendListener {
 		}
 
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = FrontendListener.class.getResourceAsStream("/client_secret.json");

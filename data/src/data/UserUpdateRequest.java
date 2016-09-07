@@ -1,6 +1,10 @@
 package data;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 /**
 * Contains all the information needed to update a User object that was previously persisted.
@@ -55,11 +59,16 @@ public class UserUpdateRequest extends User implements Serializable {
 	*/
 	@Override
 	public String toString() {
+		String u = "";
+
+		for (PimId pimId : getPimIds())
+			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+
 		return "UserUpdateRequest {\n" +
 			"\tid: " + getUserId() + ",\n" +
 			"\tfirstName: " + getFirstName()  + ",\n" +
 			"\tlastName: " + getLastName() + ",\n" +
-			"\tgmailId: " + getGmailId() + "\n" +
+			"\tids: {\n" + u + "\n\t}\n" +
 			"\tauthCodes size: " + ((authCodes == null) ? "null" : authCodes.length) + "\n" +
 		"}";
 	}
