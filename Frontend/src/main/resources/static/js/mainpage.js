@@ -50,7 +50,7 @@ var flagHasNodesToLoad = false;
 /**
 *   @var {bool} mocktesting - Checks whether to use mock data rather than requesting data for testing data
 */
-var mocktesting = true;
+var mocktesting = false;
 /**
 *   @var {bool} currFramerate - Stores the current framerate.
 */
@@ -937,7 +937,7 @@ $(document).ready(function(){
             $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
         for(var i = 1 ; i < array.length; i++ )
         {
-            $(id).append("<div>"+array[i]+"</div>");
+            $(id).append("<div class='email panel'>"+array[i]+"</div>");
         }
         // if(array[0] == "facebook")
         // {
