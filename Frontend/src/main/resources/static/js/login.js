@@ -429,6 +429,7 @@ function onFacebookLogin()
 	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
 	  // alert(fuid)
 	  // alert(fAT)
+	  // alert(response.authResponse.expiresIn)
 	  console.log(response.authResponse);
 	  showtick();
 	}
@@ -469,6 +470,7 @@ function sendUserObjectForFacebook()
 	//   		console.log("hello: "+JSON.stringify(AuthResponse))
 	// 		// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 	// 		var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
+			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")}));
 			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
 			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
 			// stompClient.subscribe('user/topic/greetings', function(serverResponse){

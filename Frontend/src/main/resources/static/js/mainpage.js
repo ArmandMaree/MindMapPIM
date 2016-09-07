@@ -548,17 +548,16 @@ $(document).ready(function(){
                 if(JSON.parse(serverResponse.body).items!=null){
                     console.log("serverResponse.items: "+JSON.parse(serverResponse.body).items);
                     var items = JSON.parse(serverResponse.body).items;
-                    $("#accordion").html(""); 
                     if($(window).width()<=768){
                         $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                     }else{
                         $("#backfromsidebar").html(navbarReloadTextCondensed)
                     }
 
-                    $("#facebook").html("");
-                    $("#gmail").html("");
-                    $("#twitter").html("");
-                    $("#linkedIn").html("");
+                    // $("#facebook").html("");
+                    // $("#gmail").html("");
+                    // $("#twitter").html("");
+                    // $("#linkedIn").html("");
                     // $("#sidepanelTitle").html("");
                     var selectedID = network.getSelectedNodes();
                     $("#sidepanel").show();
@@ -927,11 +926,15 @@ $(document).ready(function(){
     function populateSidePanel(array)
     {
         // console.log("node is this: "+node)
+        // alert("refreshing now")
         var t = array[0];
         console.log(array)
         var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
         var id = "#"+array[0];
-        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+title+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        // alert(array.size)
+        // alert(array.length)
+        if(array.length >1)
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
         for(var i = 1 ; i < array.length; i++ )
         {
             $(id).append("<div class='email panel'>"+array[i]+"</div>");
@@ -1093,6 +1096,10 @@ $(document).ready(function(){
     network.on("doubleClick", function(){
 
         $("#accordion").html("");
+        $("#facebook").html("");
+        $("#gmail").html("");
+        $("#twitter").html("");
+        $("#linkedIn").html("");
         
         /**
         *   A function that displays the loading bar

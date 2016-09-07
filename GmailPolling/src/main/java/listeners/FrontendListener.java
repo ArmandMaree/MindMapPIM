@@ -157,7 +157,7 @@ public class FrontendListener {
 		}
 
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = FrontendListener.class.getResourceAsStream("/client_secret.json");

@@ -156,7 +156,7 @@ public class GmailPoller implements Poller {
 	*/
 	public Gmail getGmailServiceFromAuthCode() throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
@@ -190,7 +190,7 @@ public class GmailPoller implements Poller {
 	public Gmail getGmailServiceFromRefreshToken() throws IOException {
 		GmailPollingUser pollingUser = gmailRepository.findByUserId(userEmail);
 		String CLIENT_SECRET_FILE = "client_secret.json";
-		String REDIRECT_URI = "https://bubbles.iminsys.com";
+		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
 		InputStream in = GmailPoller.class.getResourceAsStream("/client_secret.json");
