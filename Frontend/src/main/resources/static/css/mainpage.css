@@ -10,8 +10,8 @@ iframe
 {
   border: none;
   overflow: hidden;
-  width : 500px;
-  height: 500px;
+  width : 100%;
+  height: auto;
 }
 .email
 {
@@ -54,7 +54,7 @@ body
     position: fixed !important;
     left: auto !important;
     right: 0px !important;
-    width: 1000px;
+    width: 1500px;
     vertical-align: middle !important;
     color: black !important;
     border: solid;

@@ -77,7 +77,7 @@ var sendUserReg = function(){
 			console.log("User registration object:" +JSON.stringify(userReg));
 	  	}
 	  	// setTimeout(function(){
-			stompClient.subscribe('/topic/greetings', function(serverResponse){
+			stompClient.subscribe('/user/topic/greetings', function(serverResponse){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("Server says: "+jsonresponse.userId);
 				document.cookie="userId="+jsonresponse.userId;
@@ -293,7 +293,7 @@ function loadXMLDoc(){
 		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"Gmail",authCode:null}]};
 
 		document.cookie="gmailId="+gmailUser.w3.U3;
-		stompClient.subscribe('/topic/greetings', function(serverResponse){
+		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
 			var jsonresponse = JSON.parse(serverResponse.body);
 			console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
 			console.log("ServerResponse is : "+jsonresponse.userId);
@@ -473,7 +473,7 @@ function sendUserObjectForFacebook()
 			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")}));
 			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
 			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
-			// stompClient.subscribe('user/topic/greetings', function(serverResponse){
+			// stompClient.subscribe('/useruser/topic/greetings', function(serverResponse){
 			// 	var jsonresponse = JSON.parse(serverResponse.body);
 			// 	console.log("ServerResponse is : "+jsonresponse);
 			// 	console.log("Server asked if user is registered : "+jsonresponse.isRegistered);

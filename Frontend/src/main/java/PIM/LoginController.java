@@ -65,7 +65,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
  
     @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
+    @SendToUser("/topic/greetings")
     public UserIdentified accessTokenSend(UserRegistration message) throws Exception {
 		String id = UUID.randomUUID().toString();
         if(message.getAuthCodes()[0].getAuthCode()!=null){

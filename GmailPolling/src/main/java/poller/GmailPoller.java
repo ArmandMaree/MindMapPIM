@@ -83,7 +83,7 @@ public class GmailPoller implements Poller {
 	private RabbitTemplate rabbitTemplate;
 	private boolean firstPageDone = false;
 	private boolean oldDone = false;
-	private long maxEmails = 50;
+	private long maxEmails = 200;
 	private long currNumEmails = 0;
 
 	static {
@@ -504,7 +504,7 @@ public class GmailPoller implements Poller {
 
 		String senderName = address.substring(0, address.indexOf("@"));
 
-		if ((senderName.contains("no") && senderName.contains("reply")) || senderName.contains("news") || senderName.contains("info"))
+		if ( senderName.contains("news") || senderName.contains("info"))
 			return null;
 
 		String body = "";

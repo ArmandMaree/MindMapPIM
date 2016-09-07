@@ -449,7 +449,8 @@ $(document).ready(function(){
               return false;
             },
             edges: {
-                width: 1
+                width: 1, 
+                length: 150
             }
         };
         network = new vis.Network(container, data, options);
@@ -1253,15 +1254,17 @@ function keepOpen()
 function showBranchValue(newValue)
 {
   // alert("Here");
-  document.getElementById("Branchrange").innerHTML=newValue;
-  initialbranching = newValue;
+    document.getElementById("Branchrange").innerHTML=newValue;
+    initialbranching = newValue;
+    document.cookie = "branch="+initialbranching;
   // keepOpen();
 }
 function showDepthValue(newValue)
 {
   // alert("Here");
-  document.getElementById("Depthrange").innerHTML=newValue;
-  initialdepth = newValue;
+    document.getElementById("Depthrange").innerHTML=newValue;
+    initialdepth = newValue;
+    document.cookie = "depth="+ initialdepth;
   // keepOpen();
 }
 /**
@@ -1277,7 +1280,7 @@ function expandBubble(nextID)
     }catch(err){
         console.log("expand "+err)
     }
-    // $("#loadingAlert").fadeIn(1000, function() {
+    // $("#loadingAlert").fadeIn(1000, function() { 
     //     // body...
     // });
     var pathtoselectednode=[];
@@ -1301,7 +1304,7 @@ function expandBubble(nextID)
     console.log("expand:"+ initialdepth)
     console.log("expand PathFrom: " + (pathtoselectednode.length+1));
     console.log("expand pathtoselectednode.length:"+(pathtoselectednodelabels.length+1));
-    if((pathtoselectednode.length+1)<=2 && !flagHasNodesToLoad){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
         console.log("pooooo "+selectedID);
