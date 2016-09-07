@@ -931,7 +931,10 @@ $(document).ready(function(){
         console.log(array)
         var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
         var id = "#"+array[0];
-        $("#accordion").html('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title">'+title+'</h3></div><div id="collapse2" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+        // alert(array.size)
+        // alert(array.length)
+        if(array.length >1)
+            $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
         for(var i = 1 ; i < array.length; i++ )
         {
             $(id).append("<div>"+array[i]+"</div>");
