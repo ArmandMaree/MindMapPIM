@@ -86,6 +86,8 @@ var sendUserReg = function(){
 				var jsonresponse = JSON.parse(serverResponse.body);
 				console.log("Server says: "+jsonresponse.userId);
 				document.cookie="userId="+jsonresponse.userId;
+				document.cookie="branch="+jsonresponse.branchingFactor;
+				document.cookie="depth="+jsonresponse.initialDepth;
 				$("#loadingAlert").fadeOut(1000, function() {
 					// body...
 				});
