@@ -9,6 +9,7 @@ import org.springframework.social.facebook.api.Post;
 import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.PagingParameters;
 import org.springframework.social.facebook.api.PagedList;
+import org.springframework.social.RevokedAuthorizationException;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -65,6 +66,11 @@ public class FacebookPoller implements Runnable, Poller {
 					oldDone = true;
 
 				Thread.sleep(60 * 1000);
+			}
+			catch (org.springframework.social.RevokedAuthorizationException rae) {
+				System.out.println("Auth revoked: ");
+				rae.printStackTrace();
+				return;
 			}
 			catch (Exception e) {
 				e.printStackTrace();

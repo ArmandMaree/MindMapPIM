@@ -42,13 +42,13 @@ public class ProcessingManager {
 
 			System.out.println("Size of rawDataQueue: " + rawDataQueue.size());
 
-			for (Processor processor : processors)
+			for (Processor processor : processorMap.values())
 				processor.stop();
 
 			for (RawData rawData : rawDataQueue)
 				rabbitTemplate.convertAndSend(rawDataQueueName, rawData);
 
-			for (Thread thread : processorsThreads)
+			for (Thread thread : processorMap.keySet())
 				try {
 					thread.join();
 				}
@@ -81,17 +81,12 @@ public class ProcessingManager {
 	*/
 	private LinkedBlockingQueue<RawData> priorityRawDataQueue = new LinkedBlockingQueue<>();
 
-	/**
-	* A {@link java.util.List} containing all the {@link nlp.Processor} objects that process the {@link data.RawData}.
-	*/
-	private List<Processor> processors = new ArrayList<>();
-
-	/**
-	* A {@link java.util.List} containing all the threads that are running the {@link nlp.Processor} objects.
-	*/
-	private List<Thread> processorsThreads = new ArrayList<>();
-
 	private RabbitTemplate rabbitTemplate;
+
+	/**
+	* A {@link java.util.Map} containing all the {@link nlp.Processor} objects that process the {@link data.RawData} and the threads that are running the {@link nlp.Processor} objects.
+	*/
+	private Map<Thread, Processor> processorMap = new HashMap<>();
 
 	/**
 	* Constructor used by the {@link main.Application} to pass all the required beans.
@@ -104,9 +99,8 @@ public class ProcessingManager {
 
 		for (int i = 0; i < NUM_PROCESSORS; i++) {
 			Processor processor = new Processor(rawDataQueue, priorityRawDataQueue, rabbitTemplate, nlp);
-			processors.add(processor);
 			Thread thread = new Thread(processor);
-			processorsThreads.add(thread);
+			processorMap.put(thread, processor);
 			thread.start();
 		}
 	}
@@ -170,11 +164,18 @@ public class ProcessingManager {
 		}
 	}
 
-	public void checkThreads() {
-		for (Thread thread : processorsThreads)
-			if (!thread.isAlive()) {
-				System.out.println(thread.getName() + " stopped!");
-				thread.start();
-			}	
+	private void checkThreads() {
+		List<Thread> removeList = new ArrayList<>();
+
+		for (Thread thread : processorMap.keySet())
+			if (!thread.isAlive())
+				removeList.add(thread);
+
+		for (Thread thread : removeList) {
+			System.out.println(thread.getName() + " stopped!");
+			Processor processor = processorMap.get(thread);
+			processorMap.remove(thread);
+			processorMap.put(new Thread(processor), processor);		
+		}	
 	}
 }
