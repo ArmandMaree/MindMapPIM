@@ -481,7 +481,7 @@ function checkFacebook()
 		  FB.login(function(response) {
 			if (response.authResponse) {
 			   AuthResponse = response.authResponse;
-			  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"facebook","authCode":AuthResponse.accessToken};
+			  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"facebook","authCode":AuthResponse.accessToken,"expireTime":AuthResponse.expiresIn};
 			  console.log(response.authResponse);
 			
 			  showtick();
