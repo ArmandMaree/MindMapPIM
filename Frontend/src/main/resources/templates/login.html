@@ -34,7 +34,7 @@
           </p>
         </div>
         <br/>
-        <div id="centreText4" style="position:fixed;top:20%">
+        <div id="centreText4" style="position:fixed;top:20%"> 
           <p style="color:white;font-size:3vh;text-align: center;font-family:'Raleway';">
             You simplified.
           </p>
@@ -48,8 +48,8 @@
 
           </p>
         </div>
-        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup()" >Sign me up</button> 
-        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup()" >log me in</button> 
+        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup();loadReg()" >Sign me up</button> 
+        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup();" >Log me in</button> 
             
 
     </div>
@@ -94,6 +94,11 @@
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>
                     <br/>
+                    <div id="errr">
+                       <a onclick="liftdown()">
+                          &lt; Go back to landing page.
+                        </a>
+                    </div>
                     <div id="tos">
                         <p>
                             By signing in, you are agreeing to the <a data-toggle="modal" data-target="#myModal" id="privacy" style="cursor:pointer" onclick="loadPrivacy()">privacy policy</a> and <a data-toggle="modal" data-target="#myModal" id="terms" style="cursor:pointer" onclick="loadTos()">terms of service.</a>

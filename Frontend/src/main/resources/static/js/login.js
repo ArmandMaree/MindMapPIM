@@ -114,6 +114,11 @@ var signinChanged = function (val) {
 		  opacity: '0.0'
 
 	  });
+	  $("#errr").animate({
+		  top: '100px',
+		  opacity: '0.0'
+
+	  });
 	  $("#tos").animate({
 		  top: '100px',
 		  opacity: '0.0'
@@ -152,6 +157,8 @@ var signinChanged = function (val) {
 	  $("#continue").delay(2000).animate({
 		  opacity: '1'
 	  });
+	  console.log(auth2.currentUser.get())
+	  googleUser = auth2.currentUser.get();
 	  document.cookie = "login=1";
   }
 };
@@ -192,19 +199,39 @@ var onSuccess = function(user) {
 var onFailure = function(error) {
 	console.log(error);
 };
+var myVar;
 /**
  * A function for Google that uses the API to retrieve an access token, this will be sent to back end to retrieve user information.
  */
 function googleretrieve(){
+	if(gmailUser==null){
+		$('#googleLogin2').click();
+		// alert("gmailUser2")
 
-  auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
+		auth2.signIn();
+		myVar = setInterval(function(){ checkofflineprompt() }, 500);
+	}else{
+		auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
+	}
+}
 
+function checkofflineprompt() {
+	// console.log(auth2.currentUser.get())
+	gmailUser = auth2.currentUser.get();
+	if(gmailUser.w3.U3!=null){
+		auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
+	  	clearInterval(myVar);
+		
+	}
 }
 /**
  * Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.
  * @param {string} authResult - the result of calling the google api and signing in
  */
   function signInCallback(authResult) {
+  	clearInterval(myVar);
+  	// gmailUser= auth2.currentUser.get()
+  	// console.log(JSON.stringify(auth2));
 	if (authResult['code']) {
 	  console.log(authResult['code']);
 	  $('#tickGoogle').show();
@@ -231,6 +258,17 @@ function loadPrivacy(){
   xmlhttp.open("GET","ajax/PrivacyPolicy.txt");
   xmlhttp.send();
 }
+function loadError(){
+  document.getElementById("modaltitle").innerHTML="Sorry";
+  var xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function(){
+	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+		  }
+    }
+  xmlhttp.open("GET","ajax/error.txt");
+  xmlhttp.send();
+}
 /**
  * A function to ajax the Terms of service document into a modal and display the Terms of service.
  */
@@ -245,10 +283,56 @@ function loadTos(){
   xmlhttp.open("GET","ajax/TermsofService.txt");
   xmlhttp.send();
 }
-/**
- * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
- */
-function loadXMLDoc(){
+function loadReg(){
+	$("#googleLogin").animate({
+	  top: '100px',
+	  opacity: '0.0'
+
+	});
+	$("#facebookLogin").animate({
+	  top: '100px',
+	  opacity: '0.0'
+
+	});
+	$("#tos").animate({
+	  top: '100px',
+	  opacity: '0.0'
+
+	});
+	$("#tos2").animate({
+	  top: '100px',
+	  opacity: '0.0'
+
+	});
+	$("#web").animate({
+	  top: '100px',
+	  opacity: '0.0'
+
+	});
+	$("#errr").hide();
+	$("#tos").hide();
+	$("#tos2").hide();
+	$("#web").hide();
+
+	$("#avatar").delay("slow").animate({
+	  top: '70px',
+	  opacity: '0.3'
+
+	});
+	$("#welcome").show();
+	$("#welcome").delay(1000).animate({
+	  opacity: '1'
+	});
+	$('#avatar').fadeOut(0, function() {
+	  $('#avatar').fadeIn(0);
+	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
+	  $('#avatar').css("background-size","cover");
+	  $('#avatar').css("opacity","1");
+	});
+	$("#continue").show();
+	$("#continue").delay(2000).animate({
+	  opacity: '1'
+	});
 	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {
@@ -279,6 +363,56 @@ function loadXMLDoc(){
 		opacity: '0.0'
 
 	});
+	$("#cssload-pgloading").hide();
+
+	$("#loadingAlert").fadeOut(1000, function() {
+		// body...
+	});
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			document.getElementById("container").innerHTML=xmlhttp.responseText;
+		}
+	}
+	xmlhttp.open("GET","ajax/selectdata.html");
+	xmlhttp.send();
+	var filename;
+}
+/**
+ * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
+ */
+function loadXMLDoc(){
+	$("#cssload-pgloading").show();
+    if($(window).width()<=700)
+    {
+		$('.login-container').animate({
+			width:"110%",
+			height:"100%"
+		});
+    }
+    else
+    {
+		$('.login-container').animate({
+			width:"450px",
+			height:"450px",
+		});
+  	}
+	$("#continue").animate({
+		top: '100px',
+		opacity: '0.0'
+
+	});
+
+	$("#avatar").animate({
+		top: '100px',
+		opacity: '0.0'
+
+	});
+	$("#welcome").animate({
+		top: '100px',
+		opacity: '0.0'
+
+	});
 
 		// $("#loadingAlert").fadeIn(1000, function() {
 		// // body...
@@ -290,7 +424,7 @@ function loadXMLDoc(){
 		    connected = true;
 			
 			// var usercheck={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
-		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"Gmail",authCode:null}]};
+		var userReg={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,authCodes:[{id:gmailUser.w3.U3,pimSource:"gmail",authCode:null}]};
 
 		document.cookie="gmailId="+gmailUser.w3.U3;
 		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
@@ -313,19 +447,22 @@ function loadXMLDoc(){
 				if(jsonresponse.isRegistered){
 					window.location.assign('/');
 				}else{
-					$("#cssload-pgloading").hide();
-					$("#loadingAlert").fadeOut(1000, function() {
-						// body...
-					});
-					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.onreadystatechange=function(){
-						if (xmlhttp.readyState==4 && xmlhttp.status==200){
-							document.getElementById("container").innerHTML=xmlhttp.responseText;
-						}
-					}
-					xmlhttp.open("GET","ajax/selectdata.html");
-					xmlhttp.send();
-					var filename;
+					liftdown();
+					$('#myModal').modal('show') 
+					loadError();
+					// $("#cssload-pgloading").hide();
+					// $("#loadingAlert").fadeOut(1000, function() {
+					// 	// body...
+					// });
+					// var xmlhttp=new XMLHttpRequest();
+					// xmlhttp.onreadystatechange=function(){
+					// 	if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					// 		document.getElementById("container").innerHTML=xmlhttp.responseText;
+					// 	}
+					// }
+					// xmlhttp.open("GET","ajax/selectdata.html");
+					// xmlhttp.send();
+					// var filename;
 					// if (stompClient != null) {
 		   //              stompClient.disconnect();
 		   //          }
@@ -358,16 +495,16 @@ jQuery(document).ready(function($){
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
 	// $.holdReady(true);
-	basket
-	.require({ url: '/js/vis.js' })
-	.then(function () {
-	    // Success
-	    // $.holdReady(false)
-	    console.log("Loaded all required scripts.");
-	}, function (error) {
-	    // There was an error fetching the script
-	    console.log(error);
-	});
+	// basket
+	// .require({ url: '/js/vis.js' })
+	// .then(function () {
+	//     // Success
+	//     // $.holdReady(false)
+	//     console.log("Loaded all required scripts.");
+	// }, function (error) {
+	//     // There was an error fetching the script
+	//     console.log(error);
+	// });
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
@@ -601,6 +738,11 @@ function onSuccessFacebook() {
 	  opacity: '0.3'
 
   });
+   $("#errr").animate({
+	  top: '100px',
+	  opacity: '0.0'
+  });
+
   $("#tos").animate({
 	  top: '100px',
 	  opacity: '0.0'
@@ -609,8 +751,8 @@ function onSuccessFacebook() {
   $("#tos2").animate({
 	top: '100px',
 	opacity: '0.0'
-
   });
+
   $("#welcome").show();
   $("#welcome").delay(1000).animate({
 	  opacity: '1'
