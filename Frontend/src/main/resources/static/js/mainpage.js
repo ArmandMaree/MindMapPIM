@@ -720,7 +720,7 @@ $(document).ready(function(){
                                 parentlist.push(selectedID);
                             }
                             catch (err) {
-                                alert(err);
+                                // alert(err);
                                 $("#loadingAlert").fadeOut(1000, function() {
                                     // body...
                                 });
@@ -737,7 +737,7 @@ $(document).ready(function(){
                                 });
                             }
                             catch (err) {
-                                alert(err);
+                                // alert(err);
                                 $("#loadingAlert").fadeOut(1000, function() {
                                     // body...
                                 });

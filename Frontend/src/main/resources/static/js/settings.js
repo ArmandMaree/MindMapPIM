@@ -322,13 +322,13 @@ function checkDatabase()
 					
 					if(current.pim == "gmail")
 					{
-						alert("gmail");
+						// alert("gmail");
 						$(id).show();
 						$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
 					}
 					if(current.pim == "facebook")
 					{
-						alert("facebook");
+						// alert("facebook");
 						$(id).show();
 						$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
 					}
@@ -428,7 +428,7 @@ function checkGoogle()
 		$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Gmail</span>");
 
 		var gmailEmail =findPim("gmail");
-		alert("Gmail uid: "+ gmailEmail);
+		// alert("Gmail uid: "+ gmailEmail);
 		var gmailAuthCode = {id:gmailEmail,pimSource:"gmail",authCode:""};
 		UpdateSourcesObject.authcodes.push(gmailAuthCode);
 		console.log("GmailAuthCode: " + JSON.stringify(gmailAuthCode));
@@ -460,13 +460,13 @@ function checkGoogle()
 var facebookAuthCode;
 function checkFacebook()
 {
-	alert("Here");
+	// alert("Here");
 	if($("#tickFacebook").is(":visible") == true)
 	{
 		//Unselect it
 		console.log("Facebook is selected!");
 		var userId =findPim("facebook");
-		alert("facebookId: " + userId);
+		// alert("facebookId: " + userId);
 		var facebookAuthCode = {id:AuthResponse.userID,pimSource:"facebook",authCode:null}
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);

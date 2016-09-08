@@ -65,7 +65,7 @@ var sendUserReg = function(){
 	if(getCookie("facebookId") != "")
 	{
 		authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
-		alert("Here");
+		// alert("Here");
 	}
 		// sendUserObjectForFacebook();
 	$("#loadingAlert").fadeIn(1000, function() {
@@ -443,7 +443,7 @@ function loadXMLDoc(){
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
-			alert("PimIds: "+JSON.stringify(jsonresponse.pimIds));
+			// alert("PimIds: "+JSON.stringify(jsonresponse.pimIds));
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 
