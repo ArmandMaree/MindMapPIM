@@ -34,10 +34,12 @@ cache:
 
 script:
   - cd BusinessLogic/
-  - ./gradlew test
+  - ./gradlew test -i
   - cd ../Database/
-  - ./gradlew test
+  - ./gradlew test -i
   - cd ../Frontend/
-  - ./gradlew test
+  - ./gradlew test -i
   - cd ../GmailPolling/
-  - ./gradlew test
+  - ./gradlew test -i
+  - cd ../FacebookPolling/
+  - ./gradlew test -i
