@@ -128,6 +128,7 @@ public class ProcessingManager {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public synchronized void receiveRawData(RawData rawData) {
+		checkThreads();
 		System.out.println("Received RawData for user: " + rawData.getUserId());
 		try {
 			if (rawDataQueue.size() >= 50) {
@@ -137,7 +138,11 @@ public class ProcessingManager {
 
 			rawDataQueue.put(rawData);
 		}
-		catch (InterruptedException ignore) {}
+		catch (InterruptedException ignore) {
+			System.out.println("Thread crashedCaught in rawdata");
+			ignore.printStackTrace();
+
+		}
 	}
 
 	/**
@@ -149,6 +154,7 @@ public class ProcessingManager {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public synchronized void receivePriorityRawData(RawData rawData) {
+		checkThreads();
 		System.out.println("Received priorityRawData for user: " + rawData.getUserId());
 		try {
 			if (priorityRawDataQueue.size() >= 50) {
@@ -158,6 +164,17 @@ public class ProcessingManager {
 
 			priorityRawDataQueue.put(rawData);
 		}
-		catch (InterruptedException ignore) {}
+		catch (InterruptedException ignore) {
+			System.out.println("Thread Caught in priority");
+			ignore.printStackTrace();
+		}
+	}
+
+	public void checkThreads() {
+		for (Thread thread : processorsThreads)
+			if (!thread.isAlive()) {
+				System.out.println(thread.getName() + " stopped!");
+				thread.start();
+			}	
 	}
 }

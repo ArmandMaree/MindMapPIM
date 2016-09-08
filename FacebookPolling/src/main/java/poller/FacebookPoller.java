@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
+import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.PagingParameters;
 import org.springframework.social.facebook.api.PagedList;
 
@@ -129,9 +130,24 @@ public class FacebookPoller implements Runnable, Poller {
 			postId = post.getId() + ":" + post.getFrom().getId();
 		}
 
+		PagedList<Comment> comments = service.commentOperations().getComments(post.getId(), new PagingParameters(null, null, null, null));
 
-		RawData rawData = new RawData("facebook", userId, null, postId, text.toArray(new String[0]), post.getCreatedTime().getTime());
-		rawData.setInvolvedContacts(contacts);
+		while (comments != null) {
+			for (Comment comment : comments) {
+				text.add(comment.getMessage());
+
+				if (!comment.getFrom().getId().equals(userId))
+					contacts.add(comment.getFrom().getName());
+			}
+
+			if (comments.getNextPage() == null)
+				comments = null;
+			else
+				comments = service.commentOperations().getComments(post.getId(), comments.getNextPage());
+		}
+
+		RawData rawData = new RawData("facebook", userId, contacts, postId, text.toArray(new String[0]), post.getCreatedTime().getTime());
+		// rawData.setInvolvedContacts(contacts);
 		return rawData;
 	}
 

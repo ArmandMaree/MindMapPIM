@@ -79,7 +79,7 @@ public class ProcessedDataListener {
 					}
 
 					ProcessedData processedData = pendingTopic.getProcessedData();
-					System.out.println("Persisting: " + pendingTopic);
+					System.out.println("Persisting: " + pendingTopic.getTopic());
 					Topic topicInRepo = topicRepository.findByTopicAndUserId(pendingTopic.getTopic(), processedData.getUserId());
 
 					if (topicInRepo == null) { // topic not in db yet

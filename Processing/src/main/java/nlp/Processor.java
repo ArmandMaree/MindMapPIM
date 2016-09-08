@@ -81,7 +81,7 @@ public class Processor implements Runnable {
 				if (rawData == null)
 					continue;
 
-				System.out.println("Processing: " + rawData);
+				System.out.println("Processing: some rawData in thread " + Thread.currentThread().getName());
 
 				ProcessedData processedData = process(rawData);
 
@@ -91,9 +91,12 @@ public class Processor implements Runnable {
 				pushToQueue(processedData, priority);
 			}
 			catch (Exception ignore) {
+				System.out.println(Thread.currentThread().getName() + " Caught in run");
 				ignore.printStackTrace();
 			}
 		}
+
+		System.out.println(Thread.currentThread().getName() + " i was told to stop: " + stop);
 	}
 
 	/**
@@ -140,7 +143,7 @@ public class Processor implements Runnable {
 	* @param priority Indicates whether the processedData should be placed on the priority queue or not.
 	*/
 	public void pushToQueue(ProcessedData processedData, boolean priority) {
-		System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority + "  " + processedData);
+		System.out.println("Sending processedData for user: " + processedData.getUserId() + " priority: " + priority);
 		if (priority)
         	rabbitTemplate.convertAndSend("priority-" + processedDataDatabaseQueueName, processedData);
 		else
