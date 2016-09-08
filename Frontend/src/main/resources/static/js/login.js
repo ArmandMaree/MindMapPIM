@@ -50,7 +50,7 @@ var initSigninV2 = function() {
  * @param {function} successFunc - attach a callback function if request succeded
  * @param {function} failFunc - attach a callback function if request fails
  */
-  auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
+  auth2.attachClickHandler('googleLogin2', {}, onSuccess, onFailure)
   auth2.isSignedIn.listen(signinChanged);
   if (auth2.isSignedIn.get() == true) {
 	auth2.signIn();
@@ -778,7 +778,15 @@ function onSuccessFacebook() {
   });
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////End of Facebook Code
+var divClone
 function liftup(){
+ 	divClone = $(".container").clone();
+ 	 $("#centreText4").slideUp( "medium", function() {
+  	});
+ 	  $("#ptext").slideUp( "medium", function() {
+  	});
+ 	  $("#ptext2").slideUp( "medium", function() {
+  	});
 	$( "#landingside" ).slideUp( "slow", function() {
 	});
 	$( "#landingpage" ).slideUp( "slow", function() {
@@ -786,9 +794,21 @@ function liftup(){
  	});
 }
 function liftdown(){
+	$("#centreText4").slideDown( "slow", function() {
+  	});
+ 	  $("#ptext").slideDown( "slow", function() {
+  	});
+ 	  $("#ptext2").slideDown( "slow", function() {
+  	});
 	$( "#landingside" ).slideDown( "slow", function() {
 	});
 	$( "#landingpage" ).slideDown( "slow", function() {
     // Animation complete.
+	  	gapi.auth2.getAuthInstance().signOut();
+		$(".container").replaceWith(divClone);
  	});
+}
+
+function clickGoogleButton(){
+	$('#googleLogin2').click()
 }

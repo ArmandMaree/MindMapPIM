@@ -35,13 +35,13 @@
         </div>
         <br/>
         <div id="centreText4" style="position:fixed;top:20%"> 
-          <p style="color:white;font-size:3vh;text-align: center;font-family:'Raleway';">
+          <p id="ptext2" style="color:white;font-size:3vh;text-align: center;font-family:'Raleway';">
             You simplified.
           </p>
         </div>
         <br/>
         <div id="centreText4" style="position:fixed;top:30%">
-          <p style="color:white;font-size:2vh;text-align: center;font-family:'Raleway';">
+          <p id="ptext" style="color:white;font-size:2vh;text-align: center;font-family:'Raleway';">
             Our world of today revolves around the use of apps. Daily new apps are released with the common objective of simplifying our lives.
             There’s a saying that goes, rather less than more.
             That said, are all these numerous apps really simplifying our lives or are they actually complicating it? <br/><br/>So what is our objective you ask? The answer is simple – we are creating an app that will simplify your life
@@ -88,17 +88,12 @@
                     <a class="btn btn-social-icon btn-lg  btn-facebook" id="facebookLogin"  onclick="onFacebookLogin()">
                         <span class="fa fa-facebook"></span>
                     </a>
-                    <a class="btn btn-social-icon btn-lg  btn-google" id="googleLogin">
+                    <a class="btn btn-social-icon btn-lg  btn-google" id="googleLogin" onclick="clickGoogleButton()">
                         <span class="fa fa-google"></span>
                     </a>
                     <button id="continue" type="button" class="button btn btn-info btn-block login" onclick="loadXMLDoc()" Style="position:relative;opacity:0">Continue</button> 
                     <br/>
                     <br/>
-                    <div id="errr">
-                       <a onclick="liftdown()">
-                          &lt; Go back to landing page.
-                        </a>
-                    </div>
                     <div id="tos">
                         <p>
                             By signing in, you are agreeing to the <a data-toggle="modal" data-target="#myModal" id="privacy" style="cursor:pointer" onclick="loadPrivacy()">privacy policy</a> and <a data-toggle="modal" data-target="#myModal" id="terms" style="cursor:pointer" onclick="loadTos()">terms of service.</a>
@@ -113,7 +108,10 @@
             </div>   
     </div>
     </div>
-    
+    <button id="skip" type="button" class="btn btn-warning" onclick="liftdown();" style="bottom: 0; left: 0; position: fixed; margin: 25px;position:fixed"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Back </button>
+    <a class="btn btn-social-icon btn-lg  btn-google" id="googleLogin2">
+        <span class="fa fa-google"></span>
+    </a>
     <!-- Modal -->
     <div id="myModal" class="modal fade" role="dialog">
       <div class="modal-dialog">

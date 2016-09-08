@@ -88,7 +88,18 @@ pre {
     transition:0.2s ease-in-out;
 
 }
-
+#centreText4{
+    position: fixed;
+      top:50px;
+  }
+#centreText5{
+    position: fixed;
+      top:50px;
+  }
+#centreText6{
+    position: fixed;
+      top:50px;
+  }
 .form-box input:focus{
     outline: 0;
     background: #eee;
