@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#0f4d71"></meta>
     <title>Register</title>
     <link rel="stylesheet" href="/css/login.css"/>
+    <link rel="stylesheet" href="/css/landingpage.css"/>
     <script src="/js/jquery-2.1.0.min.js"></script>
     <link href="/bootstrap/css/bootstrap-social.css" rel="stylesheet" id="bootstrap-css"></link>
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
@@ -17,13 +18,41 @@
     <script src="/js/stomp.min.js"></script>
     <script src="/js/basket.full.min.js" type="text/javascript" ></script>
     <script src="/js/login.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway" rel="stylesheet"></link>
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"></link>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon"></link>
 </head>
 
 <body onload="startApp()">
-   
+    <div id="landingpage">
+        <img id="sidedemo" src="/images/expand.gif" alt="Expanding"></img>
+    </div>
+    <div id="landingside">
+        <div id="centreText4" style="position:fixed;">
+          <p style="color:white;font-size:6vh;text-align: center;font-family:'Pacifico';">
+            unclutter
+          </p>
+        </div>
+        <br/>
+        <div id="centreText4" style="position:fixed;top:20%">
+          <p style="color:white;font-size:3vh;text-align: center;font-family:'Raleway';">
+            You simplified.
+          </p>
+        </div>
+        <br/>
+        <div id="centreText4" style="position:fixed;top:30%">
+          <p style="color:white;font-size:2vh;text-align: center;font-family:'Raleway';">
+            Our world of today revolves around the use of apps. Daily new apps are released with the common objective of simplifying our lives.
+            There’s a saying that goes, rather less than more.
+            That said, are all these numerous apps really simplifying our lives or are they actually complicating it? <br/><br/>So what is our objective you ask? The answer is simple – we are creating an app that will simplify your life
+
+          </p>
+        </div>
+        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup()" >Sign me up</button> 
+        <button id="sigin" type="button" class="button btn btn-warning btn-block" onclick="liftup()" >log me in</button> 
+            
+
+    </div>
    <!--  <a href="#" onclick="signOut();">Sign out</a>
     <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true" id="facebookLogout" onlogin="onFacebookLogin"></div> -->
     <div class="container">

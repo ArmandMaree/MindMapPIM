@@ -629,3 +629,17 @@ function onSuccessFacebook() {
   });
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////End of Facebook Code
+function liftup(){
+	$( "#landingside" ).slideUp( "slow", function() {
+	});
+	$( "#landingpage" ).slideUp( "slow", function() {
+    // Animation complete.
+ 	});
+}
+function liftdown(){
+	$( "#landingside" ).slideDown( "slow", function() {
+	});
+	$( "#landingpage" ).slideDown( "slow", function() {
+    // Animation complete.
+ 	});
+}
