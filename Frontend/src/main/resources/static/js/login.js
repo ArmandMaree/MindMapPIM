@@ -432,9 +432,13 @@ function loadXMLDoc(){
 		    connected = true;
 			
 			// var usercheck={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
-		var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:gmailUser.w3.U3,pimSource:"gmail",authCode:null}]};
-
-		document.cookie="gmailId="+gmailUser.w3.U3;
+		if(gmailUser !=null){
+			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:gmailUser.w3.U3,pimSource:"gmail",authCode:null}]};
+			document.cookie="gmailId="+gmailUser.w3.U3;
+		
+		}else{
+			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:getCookie("facebookId"),pimSource:"facebook",authCode:null}]};
+		}
 		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
 			var jsonresponse = JSON.parse(serverResponse.body);
 			console.log("ServerResponse is : "+JSON.stringify(jsonresponse));
