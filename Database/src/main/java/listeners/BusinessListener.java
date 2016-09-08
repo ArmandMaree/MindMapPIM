@@ -44,6 +44,7 @@ public class BusinessListener {
 	* @param user Contains all the details of the user.
 	*/
 	public void receiveUserRegister(UserIdentified user) {
+		System.out.println("Receive in register: " + user);
 		boolean userAlreadyRegistered = true;
 		User userReturn = null;
 
@@ -77,8 +78,8 @@ public class BusinessListener {
 	}
 
 	public void receiveCheckIfRegistered(UserIdentified user) {
+		System.out.println("Receive in check: " + user);
 		User userReturn = null;
-		System.out.println("Checking: " + user);
 
 		for (PimId pimId : user.getPimIds()) {
 			userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
@@ -97,6 +98,7 @@ public class BusinessListener {
 	}
 
 	public void receiveUserUpdate(UserIdentified userIdentified) {
+		System.out.println("Receive in update: " + userIdentified);
 		User userInRepo = userRepository.findByUserId(userIdentified.getUserId());
 		UserUpdateResponseIdentified userUpdateResponseIdentified = new UserUpdateResponseIdentified(userIdentified.getReturnId());
 

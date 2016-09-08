@@ -128,6 +128,7 @@ public class ProcessingManager {
 	* @param rawData The rawData object that needs processing.
 	*/
 	public synchronized void receiveRawData(RawData rawData) {
+		System.out.println("Received RawData for user: " + rawData.getUserId());
 		try {
 			if (rawDataQueue.size() >= 50) {
 				rabbitTemplate.convertAndSend("raw-data.processing.rabbit");

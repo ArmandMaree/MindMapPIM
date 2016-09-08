@@ -79,7 +79,7 @@ public class ProcessedDataListener {
 					}
 
 					ProcessedData processedData = pendingTopic.getProcessedData();
-					// System.out.println("Persisting: " + pendingTopic);
+					System.out.println("Persisting: " + pendingTopic);
 					Topic topicInRepo = topicRepository.findByTopicAndUserId(pendingTopic.getTopic(), processedData.getUserId());
 
 					if (topicInRepo == null) { // topic not in db yet
@@ -117,7 +117,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
-		// System.out.println("Received processedData for user: " + processedData.getUserId());
+		System.out.println("Received processedData for user: " + processedData.getUserId());
 		List<PendingTopic> pt = processProcessedData(processedData);
 
 		for (PendingTopic pendingTopic : pt)
@@ -129,7 +129,7 @@ public class ProcessedDataListener {
 	* @param processedData The object that needs to be persisted.
 	*/
 	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
-		// System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
+		System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
 		List<PendingTopic> pt = processProcessedData(processedData);
 
 		for (PendingTopic pendingTopic : pt)

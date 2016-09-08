@@ -27,6 +27,7 @@ public class BusinessListener {
 	* @param authCode The AuthCode that contains all the information needed to start the poller.
 	*/
 	public void receiveAuthCode(AuthCode authCode) {
+		System.out.println("Received: " + authCode);
 		GmailPollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
 
 		if (pollingUser == null) {

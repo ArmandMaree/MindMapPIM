@@ -81,6 +81,8 @@ public class Processor implements Runnable {
 				if (rawData == null)
 					continue;
 
+				System.out.println("Processing: " + rawData);
+
 				ProcessedData processedData = process(rawData);
 
 				if (processedData == null)
