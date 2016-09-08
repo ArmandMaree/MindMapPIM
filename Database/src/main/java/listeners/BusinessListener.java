@@ -78,6 +78,7 @@ public class BusinessListener {
 
 	public void receiveCheckIfRegistered(UserIdentified user) {
 		User userReturn = null;
+		System.out.println("Checking: " + user);
 
 		for (PimId pimId : user.getPimIds()) {
 			userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
