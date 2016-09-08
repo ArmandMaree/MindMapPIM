@@ -50,7 +50,7 @@ var initSigninV2 = function() {
  * @param {function} successFunc - attach a callback function if request succeded
  * @param {function} failFunc - attach a callback function if request fails
  */
-  auth2.attachClickHandler('googleLogin2', {}, onSuccess, onFailure)
+  auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
   auth2.isSignedIn.listen(signinChanged);
   if (auth2.isSignedIn.get() == true) {
 	auth2.signIn();
@@ -804,11 +804,7 @@ function liftdown(){
 	});
 	$( "#landingpage" ).slideDown( "slow", function() {
     // Animation complete.
-	  	gapi.auth2.getAuthInstance().signOut();
-		$(".container").replaceWith(divClone);
+    window.location.assign("/login")
  	});
 }
 
-function clickGoogleButton(){
-	$('#googleLogin2').click()
-}
