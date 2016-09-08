@@ -34,6 +34,8 @@ $( window ).resize(function() {
 });
 $(document).ready(function(){
 	// alert("Here Tonight!");
+	// $("#tickFacebook").hide();
+	// $("#tickGmail").hide();
 	var navcolour = getCookie("nav");
 	$("#nav").css("backgroundColor",navcolour);
 	 document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -85,7 +87,7 @@ $(document).ready(function(){
         $("#logout").html("");
         $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
-	checkDatabase();
+	// checkDatabase();
 	
 	/**
 	*	This function updates the css settings selected tab and hides/shows the respective div
@@ -283,11 +285,10 @@ $("#deactivateAccount").on("click", function(){
 
 }); //End of on load
 
-// window.onload = function()
-// {
-// 	$("#Loading").fadeIn(1000, function() {
-// 	});
-// }
+window.onload = function()
+{
+	checkDatabase();
+}
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -308,58 +309,35 @@ function checkDatabase()
 		$("#Loading").fadeIn(3000,function(){
 
 		});
-		var socket = new SockJS('/usercheck');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
-			
-			var name= getCookie("name");
-			var surname = getCookie("surname");
-			var email = getCookie("email");
-			console.log("Got cookie: "+ name,surname,email);
-			var usercheck={firstName:name,lastName:surname,gmailId:email};
-			
-			stompClient.subscribe('/user/topic/request', function(serverResponse){
-				console.log("subscribing")
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("ServerResponse is : "+ jsonresponse);
-				console.log("BOOOOOOOOOOOOO: "+jsonresponse.isRegistered);
-		
-				if(jsonresponse.gmailId != null || jsonresponse.gmailId !="")
+		var pimIds = JSON.parse(getCookie("pimIds"));
+		// alert("settings pimIds: " +pimIds);
+
+		// alert("Pimids size: "+ pimIds.length);
+				for(var i = 0 ; i < pimIds.length; i++)
 				{
-					console.log("Ticked google");
-					$("#tickGoogle").show();
+					var current = pimIds[i];
+					// alert("Current: "+ JSON.stringify(current));
+					var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();
+					// console.log("Id :"+(id));
+					
+					if(current.pim == "gmail")
+					{
+						alert("gmail");
+						$(id).show();
+						$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
+					}
+					if(current.pim == "facebook")
+					{
+						alert("facebook");
+						$(id).show();
+						$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
+					}
+					
+				} 
 
-					// console.log("Google button: "+$("#googlesigninButton").html());
-					$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
-
-				}
-				else
-				{
-					console.log("Else blockk");
-					//startApp();
-				}
-				//DONT DELETE!!!!!!!!!!!!!!
-
-				// if(jsonresponse.facebookId != null || jsonresponse.facebookId !="")
-				// {
-				// 	$("#tickFacebook").show();
-				// }
-				// else
-				// {
-				// 	console.log("Jsonresponse error");
-				// }
 				$("#Loading").fadeOut(1000,function(){
 
 				});
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
-			stompClient.send("/app/usercheck", {}, JSON.stringify(usercheck));
-			
-		});
 		
 }
 
@@ -430,19 +408,27 @@ var refreshValues = function() {
   return auth2.isSignedIn.get();
   }
 }
+var pimIds = getCookie("pimIds");
+function findPim(name)
+{
+	for(var i = 0; i < pimIds.length;i++)
+	{
+		if(pimIds[i].pim == name)
+			return pimIds[i].uId;
+	} 
+}
 function checkGoogle()
 {
 	startApp();
-	if($("#tickGoogle").is(":visible") == true)
+	if($("#tickGmail").is(":visible") == true)
 	{
 		console.log("Google is selected!");
 		//Unselect it
-		$("#tickGoogle").hide();
+		$("#tickGmail").hide();
 		$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Gmail</span>");
 
-		//startApp();
-		//gapi.auth2.getAuthInstance().signOut();
-		var gmailEmail = getCookie("email");
+		var gmailEmail =findPim("gmail");
+		alert("Gmail uid: "+ gmailEmail);
 		var gmailAuthCode = {id:gmailEmail,pimSource:"gmail",authCode:""};
 		UpdateSourcesObject.authcodes.push(gmailAuthCode);
 		console.log("GmailAuthCode: " + JSON.stringify(gmailAuthCode));
@@ -456,29 +442,12 @@ function checkGoogle()
 			console.log("Timeout");
 		},5000);
 		console.log("Gmail is now selected!");
-
-		//gapi.auth2.getAuthInstance().signOut();
-		// googleretrieve();
-		// getGmailResponse(gmailUser,authCodes[2]);
-		// function getGmailResponse(gmailUser,response) //Response is authResult['code']
-		// {
-			
-			
 			$("#Loading").fadeIn(1000, function() { 
 			});
-				// while(refreshValues() == false)
-				// {
-				// 	console.log("While");
-				// }
-				setTimeout(function(){
-					//refreshValues();
 
-					// if(gmailUser != null)
-					// 	var gmailAuthCode = {id:gmailUser.wc.hg,pimSource:"gmail",authCode:gmailUser.hg.access_token};
-					// console.log(gmailAuthCode);
-					// UpdateSourcesObject.authcodes.push(gmailAuthCode);
+				setTimeout(function(){
 			 		$("#Loading").fadeOut(1000, function(){}); 	
-			 		$("#tickGoogle").show();
+			 		$("#tickGmail").show();
 			 		$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
 					
 				},5000);
@@ -491,11 +460,13 @@ function checkGoogle()
 var facebookAuthCode;
 function checkFacebook()
 {
+	alert("Here");
 	if($("#tickFacebook").is(":visible") == true)
 	{
 		//Unselect it
 		console.log("Facebook is selected!");
-		var userId = getCookie("userIdFaceebook");
+		var userId =findPim("facebook");
+		alert("facebookId: " + userId);
 		var facebookAuthCode = {id:AuthResponse.userID,pimSource:"facebook",authCode:null}
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);

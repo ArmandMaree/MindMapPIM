@@ -16,6 +16,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.*;
 import data.*; 
+import java.util.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Controller;
@@ -81,7 +82,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return user;
         }else{
             System.out.println(message);
+            List<PimId> pimIds = new ArrayList<>();
+            for(int i = 0 ; i < message.getAuthCodes().length; i++)
+            {
+                pimIds.add(new PimId(message.getAuthCodes()[i].getPimSource(),message.getAuthCodes()[i].getId()));
+            }
             UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName());
+            userIdentified.setPimIds(pimIds);
             rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
             while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
                 Thread.sleep(1000);

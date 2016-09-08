@@ -62,7 +62,12 @@ var initSigninV2 = function() {
  * Function to send a User Registration Object through to the frontend application
  */
 var sendUserReg = function(){
-	sendUserObjectForFacebook();
+	if(getCookie("facebookId") != "")
+	{
+		authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
+		alert("Here");
+	}
+		// sendUserObjectForFacebook();
 	$("#loadingAlert").fadeIn(1000, function() {
 		// body...
 	});
@@ -234,7 +239,7 @@ function checkofflineprompt() {
   	// console.log(JSON.stringify(auth2));
 	if (authResult['code']) {
 	  console.log(authResult['code']);
-	  $('#tickGoogle').show();
+	  $('#tickGmail').show();
 	  $('#nextButton').show();
 	  var gmailAuthCode = {id:gmailUser.w3.U3,pimSource:"gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
@@ -437,6 +442,8 @@ function loadXMLDoc(){
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
+			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
+			alert("PimIds: "+JSON.stringify(jsonresponse.pimIds));
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 

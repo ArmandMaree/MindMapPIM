@@ -940,47 +940,7 @@ $(document).ready(function(){
         {
             $(id).append("<div class='email panel'>"+array[i]+"</div>");
         }
-        // if(array[0] == "facebook")
-        // {
-        //     // https://www.facebook.com/userId/posts/postid
-        //     for(var i = 1 ; i < array.length; i++ )
-        //     {
-        //         $(id).append("<div class='fb-post'  data-width='500'data-href='https://www.facebook.com/"+getCookie("facebookId")+"/posts/"+array[i]+"'></div>");
-        //     }
-        // }
-        // else
-        // {
-            
-        // }
-        // }
-
-       
-        // $("#accordion").html("");
-        // if(array.Topic != "Contact")
-        // {
-        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
-        // if((array.hasOwnProperty('LinkedIn')))
-        // {
-        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
-        //     {
-        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
-        //     }
-        // }
-
-       
-        // $("#accordion").html("");
-        // if(array.Topic != "Contact")
-        // {
-        //     $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
-        // if((array.hasOwnProperty('LinkedIn')))
-        // {
-        //     $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse5" class="panel-title">LinkedIn</h3></div><div id="collapse5" class="panel-collapse collapse"><div id="linkedIn" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-        //     for(var i = 0 ; i < array.LinkedIn.length; i++ )
-        //     {
-        //         $("#linkedIn").html("<div>"+array[i].data+"</div>");
-        //     }
-        // }
+      
 
        
         // $("#accordion").html("");
