@@ -132,7 +132,7 @@ public class ProcessingManager {
 
 			rawDataQueue.put(rawData);
 		}
-		catch (InterruptedException ignore) {
+		catch (Throwable ignore) {
 			System.out.println("Thread crashedCaught in rawdata");
 			ignore.printStackTrace();
 
@@ -158,7 +158,7 @@ public class ProcessingManager {
 
 			priorityRawDataQueue.put(rawData);
 		}
-		catch (InterruptedException ignore) {
+		catch (Throwable ignore) {
 			System.out.println("Thread Caught in priority");
 			ignore.printStackTrace();
 		}

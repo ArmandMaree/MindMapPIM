@@ -68,7 +68,7 @@ public class Processor implements Runnable {
 	* </p>
 	*/
 	public void run() {
-		while (!stop) {
+		while (true) {
 			try {
 				boolean priority = false;
 				RawData rawData = priorityRawDataQueue.poll();
@@ -78,25 +78,27 @@ public class Processor implements Runnable {
 				else
 					priority = true;
 
-				if (rawData == null)
+				if (rawData == null) {
+					Thread.sleep(10);
 					continue;
+				}
 
 				System.out.println("Processing: some rawData in thread " + Thread.currentThread().getName());
 
 				ProcessedData processedData = process(rawData);
 
 				if (processedData == null)
-					return;
+					continue;
 
 				pushToQueue(processedData, priority);
 			}
-			catch (Exception ignore) {
+			catch (Throwable ignore) {
 				System.out.println(Thread.currentThread().getName() + " Caught in run");
 				ignore.printStackTrace();
 			}
 		}
 
-		System.out.println(Thread.currentThread().getName() + " i was told to stop: " + stop);
+		// System.out.println(Thread.currentThread().getName() + " i was told to stop: " + stop);
 	}
 
 	/**
