@@ -450,7 +450,7 @@ function checkGoogle()
 			 		$("#tickGmail").show();
 			 		$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
 					
-				},5000);
+				},2000);
 			// },5000);
 		// }
 
@@ -499,7 +499,7 @@ function checkFacebook()
 		console.log("Facebook Auth code: "+JSON.stringify(facebookAuthCode));
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);
 			
-		},5000);
+		},2000);
 		
 	}
 	

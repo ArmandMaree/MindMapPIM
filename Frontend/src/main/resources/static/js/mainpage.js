@@ -211,10 +211,10 @@ $(document).ready(function(){
         $("#mynetwork").css("backgroundColor", map+" !important");
     if(sidepanel!= "")
     {
-        $("#sidepanel").css("backgroundColor",sidepanel);
-        $("#sidepanelTitle").css("backgroundColor",nav);
-        $(".panel-group").css("backgroundColor",nav);
-         $(".breadcrumb").css("backgroundColor",nav);
+        // $("#sidepanel").css("backgroundColor",sidepanel);
+        $("#sidepanelTitle").css("backgroundColor",sidepanel);
+        $(".panel-group").css("backgroundColor",sidepanel);
+         $(".breadcrumb").css("backgroundColor",sidepanel);
      }
         // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
 
