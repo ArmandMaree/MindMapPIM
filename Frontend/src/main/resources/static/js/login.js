@@ -88,6 +88,13 @@ var sendUserReg = function(){
 				document.cookie="userId="+jsonresponse.userId;
 				document.cookie="branch="+jsonresponse.branchingFactor;
 				document.cookie="depth="+jsonresponse.initialDepth;
+				console.log("PIMIDS: " + JSON.stringify(jsonresponse.pimIds));
+
+				for (var i = 0; i < jsonresponse.pimIds.length; i++) {
+					document.cookie=jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId;
+					console.log("Added PIM: " + jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId); 
+				}
+
 				$("#loadingAlert").fadeOut(1000, function() {
 					// body...
 				});
@@ -584,7 +591,7 @@ function onFacebookLogin()
 	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
 	  // alert(fuid)
 	  // alert(fAT)
-	  // alert(response.authResponse.expiresIn)
+	  alert("response userID: " + response.authResponse.response.authResponse.userID)
 	  console.log(response.authResponse);
 	  showtick();
 	}
