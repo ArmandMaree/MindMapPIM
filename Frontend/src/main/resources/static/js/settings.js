@@ -215,6 +215,7 @@ $("#saveTheme").on("click",
 			// $("#sidepanelTitle").css("backgroundColor",themeObject.theme[2]);
 
 			//Set Cookie
+			
 			document.cookie ="nav="+themeObject.theme[0];
 			document.cookie ="map="+themeObject.theme[1];
 			document.cookie ="sidepanel="+themeObject.theme[2];

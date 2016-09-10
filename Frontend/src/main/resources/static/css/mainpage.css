@@ -80,7 +80,7 @@ body
 }*/
 #sidepanelTitle{
     padding:5px;
-    background-color:  rgba(15,77,113,0.8); 
+    background-color:  rgb(15,77,113); 
     color:white;
     margin-top: 3%;
     text-align: center;
@@ -91,9 +91,13 @@ body
 }
 .panel-default{
     color: white !important;
-    background-color: rgba(15, 77, 113, 0.4) ; 
+    /*background-color: rgb(15, 77, 113) ; */
     font-size: 12pt;/*
     cursor: auto !important;*/
+}
+.panel-group
+{
+  /*background-color: rgb(15, 77, 113); */
 }
 .panel-body
 {
@@ -102,7 +106,7 @@ body
 }
 .panel-heading {
     color: white !important;
-    background-color: rgba(15, 77, 113, 0.4) !important; 
+    /*background-color: rgb(15, 77, 113) ; */
     font-size: 18pt;
     cursor: pointer !important;
     text-align: center;
@@ -116,7 +120,7 @@ h2{
 }
 .breadcrumb{
     color: white !important;
-    background-color: rgba(15, 77, 113, 0.8); 
+    background-color: rgb(15, 77, 113); 
 }
 .breadcrumb > li{
     color: white !important;

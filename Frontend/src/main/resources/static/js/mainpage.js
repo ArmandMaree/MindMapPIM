@@ -206,16 +206,18 @@ $(document).ready(function(){
     }
     var sidepanel=getCookie("sidepanel");
     if(nav!= "")
+    {
         $("#nav").css("backgroundColor",nav+" !important");
+        $("#sidepanelTitle").css("backgroundColor",nav);
+        // $(".panel").css("backgroundColor",nav+" !important");
+        $(".panel-group").css("backgroundColor",nav);
+        // $(".panel-default").css("backgroundColor",nav+" !important");
+        // $(".panel-heading").css("backgroundColor",nav+" !important");
+         $(".breadcrumb").css("backgroundColor",nav+" !important");
+    }
     if(map!= "")
         $("#mynetwork").css("backgroundColor", map+" !important");
-    if(sidepanel!= "")
-    {
-        // $("#sidepanel").css("backgroundColor",sidepanel);
-        $("#sidepanelTitle").css("backgroundColor",sidepanel);
-        $(".panel-group").css("backgroundColor",sidepanel);
-         $(".breadcrumb").css("backgroundColor",sidepanel);
-     }
+
         // console.log("---------------------------------------changed sidepanel title colour----------------------------------------------");
 
     if($(window).width()<=768){
