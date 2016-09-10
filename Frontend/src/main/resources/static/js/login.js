@@ -519,17 +519,39 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
-	// $.holdReady(true);
-	// basket
-	// .require({ url: '/js/vis.js' })
-	// .then(function () {
-	//     // Success
-	//     // $.holdReady(false)
-	//     console.log("Loaded all required scripts.");
-	// }, function (error) {
-	//     // There was an error fetching the script
-	//     console.log(error);
-	// });
+
+/**
+*	This function initialises the JavaScript SDK
+*	@property {String} appId - the id assigned to your app by Facebook
+*	@preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
+*	@property {Boolean} xfbml - allows the page to parse social plugins
+*	@property {String} version - indicates the graph api version
+*/
+window.fbAsyncInit = function() {
+FB.init({
+  appId      : '1051696778242173',
+  cookie     : false,  
+  xfbml      : true, 
+  version    : 'v2.5' 
+});
+
+// Cause auto login to facebook
+// FB.getLoginStatus(function(response) {
+//   statusChangeCallback(response);
+// }); 
+
+};
+
+/**
+*	This loads the Facebook SDK asynchronously
+*/
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
@@ -586,12 +608,12 @@ function onFacebookLogin()
 	if (response.authResponse) {
 	  console.log("Auth response:");
 	  AuthResponse = response;
-	  document.cookie = "facebookId="+ response.authResponse.userID;
+	  document.cookie = "facebookId="+ String(response.authResponse.userID);
 	  document.cookie = "fAT="+ response.authResponse.accessToken;
 	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
 	  // alert(fuid)
 	  // alert(fAT)
-	  alert("response userID: " + response.authResponse.response.authResponse.userID)
+	  alert("response userID: " + response.authResponse.userID)
 	  console.log(response.authResponse);
 	  showtick();
 	}
@@ -686,38 +708,38 @@ function showtick()
   $('#nextButton').show();
 }
 
-/**
-*	This function initialises the JavaScript SDK
-*	@property {String} appId - the id assigned to your app by Facebook
-*	@preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
-*	@property {Boolean} xfbml - allows the page to parse social plugins
-*	@property {String} version - indicates the graph api version
-*/
-window.fbAsyncInit = function() {
-FB.init({
-  appId      : '1051696778242173',
-  cookie     : false,  
-  xfbml      : true, 
-  version    : 'v2.5' 
-});
+// /**
+// *	This function initialises the JavaScript SDK
+// *	@property {String} appId - the id assigned to your app by Facebook
+// *	@preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
+// *	@property {Boolean} xfbml - allows the page to parse social plugins
+// *	@property {String} version - indicates the graph api version
+// */
+// window.fbAsyncInit = function() {
+// FB.init({
+//   appId      : '1051696778242173',
+//   cookie     : false,  
+//   xfbml      : true, 
+//   version    : 'v2.5' 
+// });
 
-// Cause auto login to facebook
-// FB.getLoginStatus(function(response) {
-//   statusChangeCallback(response);
-// }); 
+// // Cause auto login to facebook
+// // FB.getLoginStatus(function(response) {
+// //   statusChangeCallback(response);
+// // }); 
 
-};
+// };
 
-/**
-*	This loads the Facebook SDK asynchronously
-*/
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+// /**
+// *	This loads the Facebook SDK asynchronously
+// */
+// (function(d, s, id) {
+//   var js, fjs = d.getElementsByTagName(s)[0];
+//   if (d.getElementById(id)) return;
+//   js = d.createElement(s); js.id = id;
+//   js.src = "//connect.facebook.net/en_US/sdk.js";
+//   fjs.parentNode.insertBefore(js, fjs);
+// }(document, 'script', 'facebook-jssdk'));
 
 /**
 *	This function test of the Facebook Graph API after login is
@@ -739,7 +761,7 @@ function testAPI() {
 
 	document.cookie = "name="+fname;
 	document.cookie ="surname="+lname;
-	document.cookie= "facebookId="+ AuthResponse.userID;
+	// document.cookie= "facebookId="+ AuthResponse.userID;
 	document.getElementById('welcome').innerHTML += ", " + response.name;
 	onSuccessFacebook();
 
