@@ -20,18 +20,6 @@ module.exports = {
 	    .assert.text('#welcome','Welcome, Acuben Cos',"User successfully logged in.")
 	    .done()
 	},
-	'Can user register?': function (test) {
-		test
-		    .click('#continue')
-		    .click('#googlesigninButton')
-		    .wait(10000)
-		    .click('.btn-success')
-			.wait(10000)
-		    .click('#skip')
-		    .wait(10000)
-		    .assert.title().is('Unclutter', 'User successfully registered.')
-			.done()
-	},
 	'Can user retrieve topics?' : function (test) {
 		test
 			.open('http://bubbles.iminsys.com')
