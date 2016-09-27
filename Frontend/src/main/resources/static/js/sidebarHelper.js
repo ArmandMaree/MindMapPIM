@@ -15,7 +15,7 @@ function initialiliseSidebar(items){
     var pathtoselectednode=[];
     if(selectedID!=0)
         var pathtoselectednode =[];
-   
+
     var pathtoselectednodelabels =[]
 
     var dataForSideBar = {
@@ -56,6 +56,7 @@ function populateSidePanel(array)
         $(id).append("<div class='email panel'>"+array[i]+"</div>");
     }
 	$(".panel-heading").css("backgroundColor",nav);
+	$(".panel-default").css("backgroundColor",nav);
 
 }
 
