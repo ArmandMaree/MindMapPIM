@@ -142,7 +142,7 @@ $(document).ready(function(){
         min: 2,
         max: 5,
         step: 1
-    }).val(2);
+    }).val(4);
     /**
   	*	This function sets up the second number spinner
   	*/
@@ -150,7 +150,7 @@ $(document).ready(function(){
         min: 2,
         max: 40,
         step: 1
-    }).val(4);
+    }).val(2);
 
 
 	/**
