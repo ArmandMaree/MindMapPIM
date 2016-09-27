@@ -11,13 +11,10 @@ import org.springframework.social.facebook.api.PagingParameters;
 import org.springframework.social.facebook.api.PagedList;
 import org.springframework.social.RevokedAuthorizationException;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.AmqpException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import data.*;
+import com.unclutter.poller.*;
 
 /**
 * Uses the Facebook API to retrieve new activity and add them to a queue that lets them be processed.
@@ -26,7 +23,7 @@ import data.*;
 * @since   1.0.0
 */
 public class FacebookPoller implements Runnable, Poller {
-	private RabbitTemplate rabbitTemplate;
+	private MessageBroker messageBroker;
 	private final static String rawDataQueue = "raw-data.processing.rabbit";
 	private long expireTime;
 	private Facebook service;
@@ -38,8 +35,8 @@ public class FacebookPoller implements Runnable, Poller {
 	private String userId;
 	private String lastId = "";
 
-	public FacebookPoller(RabbitTemplate rabbitTemplate, String authCode, long expireTime, String userId) {
-		this.rabbitTemplate = rabbitTemplate;
+	public FacebookPoller(MessageBroker messageBroker, String authCode, long expireTime, String userId) {
+		this.messageBroker = messageBroker;
 		service = getService(authCode);
 		this.expireTime = expireTime + System.currentTimeMillis() / 1000;
 		this.userId = userId;
@@ -162,12 +159,12 @@ public class FacebookPoller implements Runnable, Poller {
 				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " firstPageDone: " + firstPageDone);
 
 				if (!firstPageDone || oldDone)
-					rabbitTemplate.convertAndSend("priority-" + rawDataQueue, rawData);
+					messageBroker.sendPriorityRawData(rawData);
 				else
-					rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+					messageBroker.sendRawData(rawData);
 		}
-		catch (AmqpException ampqe) {
-			System.out.println("Could not send message to RabbitMQ.");
+		catch (MessageNotSentException mnse) {
+			mnse.printStackTrace();
 		}
 	}
 }

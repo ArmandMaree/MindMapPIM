@@ -2,11 +2,7 @@ package listeners;
 
 import data.*;
 import poller.*;
-
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.unclutter.poller.*;
 
 /**
 * Waits for messages from the business service.
@@ -15,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @since   1.0.0
 */
 public class BusinessListener {
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private MessageBroker messageBroker;
+
+	public void setMessageBroker(MessageBroker messageBroker) {
+		this.messageBroker = messageBroker;
+	}
 
 	/**
 	* Receives an AuthCode and starts a poller with the authCode contained in that class.
@@ -24,7 +23,7 @@ public class BusinessListener {
 	*/
 	public void receiveAuthCode(AuthCode authCode) {
 		System.out.println("Starting for: " + authCode);
-		FacebookPoller poller = new FacebookPoller(rabbitTemplate, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+		FacebookPoller poller = new FacebookPoller(messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
 		new Thread(poller).start();
 	}
 }

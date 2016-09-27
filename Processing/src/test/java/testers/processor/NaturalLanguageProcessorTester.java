@@ -3,6 +3,7 @@ package testers.processor;
 import nlp.*;
 import data.*;
 import testers.AbstractTester;
+import com.unclutter.poller.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class NaturalLanguageProcessorTester extends AbstractTester {
 		}
 
 		topics = nlp.purge(topics);
-		ProcessedData processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
+		ProcessedData processedData =new ProcessedData(null, rawData.getPimSource(), rawData.getUserId(), involvedContacts.toArray(new String[0]), rawData.getPimItemId(), topics.toArray(new String[0]), rawData.getTime());
 
 		Assert.assertNotNull("Failure - processedData is null.", processedData);
 		// Assert.assertEquals("Failure - topics has wrong length.", processedData.getTopics().length, topicsArr.length);

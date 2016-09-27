@@ -21,8 +21,6 @@ import com.google.api.services.gmail.model.*;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
-import org.springframework.amqp.AmqpException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
@@ -388,15 +386,15 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
 
-				if (!firstPageDone || oldDone)
-					messageBroker.sendPriorityRawData(rawData);
-				else
-					messageBroker.sendRawData(rawData);
+			if (!firstPageDone || oldDone)
+				messageBroker.sendPriorityRawData(rawData);
+			else
+				messageBroker.sendRawData(rawData);
 		}
-		catch (AmqpException ampqe) {
-			System.out.println("Could not send message to RabbitMQ.");
+		catch (MessageNotSentException mnse) {
+			mnse.printStackTrace();
 		}
 	}
 

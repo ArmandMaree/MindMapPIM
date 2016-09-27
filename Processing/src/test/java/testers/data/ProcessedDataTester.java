@@ -1,6 +1,7 @@
 package testers.data;
 
 import data.*;
+import com.unclutter.poller.*;
 import testers.AbstractTester;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class ProcessedDataTester extends AbstractTester {
 		long time = System.currentTimeMillis();
 		RawData rawData = new RawData(pimSource, userId, involvedContacts, pimItemId, data, time);
 		String[] topics = {"horse", "photo"};
-		ProcessedData processedData = new ProcessedData(rawData, topics);
+		ProcessedData processedData = new ProcessedData(null, rawData.getPimSource(), rawData.getUserId(), involvedContacts.toArray(new String[0]), rawData.getPimItemId(), topics, rawData.getTime());
 
 		Assert.assertEquals("Failure - pimSource differs.", rawData.getPimSource(), processedData.getPimSource());
 		Assert.assertEquals("Failure - userId differs.", rawData.getUserId(), processedData.getUserId());

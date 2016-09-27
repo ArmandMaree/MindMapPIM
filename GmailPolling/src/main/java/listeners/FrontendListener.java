@@ -157,7 +157,13 @@ public class FrontendListener {
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));
 		System.out.println("Responded: " + itemResponseIdentified);
-		messageBroker.sendItem(itemResponseIdentified);
+
+		try {
+			messageBroker.sendItem(itemResponseIdentified);
+		}
+		catch (MessageNotSentException mnse) {
+			mnse.printStackTrace();
+		}
 	}
 
 	/**

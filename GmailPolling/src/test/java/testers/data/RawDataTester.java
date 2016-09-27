@@ -1,6 +1,6 @@
 package testers.data;
 
-import data.RawData;
+import com.unclutter.poller.RawData;
 import testers.AbstractTester;
 
 import org.junit.After;
