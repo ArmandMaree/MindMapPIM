@@ -1,4 +1,4 @@
-package data;
+package com.unclutter.poller;
 
 import java.io.Serializable;
 

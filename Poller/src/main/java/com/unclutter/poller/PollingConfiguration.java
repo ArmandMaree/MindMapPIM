@@ -15,44 +15,43 @@ public class PollingConfiguration {
 		this.itemMethod = itemMethod;
 	}
 
-	public getPollerName() {
+	public String getPollerName() {
 		return pollerName;
 	}
 
-	public setPollerName(String pollerName) {
+	public void setPollerName(String pollerName) {
 		this.pollerName = pollerName;
 	}
 
-	public getAuthCodeListener() {
+	public Object getAuthCodeListener() {
 		return authCodeListener;
 	}
 
-	public setAuthCodeListener(Object authCodeListener) {
+	public void setAuthCodeListener(Object authCodeListener) {
 		this.authCodeListener = authCodeListener;
 	}
 
-	public getAuthCodeMethod() {
+	public String getAuthCodeMethod() {
 		return authCodeMethod;
 	}
 
-	public setAuthCodeMethod(String authCodeMethod) {
+	public void setAuthCodeMethod(String authCodeMethod) {
 		this.authCodeMethod = authCodeMethod;
 	}
 
-	public getItemListener() {
+	public Object getItemListener() {
 		return itemListener;
 	}
 
-	public setItemListener(Object itemListener) {
+	public void setItemListener(Object itemListener) {
 		this.itemListener = itemListener;
 	}
 
-	public getItemMethod() {
+	public String getItemMethod() {
 		return itemMethod;
 	}
 
-	public setItemMethod(String itemMethod) {
+	public void setItemMethod(String itemMethod) {
 		this.itemMethod = itemMethod;
 	}
-
 }

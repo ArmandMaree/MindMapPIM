@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.*;
 import data.*;
 import nlp.NaturalLanguageProcessor;
 
+import com.unclutter.poller.*;
+
 /**
 * Receives {@link data.RawData} and processes it with a {@link nlp.NaturalLanguageProcessor}.
 *
@@ -129,8 +131,8 @@ public class Processor implements Runnable {
 				people.addAll(rawData.getInvolvedContacts());
 				people = nlp.purge(people);
 			}
-			
-			processedData = new ProcessedData(rawData, topics.toArray(new String[0]));
+
+			processedData = new ProcessedData(null, rawData.getPimSource(), rawData.getUserId(), null, rawData.getPimItemId(), topics.toArray(new String[0]), rawData.getTime());
 			processedData.setInvolvedContacts(people.toArray(new String[0]));
 		}
 		else

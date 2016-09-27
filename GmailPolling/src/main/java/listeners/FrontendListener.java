@@ -34,7 +34,7 @@ import repositories.*;
 import java.util.*;
 import java.io.*;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.unclutter.poller.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,10 +54,7 @@ public class FrontendListener {
 
 	private final String itemResponseQueueName = "item-response.frontend.rabbit";
 
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
-
-	@Autowired
+	private MessageBroker messageBroker;
 	private GmailRepository gmailRepository;
 
 	static {
@@ -68,6 +65,14 @@ public class FrontendListener {
 			t.printStackTrace();
 			System.exit(1);
 		}
+	}
+
+	public FrontendListener(GmailRepository gmailRepository) {
+		this.gmailRepository = gmailRepository;
+	}
+
+	public void setMessageBroker(MessageBroker messageBroker) {
+		this.messageBroker = messageBroker;
 	}
 
 	/**
@@ -152,7 +157,7 @@ public class FrontendListener {
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));
 		System.out.println("Responded: " + itemResponseIdentified);
-		rabbitTemplate.convertAndSend(itemResponseQueueName, itemResponseIdentified);
+		messageBroker.sendItem(itemResponseIdentified);
 	}
 
 	/**
