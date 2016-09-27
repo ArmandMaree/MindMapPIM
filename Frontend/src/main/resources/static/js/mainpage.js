@@ -405,7 +405,8 @@ $(document).ready(function(){
                 $("#breadcrumb").html(breadcrumb);
 
                 populateSidePanel(items);
-
+                $(".panel-heading").css("backgroundColor",nav);
+                $(".panel-default").css("backgroundColor",nav);
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
