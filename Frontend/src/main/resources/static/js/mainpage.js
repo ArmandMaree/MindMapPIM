@@ -12,11 +12,11 @@ var rightClick;
 */
 var ca = document.cookie.split(';');
 /**
-*   @var {String} x - Temp Variable to hold the cookie result 
+*   @var {String} x - Temp Variable to hold the cookie result
 */
 var x="";
 /**
-*   @var {String} x1 - Temp Variable to hold the cookie result 
+*   @var {String} x1 - Temp Variable to hold the cookie result
 */
 var x1="";
 /**
@@ -141,7 +141,7 @@ $(document).ready(function(){
         $("#Branchrange").html("4");
         $("#brange").attr("value","4");
     }
-    
+
     if(getCookie("depth") != "")
     {
         var initialdepth = getCookie("depth");
@@ -197,16 +197,16 @@ $(document).ready(function(){
     }
 
     //A function that hides the error
-    $("#loadingAlertError").hide();  
-    
+    $("#loadingAlertError").hide();
+
     //A function that hides the warning
-    $("#loadingAlertWarning").hide();  
+    $("#loadingAlertWarning").hide();
 
     //A function that displays the loading bar
     $("#loadingAlert").fadeIn(1000, function() {
         // body...
     });
-    
+
     //color -  A varible that contains the colour of the text in the bubbles on the BubbleMap
     var color = 'gray';
     var len = undefined;
@@ -282,13 +282,13 @@ $(document).ready(function(){
 
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
-    
+
     //data - An object that contains the node and edge objects
     var data = {
        nodes: new vis.DataSet(nodes),
        edges: new vis.DataSet(edges)
     };
-    
+
     //options - An object that contains all settings for the BubbleMap
     var options = {
         interaction:{
@@ -316,14 +316,14 @@ $(document).ready(function(){
           return false;
         },
         edges: {
-            width: 1, 
+            width: 1,
             length: 150
         }
     };
     network = new vis.Network(container, data, options);
-    
+
     if(!window.FPSMeter){
-    alert("This test page doesn't seem to include FPSMeter: aborting"); 
+    alert("This test page doesn't seem to include FPSMeter: aborting");
     return;
     }
 
@@ -351,22 +351,22 @@ $(document).ready(function(){
         },
     false);
 
-    // Start FPS analysis, optionnally specifying the rate at which FPS 
+    // Start FPS analysis, optionnally specifying the rate at which FPS
     // are evaluated (in seconds, defaults to 1).
     FPSMeter.run();
-    
+
     //socket - holds the web socket object
     var socket = new SockJS('/request');
     stompClient = Stomp.over(socket);
-    //A function that connects the stompClient 
+    //A function that connects the stompClient
     stompClient.connect({}, function(frame) {
         x1 =getCookie("userId");
 
         //SelectedID - contains the id of the last selected node
         selectedID=0;
         document.cookie="lastselectednode="+selectedID;
-    
-        //A function that subscribes to a destination that the requests are sent to 
+
+        //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
             if(JSON.parse(serverResponse.body).items!=null){
                 var items = JSON.parse(serverResponse.body).items;
@@ -405,8 +405,6 @@ $(document).ready(function(){
                 $("#breadcrumb").html(breadcrumb);
 
                 populateSidePanel(items);
-                $(".panel-heading").css("backgroundColor",nav);
-                $(".panel-default").css("backgroundColor",nav);
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
@@ -453,11 +451,11 @@ $(document).ready(function(){
                         branchinglimit=4;
                     }
                 }
-                if(selectedID==0){ 
+                if(selectedID==0){
                     for(var j=0;j<parentlist.length;j++){
                         if(parentlist[j] == 1){
                             refreshContactList.push(j);
-                        } 
+                        }
                     }
                 }
 
@@ -482,7 +480,7 @@ $(document).ready(function(){
                             data.nodes.add({
                                 id: nodes.length,
                                 label: "  "+topicsall[nodePosition]+"  ",
-                                font:'20px Raleway '+fontcolor, 
+                                font:'20px Raleway '+fontcolor,
                                 color: thiscolour
                             });
                             parentlist.push(selectedID);
@@ -516,7 +514,7 @@ $(document).ready(function(){
                         nodes.push({
                             id: nodes.length,
                             label: "  "+topicsall[nodePosition]+"  ",
-                            font:'20px Raleway '+fontcolor, 
+                            font:'20px Raleway '+fontcolor,
                             color: thiscolour
                         })
                         edges.push({
@@ -524,18 +522,18 @@ $(document).ready(function(){
                             from:  nodes.length,
                             to: selectedID
                         });
-                    
+
                         if(selectedID==0  && contactsAll != null && contactsAll.length >0 && i<contactsAll.length && contactsAll[i]!="undefined"){
                             allPimIDlist[nodes.length]=pimSourceIds[i];
                             expandlist.push(tempnodelength++);
                             data.nodes.add({
                                 id: nodes.length,
                                 label:"  "+ contactsAll[i]+"  ",
-                                font:'20px Raleway '+fontcolor, 
+                                font:'20px Raleway '+fontcolor,
                                 color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                             });
                             parentlist.push("1");
-                            
+
                             data.edges.add({
                                 id: edges.length,
                                 from: nodes.length,
@@ -544,7 +542,7 @@ $(document).ready(function(){
                             nodes.push({
                                 id: nodes.length,
                                 label:"  "+ contactsAll[i]+"  ",
-                                font:'20px Raleway '+fontcolor, 
+                                font:'20px Raleway '+fontcolor,
                                 color: {background:nodecolor, border:'purple',highlight:{background:'purple', border:'purple'},hover:{background:'purple', border:'purple'}}
                             })
                             edges.push({
@@ -797,7 +795,7 @@ $(document).ready(function(){
         $("#gmail").html("");
         $("#twitter").html("");
         $("#linkedIn").html("");
-        
+
         /**
         *   A function that displays the loading bar
         */
@@ -851,7 +849,7 @@ $(document).ready(function(){
     });
 
     /**
-    *   A function that handles the rightClick event on the BubbleMap 
+    *   A function that handles the rightClick event on the BubbleMap
     */
     network.on("oncontext", function(){
         var e = window.event;

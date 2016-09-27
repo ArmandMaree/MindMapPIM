@@ -56,6 +56,8 @@ function populateSidePanel(array)
         $(id).append("<div class='email panel'>"+array[i]+"</div>");
     }
 
+	$(".panel-heading").css("backgroundColor",getCookie("nav"));
+	$(".panel-default").css("backgroundColor",getCookie("nav"));
 }
 
 /**
