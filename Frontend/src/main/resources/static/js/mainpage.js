@@ -427,10 +427,6 @@ $(document).ready(function(){
                     }
                 }
 
-
-
-
-
                 //update graph with server response
 
                 //JSONServerResponse - contains the parsed response from the websocket
@@ -479,7 +475,6 @@ $(document).ready(function(){
                         thiscolour = {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
 
                     var pimSourceIds = JSONServerResponse.pimSourceIds;
-
                     allPimIDlist[nodes.length]=pimSourceIds[i];
                     if(topicsall[nodePosition]!="undefined" && topicsall[i]!=undefined){
                         try {
@@ -531,6 +526,7 @@ $(document).ready(function(){
                         });
                     
                         if(selectedID==0  && contactsAll != null && contactsAll.length >0 && i<contactsAll.length && contactsAll[i]!="undefined"){
+                            allPimIDlist[nodes.length]=pimSourceIds[i];
                             expandlist.push(tempnodelength++);
                             data.nodes.add({
                                 id: nodes.length,
@@ -826,8 +822,6 @@ $(document).ready(function(){
         var node = network.getSelectedNodes();
         $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
         selectedID = node;
-
-
 
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
