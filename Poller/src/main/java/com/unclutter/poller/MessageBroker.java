@@ -10,15 +10,14 @@ public class MessageBroker {
 	}
 
 	public void sendRawData(RawData rawData) {
-		System.out.println("Sending normal.");
-		rabbitTemplate.convertAndSend("raw-data.processing.rabbit");
+		rabbitTemplate.convertAndSend("raw-data.processing.rabbit", rawData);
 	}
 
 	public void sendPriorityRawData(RawData rawData) {
 		rabbitTemplate.convertAndSend("priority-raw-data.processing.rabbit", rawData);
 	}
 
-	public void sendItem(ItemResponseIdentified rawData) {
-		rabbitTemplate.convertAndSend("item-response.frontend.rabbit", rawData);
+	public void sendItem(ItemResponseIdentified itemResponse) {
+		rabbitTemplate.convertAndSend("item-response.frontend.rabbit", itemResponse);
 	}
 }
