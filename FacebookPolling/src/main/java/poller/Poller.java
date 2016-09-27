@@ -1,6 +1,6 @@
 package poller;
 
-import data.*;
+import com.unclutter.poller.RawData;
 
 /**
 * Basic interface that defines a poller.

@@ -2,12 +2,8 @@ package listeners;
 
 import data.*;
 import poller.*;
-
+import com.unclutter.poller.*;
 import java.util.*;
-
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
 * Waits for messages from the frontend service.
@@ -16,10 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @since   1.0.0
 */
 public class FrontendListener {
-	private final String itemResponseQueueName = "item-response.frontend.rabbit";
+	private MessageBroker messageBroker;
 
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	public void setMessageBroker(MessageBroker messageBroker) {
+		this.messageBroker = messageBroker;
+	}
 
 	/**
 	* Puts the item id and user id for a certain post into an iframe the frontend can display.
@@ -53,6 +50,12 @@ public class FrontendListener {
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));
 		System.out.println("Responded: " + itemResponseIdentified);
-		rabbitTemplate.convertAndSend(itemResponseQueueName, itemResponseIdentified);
+
+		try {
+			messageBroker.sendItem(itemResponseIdentified);	
+		}
+		catch (MessageNotSentException mnse) {
+			mnse.printStackTrace();
+		}
 	}
 }

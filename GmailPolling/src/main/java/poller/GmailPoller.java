@@ -21,10 +21,6 @@ import com.google.api.services.gmail.model.*;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.AmqpException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
@@ -51,6 +47,7 @@ import org.jsoup.safety.Whitelist;
 
 import data.*;
 import repositories.*;
+import com.unclutter.poller.*;
 
 /**
 * Uses the Gmail API to retrieve new emails and add them to a queue that lets them be processed.
@@ -80,7 +77,7 @@ public class GmailPoller implements Poller {
 	private boolean processedOldEmails = false;
 	private GmailPollingUser pollingUser;
 	private Properties props;
-	private RabbitTemplate rabbitTemplate;
+	private MessageBroker messageBroker;
 	private boolean firstPageDone = false;
 	private boolean oldDone = false;
 	private long maxEmails = 200;
@@ -99,13 +96,13 @@ public class GmailPoller implements Poller {
 	/**
 	* Constructor that initializes some fields and starts up a Gmail service.
 	* @param gmailRepository The repository where all the users and their refresh tokens are stored.
-	* @param rabbitTemplate Reference to a rabbitTemplate used to communicate with a RabbitMQ server.
+	* @param messageBroker Reference to a messageBroker used to communicate with a RabbitMQ server.
 	* @param userAuthCode Authentication code received from the login service.
 	* @param userEmail The email address of the user.
 	*/
-	public GmailPoller(GmailRepository gmailRepository, RabbitTemplate rabbitTemplate, String userAuthCode, String userEmail) {
+	public GmailPoller(GmailRepository gmailRepository, MessageBroker messageBroker, String userAuthCode, String userEmail) {
 		this.gmailRepository = gmailRepository;
-		this.rabbitTemplate = rabbitTemplate;
+		this.messageBroker = messageBroker;
 		this.userAuthCode = userAuthCode;
 		this.userEmail = userEmail;
 
@@ -389,15 +386,15 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
 
-				if (!firstPageDone || oldDone)
-					rabbitTemplate.convertAndSend("priority-" + rawDataQueue, rawData);
-				else
-					rabbitTemplate.convertAndSend(rawDataQueue, rawData);
+			if (!firstPageDone || oldDone)
+				messageBroker.sendPriorityRawData(rawData);
+			else
+				messageBroker.sendRawData(rawData);
 		}
-		catch (AmqpException ampqe) {
-			System.out.println("Could not send message to RabbitMQ.");
+		catch (MessageNotSentException mnse) {
+			mnse.printStackTrace();
 		}
 	}
 
