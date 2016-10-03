@@ -3,13 +3,27 @@ package com.unclutter.poller;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.AmqpException;
 
+/**
+* A simplified interface to interact with the backend. This class should be used by the pollers and should be instantiated by the MessageBrokerFactory.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 public class MessageBroker {
 	private RabbitTemplate rabbitTemplate;
 
+	/**
+	* Constructor that initializes some variables.
+	* @param rabbitTemplate Used to send messages via RabbitMQ.
+	*/
 	public MessageBroker(RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
 	}
 
+	/**
+	* Send a raw data object to a non priority queue for processing.
+	* @param rawData The object that contains all the information of the item that needs to be processed.
+	*/
 	public void sendRawData(RawData rawData) throws MessageNotSentException {
 		try {
 			rabbitTemplate.convertAndSend("raw-data.processing.rabbit", rawData);
@@ -20,7 +34,11 @@ public class MessageBroker {
 		}
 	}
 
-	public void sendPriorityRawData(RawData rawData)throws MessageNotSentException {
+	/**
+	* Send a raw data object to a priority queue for processing.
+	* @param rawData The object that contains all the information of the item that needs to be processed.
+	*/
+	public void sendPriorityRawData(RawData rawData) throws MessageNotSentException {
 		try {
 			rabbitTemplate.convertAndSend("priority-raw-data.processing.rabbit", rawData);
 		}
@@ -30,7 +48,11 @@ public class MessageBroker {
 		}
 	}
 
-	public void sendItem(ItemResponseIdentified itemResponse)throws MessageNotSentException {
+	/**
+	* Return an item that was requested to be retrieved.
+	* @param itemResponse The object that contains the item.
+	*/
+	public void sendItem(ItemResponseIdentified itemResponse) throws MessageNotSentException {
 		try {
 			rabbitTemplate.convertAndSend("item-response.frontend.rabbit", itemResponse);
 		}

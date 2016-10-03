@@ -15,6 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
 
+/**
+* A factory that creates all the beans necessary to interact with RabbitMQ and produces objects (MessageBroker) that does this interaction. This class should be managed by Spring and must thus be created as a bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @Component
 public class MessageBrokerFactory {
 	public class BeansNotSetUpException extends Exception {
@@ -102,15 +108,17 @@ public class MessageBrokerFactory {
 		return container;
 	}
 
-	/*
+	/**
 	* Constructor that sets up all the beans.
+	* @param pollerConfig Contains all the information needed to ceate the beans.
 	*/
 	public MessageBrokerFactory(PollingConfiguration pollerConfig) {
 		this.pollerConfig = pollerConfig;
 	}
 
 	/**
-	* Manually set up the RabbitTemplate bean.
+	* Manually set up the RabbitTemplate if it couldn't be injected.
+	* @param rabbitTemplate Used to send messages via RabbitMQ.
 	*/
 	public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
@@ -118,6 +126,7 @@ public class MessageBrokerFactory {
 
 	/**
 	* Get a new instance of a message broker used for sending messages to other services.
+	* @return An instance of a MessageBrokoer that should be used by the poller to send messages to the backend.
 	*/
 	public MessageBroker getMessageBroker() throws BeansNotSetUpException {
 		if (rabbitTemplate == null)
