@@ -56,9 +56,17 @@ public class Application implements CommandLineRunner {
 	private GmailRepository gmailRepository;
 
 	@Bean
-	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, GmailRepository gmailRepository) {
-		BusinessListener business = new BusinessListener(gmailRepository);
-		FrontendListener frontend = new FrontendListener(gmailRepository);
+	public BusinessListener authCodeReceiver(GmailRepository gmailRepository) {
+		return new BusinessListener(gmailRepository);
+	}
+
+	@Bean
+	public FrontendListener itemRequestReceiver(GmailRepository gmailRepository) {
+		return new FrontendListener(gmailRepository);
+	}
+
+	@Bean
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, GmailRepository gmailRepository, BusinessListener business, FrontendListener frontend) {
 		PollingConfiguration pollingConfig = new PollingConfiguration("gmail", business, "receiveAuthCode", frontend, "receiveItemRequest");
 		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
 		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);

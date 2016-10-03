@@ -31,9 +31,17 @@ import com.unclutter.poller.*;
 @ComponentScan({"com.unclutter.poller"})
 public class Application implements CommandLineRunner {
 	@Bean
-	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate) {
-		BusinessListener business = new BusinessListener();
-		FrontendListener frontend = new FrontendListener();
+	public BusinessListener authCodeReceiver() {
+		return new BusinessListener();
+	}
+
+	@Bean
+	public FrontendListener itemRequestReceiver() {
+		return new FrontendListener();
+	}
+
+	@Bean
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, BusinessListener business, FrontendListener frontend) {
 		PollingConfiguration pollingConfig = new PollingConfiguration("facebook", business, "receiveAuthCode", frontend, "receiveItemRequest");
 		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
 		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);

@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import org.springframework.stereotype.Component;
 
@@ -47,47 +48,37 @@ public class MessageBrokerFactory {
 	@Autowired
 	public RabbitTemplate rabbitTemplate;
 
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
-	private Queue queue(String queueName) {
-		System.out.println("Creating Queue with name: " + queueName);
-		return new Queue(queueName, false);
+	@Bean
+	public MessageBroker messageBroker(RabbitTemplate rabbitTemplate) {
+		return new MessageBroker(rabbitTemplate);
 	}
 
 	@Bean
 	private TopicExchange exchange() {
-		System.out.println("Creating TopicExchange.");
 		return new TopicExchange("spring-boot-exchange");
 	}
 
 	@Bean
-	private Binding authCodeBinding(TopicExchange exchange) {
+	private MessageListenerAdapter authCodeAdapter() {
+		return new MessageListenerAdapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
+	}
+
+	@Bean
+	private Queue authCodeQueue() {
 		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
-		System.out.println("Creating bindig with queueName: " + queueName + " and TopicExchange: " + exchange);
-		return BindingBuilder.bind(queue(queueName)).to(exchange).with(queueName);
+		return new Queue(queueName, false);
 	}
 
 	@Bean
-	private Binding itemRequestBinding(TopicExchange exchange) {
-		String queueName = "item-request." + pollerConfig.getPollerName() + ".rabbit";
-		System.out.println("Creating bindig with queueName: " + queueName + " and TopicExchange: " + exchange);
-		return BindingBuilder.bind(queue(queueName)).to(exchange).with(queueName);
-	}
-
-	private MessageListenerAdapter adapter(Object listener, String methodName) {
-		System.out.println("Creating adapter with listener: " + listener + " and methodName: " + methodName);
-		return new MessageListenerAdapter(listener, methodName);
+	private Binding authCodeBinding(@Qualifier("authCodeQueue") Queue queue, TopicExchange exchange) {
+		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
+		return BindingBuilder.bind(queue).to(exchange).with(queueName);
 	}
 
 	@Bean
-	private SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory) {
+	private SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeAdapter") MessageListenerAdapter listenerAdapter) {
+		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		MessageListenerAdapter listenerAdapter = adapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
-		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
-
-		System.out.println("Creating container with queueName: " + queueName + " and connectionFactory: " + connectionFactory + " and listenerAdapter: " + listenerAdapter);
-
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(queueName);
 		container.setMessageListener(listenerAdapter);
@@ -95,13 +86,26 @@ public class MessageBrokerFactory {
 	}
 
 	@Bean
-	private SimpleMessageListenerContainer itemRequestContainer(ConnectionFactory connectionFactory) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		MessageListenerAdapter listenerAdapter = adapter(pollerConfig.getItemListener(), pollerConfig.getItemMethod());
+	private MessageListenerAdapter itemRequestAdapter() {
+		return new MessageListenerAdapter(pollerConfig.getItemRequestListener(), pollerConfig.getItemRequestMethod());
+	}
+
+	@Bean
+	private Queue itemRequestQueue() {
 		String queueName = "item-request." + pollerConfig.getPollerName() + ".rabbit";
+		return new Queue(queueName, false);
+	}
 
-		System.out.println("Creating container with queueName: " + queueName + " and connectionFactory: " + connectionFactory + " and listenerAdapter: " + listenerAdapter);
+	@Bean
+	private Binding itemRequestBinding(@Qualifier("itemRequestQueue") Queue queue, TopicExchange exchange) {
+		String queueName = "item-request." + pollerConfig.getPollerName() + ".rabbit";
+		return BindingBuilder.bind(queue).to(exchange).with(queueName);
+	}
 
+	@Bean
+	private SimpleMessageListenerContainer itemRequestContainer(ConnectionFactory connectionFactory, @Qualifier("itemRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		String queueName = "item-request." + pollerConfig.getPollerName() + ".rabbit";
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(queueName);
 		container.setMessageListener(listenerAdapter);
