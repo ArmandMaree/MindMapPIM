@@ -578,8 +578,6 @@ $(document).ready(function(){
                     // body...
                 });
 
-                // alert(JSON.stringify(edges))
-                // console.log("edges ="+getCookie("edges"));
                 if(shouldRebuild){
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
@@ -661,18 +659,14 @@ $(document).ready(function(){
         $("#logout").html("");
     }
     $("#sidepanel").hide();
-    /**
-    *   A function that disables the default event that occurs on rightclick event
-    */
+    //A function that disables the default event that occurs on rightclick event
     document.oncontextmenu = function() {return false;};
     function showValue(newValue)
     {
         document.getElementById("range").innerHTML=newValue;
     }
 
-    /**
-    *   @var menu - variable that is assigned the context menu
-    */
+    //menu - variable that is assigned the context menu
     menu = new ax5.ui.menu({
         position: "absolute", // default position is "fixed"
         theme: "info",
@@ -709,7 +703,6 @@ $(document).ready(function(){
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
                    pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
                 }
-                // pathtoselectednodelabels.push()
                 if(pathtoselectednodelabels.indexOf("Contacts") >=0){
                     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
                 }
@@ -752,9 +745,7 @@ $(document).ready(function(){
             }
         }
     });
-    /**
-    *   A function that resets the html for certain divs
-    */
+    //A function that resets the html for certain divs
     network.on("click", function(){
 
        $("#facebook").html("");
@@ -785,9 +776,8 @@ $(document).ready(function(){
         }
 
     });
-    /**
-    *   A function that handles the doubleClick event on the BubbleMap
-    */
+     // A function that handles the doubleClick event on the BubbleMap
+    
     network.on("doubleClick", function(){
 
         $("#accordion").html("");
@@ -796,16 +786,11 @@ $(document).ready(function(){
         $("#twitter").html("");
         $("#linkedIn").html("");
 
-        /**
-        *   A function that displays the loading bar
-        */
+        // A function that displays the loading bar
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
         var name1 = "lastselectednode=";
-        /**
-        *   @var ca1 - Cookie....
-        */
         var ca1 = document.cookie.split(';');
         var selectedID ="";
         for(var i = 0; i <ca1.length; i++) {
@@ -831,9 +816,7 @@ $(document).ready(function(){
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
             else
                 var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
-            /**
-            *   A function that sends the itemRequest object through the websocket in order to make the request
-            */
+            
             // setTimeout(function(){
             try{
                 stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
@@ -848,9 +831,7 @@ $(document).ready(function(){
         }
     });
 
-    /**
-    *   A function that handles the rightClick event on the BubbleMap
-    */
+    //A function that handles the rightClick event on the BubbleMap
     network.on("oncontext", function(){
         var e = window.event;
         var posX = e.clientX;
