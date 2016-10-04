@@ -146,6 +146,9 @@ setInterval(function(){
 */
 function deleteBranch(selectedID){
     if(selectedID!=0 &&  selectedID!=1){
+        localStorage.setItem('nodes', "");
+        localStorage.setItem('edges', "");
+        localStorage.setItem('parentlist', "");
         var deletelist =[]
         var templist = []
         deletelist.push(selectedID);
@@ -186,7 +189,7 @@ function deleteBranch(selectedID){
         ]
 
         edges = [
-            {from: 1, to: 0}
+            {id:0, from: 1, to: 0}
         ]
         expandlist = [];
         parentlist = ["-1","-1"];

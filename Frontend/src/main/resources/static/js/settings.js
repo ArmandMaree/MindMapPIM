@@ -217,6 +217,7 @@ $(document).ready(function(){
 				document.cookie ="nav="+themeObject.theme[0];
 				document.cookie ="map="+themeObject.theme[1];
 				document.cookie ="sidepanel="+themeObject.theme[2];
+		        document.cookie = "mustreload=true";
 
 				stompClient.subscribe('/user/topic/request', function(Response){
 					var response = JSON.parse(Response.body);
@@ -225,6 +226,7 @@ $(document).ready(function(){
 						$("#Saved").fadeIn(1000, function() {
 					   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 						});
+
 					}
 					else if(response.code == 99 || response.code == 1)
 					{
@@ -249,6 +251,7 @@ $(document).ready(function(){
 	*	Function that is called when the user clicks on the Deactivate button on the account settings page
 	*/
 	$("#deactivateAccount").on("click", function(){
+		    document.cookie = "mustreload=true";
 			var socket = new SockJS('/deactivate');
 			stompClient = Stomp.over(socket);
 			stompClient.connect({}, function(frame) {
@@ -331,6 +334,7 @@ var branch=0;
 */
 function saveUserPreferences()
 {
+    document.cookie = "mustreload=true";
 	branch = $("#spinner").val();
 	console.log("Branch: "+branch);
 	depth = $("#spinner2").val();
@@ -482,6 +486,7 @@ function checkFacebook()
 */
 function SaveAccountChanges()
 {
+	document.cookie = "mustreload=true";
 	UpdateSourcesObject.userId = getCookie("userId");
 	var socket = new SockJS('/datasources');
 	stompClient = Stomp.over(socket);

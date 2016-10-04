@@ -66,7 +66,7 @@ var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
-var shouldRebuild = false;
+var shouldRebuild = true;
 /**
 *   @var {bool} canExpand - Checks whether the mindmap can expand.
 */
@@ -95,7 +95,6 @@ if(x!="1"){
 $( window ).resize(function() {
     var map=getCookie("map");
     console.log(map)
-    $("#mynetwork").css("backgroundColor", "#1E2019 !important")
     if($(window).width()<=768){
         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
@@ -133,6 +132,13 @@ var network;
 */
 
 $(document).ready(function(){
+    if(getCookie("mustreload")!=""){
+        localStorage.setItem('nodes', "");
+        localStorage.setItem('edges', "");
+        localStorage.setItem('parentlist', "");
+        document.cookie="lastrefreshtime="+ Date.now();
+        document.cookie = "mustreload=; expires=Thu, 01 Jan 1970 00:00:00 UTC";   
+    }
     if(getCookie("branch")!= "")
     {
         var initialbranching = getCookie("branch");
@@ -216,9 +222,9 @@ $(document).ready(function(){
     var color = 'gray';
     var len = undefined;
 
-    tempnodes =getCookie("nodes");
+    tempnodes =localStorage.getItem('nodes');
 
-    if(tempnodes==""){
+    if(tempnodes==""||tempnodes==null){
         if(mocktesting){
             nodes = [
                 {id: 0, label: "   ME   ",font:'20px Raleway '+fontcolor, color: {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6',border:'#1999d6'},hover:{background:'#1999d6',border:'#1999d6'}}},
@@ -241,48 +247,30 @@ $(document).ready(function(){
         document.cookie="lastrefreshtime="+ Date.now();
 
     }else{
-        nodes =[];
-        var splitter = tempnodes.split('%');
-        for(var i = 0; i <splitter.length; i++) {
-            var c = splitter[i];
-            if(c==""|| c=="undefined"){
-                break;
-            }
-            tempnodes = JSON.parse(c);
-            nodes.push(tempnodes);
-        }
+        console.log(localStorage.getItem('nodes'))
+        nodes =JSON.parse(localStorage.getItem('nodes'));
         flagHasNodesToLoad =true;
     }
 
-    tempedges =getCookie("edges");
-
-    if(tempedges==""){
+    // tempedges =getCookie("edges");
+    tempedges = localStorage.getItem('edges')
+    if(tempedges==""||tempedges==null){
         if(mocktesting){
             edges = [
-                {from: 0, to: 1}
+                {id:0,from: 0, to: 1}
             ]
         }else{
             edges = [
-            {from: 1, to: 0}]
+            {id:0,from: 1, to: 0}]
         }
     }else{
-        edges =[];
-        edges.push({from: 1, to: 0});
-        var splitter = tempedges.split('%');
-        for(var i = 0; i <splitter.length; i++) {
-            var c = splitter[i];
-            if(c=="" || c=="undefined"){
-                break;
-            }
-            tempedges = JSON.parse(c);
-            tempedges = {id: tempedges.id, from: (tempedges.from-1) , to: tempedges.to}
-            edges.push(tempedges);
-        }
+        console.log(localStorage.getItem('edges'))
+        edges =JSON.parse(localStorage.getItem('edges'));
     }
 
-    tempparent = getCookie("parentlist");
-
-    if(tempparent!="")
+    tempparent = localStorage.getItem('parentlist');
+    // alert(localStorage.getItem('parentlist')==null)
+    if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
 
     //container - A variable that holds the html element that contains the BubbleMap
@@ -589,28 +577,34 @@ $(document).ready(function(){
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
+
+                // alert(JSON.stringify(edges))
+                // console.log("edges ="+getCookie("edges"));
                 if(shouldRebuild){
-                    document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-                    document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-                    document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-                    var tempstring ="";
-                    for(var i=0;i<nodes.length;i++){
-                        tempstring+= JSON.stringify(nodes[i])+"%";
-                    }
-                    document.cookie="nodes="+tempstring;
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
 
-                    var tempstring ="";
-                    for(var i=0;i<edges.length;i++){
-                        tempstring+= JSON.stringify(edges[i])+"%";
-                    }
+                    localStorage.setItem('nodes', JSON.stringify(nodes));
 
-                    document.cookie="edges="+tempstring;
-                    document.cookie="parentlist="+ parentlist;
+                    console.log(parentlist)
+                    var tempedges=[];
+                    if(tempedges.indexOf({from:1,to:0})==-1)
+                        tempedges.push({from:1,to:0})
+
+                    for(var i=1;i<parentlist.length;i++){
+                        if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
+                            tempedges.push({from:i,to:parentlist[i]})
+                    }
+                    console.log(JSON.stringify(tempedges))
+
+                    localStorage.setItem('edges', JSON.stringify(tempedges));
+                    localStorage.setItem('parentlist', parentlist);
 
                 }else{
-                    document.cookie = "nodes=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-                    document.cookie = "edges=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-                    document.cookie = "parentlist=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -861,6 +855,7 @@ $(document).ready(function(){
         var posX = e.clientX;
         var posY = e.clientY - $("nav").height();
         selectedID = network.getNodeAt({"x": posX, "y": posY});
+        console.log(selectedID);
         network.selectNodes([network.getNodeAt({"x": posX, "y": posY})]);
         var node = network.getSelectedNodes();
             if(node.length != 0)
@@ -872,10 +867,10 @@ $(document).ready(function(){
 
         if(rightClick.length != 0)
         {
-            menu.popup(e);
+            menu.popup(e); 
             ax5.util.stopEvent(e);
         }
 
     });
-
+ 
 });
