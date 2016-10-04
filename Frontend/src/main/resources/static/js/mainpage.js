@@ -590,8 +590,8 @@ $(document).ready(function(){
                     console.log(parentlist)
                     var tempedges=[];
                     if(tempedges.indexOf({from:1,to:0})==-1)
-                        if(tempedges[0].from == 1 && tempedges[0].to == 0 )
-                            tempedges.push({from:1,to:0})
+                        tempedges.push({from:1,to:0})
+
 
                     for(var i=1;i<parentlist.length;i++){
                         if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))

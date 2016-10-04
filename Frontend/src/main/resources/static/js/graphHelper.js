@@ -139,7 +139,7 @@ setInterval(function(){
     }
 
 
-}, 1000);
+}, 10000);
 /**
 *   A function that will expand a bubble
 *   @param nextID The ID of the node that needs to be expanded
