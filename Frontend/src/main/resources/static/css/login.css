@@ -635,7 +635,7 @@ pre {
 
       }
       #welcome{
-        font-size: 1em !important;
+        font-size: 1.5em !important;
       }
       .login-container{
           width: 80%;
@@ -694,11 +694,13 @@ pre {
 
       .avatar{
           background: #eee url("/images/bubblelogo.png");
-          width: 70px;height: 70px;
+          width:40%;
+          height: auto;
           /*margin: 10px auto 30px;*/
           border-radius: 100%;
-          border: 2px solid #aaa;
+          border: 0px solid #aaa;
           background-size: cover;
+          padding-top: 40%;
       }
       .
 
@@ -731,6 +733,12 @@ pre {
       .form-box button.login{
           margin-top:15px;
           padding: 10px 20px;
+      }
+      .form-box{
+        position: fixed;
+        top: 60%;
+        left:50%;
+        transform:translate(-50%,-50%);
       }
       .animated {
         -webkit-animation-duration: 1s;

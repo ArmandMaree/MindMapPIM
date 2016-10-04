@@ -23,7 +23,7 @@ body
 {
     color: #34a8d2!important;
     font: 10pt arial;
-    background-color:  #2d415c!important;
+    background-color:  white !important;
     overflow: hidden;
 }
 
@@ -33,7 +33,6 @@ body
     width: 100%;
     height:93.5vh;
     /*border: 1px solid #444444;*/
-    background-color: #ffffff ;  /*platinum: #eee5e9*/
     /*z-index: -1000;*/
 }
 #myCanvas 
@@ -140,11 +139,12 @@ h2{
               margin-top: 0;
               vertical-align: center;
           }
-          /*.navbar-text
-          {
-              font-size: 18pt !important;
-              padding-left: 0 !important;
-          }*/
+          #Branchrange{
+            color:white !important;
+          }
+          #Depthrange{
+            color:white !important;
+          }
           .email
           {
               background-color: white !important;
@@ -155,7 +155,7 @@ h2{
           {
               color: #34a8d2!important;
               font: 10pt arial;
-              background-color:  #2d415c!important;
+              background-color:  white !important;
           }
 
           #mynetwork {
@@ -163,20 +163,10 @@ h2{
               position: fixed;
               width: 100%;
               height:93.5vh;
-              /*border: 1px solid #444444;*/
-              background-color: #ffffff !important;  /*platinum: #eee5e9*/
+
               /*z-index: -1000;*/
           }
-          #myCanvas 
-          {
-              /*background-color: #b4c1d4 !important; */
-          }
-          /*#nav
-          {
-              margin-bottom: 0;
-              background-color: #0f4d71; /*#0b3954 !important;
-              color: white !important;
-          }*/
+
           #sidepanel{
               padding: 0.5em;
               /*opacity: 0.9;*/
@@ -195,21 +185,7 @@ h2{
               border-width: 2px !important;
               overflow:scroll; 
           }
-          /*.glyphicon
-          {
-              font-size: 14pt ;
-          }
-          #dropMenu > li
-              font-size: 16pt ;
-          }*/
-          /*#dropMenu > li
-          {
-            font-size: 12pt;
-          }*/
-          /*#dropMenu > span
-          {
-            font-size: 10pt;
-          }*/
+
           #sidepanelTitle{
               padding:5px;
               background-color:  rgba(15,77,113,0.8); 

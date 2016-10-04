@@ -66,11 +66,11 @@ var navbarReloadTextCondensed ="<a class='navbar-brand' href='#'><img alt='Brand
 /**
 *   @var {bool} shouldRebuild - Checks whether the mindmap should be saved if the user closes the session
 */
-var canExpand = false;
+var shouldRebuild = false;
 /**
 *   @var {bool} canExpand - Checks whether the mindmap can expand.
 */
-var shouldRebuild = false;
+var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
@@ -93,6 +93,9 @@ if(x!="1"){
 *   A JQuery function that allows the sidepanel to be resizeable
 */
 $( window ).resize(function() {
+    var map=getCookie("map");
+    console.log(map)
+    $("#mynetwork").css("backgroundColor", "#1E2019 !important")
     if($(window).width()<=768){
         $("#backfromsidebar").html(navbarReloadTextCondensed)
         $("#help").html("   Help");
@@ -161,6 +164,7 @@ $(document).ready(function(){
     if(map=='#1E2019'){
         nodecolor = '#1E2019';
         fontcolor= 'white'
+        $("#mynetwork").css("backgroundColor", "#1E2019 !important")
 
     }
     var sidepanel=getCookie("sidepanel");
@@ -173,7 +177,8 @@ $(document).ready(function(){
     }
     if(map!= "")
         $("#mynetwork").css("backgroundColor", map+" !important");
-
+    else
+        $("#mynetwork").css("backgroundColor", "white !important");
 
 
     if($(window).width()<=768){
