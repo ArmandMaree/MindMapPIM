@@ -22,22 +22,37 @@ public class GmailPollingUser implements Serializable {
 	/**
 	* Id of the user as used by the PIM.
 	*/
-	private String userId;
+	private String userId = null;
 
 	/**
 	* The refresh token that can be used to generate new access tokens.
 	*/
-	private String refreshToken;
+	private String refreshToken = null;
 
 	/**
-	* The email with the smallest date that was proccessed.
+	* The ID of the email that indicates the start of the block of emails that is currently being processed.
 	*/
-	private String earliestEmail;
+	private String startOfBlockEmailId = null;
 
 	/**
-	* The email with the largest date that was processed.
+	* The ID of the email that indicates the current email in the block of emails that is currently being processed.
 	*/
-	private String lastEmail;
+	private String currentEmailId = null;
+
+	/**
+	* The ID of the email that indicates the end of the block of emails that is currently being processed.
+	*/
+	private String endOfBlockEmailId = null;
+
+	/**
+	* Indicates whether this user has a poller running on this account.
+	*/
+	private boolean currentlyPolling = false;
+
+	/**
+	* Number of emails processed for this user.
+	*/
+	private int numberOfEmails = 0;
 
 	/**
 	* Default constructor
@@ -119,35 +134,91 @@ public class GmailPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of earliestEmail
-	* @return The id of the most recent item.
+	* Returns value of startOfBlockEmailId
+	* @return The ID of the email that indicates the start of the block of emails that is currently being processed.
 	*/
-	public String getEarliestEmail() {
-		return earliestEmail;
+	public String getStartOfBlockEmailId() {
+		return startOfBlockEmailId;
 	}
 
 	/**
-	* Sets new value of earliestEmail
-	* @param earliestEmail The id of the most recent item.
+	* Sets new value of startOfBlockEmailId
+	* @param startOfBlockEmailId The ID of the email that indicates the start of the block of emails that is currently being processed.
 	*/
-	public void setEarliestEmail(String earliestEmail) {
-		this.earliestEmail = earliestEmail;
+	public void setStartOfBlockEmailId(String startOfBlockEmailId) {
+		this.startOfBlockEmailId = startOfBlockEmailId;
 	}
 
 	/**
-	* Returns value of lastEmail
-	* @return The date of the latest item.
+	* Returns value of currentEmailId
+	* @return The ID of the email that indicates the current email in the block of emails that is currently being processed.
 	*/
-	public String getLastEmail() {
-		return earliestEmail;
+	public String getCurrentEmailId() {
+		return currentEmailId;
 	}
 
 	/**
-	* Sets new value of lastEmail
-	* @param lastEmail The date of the latest item.
+	* Sets new value of currentEmailId
+	* @param currentEmailId The ID of the email that indicates the current email in the block of emails that is currently being processed.
 	*/
-	public void setLastEmail(String lastEmail) {
-		this.lastEmail = lastEmail;
+	public void setCurrentEmailId(String currentEmailId) {
+		this.currentEmailId = currentEmailId;
+	}
+
+	/**
+	* Returns value of endOfBlockEmailId
+	* @return The ID of the email that indicates the end of the block of emails that is currently being processed.
+	*/
+	public String getEndOfBlockEmailId() {
+		return endOfBlockEmailId;
+	}
+
+	/**
+	* Sets new value of endOfBlockEmailId
+	* @param endOfBlockEmailId The ID of the email that indicates the end of the block of emails that is currently being processed.
+	*/
+	public void setEndOfBlockEmailId(String endOfBlockEmailId) {
+		this.endOfBlockEmailId = endOfBlockEmailId;
+	}
+
+	/**
+	* Returns value of currentlyPolling
+	* @return Indicates whether this user has a poller running on this account.
+	*/
+	public boolean getCurrentlyPolling() {
+		return currentlyPolling;
+	}
+
+	/**
+	* Sets new value of currentlyPolling
+	* @param currentlyPolling Indicates whether this user has a poller running on this account.
+	*/
+	public void setCurrentlyPolling(boolean currentlyPolling) {
+		this.currentlyPolling = currentlyPolling;
+	}
+
+	/**
+	* Returns value of numberOfEmails
+	* @return Number of emails processed for this user.
+	*/
+	public int getNumberOfEmails() {
+		return numberOfEmails;
+	}
+
+	/**
+	* Sets new value of numberOfEmails
+	* @param numberOfEmails Number of emails processed for this user.
+	*/
+	public void setNumberOfEmails(int numberOfEmails) {
+		this.numberOfEmails = numberOfEmails;
+	}
+
+	/**
+	* Increment the value of numberOfEmails
+	* @param numberOfEmails Number of emails processed for this user.
+	*/
+	public void incrementNumberOfEmails() {
+		numberOfEmails++;
 	}
 
 	/**
@@ -158,8 +229,11 @@ public class GmailPollingUser implements Serializable {
 	public String toString() {
 		return "PollingUser {\n" +
 			"\tid: " + id + ",\n" +
-			"userId: " + userId + ",\n" +
-			"refreshToken: " + refreshToken + "\n" +
+			"\tuserId: " + userId + ",\n" +
+			"\tstartOfBlockEmailId: " + startOfBlockEmailId + ",\n" +
+			"\tcurrentEmailId: " + currentEmailId + ",\n" +
+			"\tendOfBlockEmailId: " + endOfBlockEmailId + ",\n" +
+			"\tcurrentlyPolling: " + currentlyPolling + "\n" +
 		"}";
 	}
 }

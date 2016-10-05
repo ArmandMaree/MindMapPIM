@@ -55,6 +55,8 @@ public class Application implements CommandLineRunner {
 	@Autowired
 	private GmailRepository gmailRepository;
 
+	private MessageBroker messageBroker;
+
 	@Bean
 	public BusinessListener authCodeReceiver(GmailRepository gmailRepository) {
 		return new BusinessListener(gmailRepository);
@@ -74,11 +76,13 @@ public class Application implements CommandLineRunner {
 		try {
 			business.setMessageBroker(messageBrokerFactory.getMessageBroker());
 			frontend.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			messageBroker = messageBrokerFactory.getMessageBroker();
 		}
 		catch (MessageBrokerFactory.BeansNotSetUpException bnsue) {
 			bnsue.printStackTrace();
 			System.exit(1);
 		}
+
 		return messageBrokerFactory;
 	}
 
@@ -105,15 +109,13 @@ public class Application implements CommandLineRunner {
 			}
 		}
 
-		List<GmailPollingUser> pollingUsers = gmailRepository.findAll();
+		List<GmailPollingUser> pollingUsers = gmailRepository.findByCurrentlyPolling(true);
 
 		for (GmailPollingUser pollingUser : pollingUsers) {
-			if (pollingUser.getRefreshToken() != null && !pollingUser.getRefreshToken().equals("")) {
-				GmailPoller poller = new GmailPoller(gmailRepository, null, null, pollingUser.getUserId());
-				poller.setFirstId(pollingUser.getEarliestEmail());
-				poller.setLastDate(pollingUser.getLastEmail());
-				new Thread(poller).start();
-			}
+			pollingUser.setCurrentlyPolling(false);
+			gmailRepository.save(pollingUser);
+			GmailPoller poller = new GmailPoller(gmailRepository, messageBroker, null, pollingUser.getUserId());
+			new Thread(poller).start();
 		}
 	}
 }

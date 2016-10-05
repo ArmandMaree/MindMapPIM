@@ -31,17 +31,17 @@ public class BusinessListener {
 		System.out.println("Received: " + authCode);
 		GmailPollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
 
-		if (pollingUser == null) {
-			Poller poller = new GmailPoller(gmailRepository, messageBroker, authCode.getAuthCode(), authCode.getId());
-			new Thread(poller).start();
-		}
-		else {
-			if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
-				pollingUser.setRefreshToken(null);
-				gmailRepository.save(pollingUser);
+		if (authCode == null || authCode.equals(""))
+			pollingUser.setCurrentlyPolling(false);
+		else
+			if (pollingUser == null || !pollingUser.getCurrentlyPolling()) {
+				try {
+					Poller poller = new GmailPoller(gmailRepository, messageBroker, authCode.getAuthCode(), authCode.getId());
+					new Thread(poller).start();
+				}
+				catch (Exception ioe) {
+					ioe.printStackTrace();
+				}
 			}
-			else
-				new GmailPoller(gmailRepository, messageBroker, authCode.getAuthCode(), authCode.getId()); // this will update the pollingUser in the repository.
-		}
 	}
 }

@@ -15,4 +15,5 @@ import poller.GmailPollingUser;
 public interface GmailRepository extends MongoRepository<GmailPollingUser, String> {
 	public GmailPollingUser findByUserId(String userId);
 	public List<GmailPollingUser> findAll();
+	public List<GmailPollingUser> findByCurrentlyPolling(boolean currentlyPolling);
 }
