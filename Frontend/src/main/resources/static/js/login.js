@@ -464,6 +464,7 @@ jQuery(document).ready(function($){
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
 
+
 /**
 *	This function initialises the JavaScript SDK
 *	@property {String} appId - the id assigned to your app by Facebook
@@ -657,6 +658,7 @@ function onSuccessFacebook() {
 var divClone
 function liftup(){
  	divClone = $(".container").clone();
+
  	 $("#centreText4").slideUp( "medium", function() {
   	});
  	  $("#ptext").slideUp( "medium", function() {
@@ -679,7 +681,9 @@ function liftdown(){
 	$( "#landingside" ).slideDown( "slow", function() {
 	});
 	$( "#landingpage" ).slideDown( "slow", function() {
-    window.location.assign("/login")
+	$(".container").replaceWith(divClone);
+    gapi.auth2.getAuthInstance().signOut();
+    auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
  	});
 }
 
