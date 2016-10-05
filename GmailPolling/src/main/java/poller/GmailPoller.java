@@ -61,23 +61,13 @@ public class GmailPoller implements Poller {
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	private static HttpTransport HTTP_TRANSPORT;
 	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
-	private String userAuthCode;
+
 	private Gmail service = null;
-	private final String userId = "me";
-	private String lastEmailTimeStampDate = "1970/01/01";
-	private long lastEmailMilli = 0;
 	private boolean stop = false;
-	private String newestEmailId = "";
-	private String lastId = "";
-	private String refreshToken;
 	private GmailRepository gmailRepository;
-	private String userEmail = "";
-	private boolean processedOldEmails = false;
-	private Properties props;
 	private MessageBroker messageBroker;
-	private boolean firstPageDone = false;
-	private boolean oldDone = false;
-	private long MAX_OLD_EMAILS = 200;
+	private int MAX_OLD_EMAILS = 200;
+	private int MAX_PRIORITY_EMAILS = 25;
 	private GmailPollingUser pollingUser = null;
 
 	static {
@@ -99,18 +89,16 @@ public class GmailPoller implements Poller {
 	public GmailPoller(GmailRepository gmailRepository, MessageBroker messageBroker, String userAuthCode, String userEmail) throws IOException, UserNotFoundException {
 		this.gmailRepository = gmailRepository;
 		this.messageBroker = messageBroker;
-		this.userAuthCode = userAuthCode;
-		this.userEmail = userEmail;
 
 		if (userAuthCode != null && !userAuthCode.equals(""))
-			service = getGmailServiceFromAuthCode(); // Build a new authorized API client service.
+			service = getGmailServiceFromAuthCode(userAuthCode, userEmail); // Build a new authorized API client service.
 		else {
 			pollingUser = gmailRepository.findByUserId(userEmail);
 
 			if (pollingUser == null)
 				throw new UserNotFoundException("User " + userEmail + " not found in gmailRepository.");
 
-			service = getGmailServiceFromRefreshToken(); // Build a new authorized API client service.
+			service = getGmailServiceFromRefreshToken(userEmail); // Build a new authorized API client service.
 		}
 	}
 
@@ -119,7 +107,7 @@ public class GmailPoller implements Poller {
 	* @return An authorized Gmail client service
  	* @throws java.io.IOException IOException occurs.
 	*/
-	public Gmail getGmailServiceFromAuthCode() throws IOException {
+	public Gmail getGmailServiceFromAuthCode(String userAuthCode, String userEmail) throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
@@ -153,7 +141,7 @@ public class GmailPoller implements Poller {
 	* @return An authorized Gmail client service
  	* @throws java.io.IOException IOException occurs.
 	*/
-	public Gmail getGmailServiceFromRefreshToken() throws IOException {
+	public Gmail getGmailServiceFromRefreshToken(String userEmail) throws IOException {
 		String CLIENT_SECRET_FILE = "client_secret.json";
 		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
@@ -189,10 +177,10 @@ public class GmailPoller implements Poller {
 
 			while (!stop) {
 				poll();
-				pollingUser = gmailRepository.findByUserId(userEmail);
+				pollingUser = gmailRepository.findByUserId(pollingUser.getUserId());
 
 				if (!pollingUser.getCurrentlyPolling()) {
-					System.out.println("Poller stopping for " + userEmail + " due to no refreshToken (probably due to stop request).");
+					System.out.println("Poller stopping for " + pollingUser.getUserId() + " due to no refreshToken (probably due to stop request).");
 					pollingUser.setCurrentlyPolling(false);
 					gmailRepository.save(pollingUser);
 					return;
@@ -217,11 +205,7 @@ public class GmailPoller implements Poller {
 	public void poll() {
 		try {
 			// init service and list
-			service = getGmailServiceFromRefreshToken();
-			System.out.println("START");
-			System.out.println("Start: " + pollingUser.getStartOfBlockEmailId());
-			System.out.println("Current: " + pollingUser.getCurrentEmailId());
-			System.out.println("End: " + pollingUser.getEndOfBlockEmailId());
+			service = getGmailServiceFromRefreshToken(pollingUser.getUserId());
 			PagableGmailMessageList pagableMessageList = listNewMessages(null);
 
 			outerloop:
@@ -239,7 +223,7 @@ public class GmailPoller implements Poller {
 						break outerloop;
 
 					if (pollingUser.getNumberOfEmails() >= MAX_OLD_EMAILS && MAX_OLD_EMAILS != -1 && pollingUser.getEndOfBlockEmailId() == null) {
-						System.out.println("Max old emails reached for " + userEmail + ". Now only checking for new emails.");
+						System.out.println("Max old emails reached for " + pollingUser.getUserId() + ". Now only checking for new emails.");
 						break outerloop;
 					}
 
@@ -255,11 +239,7 @@ public class GmailPoller implements Poller {
 				}
 
 				if (pagableMessageList.nextPageToken != null) {
-					service = getGmailServiceFromRefreshToken();
-					System.out.println("NEXT RUN");
-					System.out.println("Start: " + pollingUser.getStartOfBlockEmailId());
-					System.out.println("Current: " + pollingUser.getCurrentEmailId());
-					System.out.println("End: " + pollingUser.getEndOfBlockEmailId());
+					service = getGmailServiceFromRefreshToken(pollingUser.getUserId());
 					pagableMessageList = listNewMessages(pagableMessageList.nextPageToken);
 				}
 				else
@@ -363,9 +343,9 @@ public class GmailPoller implements Poller {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userEmail + " firstPageDone: " + firstPageDone + " oldDone: " + oldDone);
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + pollingUser.getUserId() + " numberOfEmails: " + pollingUser.getNumberOfEmails() + " MAX_PRIORITY_EMAILS: " + MAX_PRIORITY_EMAILS);
 
-			if (!firstPageDone || oldDone)
+			if (pollingUser.getNumberOfEmails() <= MAX_PRIORITY_EMAILS)
 				messageBroker.sendPriorityRawData(rawData);
 			else
 				messageBroker.sendRawData(rawData);
@@ -387,7 +367,7 @@ public class GmailPoller implements Poller {
 
 		// have not started processing yet
 		if (pollingUser.getStartOfBlockEmailId() == null && pollingUser.getEndOfBlockEmailId() == null) {
-			response = service.users().messages().list(userId).execute();
+			response = service.users().messages().list("me").execute();
 		}
 		//started processing old emails, but have not finished
 		else if (pollingUser.getStartOfBlockEmailId() != null && pollingUser.getEndOfBlockEmailId() == null) {
@@ -401,9 +381,9 @@ public class GmailPoller implements Poller {
 			String query = "before:" + timestamp;
 			
 			if (nextPageToken == null)
-				response = service.users().messages().list(userId).setQ(query).execute();
+				response = service.users().messages().list("me").setQ(query).execute();
 			else
-				response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
+				response = service.users().messages().list("me").setQ(query).setPageToken(pageToken).execute();
 		}
 		// processing a middle block
 		else if (pollingUser.getStartOfBlockEmailId() != null && pollingUser.getEndOfBlockEmailId() != null) {
@@ -417,9 +397,9 @@ public class GmailPoller implements Poller {
 			String query = "before:" + timestamp + " after:" + getTimeStamp(getMimeMessage(getMessage(pollingUser.getEndOfBlockEmailId())));
 			
 			if (nextPageToken == null)
-				response = service.users().messages().list(userId).setQ(query).execute();
+				response = service.users().messages().list("me").setQ(query).execute();
 			else
-				response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
+				response = service.users().messages().list("me").setQ(query).setPageToken(pageToken).execute();
 		}
 		// finished processing old emails and need to process new emails
 		else if (pollingUser.getStartOfBlockEmailId() == null && pollingUser.getEndOfBlockEmailId() != null) {
@@ -429,9 +409,9 @@ public class GmailPoller implements Poller {
 			String query = "after:" + timestamp;
 			
 			if (nextPageToken == null)
-				response = service.users().messages().list(userId).setQ(query).execute();
+				response = service.users().messages().list("me").setQ(query).execute();
 			else
-				response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
+				response = service.users().messages().list("me").setQ(query).setPageToken(pageToken).execute();
 		}
 
 		List<Message> messages = new ArrayList<Message>();
@@ -466,7 +446,7 @@ public class GmailPoller implements Poller {
 	* @throws javax.mail.MessagingException Error retrieving email.
 	*/
   	public Message getMessage(String messageId) throws IOException, MessagingException {
-		Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
+		Message message = service.users().messages().get("me", messageId).setFormat("raw").execute();
 
 		return message;
 	}
@@ -605,7 +585,7 @@ public class GmailPoller implements Poller {
 			System.out.println("Contact: " + contact);
 		}
 
-		RawData rawData = new RawData("gmail", userEmail, involvedContacts, msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
+		RawData rawData = new RawData("gmail", pollingUser.getUserId(), involvedContacts, msgId, rawDataElements.toArray(new String[0]), getMilliSeconds(email));
 
 		return rawData;
 	}
