@@ -317,26 +317,4 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 
 		return remainingWords;
 	}
-
-	/**
-	* Takes a list of words and seperates it into names and non-names by using the {@link nlp.NameFinder} class.
-	* @param words The list of words that should be checked.
-	*/
-	public List<List<String>> splitNamesAndTopics(List<String> words) {
-		List<String> topics = new ArrayList<>();
-		List<String> names = new ArrayList<>();
-
-		for (String word : words) {
-			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word))
-				names.add(word);
-			else
-				topics.add(word);
-		}
-
-		List<List<String>> topicsAndPeople = new ArrayList<>();
-		topicsAndPeople.add(topics);
-		topicsAndPeople.add(names);
-
-		return topicsAndPeople;
-	}
 }
