@@ -74,11 +74,12 @@ var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
+var allPimIDlist = new Array();
+var sidebarexpanded =false;
 var nodecolor= 'white'
 var fontcolor= 'black'
 
 var nodePosition =0;
-var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
@@ -362,6 +363,7 @@ $(document).ready(function(){
         //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
             if(JSON.parse(serverResponse.body).items!=null){
+                sidebarexpanded =true;
                 var items = JSON.parse(serverResponse.body).items;
                 if($(window).width()<=768){
                     $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
@@ -754,7 +756,7 @@ $(document).ready(function(){
        $("#linkedIn").html("");
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
-
+        sidebarexpanded=false;
         if($(window).width()<=768){
             $("#backfromsidebar").html(navbarReloadTextCondensed)
             $("#help").html("   Help");

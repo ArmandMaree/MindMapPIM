@@ -463,7 +463,7 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
-
+	startApp()
 
 /**
 *	This function initialises the JavaScript SDK
