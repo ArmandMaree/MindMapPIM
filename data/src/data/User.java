@@ -54,7 +54,12 @@ public class User implements Serializable {
 	/**
 	* Specifies if the user has deregistered their account or not.
 	*/
-	private Boolean isActive = true;
+	private boolean isActive = true;
+
+	/**
+	* Indicates whether the bubble map should be cached on the client side.
+	*/
+	private boolean persistMap = true;
 
 	/**
 	* Default empty constructor.
@@ -274,11 +279,12 @@ public class User implements Serializable {
 	public void setBranchingFactor(int branchingFactor) {
 		this.branchingFactor = branchingFactor;
 	}
+
 	/**
 	* Returns value of isActive.
 	* @return True or False indicating if the user is active or not
 	*/
-	public Boolean getIsActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
 
@@ -286,8 +292,24 @@ public class User implements Serializable {
 	* Sets new value of isActive.
 	* @param isActive True or False indicating is the user is active or not.
 	*/
-	public void setIsActive(Boolean isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	/**
+	* Returns value of persistMap.
+	* @return Indicates whether the bubble map should be cached on the client side.
+	*/
+	public boolean getPersistMap() {
+		return persistMap;
+	}
+
+	/**
+	* Sets new value of persistMap.
+	* @param persistMap Indicates whether the bubble map should be cached on the client side.
+	*/
+	public void setPersistMap(boolean persistMap) {
+		this.persistMap = persistMap;
 	}
 
 	/**
