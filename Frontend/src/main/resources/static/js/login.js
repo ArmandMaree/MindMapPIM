@@ -79,10 +79,12 @@ var sendUserReg = function(){
 			document.cookie="userId="+jsonresponse.userId;
 			document.cookie="branch="+jsonresponse.branchingFactor;
 			document.cookie="depth="+jsonresponse.initialDepth;
-
-			for (var i = 0; i < jsonresponse.pimIds.length; i++) {
-				document.cookie=jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId;
-			}
+			document.cookie = "nav="+jsonresponse.theme[0];
+			document.cookie = "map="+jsonresponse.theme[1];
+			document.cookie = "sidepanel="+jsonresponse.theme[2];
+			alert(JSON.stringify(jsonresponse.pimIds));
+			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
+			
 			$("#loadingAlert").fadeOut(1000, function() {
 				
 			});
@@ -652,6 +654,23 @@ function onSuccessFacebook() {
 
   });
 }
+////////////////////////////////////////////////////////
+function onTwitterLogin()
+{
+	var Codebird = require("codebird");
+	var cb = new Codebird;
+	cb._call(
+		"oauth_requestToken",{oauth_callback:"oob"},function (reply){
+			cb.setToken(reply.oauthToken,reply.oauth_token_secret);
+			cb._call(
+				"oauth_authorize",{},function(auth_url){
+					window.codebird_auth = window.open(auth_url);
+				}
+			)
+		}
+	)
+}
+///////////////////////////////////////////////////////
 /**
 *	@var {HTMLContainer} divClone - This holds an html element that can be used to restore state of another html element
 */
