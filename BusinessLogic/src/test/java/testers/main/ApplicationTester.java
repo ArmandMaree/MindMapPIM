@@ -1,6 +1,7 @@
 package testers.main;
 
 import testers.AbstractTester;
+import listeners.*;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class ApplicationTester extends AbstractTester {
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
+	@Autowired
+	FrontendListener frontendListener;
+
 	@Before
 	public void setUp() {
 		if (!setUpDone) {
@@ -44,7 +48,8 @@ public class ApplicationTester extends AbstractTester {
 	}
 
 	@Test
-	public void testRabbitTemplate() {
+	public void testBeans() {
 		Assert.assertNotNull("Failure - rabbitTemplate is null. Is RabbitMQ running?", rabbitTemplate);
+		Assert.assertNotNull("Failure - frontendListener is null.", frontendListener);
 	}
 }

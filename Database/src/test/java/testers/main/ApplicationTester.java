@@ -55,22 +55,10 @@ public class ApplicationTester extends AbstractTester {
 	}
 
 	@Test
-	public void testRabbitTemplate() {
+	public void testBeans() {
 		Assert.assertNotNull("Failure - rabbitTemplate is null. Is RabbitMQ running?", rabbitTemplate);
-	}
-
-	@Test
-	public void testUserRepository() {
 		Assert.assertNotNull("Failure - userRepository is null. Is MongoDB running?", userRepository);
-	}
-
-	@Test
-	public void testPimProcessedDataRepository() {
 		Assert.assertNotNull("Failure - processedDataRepository is null. Is MongoDB running?", processedDataRepository);
-	}
-
-	@Test
-	public void testTopicRepository() {
 		Assert.assertNotNull("Failure - topicRepository is null. Is MongoDB running?", topicRepository);
 	}
 }

@@ -44,9 +44,6 @@ public class FrontendListenerTester extends AbstractTester {
 	RabbitTemplate rabbitTemplate;
 
 	@Autowired
-	FrontendListener frontendListener;
-
-	@Autowired
 	@Qualifier("testAuthCodeQueueDev")
 	private LinkedBlockingQueue<AuthCode> authCodeQueue;
 
@@ -68,16 +65,6 @@ public class FrontendListenerTester extends AbstractTester {
 	}
 
 	@Test
-	public void testRabbitTemplate() {
-		Assert.assertNotNull("Failure - rabbitTemplate is null. Is RabbitMQ running?", rabbitTemplate);
-	}
-
-	@Test
-	public void testFrontendListener() {
-		Assert.assertNotNull("Failure - frontendListener is null.", frontendListener);
-	}
-
-	@Test
 	public void testReceiveRegister() throws InterruptedException {
 		String id = UUID.randomUUID().toString();
 		String firstName = "Acuben";
@@ -91,6 +78,10 @@ public class FrontendListenerTester extends AbstractTester {
 		UserIdentified userIdentified = userIdentifiedQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failed - userIdentified is null.", userIdentified);
 	}
+
+	// TODO: testReceiveRegister1 Only 1 PIM
+	// TODO: testReceiveRegister1 2 PIMs
+	// TODO: testReceiveRegister1 No PIMs
 
 	@Test
 	public void testReceiveUserUpdateRequest() throws InterruptedException {
