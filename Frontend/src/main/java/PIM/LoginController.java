@@ -101,7 +101,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return user;
         }
     }
-////////////// AMY
 
     @MessageMapping("/usercheck")
     @SendToUser("/topic/request")
@@ -133,8 +132,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             System.out.println("No authcodes");
 
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),message.getAuthcodes());
-        //System.out.println("Java auth codes length:"+ message.getAuthcodes().length);
-        request.setTheme(null);
+         request.setTheme(null);
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
         System.out.println(request);
@@ -165,22 +163,18 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received response!");
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response.getCode());
 
         return response;
     }
     @MessageMapping("/mapsettings")
-    // @SendTo("/topic/request")
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme (MapSettings message) throws Exception {
         String id = UUID.randomUUID().toString();
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
-        
+        request.setPersistMap(message.getPersistMap());
         System.out.println(request);
         
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
@@ -190,9 +184,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response);
 
         return response;
@@ -217,15 +208,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
-        System.out.println("Settings response: " +response);
+       System.out.println("Settings response: " +response);
 
         return response;
     }
 
-/////////////////
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
