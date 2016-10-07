@@ -83,7 +83,6 @@ var sendUserReg = function(){
 			document.cookie = "map="+jsonresponse.theme[1];
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "persistMap="+jsonresponse.persistMap;
-			alert(JSON.stringify(jsonresponse.pimIds));
 			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
 			
 			$("#loadingAlert").fadeOut(1000, function() {
