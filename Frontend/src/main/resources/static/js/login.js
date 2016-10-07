@@ -82,6 +82,7 @@ var sendUserReg = function(){
 			document.cookie = "nav="+jsonresponse.theme[0];
 			document.cookie = "map="+jsonresponse.theme[1];
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
+			document.cookie = "persistMap="+jsonresponse.persistMap;
 			alert(JSON.stringify(jsonresponse.pimIds));
 			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
 			
@@ -424,6 +425,7 @@ function loadXMLDoc(){
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
+			document.cookie = "persistMap="+jsonresponse.persistMap;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);

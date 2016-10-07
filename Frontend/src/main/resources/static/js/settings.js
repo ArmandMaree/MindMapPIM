@@ -47,6 +47,10 @@ $(document).ready(function(){
 	$("#userPreferences").hide();
 	$("#Saved").hide();
 	$("#Error").hide();
+	if(getCookie("persistMap") == true)
+	{
+		$("reloadGraph").attr("checked",true);
+	}
 	
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
@@ -134,10 +138,10 @@ $(document).ready(function(){
 	*	Changes the colour of the drop down button according to the user's settings
 	*/
 	$("#sidePanelColour").css("backgroundColor",getCookie("sidepanel"));
-
   	/**
   	*	This function sets up the first number spinner
   	*/
+
     $('#spinner').spinner({
         min: 2,
         max: 5,
@@ -174,7 +178,8 @@ $(document).ready(function(){
 	var userPreferences={
 		userId:"",
 		initialDepth:0,
-		initialBranchFactor:0
+		initialBranchFactor:0,
+		persistMap:true
 	};
 	/**
 	*	Function that obtains the new theme selected by the user and constructs the object to send via the websocket
@@ -337,6 +342,7 @@ var branch=0;
 /**
 *	Function that is called when the user clicks Save on the user preferences page
 */
+var persistMap;
 function saveUserPreferences()
 {
     document.cookie = "mustreload=true";
@@ -344,7 +350,14 @@ function saveUserPreferences()
 	console.log("Branch: "+branch);
 	depth = $("#spinner2").val();
 	console.log("Depth: "+depth);
-
+	if($("#reloadGraph").attr("checked") == "checked")
+	{
+		userPreferences.persistMap= true;
+	}
+	else
+	{
+		userPreferences.persistMap=false;
+	}
 	if(branch != null || branch!="")
 	{
 		userPreferences.initialBranchFactor = branch;
@@ -371,6 +384,8 @@ function saveUserPreferences()
 				});
 				document.cookie = "depth="+ depth;
 				document.cookie = "branch="+branch;
+				document.cookie = "persistMap"+ userPreferences.persistMap;
+
 			}
 			else if(response.code == 99 || response.code ==1)
 			{
@@ -522,6 +537,7 @@ function SaveAccountChanges()
 	});
 		
 }
+
 	
 
 
