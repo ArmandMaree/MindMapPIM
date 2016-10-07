@@ -166,7 +166,7 @@ $(document).ready(function(){
 	*/
 	var themeObject={
 		"userId":"",
-		"theme":["#0f4d71","#ffffff","#0f4d71"]
+		"theme":[getCookie("nav"),getCookie("map"),getCookie("sidepanel")]
 	};
 	/**
 	*	@var {JsonObject} userPreferences - The object that contains the users preferences
@@ -282,6 +282,8 @@ $(document).ready(function(){
 				stompClient.send("/app/deactivate", {}, JSON.stringify(deactivate));
 			});
 	});
+checkDatabase();
+
 
 }); //End of on load
 /**
@@ -289,16 +291,19 @@ $(document).ready(function(){
 */
 window.onload = function()
 {
+	$("#Loading").show();
 	checkDatabase();
+	console.log("On window load");
 }
 /**
 *	Function that checks the database to determine which data sources the user has selected 
 */
 function checkDatabase()
 {
-		$("#Loading").fadeIn(3000,function(){
+		console.log("Checking database");
+		// $("#Loading").fadeIn(3000,function(){
 
-		});
+		// });
 		var pimIds = JSON.parse(getCookie("pimIds"));
 		
 		for(var i = 0 ; i < pimIds.length; i++)
