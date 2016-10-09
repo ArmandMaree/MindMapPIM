@@ -53,7 +53,13 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	@Autowired
+	private ApplicationContext appContext;
+
+	@Autowired
 	private GmailRepository gmailRepository;
+
+	@Autowired
+	private MessageBrokerFactory messageBrokerFactory;
 
 	private MessageBroker messageBroker;
 
@@ -95,9 +101,9 @@ public class Application implements CommandLineRunner {
 		for (String arg : args) {
 			switch (arg) {
 				case "testaccount":
-					// System.out.println("Setting up test account.");
-					// GmailPoller poller = new GmailPoller(gmailRepository, rabbitTemplate, "4/W4n6Kmnm1JP-WmVLwbG8cusspwoh2FCl0-iRXp8zoTo", "acubencos@gmail.com", "http://codehaven.co.za/");
-					// new Thread(poller).start();
+					System.out.println("Setting up test account.");
+					GmailPoller poller = new GmailPoller(gmailRepository, messageBroker, "4/W4n6Kmnm1JP-WmVLwbG8cusspwoh2FCl0-iRXp8zoTo", "acubencos@gmail.com");
+					new Thread(poller).start();
 					break;
 				case "cleandb":
 					System.out.println("Cleaning all databases...");
