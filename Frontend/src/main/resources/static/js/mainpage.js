@@ -253,7 +253,6 @@ $(document).ready(function(){
         flagHasNodesToLoad =true;
     }
 
-    // tempedges =getCookie("edges");
     tempedges = localStorage.getItem('edges')
     if(tempedges==""||tempedges==null){
         if(mocktesting){
@@ -266,7 +265,23 @@ $(document).ready(function(){
         }
     }else{
         console.log(localStorage.getItem('edges'))
-        edges =JSON.parse(localStorage.getItem('edges'));
+
+        var temp = localStorage.getItem('edges');
+        // {"from":1,"to":0}
+        var count=0;
+        for(var i =0;i<2;i++){
+            if(temp.indexOf('{"from":1,"to":0}')!=-1){
+                count++;
+            }
+        }
+        if(count == 2){
+            temp =temp.replace('{"from":1,"to":0},','');
+            edges =JSON.parse(temp);
+
+        }else{
+            edges =JSON.parse(localStorage.getItem('edges'));
+        }
+
     }
 
     tempparent = localStorage.getItem('parentlist');
