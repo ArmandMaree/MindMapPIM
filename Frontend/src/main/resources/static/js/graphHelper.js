@@ -126,20 +126,20 @@ setInterval(function(){
                 datenow = c.substring(name1.length,c.length);
             }
         }
-    
-        if(Date.now()-datenow > 60000){
+        
+        if(Date.now()-datenow > 600000){
             $("#loadingAlert").fadeOut(1000, function() {
                     // body...
             });
             $("#loadingAlertWarning").fadeIn(1000, function() {
                 // body...
             });
-            $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
+            $("#loadingAlertWarning").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type="button" class="button btn btn-warning btn-block" onclick="refreshGraph()" >Refresh</button> ');
         }
     }
 
 
-}, 10000);
+}, 1000);
 /**
 *   A function that will expand a bubble
 *   @param nextID The ID of the node that needs to be expanded

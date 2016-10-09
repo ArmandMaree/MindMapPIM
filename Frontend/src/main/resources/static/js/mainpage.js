@@ -780,8 +780,7 @@ $(document).ready(function(){
     });
      // A function that handles the doubleClick event on the BubbleMap
     
-    network.on("doubleClick", function(){
-
+    network.on("doubleClick", function(e){
         $("#accordion").html("");
         $("#facebook").html("");
         $("#gmail").html("");
@@ -792,21 +791,10 @@ $(document).ready(function(){
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
-        var name1 = "lastselectednode=";
-        var ca1 = document.cookie.split(';');
-        var selectedID ="";
-        for(var i = 0; i <ca1.length; i++) {
-            var c = ca1[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name1) == 0) {
-                selectedID = c.substring(name1.length,c.length);
-            }
-        }
-        var node = network.getSelectedNodes();
-        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        var node = getCookie("lastselectednode");
+        console.log(node);
         selectedID = node;
+        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
 
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
@@ -856,5 +844,9 @@ $(document).ready(function(){
         }
 
     });
- 
+
+    network.on("selectNode", function(e){
+        console.log(e.nodes);
+        document.cookie="lastselectednode="+e.nodes[0];
+    });
 });
