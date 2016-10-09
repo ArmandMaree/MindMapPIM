@@ -274,6 +274,9 @@ $(document).ready(function(){
     if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
 
+    if(tempparent!="" &&tempparent!=null)
+        allPimIDlist = JSON.parse(localStorage.getItem('pimlist'));
+
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
 
@@ -370,7 +373,7 @@ $(document).ready(function(){
                 }else{
                     $("#backfromsidebar").html(navbarReloadTextCondensed)
                 }
-                var selectedID = network.getSelectedNodes();
+                var selectedID = getCookie("lastselectednode");
                 $("#sidepanel").show();
 
                 var pathtoselectednode=[];
@@ -601,11 +604,13 @@ $(document).ready(function(){
 
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
+                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
+                    localStorage.setItem('pimlist', "");
                 }
             }
             expandBubble(expandlist.shift());

@@ -18,6 +18,8 @@ function logout()
     localStorage.setItem('nodes', "");
     localStorage.setItem('edges', "");
     localStorage.setItem('parentlist', "");
+    localStorage.setItem('pimlist', "");
+    
     window.location.assign('/');
 
 }
