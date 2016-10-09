@@ -4,15 +4,15 @@ public class PollingConfiguration {
 	public String pollerName;
 	public Object authCodeListener;
 	public String authCodeMethod;
-	public Object itemListener;
-	public String itemMethod;
+	public Object itemRequestListener;
+	public String itemRequestMethod;
 
-	public PollingConfiguration(String pollerName, Object authCodeListener, String authCodeMethod, Object itemListener, String itemMethod) {
+	public PollingConfiguration(String pollerName, Object authCodeListener, String authCodeMethod, Object itemRequestListener, String itemRequestMethod) {
 		this.pollerName = pollerName;
 		this.authCodeListener = authCodeListener;
 		this.authCodeMethod = authCodeMethod;
-		this.itemListener = itemListener;
-		this.itemMethod = itemMethod;
+		this.itemRequestListener = itemRequestListener;
+		this.itemRequestMethod = itemRequestMethod;
 	}
 
 	public String getPollerName() {
@@ -39,19 +39,30 @@ public class PollingConfiguration {
 		this.authCodeMethod = authCodeMethod;
 	}
 
-	public Object getItemListener() {
-		return itemListener;
+	public Object getItemRequestListener() {
+		return itemRequestListener;
 	}
 
-	public void setItemListener(Object itemListener) {
-		this.itemListener = itemListener;
+	public void getItemRequestListener(Object itemRequestListener) {
+		this.itemRequestListener = itemRequestListener;
 	}
 
-	public String getItemMethod() {
-		return itemMethod;
+	public String getItemRequestMethod() {
+		return itemRequestMethod;
 	}
 
-	public void setItemMethod(String itemMethod) {
-		this.itemMethod = itemMethod;
+	public void setItemRequestMethod(String itemRequestMethod) {
+		this.itemRequestMethod = itemRequestMethod;
+	}
+
+	@Override
+	public String toString() {
+		return "PollingConfiguration {\n" +
+			"\tpollerName: " + pollerName + "\n" +
+			"\tauthCodeListener: " + authCodeListener + "\n" +
+			"\tauthCodeMethod: " + authCodeMethod + "\n" +
+			"\titemRequestListener: " + itemRequestListener + "\n" +
+			"\titemRequestMethod: " + itemRequestMethod + "\n" +
+		"}\n";
 	}
 }

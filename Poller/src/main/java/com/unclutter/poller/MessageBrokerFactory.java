@@ -59,11 +59,6 @@ public class MessageBrokerFactory {
 	}
 
 	@Bean
-	private MessageListenerAdapter authCodeAdapter() {
-		return new MessageListenerAdapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
-	}
-
-	@Bean
 	private Queue authCodeQueue() {
 		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
 		return new Queue(queueName, false);
@@ -76,8 +71,15 @@ public class MessageBrokerFactory {
 	}
 
 	@Bean
+	private MessageListenerAdapter authCodeAdapter() {
+		System.out.println("Creating authCodeAdapter for: " + pollerConfig.getAuthCodeListener() + "   " + pollerConfig.getAuthCodeMethod());
+		return new MessageListenerAdapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
+	}
+
+	@Bean
 	private SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeAdapter") MessageListenerAdapter listenerAdapter) {
 		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
+		System.out.println("Creating authCodeContainer for: " + queueName);
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(queueName);
