@@ -281,7 +281,9 @@ $(document).ready(function(){
         }else{
             edges =JSON.parse(localStorage.getItem('edges'));
         }
-
+        $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+        });
     }
 
     tempparent = localStorage.getItem('parentlist');
