@@ -823,7 +823,17 @@ $(document).ready(function(){
                 $.each(allPimIDlist[selectedID][i], function(j, el){
                     if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
                 });
-                var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+                // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+             var pimIds = JSON.parse(getCookie("pimIds"));
+            var ID = "";
+            for(var i = 0 ; i < pimIds.length; i++)
+            {
+                var current = pimIds[i];        
+                if(current.pim == allPimIDlist[selectedID][i][0])
+                {
+                    ID =current.uId
+                }
+            }
             if(!mocktesting)
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
             else

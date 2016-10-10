@@ -79,10 +79,12 @@ var sendUserReg = function(){
 			document.cookie="userId="+jsonresponse.userId;
 			document.cookie="branch="+jsonresponse.branchingFactor;
 			document.cookie="depth="+jsonresponse.initialDepth;
-
-			for (var i = 0; i < jsonresponse.pimIds.length; i++) {
-				document.cookie=jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId;
-			}
+			document.cookie = "nav="+jsonresponse.theme[0];
+			document.cookie = "map="+jsonresponse.theme[1];
+			document.cookie = "sidepanel="+jsonresponse.theme[2];
+			document.cookie = "persistMap="+jsonresponse.persistMap;
+			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
+			
 			$("#loadingAlert").fadeOut(1000, function() {
 				
 			});
@@ -422,6 +424,7 @@ function loadXMLDoc(){
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
+			document.cookie = "persistMap="+jsonresponse.persistMap;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
@@ -652,6 +655,12 @@ function onSuccessFacebook() {
 
   });
 }
+////////////////////////////////////////////////////////
+function onTwitterLogin()
+{
+
+}
+///////////////////////////////////////////////////////
 /**
 *	@var {HTMLContainer} divClone - This holds an html element that can be used to restore state of another html element
 */
