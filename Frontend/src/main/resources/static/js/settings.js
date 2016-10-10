@@ -38,7 +38,7 @@ $( window ).resize(function() {
     }
 });
 $(document).ready(function(){
-
+	$('#reloadGraph').bootstrapSwitch();
 	var navcolour = getCookie("nav");
 	$("#nav").css("backgroundColor",navcolour);
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -50,7 +50,7 @@ $(document).ready(function(){
 	if(getCookie("persistMap") == true)
 	{
 		$("reloadGraph").attr("checked",true);
-	}
+	} 
 	
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");

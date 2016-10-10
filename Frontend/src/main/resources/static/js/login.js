@@ -658,18 +658,7 @@ function onSuccessFacebook() {
 ////////////////////////////////////////////////////////
 function onTwitterLogin()
 {
-	var Codebird = require("codebird");
-	var cb = new Codebird;
-	cb._call(
-		"oauth_requestToken",{oauth_callback:"oob"},function (reply){
-			cb.setToken(reply.oauthToken,reply.oauth_token_secret);
-			cb._call(
-				"oauth_authorize",{},function(auth_url){
-					window.codebird_auth = window.open(auth_url);
-				}
-			)
-		}
-	)
+
 }
 ///////////////////////////////////////////////////////
 /**
