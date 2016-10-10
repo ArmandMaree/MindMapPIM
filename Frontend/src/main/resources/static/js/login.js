@@ -658,7 +658,7 @@ function onSuccessFacebook() {
 ////////////////////////////////////////////////////////
 function onTwitterLogin()
 {
-
+	window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
 }
 ///////////////////////////////////////////////////////
 /**

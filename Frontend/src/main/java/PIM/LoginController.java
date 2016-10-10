@@ -60,6 +60,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/").setViewName("mainpage");
         registry.addViewController("/help").setViewName("help");
+        registry.addViewController("/twitter").setViewName("twitter");
     }
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String showLogin() {
@@ -365,5 +366,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return "help";
     }
 
+    @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    public String showTwitter() {
+        return "twitter";
+    }
 
 }
