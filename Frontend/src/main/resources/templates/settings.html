@@ -1,42 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
   	<head>
-	  	<meta http-equiv="Content-Type" content="text/html;a charset=UTF-8"></meta>
-	    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-		<meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
-		<title>Settings</title>
-		<meta name="theme-color" content="#0f4d71"></meta>
-		<link href="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css" rel="stylesheet" type="text/css"/>
-		<link href="/css/settings.css" rel="stylesheet" />
-		<link href="/css/navbar.css" rel="stylesheet" type="text/css"/>
-		<link href="/bootstrap/css/bootstrap-social.css" rel="stylesheet" id="bootstrap-css"></link>
-		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
-	    <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway" rel="stylesheet"></link>
-		
+	  <meta http-equiv="Content-Type" content="text/html;a charset=UTF-8"></meta>
+	  <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+	  <meta name="google-signin-client_id" content="570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com"></meta>
+	  <title>Settings</title>
+	  <meta name="theme-color" content="#0f4d71"></meta>
+	  <link href="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css" rel="stylesheet" type="text/css"/>
+	  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
+	  <link href="/css/settings.css" rel="stylesheet" />
+	  <link href="/css/navbar.css" rel="stylesheet" type="text/css"/>
+	  <link href="/bootstrap/css/bootstrap-social.css" rel="stylesheet" id="bootstrap-css"></link>
+	  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
+      <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway" rel="stylesheet"></link>
 
-		 
-		<script src="https://code.jquery.com/jquery-1.12.3.min.js" type="text/javascript" ></script>
-		<script src="/js/helperFunctions.js"></script>
-		<script src="/js/logout.js"></script>
-		<script src="/js/settings.js"></script>
-		<script src="/js/facebook.js"></script>
-		<script src="/js/google.js"></script> 
+	  <script src="https://code.jquery.com/jquery-1.12.3.min.js" type="text/javascript" ></script>
+	  <script src="/js/jquery-2.1.0.min.js"></script>
+	  <script src="/js/helperFunctions.js"></script>
+	  <script src="/js/logout.js"></script>
+	  <script src="/js/settings.js"></script>
+	  <script src="/js/facebook.js"></script>
+	  <script src="/js/google.js"></script> 
 
+	  <script src="/bootstrap/js/bootstrap.min.js"></script>
+	  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+      <script src="https://apis.google.com/js/api:client.js"></script>
 
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-	    <script src="https://apis.google.com/js/api:client.js"></script>
+      
 
-	      
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
+    <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
 
-	    <script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
-	    <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
-
-      	<script src="/js/stomp.min.js"></script>
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.min.css" rel="stylesheet" type="text/css"></link>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" type="text/javascript" ></script>
+    <script src="/js/stomp.min.js"></script>
   </head>
   <body>
          <nav id="nav" class="navbar navbar-default">
@@ -45,7 +42,7 @@
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
-                <span class="icon-bar"></span> 
+                <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
               <div id="backfromsidebar">
@@ -61,7 +58,22 @@
          
               <ul class="nav navbar-nav navbar-right">
               <li><a href="/help" title="Help" onclick="help()"><span class="glyphicon glyphicon-question-sign"><span   id="help"></span></span></a></li>
-          
+              <!-- <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Settings"><span class="glyphicon glyphicon-cog"  id="settings"></span></a>
+                  <ul id="dropMenu" class="dropdown-menu">
+                    <li><a href="#">Set branch factor</a></li>
+                    <li><a href="#">Set depth limit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Reset graph</a></li>
+                    <li><a href="#"><span  style="font-size:10pt" class="glyphicon glyphicon-remove-circle"></span> Clear graph</a></li>
+                    
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
+                     <li><a href="#">Separated link</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">One more separated link</a></li> 
+                  </ul>
+                </li> -->
                 <li><a title="Logout" onclick="logout()"><span class="glyphicon glyphicon-log-out"><span   id="logout"></span></span></a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
@@ -72,7 +84,7 @@
 	          <br />
 	          <ul class="nav nav-tabs">
 	            <li role="presentation" class="active"><a>Account</a></li>
-	            <li role="presentation"><a id="theme">Theme</a></li>
+	            <li role="presentation"><a>Theme</a></li>
 	            <li role="presentation"><a>User Preferences</a></li>
 	          </ul>
 	          <div id="inject">
@@ -179,15 +191,6 @@
 							<input class="depth" id="spinner2" />
 							<br />
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12">
-						<br />
-		              		<h5 style="padding: 0px" title="Saves the state of your BubbleMap and restores it to that state when you log in again."><b>Reload graph after every refresh:</b></h5>
-		              	</div>
-						<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
-							<input type="checkbox" id="reloadGraph"/>
-						</div>
-		              <!-- 	<div class="col-xs-offset-1 col-xs-11 col-sm-offset-1 col-sm-11 col-md-offset-1 col-md-11">
-						</div> -->
 						<div class="col-xs-offset-5 col-xs-7 col-sm-offset-9 col-sm-3 col-md-offset-10 col-md-2">
 								<br />
 						  		<button type="submit" id="saveUserPreferences" class="btn btn-success" onclick="saveUserPreferences()">Save Changes</button>

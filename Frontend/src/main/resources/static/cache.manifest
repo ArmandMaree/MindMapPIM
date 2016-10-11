@@ -1,10 +1,12 @@
 CACHE MANIFEST
+
 /js/vis.js
 /js/jquery-2.1.0.min.js
 /js/logout.js
 /bootstrap/js/bootstrap.min.js 
 /js/stomp.min.js
 /js/fpsmeter.js
+/js/basket.full.min.js
 /bootstrap/css/bootstrap.min.css
 /css/vis.css
 /images/bubblelogo.png

@@ -19,6 +19,9 @@ var AuthResponse;
 	{
 		var accessToken = response.authResponse.accessToken;
 		AuthResponse=response;
+		document.cookie = "facebookId="+ String(response.authResponse.userID);
+	 	document.cookie = "fAT="+ response.authResponse.accessToken;
+	  	document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
 		// console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
 		testAPI();

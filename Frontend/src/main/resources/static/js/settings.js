@@ -38,7 +38,7 @@ $( window ).resize(function() {
     }
 });
 $(document).ready(function(){
-	$('#reloadGraph').bootstrapSwitch();
+
 	var navcolour = getCookie("nav");
 	$("#nav").css("backgroundColor",navcolour);
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -47,10 +47,6 @@ $(document).ready(function(){
 	$("#userPreferences").hide();
 	$("#Saved").hide();
 	$("#Error").hide();
-	if(getCookie("persistMap") == true)
-	{
-		$("reloadGraph").attr("checked",true);
-	} 
 	
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
@@ -70,6 +66,7 @@ $(document).ready(function(){
 			$("#ques").html("");
 			$("#googlesigninButton").attr("onclick","checkGoogle()");
 			$("#facebooksignin").attr("onclick","checkFacebook()");
+			$("#twittersignin").attr("onclick","checkTwitter()");
 			// alert("Ajax success!");
 		} 
 
@@ -138,10 +135,10 @@ $(document).ready(function(){
 	*	Changes the colour of the drop down button according to the user's settings
 	*/
 	$("#sidePanelColour").css("backgroundColor",getCookie("sidepanel"));
+
   	/**
   	*	This function sets up the first number spinner
   	*/
-
     $('#spinner').spinner({
         min: 2,
         max: 5,
@@ -152,7 +149,7 @@ $(document).ready(function(){
   	*/
     $('#spinner2').spinner({
         min: 2,
-        max: 40,
+        max: 7,
         step: 1
     }).val(2);
 
@@ -170,7 +167,7 @@ $(document).ready(function(){
 	*/
 	var themeObject={
 		"userId":"",
-		"theme":[getCookie("nav"),getCookie("map"),getCookie("sidepanel")]
+		"theme":["#0f4d71","#ffffff","#0f4d71"]
 	};
 	/**
 	*	@var {JsonObject} userPreferences - The object that contains the users preferences
@@ -287,8 +284,6 @@ $(document).ready(function(){
 				stompClient.send("/app/deactivate", {}, JSON.stringify(deactivate));
 			});
 	});
-checkDatabase();
-
 
 }); //End of on load
 /**
@@ -296,34 +291,61 @@ checkDatabase();
 */
 window.onload = function()
 {
-	$("#Loading").show();
 	checkDatabase();
-	console.log("On window load");
 }
 /**
 *	Function that checks the database to determine which data sources the user has selected 
 */
 function checkDatabase()
 {
-		console.log("Checking database");
-		// $("#Loading").fadeIn(3000,function(){
+		$("#Loading").fadeIn(3000,function(){
+		});
 
-		// });
-		var pimIds = JSON.parse(getCookie("pimIds"));
+	var socket = new SockJS('/hello');
+	stompClient = Stomp.over(socket);
+	stompClient.connect({}, function(frame) {
+	    connected = true;
+	  	var userReg = {};
+	  	var pimIds = JSON.parse(getCookie("pimIds"));
+	  	if(pimIds[0].pim =="gmail")
+			userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:pimIds[0].uId,pimSource:"gmail",authCode:null},]};
+		else
+			userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:pimIds[0].uId,pimSource:"facebook",authCode:null},]};
+
+	  
+		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			
+			document.cookie="pimIds="+JSON.stringify(jsonresponse.pimIds);
+			
+			$("#loadingAlert").fadeOut(1000, function() {
+				 
+			});
+		}, function(error) {
+	    		console.log(error.headers.message);
+  		});
+			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+	});
+		 pimIds = JSON.parse(getCookie("pimIds"));
 		
 		for(var i = 0 ; i < pimIds.length; i++)
 		{
 			var current = pimIds[i];
 			var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();			
-			if(current.pim == "gmail")
+			if(current.pim == "gmail" && current.uId != "")
 			{
 				$(id).show();
 				$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
 			}
-			if(current.pim == "facebook")
+			if(current.pim == "facebook" && current.uId != "")
 			{
 				$(id).show();
 				$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
+			}
+			if(current.pim == "twitter" && !current.uId.includes("stop"))
+			{
+				$(id).show();
+				$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='g' style='font-size:11pt'>Remove Twitter</span>");
 			}
 		} 
 		$("#Loading").fadeOut(1000,function(){
@@ -342,7 +364,6 @@ var branch=0;
 /**
 *	Function that is called when the user clicks Save on the user preferences page
 */
-var persistMap;
 function saveUserPreferences()
 {
     document.cookie = "mustreload=true";
@@ -350,14 +371,7 @@ function saveUserPreferences()
 	console.log("Branch: "+branch);
 	depth = $("#spinner2").val();
 	console.log("Depth: "+depth);
-	if($("#reloadGraph").attr("checked") == "checked")
-	{
-		userPreferences.persistMap= true;
-	}
-	else
-	{
-		userPreferences.persistMap=false;
-	}
+
 	if(branch != null || branch!="")
 	{
 		userPreferences.initialBranchFactor = branch;
@@ -365,6 +379,14 @@ function saveUserPreferences()
 	if(depth != null || depth != "")
 	{
 		userPreferences.initialDepth = depth;
+	}
+	if($("#reloadGraph").attr("checked") == "checked")
+	{
+		userPreferences.persistMap= true;
+	}
+	else
+	{
+		userPreferences.persistMap=false;
 	}
 	userPreferences.userId = getCookie("userId");
 	console.log("Save user preferences");
@@ -384,8 +406,6 @@ function saveUserPreferences()
 				});
 				document.cookie = "depth="+ depth;
 				document.cookie = "branch="+branch;
-				document.cookie = "persistMap"+ userPreferences.persistMap;
-
 			}
 			else if(response.code == 99 || response.code ==1)
 			{
@@ -464,6 +484,61 @@ function checkGoogle()
 		 		$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
 				
 			},2000);
+	} 
+}
+var interval;
+function onTwitterLogin()
+{
+	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
+  	win.focus();
+  	
+   	interval = setInterval(function(){ 
+  		if(win.closed == true)
+	  	{
+	  		if(localStorage.getItem("twitterUser"))
+	  		{
+	  			console.log("Local storage has been set")
+				var twitter = localStorage.getItem("twitterUser");
+				setTwitterAuthCode(twitter);
+
+	  		}
+	  	}
+		
+	},1000)  		
+
+}
+function setTwitterAuthCode(twitter)
+{
+	clearInterval(interval);
+	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	$("#tickTwitter").show();	
+ 	$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
+  	$("#Loading").fadeOut(1000, function(){}); 	
+}
+/**
+*	Function that is called when the Facebook button is clicked on the account settings page
+*/
+function checkTwitter()
+{
+	if($("#tickTwitter").is(":visible") == true)
+	{
+		$("#tickTwitter").hide();
+		$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Twitter</span>");
+		var twitterUsername =findPim("twitter");
+		var twitterAuthCode = {id:"stop:"+twitterUsername,pimSource:"twitter",authCode:""};
+		UpdateSourcesObject.authcodes.push(twitterAuthCode);
+		console.log("TwitterAuthCode: " + JSON.stringify(twitterAuthCode));
+		
+	}
+	else
+	{
+		$("#Loading").fadeIn(1000, function() { 
+		});
+		onTwitterLogin();
+ 		// $("#Loading").fadeOut(1000, function(){}); 	
+ 		// $("#tickTwitter").show();
+ 		// $("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
+ 		
 	}
 }
 /**
@@ -478,7 +553,7 @@ function checkFacebook()
 	if($("#tickFacebook").is(":visible") == true)
 	{
 		var userId =findPim("facebook");
-		var facebookAuthCode = {id:AuthResponse.userID,pimSource:"facebook",authCode:null}
+		var facebookAuthCode = {id:userId,pimSource:"facebook",authCode:null}
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);
 	}
@@ -487,8 +562,7 @@ function checkFacebook()
 		FB.login(function(response) {
 			if (response.authResponse) {
 			   AuthResponse = response.authResponse;
-			  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"facebook","authCode":AuthResponse.accessToken,"expireTime":AuthResponse.expiresIn};
-			  console.log(response.authResponse);
+			  console.log("Facebook authcode:" +JSON.stringify(response.authResponse));
 			  showtick();
 			}
 			FB.getLoginStatus(function(response) {
@@ -496,6 +570,7 @@ function checkFacebook()
 					
 			});
 		});
+		facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
 		setTimeout(function(){
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);	
 		},2000);
@@ -533,6 +608,7 @@ function SaveAccountChanges()
 		}, function(error) {
 	  		console.log(error.headers.message);
 		});
+		console.log(JSON.stringify(UpdateSourcesObject))
 		stompClient.send("/app/datasources", {}, JSON.stringify(UpdateSourcesObject));
 	});
 		

@@ -74,12 +74,11 @@ var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
-var allPimIDlist = new Array();
-var sidebarexpanded =false;
 var nodecolor= 'white'
 var fontcolor= 'black'
 
 var nodePosition =0;
+var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
@@ -253,6 +252,7 @@ $(document).ready(function(){
         flagHasNodesToLoad =true;
     }
 
+    // tempedges =getCookie("edges");
     tempedges = localStorage.getItem('edges')
     if(tempedges==""||tempedges==null){
         if(mocktesting){
@@ -265,34 +265,13 @@ $(document).ready(function(){
         }
     }else{
         console.log(localStorage.getItem('edges'))
-
-        var temp = localStorage.getItem('edges');
-        // {"from":1,"to":0}
-
-        while(temp.indexOf('{"from":1,"to":0}')!=-1){
-
-            temp =temp.replace('{"from":1,"to":0},','');
-
-        }
-        edges =JSON.parse(temp);
-        edges.push({
-            id: 0,
-            from:  1,
-            to: 0
-        });
-
-        $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-        });
+        edges =JSON.parse(localStorage.getItem('edges'));
     }
 
     tempparent = localStorage.getItem('parentlist');
     // alert(localStorage.getItem('parentlist')==null)
     if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
-
-    if(tempparent!="" &&tempparent!=null)
-        allPimIDlist = JSON.parse(localStorage.getItem('pimlist'));
 
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
@@ -383,14 +362,13 @@ $(document).ready(function(){
         //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
             if(JSON.parse(serverResponse.body).items!=null){
-                sidebarexpanded =true;
                 var items = JSON.parse(serverResponse.body).items;
                 if($(window).width()<=768){
                     $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                 }else{
                     $("#backfromsidebar").html(navbarReloadTextCondensed)
                 }
-                var selectedID = getCookie("lastselectednode");
+                var selectedID = network.getSelectedNodes();
                 $("#sidepanel").show();
 
                 var pathtoselectednode=[];
@@ -621,13 +599,11 @@ $(document).ready(function(){
 
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
-                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
-                    localStorage.setItem('pimlist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -721,7 +697,7 @@ $(document).ready(function(){
                     pathtoselectednode.push(i);
                 }
 
-                var pos=0; 
+                var pos=0;
                 var branchinglimit = 4;
                 var thiscolor = nodes[selectedID].color;
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
@@ -778,7 +754,7 @@ $(document).ready(function(){
        $("#linkedIn").html("");
        $("#sidepanelTitle").html("");
        $("#sidepanel").hide();
-        sidebarexpanded=false;
+
         if($(window).width()<=768){
             $("#backfromsidebar").html(navbarReloadTextCondensed)
             $("#help").html("   Help");
@@ -802,7 +778,8 @@ $(document).ready(function(){
     });
      // A function that handles the doubleClick event on the BubbleMap
     
-    network.on("doubleClick", function(e){
+    network.on("doubleClick", function(){
+
         $("#accordion").html("");
         $("#facebook").html("");
         $("#gmail").html("");
@@ -813,27 +790,28 @@ $(document).ready(function(){
         $("#loadingAlert").fadeIn(1000, function() {
             // body...
         });
-        var node = getCookie("lastselectednode");
-        console.log(node);
-        selectedID = node;
+        var name1 = "lastselectednode=";
+        var ca1 = document.cookie.split(';');
+        var selectedID ="";
+        for(var i = 0; i <ca1.length; i++) {
+            var c = ca1[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name1) == 0) {
+                selectedID = c.substring(name1.length,c.length);
+            }
+        }
+        var node = network.getSelectedNodes();
         $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        selectedID = node;
 
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
                 $.each(allPimIDlist[selectedID][i], function(j, el){
                     if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
                 });
-                // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
-             var pimIds = JSON.parse(getCookie("pimIds"));
-            var ID = "";
-            for(var j = 0 ; j < pimIds.length; j++)
-            {
-                var current = pimIds[j];        
-                if(current.pim == allPimIDlist[selectedID][i][0])
-                {
-                    ID =current.uId
-                }
-            }
+                var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
             if(!mocktesting)
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
             else
@@ -876,9 +854,5 @@ $(document).ready(function(){
         }
 
     });
-
-    network.on("selectNode", function(e){
-        console.log(e.nodes);
-        document.cookie="lastselectednode="+e.nodes[0];
-    });
+ 
 });

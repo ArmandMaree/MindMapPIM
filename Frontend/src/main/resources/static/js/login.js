@@ -79,11 +79,7 @@ var sendUserReg = function(){
 			document.cookie="userId="+jsonresponse.userId;
 			document.cookie="branch="+jsonresponse.branchingFactor;
 			document.cookie="depth="+jsonresponse.initialDepth;
-			document.cookie = "nav="+jsonresponse.theme[0];
-			document.cookie = "map="+jsonresponse.theme[1];
-			document.cookie = "sidepanel="+jsonresponse.theme[2];
-			document.cookie = "persistMap="+jsonresponse.persistMap;
-			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
+			document.cookie="pimIds="+JSON.stringify(jsonresponse.pimIds);
 			
 			$("#loadingAlert").fadeOut(1000, function() {
 				
@@ -424,7 +420,6 @@ function loadXMLDoc(){
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
-			document.cookie = "persistMap="+jsonresponse.persistMap;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
@@ -466,7 +461,7 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
-	startApp()
+
 
 /**
 *	This function initialises the JavaScript SDK
@@ -655,12 +650,35 @@ function onSuccessFacebook() {
 
   });
 }
-////////////////////////////////////////////////////////
+var interval;
 function onTwitterLogin()
 {
+	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
+  	win.focus();
+  	
+   	interval = setInterval(function(){ 
+  		if(win.closed == true)
+	  	{
+	  		if(localStorage.getItem("twitterUser"))
+	  		{
+	  			console.log("Local storage has been set")
+				var twitter = localStorage.getItem("twitterUser");
+				setTwitterAuthCode(twitter);
+
+	  		}
+	  	}
+		
+	},1000)  		 
 
 }
-///////////////////////////////////////////////////////
+function setTwitterAuthCode(twitter)
+{
+	clearInterval(interval);
+	authCodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	$("#tickTwitter").show();
+	//$("#nextButton").show();
+  	//alert(JSON.stringify(authCodes));
+}
 /**
 *	@var {HTMLContainer} divClone - This holds an html element that can be used to restore state of another html element
 */
