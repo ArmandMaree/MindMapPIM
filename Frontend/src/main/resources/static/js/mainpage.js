@@ -721,7 +721,7 @@ $(document).ready(function(){
                     pathtoselectednode.push(i);
                 }
 
-                var pos=0;
+                var pos=0; 
                 var branchinglimit = 4;
                 var thiscolor = nodes[selectedID].color;
                 for(var i=pathtoselectednode.length-1;i>=0;i--){
@@ -826,9 +826,9 @@ $(document).ready(function(){
                 // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
              var pimIds = JSON.parse(getCookie("pimIds"));
             var ID = "";
-            for(var i = 0 ; i < pimIds.length; i++)
+            for(var j = 0 ; j < pimIds.length; j++)
             {
-                var current = pimIds[i];        
+                var current = pimIds[j];        
                 if(current.pim == allPimIDlist[selectedID][i][0])
                 {
                     ID =current.uId
