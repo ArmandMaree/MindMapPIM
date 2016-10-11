@@ -74,11 +74,12 @@ var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
+var allPimIDlist = new Array();
+var sidebarexpanded =false;
 var nodecolor= 'white'
 var fontcolor= 'black'
 
 var nodePosition =0;
-var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
@@ -245,13 +246,34 @@ $(document).ready(function(){
         }
     }else{
         console.log(localStorage.getItem('edges'))
-        edges =JSON.parse(localStorage.getItem('edges'));
+
+        var temp = localStorage.getItem('edges');
+        // {"from":1,"to":0}
+
+        while(temp.indexOf('{"from":1,"to":0}')!=-1){
+
+            temp =temp.replace('{"from":1,"to":0},','');
+
+        }
+        edges =JSON.parse(temp);
+        edges.push({
+            id: 0,
+            from:  1,
+            to: 0
+        });
+
+        $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+        });
     }
 
     tempparent = localStorage.getItem('parentlist');
     // alert(localStorage.getItem('parentlist')==null)
     if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
+
+    if(tempparent!="" &&tempparent!=null)
+        allPimIDlist = JSON.parse(localStorage.getItem('pimlist'));
 
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
@@ -342,6 +364,7 @@ $(document).ready(function(){
         //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
             if(JSON.parse(serverResponse.body).items!=null){
+                sidebarexpanded =true;
                 var items = JSON.parse(serverResponse.body).items;
                 if($(window).width()<=768){
                     $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
@@ -581,11 +604,13 @@ $(document).ready(function(){
 
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
+                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
+                    localStorage.setItem('pimlist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -644,7 +669,10 @@ $(document).ready(function(){
     hidesidebar();
     //A function that disables the default event that occurs on rightclick event
     document.oncontextmenu = function() {return false;};
-    
+    function showValue(newValue)
+    {
+        document.getElementById("range").innerHTML=newValue;
+    }
 
     //menu - variable that is assigned the context menu
     menu = new ax5.ui.menu({
@@ -854,5 +882,9 @@ $(document).ready(function(){
         }
 
     });
- 
+
+    network.on("selectNode", function(e){
+        console.log(e.nodes);
+        document.cookie="lastselectednode="+e.nodes[0];
+    });
 });
