@@ -42,9 +42,11 @@ dependencies {
 	testCompile("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
 	compile("org.springframework.boot:spring-boot-starter:1.4.0.RELEASE")
 
-	// Facebook API
-	compile("org.springframework.social:spring-social-core:1.1.4.RELEASE")
-	compile("org.springframework.social:spring-social-twitter:1.1.2.RELEASE")
+	// MongoDB
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE")
+
+	// Twitter API
+	compile("org.twitter4j:twitter4j-core:4.0.5")
 
 	// FasterXML
 	compile("com.fasterxml.jackson.core:jackson-databind:2.8.1")
@@ -57,8 +59,7 @@ dependencies {
 	// javadoc dependencies
 	doc files("../data/data-javadoc.jar")
 	doc("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
-	doc("org.springframework.social:spring-social-core:1.1.4.RELEASE:sources")
-	doc("org.springframework.social:spring-social-twitter:1.1.2.RELEASE:sources")
+	compile("org.twitter4j:twitter4j-core:4.0.5:sources")
 }
 
 task wrapper(type: Wrapper) {

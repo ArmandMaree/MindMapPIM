@@ -87,8 +87,8 @@ public class ProcessedDataListener {
 						processedDataIds.add(processedData.getId()); // ids of all topics containing the current topic (only one in this case).
 						topicInRepo = new Topic(processedData.getUserId(), pendingTopic.getTopic(), pendingTopic.getRemainingTopics(), processedDataIds, processedData.getTime());
 
-						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
-							topicInRepo.setIsPerson(true);
+						if (pendingTopic.isPerson() && !topicInRepo.getPerson())
+							topicInRepo.setPerson(true);
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
@@ -99,8 +99,8 @@ public class ProcessedDataListener {
 						topicInRepo.addProcessedDataId(processedData.getId());
 						topicInRepo.setTime(processedData.getTime());
 
-						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
-							topicInRepo.setIsPerson(true);
+						if (pendingTopic.isPerson() && !topicInRepo.getPerson())
+							topicInRepo.setPerson(true);
 
 						topicRepository.save(topicInRepo);
 						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());

@@ -58,6 +58,7 @@ public class FrontendListener {
 			return;
 
 		UserIdentified user = new UserIdentified(userRegistrationIdentified.getReturnId(), false, userRegistrationIdentified.getFirstName(), userRegistrationIdentified.getLastName());
+		System.out.println("ISACTIVE: " + user.getIsActive());
 
 		for (AuthCode authCode : userRegistrationIdentified.getAuthCodes()) {
 			user.addPimId(authCode.getPimSource(), authCode.getId());

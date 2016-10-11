@@ -32,7 +32,6 @@ public class FrontendListener {
 				continue;
 			}
 			
-
 			String userId;
 
 			if (itemId.contains(":")) {
@@ -42,10 +41,12 @@ public class FrontendListener {
 			else
 				userId = itemRequestIdentified.getUserId();
 
-			if (itemId.contains("_"))
-				itemId = itemId.substring(itemId.indexOf("_") + 1, itemId.length());
-
-			items.add("<iframe class=\"facebook-iframe\" src=\"https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/" + userId + "/posts/" + itemId + "/&amp;width=500\"></iframe>");
+			items.add("<blockquote class=\"twitter-tweet\" data-lang=\"en\">" + 
+				"<p lang=\"en\" dir=\"ltr\">" +
+					"Loading Tweet" +
+				"</p>" + 
+				"<a href=\"https://twitter.com/" + itemRequestIdentified.getUserId() + "/status/" + itemId + "\"></a></blockquote>" +
+				"<script async src=\"//platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>");
 		}
 
 		ItemResponseIdentified itemResponseIdentified = new ItemResponseIdentified(itemRequestIdentified.getReturnId(), items.toArray(new String[items.size()]));

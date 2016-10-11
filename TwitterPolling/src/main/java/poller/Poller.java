@@ -1,6 +1,7 @@
 package poller;
 
 import com.unclutter.poller.RawData;
+import twitter4j.TwitterException;
 
 /**
 * Basic interface that defines a poller.
@@ -12,7 +13,7 @@ public interface Poller extends Runnable {
 	/**
 	* Gets a list of emails and checks to see if the have been processed. If they have not yet been, then it extracts the raw text and creates a RawData object that is pushed to the RawDataQueue.
 	*/
-	public void poll();
+	public void poll() throws TwitterException;
 
 	/**
 	* Takes a RawData object and add it to a RawDataQueue.

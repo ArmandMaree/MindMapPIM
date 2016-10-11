@@ -180,9 +180,7 @@ public class GmailPoller implements Poller {
 				pollingUser = gmailRepository.findByUserId(pollingUser.getUserId());
 
 				if (!pollingUser.getCurrentlyPolling()) {
-					System.out.println("Poller stopping for " + pollingUser.getUserId() + " due to no refreshToken (probably due to stop request).");
-					pollingUser.setCurrentlyPolling(false);
-					gmailRepository.save(pollingUser);
+					System.out.println("Poller stopping for " + pollingUser.getUserId() + " (probably due to stop request).");
 					return;
 				}
 
