@@ -52,10 +52,10 @@ body
     border-radius: 100%;
     border: 2px solid #aaa;
     background-size: cover;
+    top:50px;
 }
 #sidepanel{
-    padding: 0.5em;
-    /*opacity: 0.9;*/
+    /*padding: 0.5em;*/
     background-color: rgba(256,256,256,0.8) ;
     height:93.5vh;
     position: fixed !important;
@@ -86,12 +86,17 @@ body
   font-size: 10pt;
 }*/
 #sidepanelTitle{
-    padding:5px;
+    position: absolute; !important;
+    top:0px;
+
     background-color:  rgb(15,77,113); 
     color:white;
-    margin-top: 3%;
+    vertical-align: middle !important;
+
     text-align: center;
     font-size: 10pt;
+    width:100%;
+    height:100px;
 }
 #accordion{
      /*background-color: rgba(15, 77, 113, 0.8) !important; */
@@ -117,6 +122,7 @@ body
     font-size: 18pt;
     cursor: pointer !important;
     text-align: center;
+    width: 100%;
 }
 h2{
     color: white !important;

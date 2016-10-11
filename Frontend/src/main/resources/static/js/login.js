@@ -271,55 +271,31 @@ function loadTos(){
 *	Function that animates the log in screen
 */
 function loadReg(){
-	$("#googleLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#facebookLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos2").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#web").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
+	$("#googleLogin").hide();
+	$("#facebookLogin").hide();
+	$("#tos").hide();
+	$("#tos2").hide();
+	$("#web").hide();
 	$("#errr").hide();
 	$("#tos").hide();
 	$("#tos2").hide();
 	$("#web").hide();
 
-	$("#avatar").delay("slow").animate({
-	  top: '70px',
-	  opacity: '0.3'
-
-	});
-	$("#welcome").show();
-	$("#welcome").delay(1000).animate({
-	  opacity: '1'
-	});
-	$('#avatar').fadeOut(0, function() {
-	  $('#avatar').fadeIn(0);
-	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	  $('#avatar').css("background-size","cover");
-	  $('#avatar').css("opacity","1");
-	});
-	$("#continue").show();
-	$("#continue").delay(2000).animate({
-	  opacity: '1'
-	});
+	$("#avatar").hide();
+	// $("#welcome").show();
+	// $("#welcome").delay(1000).animate({
+	//   opacity: '1'
+	// });
+	// $('#avatar').fadeOut(0, function() {
+	//   $('#avatar').fadeIn(0);
+	//   $('#avatar').css("background","#eee url('/images/avatar3.png')");
+	//   $('#avatar').css("background-size","cover");
+	//   $('#avatar').css("opacity","1");
+	// });
+	// $("#continue").hide();
+	// $("#continue").delay(2000).animate({
+	//   opacity: '1'
+	// });
 	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {

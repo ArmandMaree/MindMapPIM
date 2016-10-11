@@ -817,15 +817,18 @@ $(document).ready(function(){
         console.log(node);
         selectedID = node;
         $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
-        var avatarlink ="";
+        var avatarlink =""; 
         var nodeswithplus = nodes[node].label;
-        $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true", function(data, status){
-            console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-            avatarlink = data.hits[1].webformatURL;
-            $('#avatar').css("background","#eee url('"+avatarlink+"')");
+            $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
             $('#avatar').css("background-size","cover");
             $('#avatar').css("background-position","center");
-        });
+            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true", function(data, status){
+                console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                    avatarlink = data.hits[1].webformatURL;
+                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                    $('#avatar').css("background-size","cover");
+                    $('#avatar').css("background-position","center");
+            });
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
             $.each(allPimIDlist[selectedID][i], function(j, el){
