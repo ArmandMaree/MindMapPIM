@@ -268,19 +268,19 @@ $(document).ready(function(){
 
         var temp = localStorage.getItem('edges');
         // {"from":1,"to":0}
-        var count=0;
-        for(var i =0;i<2;i++){
-            if(temp.indexOf('{"from":1,"to":0}')!=-1){
-                count++;
-            }
-        }
-        if(count == 2){
-            temp =temp.replace('{"from":1,"to":0},','');
-            edges =JSON.parse(temp);
 
-        }else{
-            edges =JSON.parse(localStorage.getItem('edges'));
+        while(temp.indexOf('{"from":1,"to":0}')!=-1){
+
+            temp =temp.replace('{"from":1,"to":0},','');
+
         }
+        edges =JSON.parse(temp);
+        edges.push({
+            id: 0,
+            from:  1,
+            to: 0
+        });
+
         $("#loadingAlert").fadeOut(1000, function() {
             // body...
         });
