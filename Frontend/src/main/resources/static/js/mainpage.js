@@ -817,21 +817,31 @@ $(document).ready(function(){
         console.log(node);
         selectedID = node;
         $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        var avatarlink ="";
+        var nodeswithplus = nodes[node].label;
+        $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
+            console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
+            avatarlink = data.items[0].link;
+            $('#avatar').css("background","#eee url('"+avatarlink+"')");
+            $('#avatar').css("background-size","cover");
+            $('#avatar').css("background-position","center");
 
+
+        });
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
-                $.each(allPimIDlist[selectedID][i], function(j, el){
-                    if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
-                });
-                // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
-             var pimIds = JSON.parse(getCookie("pimIds"));
+            $.each(allPimIDlist[selectedID][i], function(j, el){
+                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
+            });
+            // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+            var pimIds = JSON.parse(getCookie("pimIds"));
             var ID = "";
             for(var j = 0 ; j < pimIds.length; j++)
             {
                 var current = pimIds[j];        
                 if(current.pim == allPimIDlist[selectedID][i][0])
                 {
-                    ID =current.uId
+                    ID =current.uId;
                 }
             }
             if(!mocktesting)

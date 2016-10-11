@@ -33,7 +33,7 @@ body
     width: 100%;
     height:93.5vh;
     /*border: 1px solid #444444;*/
-    /*z-index: -1000;*/
+    /*z-index: -1000;*/ 
 }
 #myCanvas 
 {
@@ -45,6 +45,14 @@ body
     background-color: #0f4d71; /*#0b3954 !important;
     color: white !important;
 }*/
+.avatar{
+    background: #eee url("/images/bubblelogo.png");
+    width: 100px;height: 100px;
+    margin: 10px auto 30px;
+    border-radius: 100%;
+    border: 2px solid #aaa;
+    background-size: cover;
+}
 #sidepanel{
     padding: 0.5em;
     /*opacity: 0.9;*/
