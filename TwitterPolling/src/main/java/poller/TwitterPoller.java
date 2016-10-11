@@ -42,7 +42,7 @@ public class TwitterPoller implements Runnable, Poller {
 	private int tweetCount = 0;
 	private int PRIORITY_LIMIT = 50;
 	private int MAX_TWEETS = 200;
-	private int DELAY_BETWEEN_POLLS = 60 * 60; // 3600 seconds delay between polls
+	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private String userId;
 	private long lastId = -1;
 	private TwitterPollingUser pollingUser;
@@ -104,8 +104,8 @@ public class TwitterPoller implements Runnable, Poller {
 	public void poll() throws TwitterException {
 		System.out.println("Polling");
 		ResponseList<Status> timeline = getMoreTweets();
-		long earliestId = -1;
 
+		outerloop:
 		while (timeline.size() > 0) {
 			if (pollingUser.getStartOfBlockTweetId() == -1) {
 				pollingUser.setStartOfBlockTweetId(timeline.get(0).getId());
@@ -116,10 +116,9 @@ public class TwitterPoller implements Runnable, Poller {
 				pollingUser = twitterRepository.findByUserId(userId);
 
 				if (pollingUser.getCurrentlyPolling() || pollingUser.getNumberOfTweets() > MAX_TWEETS)
-					break;
+					break outerloop;
 				
 				RawData rawData = getRawData(tweet);
-				tweetCount++;
 
 				if (rawData != null)
 					addToQueue(rawData);
@@ -197,12 +196,12 @@ public class TwitterPoller implements Runnable, Poller {
 
 	public void addToQueue(RawData rawData) {
 		try {
-				System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " tweetCount: " + tweetCount);
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " tweetCount: " + pollingUser.getNumberOfPosts());
 
-				if (tweetCount < PRIORITY_LIMIT)
-					messageBroker.sendPriorityRawData(rawData);
-				else
-					messageBroker.sendRawData(rawData);
+			if (tweetCount < PRIORITY_LIMIT)
+				messageBroker.sendPriorityRawData(rawData);
+			else
+				messageBroker.sendRawData(rawData);
 		}
 		catch (MessageNotSentException mnse) {
 			mnse.printStackTrace();

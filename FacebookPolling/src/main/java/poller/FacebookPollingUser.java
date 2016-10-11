@@ -30,6 +30,11 @@ public class FacebookPollingUser implements Serializable {
 	private String accessToken = null;
 
 	/**
+	* The time the accessToken expires.
+	*/
+	private long expireTime = -1;
+
+	/**
 	* The ID of the post that indicates the start of the block of posts that is currently being processed.
 	*/
 	private String startOfBlockPostId = null;
@@ -66,10 +71,11 @@ public class FacebookPollingUser implements Serializable {
 	* @param userId Id of the user as used by the PIM.
 	* @param accessToken The access token that can be used to generate new access tokens.
 	*/
-	public FacebookPollingUser(String userId, String accessToken) {
+	public FacebookPollingUser(String userId, String accessToken, long expireTime) {
 		super();
 		this.userId = userId;
 		this.accessToken = accessToken;
+		this.expireTime = expireTime;
 	}
 
 	/**
@@ -131,6 +137,22 @@ public class FacebookPollingUser implements Serializable {
 	*/
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
+	}
+
+	/**
+	* Returns value of expireTime
+	* @return The time the accessToken expires.
+	*/
+	public long getExpireTime() {
+		return expireTime;
+	}
+
+	/**
+	* Sets new value of expireTime
+	* @param expireTime The time the accessToken expires.
+	*/
+	public void setExpireTime(long expireTime) {
+		this.expireTime = expireTime;
 	}
 
 	/**
@@ -222,12 +244,25 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
+	* A thread safe way to determine whether the user has a poller running for them.
+	* @return False if no poller is running (this will automatically change the state to currently polling) other wise true.
+	*/
+	public synchronized boolean checkAndStart() {
+		if (currentlyPolling)
+			return true;
+		else {
+			currentlyPolling = true;
+			return false;
+		}
+	}
+
+	/**
 	* Create string representation of PollingUser for printing.
 	* @return String represntation of a PollingUser.
 	*/
 	@Override
 	public String toString() {
-		return "PollingUser {\n" +
+		return "FacebookPollingUser {\n" +
 			"\tid: " + id + ",\n" +
 			"\tuserId: " + userId + ",\n" +
 			"\tstartOfBlockPostId: " + startOfBlockPostId + ",\n" +

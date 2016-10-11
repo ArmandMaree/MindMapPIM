@@ -1,5 +1,7 @@
 package main;
 
+import java.util.List;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
@@ -24,15 +26,22 @@ import org.springframework.beans.factory.annotation.*;
 
 import poller.*;
 import listeners.*;
+import repositories.*;
 
 import com.unclutter.poller.*;
 
 @SpringBootApplication
 @ComponentScan({"com.unclutter.poller"})
 public class Application implements CommandLineRunner {
+	@Autowired
+	MessageBrokerFactory messageBrokerFactory;
+
+	@Autowired
+	FacebookRepository facebookRepository;
+
 	@Bean
-	public BusinessListener authCodeReceiver() {
-		return new BusinessListener();
+	public BusinessListener authCodeReceiver(FacebookRepository facebookRepository) {
+		return new BusinessListener(facebookRepository);
 	}
 
 	@Bean
@@ -63,6 +72,23 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		for (String arg : args) {
+			switch (arg) {
+				case "cleandb":
+					facebookRepository.deleteAll();
+					break;
+			}
+		}
 
+		List<FacebookPollingUser> pollingUsers = facebookRepository.findByCurrentlyPolling(true);
+
+		for (FacebookPollingUser pollingUser : pollingUsers) {
+			try {
+				new Thread(new FacebookPoller(facebookRepository, messageBrokerFactory.getMessageBroker(), pollingUser.getAccessToken(), pollingUser.getExpireTime(), pollingUser.getUserId())).start();
+			}
+			catch (AlreadyPollingForUserException apfue) {
+				apfue.printStackTrace();
+			}
+		}
 	}
 }
