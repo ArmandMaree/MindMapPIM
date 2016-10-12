@@ -86,6 +86,7 @@ public class Application implements CommandLineRunner {
 					}
 					break;
 				case "cleandb":
+					System.out.println("Cleaning Twitter's database.");
 					twitterRepository.deleteAll();
 					break;
 			}

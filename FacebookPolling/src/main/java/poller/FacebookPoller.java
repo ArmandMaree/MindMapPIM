@@ -160,6 +160,10 @@ public class FacebookPoller implements Runnable, Poller {
 			Long timestamp = service.feedOperations().getPost(id).getCreatedTime().getTime();
 			
 			response = service.feedOperations().getFeed(userId, new PagingParameters(50, null, null, timestamp));
+
+			if (response.size() > 0)
+				if (response.get(0).getId() == id)
+					response.remove(0);
 		}
 		// processing a middle block
 		else if (pollingUser.getStartOfBlockPostId() != null && pollingUser.getEndOfBlockPostId() != null) {
@@ -174,12 +178,24 @@ public class FacebookPoller implements Runnable, Poller {
 			Long timestampEnd = service.feedOperations().getPost(id).getCreatedTime().getTime();
 			
 			response = service.feedOperations().getFeed(userId, new PagingParameters(50, null, timestampStart, timestampEnd));
+
+			if (response.size() > 0)
+				if (response.get(0).getId() == id)
+					response.remove(0);
+
+			if (response.size() > 0)
+				if (response.get(response.size() - 1).getId() == pollingUser.getEndOfBlockPostId())
+					response.remove(response.size() - 1);
 		}
 		// finished processing old emails and need to process new emails
 		else if (pollingUser.getStartOfBlockPostId() == null && pollingUser.getEndOfBlockPostId() != null) {
 			Long timestamp = service.feedOperations().getPost(pollingUser.getEndOfBlockPostId()).getCreatedTime().getTime();
 			
 			response = service.feedOperations().getFeed(userId, new PagingParameters(50, null, timestamp, null));
+
+			if (response.size() > 0)
+				if (response.get(response.size() - 1).getId() == pollingUser.getEndOfBlockPostId())
+					response.remove(response.size() - 1);
 		}
 
 		return response;

@@ -17,7 +17,7 @@ fi
 
 if [ $# -eq 0 ]
 then
-	java -jar "build/libs/facebookpoller-service-0.1.0.jar";
+	java -jar "build/libs/twitterpoller-service-0.1.0.jar";
 else
-	java -jar "build/libs/facebookpoller-service-0.1.0.jar" "$1";
+	java -jar "build/libs/twitterpoller-service-0.1.0.jar" "$1";
 fi

@@ -31,17 +31,17 @@ import repositories.TwitterRepository;
 public class TwitterPoller implements Runnable, Poller {
 	private static final String CONSUMER_KEY = "6PVgLYY8uIa3zBAwqss3ogPkA";
 	private static final String CONSUMER_SECRET = "v8PiSDzChX9qo4nirNsI26oGbSvIvrKKx9iM3fNHeAWbSYSXSS";
-	private static final String ACCESS_TOKEN = "782990014204502018";
+	private static final String ACCESS_TOKEN = "782990014204502018-WNCVqfNC4onMAjdA0iJbAQX9vqZCouo";
 	private static final String ACCESS_TOKEN_SECRET = "HZS5qZt6znwhI56ZQPCZypuosKER2COGhwuknZAvysLdy";
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	private TwitterRepository twitterRepository;
 	private MessageBroker messageBroker;
-	private Twitter service;
+	private Twitter service = null;
 	private boolean stop = false;
 	private int tweetCount = 0;
-	private int PRIORITY_LIMIT = 50;
-	private int MAX_TWEETS = 200;
+	private int PRIORITY_LIMIT = 25;
+	private int MAX_OLD_TWEETS = 50;
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private String userId;
 	private long lastId = -1;
@@ -50,7 +50,6 @@ public class TwitterPoller implements Runnable, Poller {
 	public TwitterPoller(TwitterRepository twitterRepository, MessageBroker messageBroker, String userId) throws AlreadyPollingForUserException {
 		this.twitterRepository = twitterRepository;
 		this.messageBroker = messageBroker;
-		this.service = getService();
 		this.userId = userId;
 
 		pollingUser = twitterRepository.findByUserId(userId);
@@ -60,6 +59,7 @@ public class TwitterPoller implements Runnable, Poller {
 			pollingUser.checkAndStart();
 			twitterRepository.save(pollingUser);
 			pollingUser = twitterRepository.findByUserId(userId);
+			this.service = getService();
 		}
 		else {
 			pollingUser = twitterRepository.findByUserId(pollingUser.getUserId());
@@ -86,11 +86,12 @@ public class TwitterPoller implements Runnable, Poller {
 		try {
 			pollingUser = twitterRepository.findByUserId(pollingUser.getUserId());
 
+			if (service == null)
+				System.out.println("No authorized service for user " + userId);
 			if (!pollingUser.getCurrentlyPolling())
 				System.out.println("Stopping polling for " + userId + " (probably due to stop request).");
-			else if(pollingUser.getNumberOfTweets() > MAX_TWEETS)
-				System.out.println("Reached maximum number of tweets for user " + userId);
 			else {
+				System.out.println("START");
 				poll();
 
 				final ScheduledFuture<?> pollerHandle = scheduler.schedule(this, DELAY_BETWEEN_POLLS, TimeUnit.SECONDS);
@@ -102,12 +103,13 @@ public class TwitterPoller implements Runnable, Poller {
 	}
 
 	public void poll() throws TwitterException {
-		System.out.println("Polling");
+		System.out.println("Polling for " + userId);
 		ResponseList<Status> timeline = getMoreTweets();
+		System.out.println("GOT " + timeline.size() + " tweets.");
 
 		outerloop:
 		while (timeline.size() > 0) {
-			if (pollingUser.getStartOfBlockTweetId() == -1) {
+			if (pollingUser.getStartOfBlockTweetId() == 1) {
 				pollingUser.setStartOfBlockTweetId(timeline.get(0).getId());
 				twitterRepository.save(pollingUser);
 			}
@@ -115,8 +117,13 @@ public class TwitterPoller implements Runnable, Poller {
 			for (Status tweet: timeline) {
 				pollingUser = twitterRepository.findByUserId(userId);
 
-				if (pollingUser.getCurrentlyPolling() || pollingUser.getNumberOfTweets() > MAX_TWEETS)
+				if (!pollingUser.getCurrentlyPolling())
 					break outerloop;
+
+				if(pollingUser.getNumberOfTweets() >= MAX_OLD_TWEETS && MAX_OLD_TWEETS != -1) {
+					System.out.println("Reached maximum number of tweets for user " + userId + ". Now only checking for new tweets.");
+					break outerloop;
+				}
 				
 				RawData rawData = getRawData(tweet);
 
@@ -131,10 +138,10 @@ public class TwitterPoller implements Runnable, Poller {
 			timeline = getMoreTweets();
 		}
 
-		if (pollingUser.getStartOfBlockTweetId() != -1) {
+		if (pollingUser.getStartOfBlockTweetId() != 1) {
 			pollingUser.setEndOfBlockTweetId(pollingUser.getStartOfBlockTweetId());
-			pollingUser.setStartOfBlockTweetId(-1);
-			pollingUser.setCurrentTweetId(-1);
+			pollingUser.setStartOfBlockTweetId(1);
+			pollingUser.setCurrentTweetId(1);
 			twitterRepository.save(pollingUser);
 		}
 	}
@@ -143,37 +150,50 @@ public class TwitterPoller implements Runnable, Poller {
 		ResponseList<Status> response = null;
 
 		// have not started processing yet
-		if (pollingUser.getStartOfBlockTweetId() == -1 && pollingUser.getEndOfBlockTweetId() == -1) {
-			response = service.getUserTimeline(userId, new Paging(1, 50));
+		if (pollingUser.getStartOfBlockTweetId() == 1 && pollingUser.getEndOfBlockTweetId() == 1) {
+			response = service.getUserTimeline(userId, new Paging(1,50));
 		}
 		//started processing old emails, but have not finished
-		else if (pollingUser.getStartOfBlockTweetId() != -1 && pollingUser.getEndOfBlockTweetId() == -1) {
+		else if (pollingUser.getStartOfBlockTweetId() != 1 && pollingUser.getEndOfBlockTweetId() == 1) {
 			long id;
 
-			if (pollingUser.getCurrentTweetId() == -1)// the email block was set but the actual processing hasnt started yet
+			if (pollingUser.getCurrentTweetId() == 1)// the email block was set but the actual processing hasnt started yet
 				id = pollingUser.getStartOfBlockTweetId();
 			else
 				id = pollingUser.getCurrentTweetId();
 			
-			response = service.getUserTimeline(userId, new Paging(1, 50, -1, id));
-			response.remove(0);
+			response = service.getUserTimeline(userId, new Paging(1, 50, 1, id));
+
+			if (response.size() > 0)
+				if (response.get(0).getId() == id)
+					response.remove(0);
 		}
 		// processing a middle block
-		else if (pollingUser.getStartOfBlockTweetId() != -1 && pollingUser.getEndOfBlockTweetId() != -1) {
+		else if (pollingUser.getStartOfBlockTweetId() != 1 && pollingUser.getEndOfBlockTweetId() != 1) {
 			long id;
 
-			if (pollingUser.getCurrentTweetId() == -1)// the email block was set but the actual processing hasnt started yet
+			if (pollingUser.getCurrentTweetId() == 1)// the email block was set but the actual processing hasnt started yet
 				id = pollingUser.getStartOfBlockTweetId();
 			else
 				id = pollingUser.getCurrentTweetId();
 
 			response = service.getUserTimeline(userId, new Paging(1, 50, pollingUser.getEndOfBlockTweetId(), id));
-			response.remove(0);
+			
+			if (response.size() > 0)
+				if (response.get(0).getId() == id)
+					response.remove(0);
+
+			if (response.size() > 0)
+				if (response.get(response.size() - 1).getId() == pollingUser.getEndOfBlockTweetId())
+					response.remove(response.size() - 1);
 		}
 		// finished processing old emails and need to process new emails
-		else if (pollingUser.getStartOfBlockTweetId() == -1 && pollingUser.getEndOfBlockTweetId() != -1) {			
+		else if (pollingUser.getStartOfBlockTweetId() == 1 && pollingUser.getEndOfBlockTweetId() != 1) {
 			response = service.getUserTimeline(userId, new Paging(1, 50, pollingUser.getEndOfBlockTweetId()));
-			response.remove(0);
+			
+			if (response.size() > 0)
+				if (response.get(response.size() - 1).getId() == pollingUser.getEndOfBlockTweetId())
+					response.remove(response.size() - 1);
 		}
 
 		return response;
@@ -196,7 +216,7 @@ public class TwitterPoller implements Runnable, Poller {
 
 	public void addToQueue(RawData rawData) {
 		try {
-			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " tweetCount: " + pollingUser.getNumberOfPosts());
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " tweetCount: " + (pollingUser.getNumberOfTweets() + 1));
 
 			if (tweetCount < PRIORITY_LIMIT)
 				messageBroker.sendPriorityRawData(rawData);

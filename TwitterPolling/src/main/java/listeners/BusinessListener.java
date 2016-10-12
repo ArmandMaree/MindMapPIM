@@ -28,8 +28,20 @@ public class BusinessListener {
 	* @param authCode The AuthCode that contains all the information needed to start the poller.
 	*/
 	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
-		System.out.println("Starting for: " + authCode);
-		TwitterPoller poller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
-		new Thread(poller).start();
+		System.out.println("Received: " + authCode);
+
+		if (authCode.getId().startsWith("stop:")) {
+			String id = authCode.getId().substring(6);
+			TwitterPollingUser pollingUser = twitterRepository.findByUserId(id);
+
+			if (pollingUser != null) {
+				pollingUser.setCurrentlyPolling(false);
+				twitterRepository.save(pollingUser);
+			}
+		}
+		else {
+			TwitterPoller poller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
+			new Thread(poller).start();
+		}
 	}
 }

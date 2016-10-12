@@ -28,8 +28,20 @@ public class BusinessListener {
 	* @param authCode The AuthCode that contains all the information needed to start the poller.
 	*/
 	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
-		System.out.println("Starting for: " + authCode);
-		FacebookPoller poller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
-		new Thread(poller).start();
+		System.out.println("Received: " + authCode);
+
+
+		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
+			FacebookPollingUser pollingUser = facebookRepository.findByUserId(authCode.getId());
+
+			if (pollingUser != null) {
+				pollingUser.setCurrentlyPolling(false);
+				facebookRepository.save(pollingUser);
+			}
+		}
+		else {
+			FacebookPoller poller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+			new Thread(poller).start();
+		}
 	}
 }

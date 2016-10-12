@@ -27,17 +27,17 @@ public class TwitterPollingUser implements Serializable {
 	/**
 	* The ID of the post that indicates the start of the block of tweets that is currently being processed.
 	*/
-	private long startOfBlockTweetId = -1;
+	private long startOfBlockTweetId = 1;
 
 	/**
 	* The ID of the post that indicates the current post in the block of tweets that is currently being processed.
 	*/
-	private long currentTweetId = -1;
+	private long currentTweetId = 1;
 
 	/**
 	* The ID of the post that indicates the end of the block of tweets that is currently being processed.
 	*/
-	private long endOfBlockTweetId = -1;
+	private long endOfBlockTweetId = 1;
 
 	/**
 	* Indicates whether this user has a poller running on this account.

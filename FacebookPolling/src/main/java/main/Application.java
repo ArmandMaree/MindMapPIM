@@ -24,6 +24,8 @@ import org.springframework.context.annotation.*;
 
 import org.springframework.beans.factory.annotation.*;
 
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
 import poller.*;
 import listeners.*;
 import repositories.*;
@@ -32,6 +34,7 @@ import com.unclutter.poller.*;
 
 @SpringBootApplication
 @ComponentScan({"com.unclutter.poller"})
+@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	@Autowired
 	MessageBrokerFactory messageBrokerFactory;
@@ -75,6 +78,7 @@ public class Application implements CommandLineRunner {
 		for (String arg : args) {
 			switch (arg) {
 				case "cleandb":
+					System.out.println("Cleaning Facebook's database.");
 					facebookRepository.deleteAll();
 					break;
 			}
