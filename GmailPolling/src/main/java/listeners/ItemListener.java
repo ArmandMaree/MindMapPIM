@@ -1,31 +1,25 @@
 package listeners;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
-import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.client.util.store.FileDataStoreFactory;
-
+import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
-import com.google.api.services.gmail.Gmail;
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeBodyPart;
 
 import data.*;
 import poller.*;
@@ -44,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class FrontendListener {
+public class ItemListener {
 	private static final String APPLICATION_NAME = "Gmail API";
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
 	private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -67,10 +61,18 @@ public class FrontendListener {
 		}
 	}
 
-	public FrontendListener(GmailRepository gmailRepository) {
+	/**
+	* Constructor.
+	* @param gmailRepository The repository that will be used to persist information of each user that is being polled for. {@link poller.GmailPollingUser}
+	*/
+	public ItemListener(GmailRepository gmailRepository) {
 		this.gmailRepository = gmailRepository;
 	}
 
+	/**
+	* Set the value of messageBroker.
+	* @param messageBroker Will be passed to the pollers inorder for them to send messages.
+	*/
 	public void setMessageBroker(MessageBroker messageBroker) {
 		this.messageBroker = messageBroker;
 	}
@@ -184,7 +186,7 @@ public class FrontendListener {
 		String REDIRECT_URI = "https://unclutter.iminsys.com";
 
 		// Exchange auth code for access token
-		InputStream in = FrontendListener.class.getResourceAsStream("/client_secret.json");
+		InputStream in = ItemListener.class.getResourceAsStream("/client_secret.json");
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
 		GoogleTokenResponse tokenResponse = new GoogleRefreshTokenRequest(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), pollingUser.getRefreshToken(), clientSecrets.getDetails().getClientId(), clientSecrets.getDetails().getClientSecret()).execute();
 

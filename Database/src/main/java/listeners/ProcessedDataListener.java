@@ -1,19 +1,25 @@
 package listeners;
 
-import java.util.List;
+import data.ProcessedData;
+import data.Topic;
+import data.User;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import data.*;
-import repositories.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
 /**
-* Receives processed data from a queue messaging applicatiion and persists it.
+* Receives processed data from a queue messaging service, processes it and then persists it.
+* <p>
+*	This class will receive {@link data.ProcessedData} objects from the Processor service. These {@link data.ProcessedData} objects will be broken down into {@link listeners.PendingTopic} objects that will be persisted.
+* </p>
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -92,7 +98,6 @@ public class ProcessedDataListener {
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
-						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 					else {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
@@ -103,7 +108,6 @@ public class ProcessedDataListener {
 							topicInRepo.setPerson(true);
 
 						topicRepository.save(topicInRepo);
-						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 				}
 			}

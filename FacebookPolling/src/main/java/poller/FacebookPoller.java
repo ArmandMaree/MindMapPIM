@@ -1,26 +1,25 @@
 package poller;
 
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
+import com.unclutter.poller.RawData;
+
 import java.util.List;
 import java.util.ArrayList;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.springframework.social.facebook.connect.FacebookServiceProvider;
+import org.springframework.social.RevokedAuthorizationException;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
 import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.PagingParameters;
 import org.springframework.social.facebook.api.PagedList;
-import org.springframework.social.RevokedAuthorizationException;
+import org.springframework.social.facebook.connect.FacebookServiceProvider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import data.*;
-import repositories.*;
-import com.unclutter.poller.*;
+import repositories.FacebookRepository;
 
 /**
 * Uses the Facebook API to retrieve new activity and add them to a queue that lets them be processed.
@@ -28,7 +27,7 @@ import com.unclutter.poller.*;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class FacebookPoller implements Runnable, Poller {
+public class FacebookPoller implements Runnable {
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	private MessageBroker messageBroker;
@@ -42,6 +41,14 @@ public class FacebookPoller implements Runnable, Poller {
 	private FacebookPollingUser pollingUser;
 	private String userId;
 
+	/**
+	* Constructor.
+	* @param facebookRepository The repository that will be used to persist information of each user that is being polled for. {@link poller.FacebookPollingUser}
+	* @param messageBroker Used to send messages with.
+	* @param authCode The access token that will be used to authenticate a user.
+	* @param expireTime The time at which the access token will expire.
+	* @param userId The Facebook ID of the user for which this poller is polling for.
+	*/
 	public FacebookPoller(FacebookRepository facebookRepository, MessageBroker messageBroker, String authCode, long expireTime, String userId) throws AlreadyPollingForUserException {
 		this.facebookRepository = facebookRepository;
 		this.messageBroker = messageBroker;
@@ -68,12 +75,23 @@ public class FacebookPoller implements Runnable, Poller {
 		}
 	}
 
+	/**
+	* Creates am authenticated Facebook service.
+	* @param authCode The access token that must be used to authenticate.
+	* @return An authenticated Facebook service.
+	*/
 	public Facebook getService(String authCode) {
 		String REDIRECT_URI = "https://bubbles.iminsys.com/";
 		FacebookServiceProvider facebookServiceProvider = new FacebookServiceProvider("1051696778242173", "22a06683d76460f1522396944e7e0506", "datamine");
 		return facebookServiceProvider.getApi(authCode);
 	}
 
+	/**
+	* Runs the poller on a loop.
+	* <p>
+	*	A {@link java.util.concurrent.ScheduledExecutorService} will be used to schedule the poller to run with a {@link DELAY_BETWEEN_POLLS} delay.
+	* </p>
+	*/
 	@Override
 	public void run() {
 		try {
@@ -100,6 +118,9 @@ public class FacebookPoller implements Runnable, Poller {
 
 	}
 
+	/**
+	* Gets a list of posts and checks to see if the have been processed. If they have not yet been, then it extracts the raw text and creates a RawData object that is pushed to the RawDataQueue.
+	*/
 	public void poll() {
 		System.out.println("Polling");
 		// /service.feedOperations().getFeed(new PagingParameters(null, null, null, null))
@@ -141,6 +162,13 @@ public class FacebookPoller implements Runnable, Poller {
 		}
 	}
 
+	/**
+	* Gets a list of posts that has to be processed.
+	* <p>
+	*	If the poller has previously crashed this method will be able to get only the posts that should be processed next.
+	* </p>
+	* @return A list of posts to be processed. The size will be 0 if there are no new posts.
+	*/
 	public PagedList<Post> getMorePosts() {
 		PagedList<Post> response = null;
 
@@ -201,6 +229,11 @@ public class FacebookPoller implements Runnable, Poller {
 		return response;
 	}
 
+	/**
+	* Extract the text from a post and parse it as an RawData object.
+	* @param post The Facebook post that has to be processed.
+	* @return Object that contains the details of the post or null if no data is found.
+	*/
 	public RawData getRawData(Post post) {
 		if (post.getMessage() == null || post.getMessage().length() == 0)
 			return null;
@@ -241,6 +274,13 @@ public class FacebookPoller implements Runnable, Poller {
 		return rawData;
 	}
 
+	/**
+	* Takes a RawData object and add it to a RawDataQueue.
+	* <p>
+	*	If the {@link poller.FacebookPollingUser#numberOfPosts} is less than {@link MAX_PRIORITY_POSTS} then the object will be sent on the priority queue.
+	* </p>
+	* @param rawData The rawData object that should be added to the queue.
+	*/
 	public void addToQueue(RawData rawData) {
 		try {
 			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " postCount: " + pollingUser.getNumberOfPosts());

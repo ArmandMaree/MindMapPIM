@@ -1,53 +1,52 @@
 package poller;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
-
-import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.*;
-import com.google.api.services.gmail.Gmail;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.GmailScopes;
+import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.ListMessagesResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
+import com.unclutter.poller.RawData;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Stack;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.InternetAddress;
-
-import org.apache.commons.codec.binary.StringUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.jsoup.safety.Whitelist;
 
-import data.*;
-import repositories.*;
-import com.unclutter.poller.*;
+import repositories.GmailRepository;
 
 /**
 * Uses the Gmail API to retrieve new emails and add them to a queue that lets them be processed.
@@ -55,7 +54,7 @@ import com.unclutter.poller.*;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class GmailPoller implements Poller {
+public class GmailPoller implements Runnable{
 	private static final String APPLICATION_NAME = "Gmail API";
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json");
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -160,6 +159,9 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Runs the poller on a loop.
+	* <p>
+	*	A {@link java.util.concurrent.ScheduledExecutorService} will be used to schedule the poller to run with a {@link DELAY_BETWEEN_POLLS} delay.
+	* </p>
 	*/
 	public void run() {
 		try {
@@ -257,7 +259,7 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* Gets the date and time of a message and parses it into a simper form.
+	* Gets the date and time of a message and parses it into a simpler form.
 	* @param email The email that's date should be returned.
 	* @return The date of the email in the form of yyyy/MM/dd, e.g.: 2016/07/30
 	* @throws java.io.IOException IOException occurs.
@@ -337,6 +339,9 @@ public class GmailPoller implements Poller {
 
 	/**
 	* Takes a RawData object and add it to a RawDataQueue.
+	* <p>
+	*	If the {@link poller.GmailPollingUser#numberOfEmails} is less than {@link MAX_PRIORITY_EMAILS} then the object will be sent on the priority queue.
+	* </p>
 	* @param rawData The rawData object that should be added to the queue.
 	*/
 	public void addToQueue(RawData rawData) {
@@ -354,7 +359,10 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* List all the emails after a specific date on a specific page.
+	* Gets a list of posts that has to be processed.
+	* <p>
+	*	If the poller has previously crashed this method will be able to get only the posts that should be processed next.
+	* </p>
 	* @param nextPageToken the token of the page that should be looked at.
 	* @return Batch message object containing all the messages found and a token to the next page.
 	* @throws java.io.IOException IOException occurs.
@@ -437,7 +445,7 @@ public class GmailPoller implements Poller {
 	}
 
 	/**
-	* Retrieve an email.
+	* Retrieve an email with a given ID.
 	* @param messageId The ID of the message that should be retrieved.
 	* @return MimeMessage of the message that corresponds to the given id.
 	* @throws java.io.IOException IOException occurs.

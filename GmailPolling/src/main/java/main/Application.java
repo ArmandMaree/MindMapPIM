@@ -1,52 +1,47 @@
 package main;
 
-import listeners.*;
-import repositories.*;
-import data.*;
-import poller.*;
+import com.unclutter.poller.PollingConfiguration;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageBrokerFactory;
 
-import com.unclutter.poller.*;
+import listeners.AuthCodeListener;
+import listeners.ItemListener;
 
+import poller.GmailPoller;
+import poller.GmailPollingUser;
+
+import repositories.GmailRepository;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.io.PrintWriter;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-// import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import org.springframework.stereotype.Component;
-
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import org.springframework.stereotype.Component;
 
 /**
 * Main application that starts up the service.
 *
 * @author  Armand Maree
-* @since   2016-07-25
+* @since   1.0.0
 */
 @SpringBootApplication
 @ComponentScan({"com.unclutter.poller"})
@@ -64,24 +59,24 @@ public class Application implements CommandLineRunner {
 	private MessageBroker messageBroker;
 
 	@Bean
-	public BusinessListener authCodeReceiver(GmailRepository gmailRepository) {
-		return new BusinessListener(gmailRepository);
+	public AuthCodeListener authCodeReceiver(GmailRepository gmailRepository) {
+		return new AuthCodeListener(gmailRepository);
 	}
 
 	@Bean
-	public FrontendListener itemRequestReceiver(GmailRepository gmailRepository) {
-		return new FrontendListener(gmailRepository);
+	public ItemListener itemRequestReceiver(GmailRepository gmailRepository) {
+		return new ItemListener(gmailRepository);
 	}
 
 	@Bean
-	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, GmailRepository gmailRepository, BusinessListener business, FrontendListener frontend) {
-		PollingConfiguration pollingConfig = new PollingConfiguration("gmail", business, "receiveAuthCode", frontend, "receiveItemRequest");
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, GmailRepository gmailRepository, AuthCodeListener authCodeListener, ItemListener itemListener) {
+		PollingConfiguration pollingConfig = new PollingConfiguration("gmail", authCodeListener, "receiveAuthCode", itemListener, "receiveItemRequest");
 		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
 		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);
 
 		try {
-			business.setMessageBroker(messageBrokerFactory.getMessageBroker());
-			frontend.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			authCodeListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			itemListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
 			messageBroker = messageBrokerFactory.getMessageBroker();
 		}
 		catch (MessageBrokerFactory.BeansNotSetUpException bnsue) {
@@ -96,6 +91,15 @@ public class Application implements CommandLineRunner {
 		SpringApplication.run(Application.class, args);
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean the repository used by this poller.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
 		for (String arg : args) {

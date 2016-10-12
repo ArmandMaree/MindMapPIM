@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 
 /**
-* The information of a user as used by a PIM {@link poller.Poller}.
+* The information of a user as used by a PIM {@link poller.TwitterPoller}.
 *
 * @author  Armand Maree
 * @since   1.0.0

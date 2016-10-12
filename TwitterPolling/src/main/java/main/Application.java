@@ -1,37 +1,41 @@
 package main;
 
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageBrokerFactory;
+import com.unclutter.poller.PollingConfiguration;
+
 import java.util.List;
+
+import listeners.AuthCodeListener;
+import listeners.ItemListener;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import poller.*;
-import listeners.*;
-import repositories.*;
+import poller.AlreadyPollingForUserException;
+import poller.TwitterPoller;
+import poller.TwitterPollingUser;
 
-import com.unclutter.poller.*;
+import repositories.TwitterRepository;
 
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
 @ComponentScan({"com.unclutter.poller"})
 @EnableMongoRepositories({"repositories"})
@@ -43,24 +47,24 @@ public class Application implements CommandLineRunner {
 	TwitterRepository twitterRepository;
 
 	@Bean
-	public BusinessListener authCodeReceiver(TwitterRepository twitterRepository) {
-		return new BusinessListener(twitterRepository);
+	public AuthCodeListener authCodeReceiver(TwitterRepository twitterRepository) {
+		return new AuthCodeListener(twitterRepository);
 	}
 
 	@Bean
-	public FrontendListener itemRequestReceiver() {
-		return new FrontendListener();
+	public ItemListener itemRequestReceiver() {
+		return new ItemListener();
 	}
 
 	@Bean
-	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, BusinessListener business, FrontendListener frontend) {
-		PollingConfiguration pollingConfig = new PollingConfiguration("twitter", business, "receiveAuthCode", frontend, "receiveItemRequest");
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, AuthCodeListener authCodeListener, ItemListener itemListener) {
+		PollingConfiguration pollingConfig = new PollingConfiguration("twitter", authCodeListener, "receiveAuthCode", itemListener, "receiveItemRequest");
 		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
 		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);
 
 		try {
-			business.setMessageBroker(messageBrokerFactory.getMessageBroker());
-			frontend.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			authCodeListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			itemListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
 		}
 		catch (MessageBrokerFactory.BeansNotSetUpException bnsue) {
 			bnsue.printStackTrace();
@@ -73,6 +77,15 @@ public class Application implements CommandLineRunner {
 		SpringApplication.run(Application.class, args);
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean the repository used by this poller.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
 		for (String arg : args) {

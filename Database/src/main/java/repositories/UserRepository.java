@@ -1,10 +1,11 @@
 package repositories;
 
+import data.User;
+
 import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-
-import data.*;
 
 /**
 * MongoDB repository for {@link data.User} objects.

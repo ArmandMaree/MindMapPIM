@@ -1,16 +1,26 @@
 package listeners;
 
-import java.util.*;
+import data.PimId;
+import data.ProcessedData;
+import data.Topic;
+import data.TopicRequest;
+import data.TopicResponse;
+import data.User;
 
-import repositories.*;
-import data.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
-* Receives topic requests from a queue messaging application and responds to it.
+* Receives requests from a queue messaging service that requires some operation with topics.
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -47,9 +57,10 @@ public class TopicListener {
 	*	</ul>
 	*	<br>
 	*	How the topic selection algorithm works:<br>
-	*	The most relevant topic will always be added to the returnTopics list. It then looks at the remaining topics and if the next topic does not appear in any of the related topics of the topics in the returnTopics list then the current topic will be added to the returnTopic list. This allows a more diverse selection of topics.
+	*	The most relevant topic will always be added to the returnTopics list. It then looks at the remaining topics and if the next topic does not appear in any of the related topics of the topics in the returnTopics list then the current topic will be added to the returnTopic list. This allows a more diverse selection of topics.<br>
+	*	The contacts are selected in the same manner.
 	* </p>
-	* @param topicRequest Request for topics dequeued form messaging application.
+	* @param topicRequest Request for topics dequeued form messaging service.
 	*/
 	public void receiveTopicRequest(TopicRequest topicRequest) throws NoSuchTopicException {
 		// finds the topics related to the node specified in path
@@ -134,6 +145,11 @@ public class TopicListener {
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 
+	/**
+	* Converts a 3D {@link java.util.list} of {@link java.lang.String}s to a 3D {@link java.lang.String} array.
+	* @param list The list that has to be converted.
+	* @return The converted array.
+	*/
 	private String[][][] listToArray3D(List<List<List<String>>> list) {
 		List<String[][]> tmp3d = new ArrayList<>();
 
@@ -149,6 +165,17 @@ public class TopicListener {
 		return tmp3d.toArray(new String[0][0][0]);
 	}
 
+	/**
+	* Finds the last topic in the provided path.
+	* <p>
+	*	The path is traversed and at each index it is checked whether the user provided has a topic with the same name stored in the database. It also checks whether the topic has a related topic that has the same name as the topic name specified in the next index.<br>
+	*	If the path is null, an empty array, or the first element is an empty string then null will be returned.
+	* </p>
+	* @param path The path that has to be followed to find the last node.
+	* @param userId The user to which this path applies.
+	* @return The topic at the end of the path or null if the path is null, an empty array, or the first element is an empty string.
+	* @throws NoSuchTopicException If at any point during the traversal a node is found that either does not exist for the given user or it is not related to the topic in the previous index.
+	*/
 	public Topic findTopicAtEndOfPath(String[] path, String userId) throws NoSuchTopicException {
 		if (path == null || path.length == 0 || path[0].equals(""))
 			return null;
@@ -156,7 +183,7 @@ public class TopicListener {
 		Topic returnTopic = null;
 
 		for (int i = 0; i < path.length; i++) { // iterate all nodes in path
-			Topic topic = topicRepository.findByTopicAndUserId(path[i], userId); // find topic for specified user
+			Topic topic = topicRepository.findByTopicAndUserIdAndHidden(path[i], userId, false); // find topic for specified user
 
 			if (topic == null) // user does not have a topic with this name
 				throw new NoSuchTopicException(path[i]);
@@ -169,7 +196,7 @@ public class TopicListener {
 				List<Topic> relatedTopics = new ArrayList<>(); // store the related topics of the topic retrieved from repo
 
 				for (String t : topic.getRelatedTopics()) {
-					Topic relatedTopicInRepo = topicRepository.findByTopicAndUserId(t, userId);
+					Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
 
 					if (relatedTopicInRepo != null)
 						relatedTopics.add(relatedTopicInRepo);
@@ -192,17 +219,27 @@ public class TopicListener {
 		return returnTopic;
 	}
 
+	/**
+	* Gets the topics and contacts related to the provided topic.
+	* <p>
+	*	The topics that will be returned will be sorted in decending order based on {@link data.Topic#getWeight} method.
+	* </p>
+	* @param topic The topic for which the related topics has to be found.
+	* @param maxNumberOfTopics The maximum number of topics and contacts that will be returned.
+	* @param userId The user for which the topics must be retrieved.
+	* @return A 2D {@link java.util.List} that contains 2 {@link java.util.List}. The first is the related topics and the second is the contacts.
+	*/
 	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId) {
 		List<Topic> topics;
 
 		if (topic == null) {
-			topics = topicRepository.findByUserId(userId);
+			topics = topicRepository.findByUserIdAndHidden(userId, false);
 		}
 		else {
 			topics = new ArrayList<>();
 
 			for (String t : topic.getRelatedTopics()) {
-				Topic relatedTopicInRepo = topicRepository.findByTopicAndUserId(t, userId);
+				Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
 
 				if (relatedTopicInRepo != null)
 					topics.add(relatedTopicInRepo);
@@ -263,6 +300,17 @@ public class TopicListener {
 		return topicsAndContacts;
 	}
 
+	/**
+	* Receives a topic that must be updated.
+	* <p>
+	*	It updates the topic in the database that has the same {@link data.Topic#topic} as the one in the parameter. Currently the fields that can be updated are:
+	*	<ul>
+	*		<li>{@link data.Topic#person}</li>
+	*		<li>{@link data.Topic#hidden}</li>
+	*	</ul>
+	* </p>
+	* @param topic The topic that contains the updated information.
+	*/
 	public void receiveTopicUpdate(Topic topic) {
 		System.out.println("Received: " + topic);
 		Topic topicInRepo = topicRepository.findByTopicAndUserId(topic.getTopic(), topic.getUserId());

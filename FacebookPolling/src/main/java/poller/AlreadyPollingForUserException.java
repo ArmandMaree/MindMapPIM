@@ -1,5 +1,11 @@
 package poller;
 
+/**
+* Exception that gets throws when a poller is already running for a specific user.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 public class AlreadyPollingForUserException extends Exception {
 	public AlreadyPollingForUserException() {
 		super();

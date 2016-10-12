@@ -1,25 +1,35 @@
 package listeners;
 
-import data.*;
-import poller.*;
-import com.unclutter.poller.*;
-import java.util.*;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
+import com.unclutter.poller.ItemRequestIdentified;
+import com.unclutter.poller.ItemResponseIdentified;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
-* Waits for messages from the frontend service.
+* Waits for request that requires operations to do with PIM items.
 *
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class FrontendListener {
+public class ItemListener {
 	private MessageBroker messageBroker;
 
+	/**
+	* Set the value of messageBroker.
+	* @param messageBroker Will be passed to the pollers inorder for them to send messages.
+	*/
 	public void setMessageBroker(MessageBroker messageBroker) {
 		this.messageBroker = messageBroker;
 	}
 
 	/**
-	* Puts the item id and user id for a certain post into an iframe the frontend can display.
+	* Puts the item id and user id for a certain post into an blockquote element the frontend can display.
+	* <p>
+	*	If the item is for another user then save the itemId like this: "userId:itemId".
+	* </p>
 	* @param itemRequestIdentified Contains all the relevant user information and the IDs of the posts that needs to be retrieved.
 	*/
 	public void receiveItemRequest(ItemRequestIdentified itemRequestIdentified) {
@@ -45,7 +55,7 @@ public class FrontendListener {
 				"<p lang=\"en\" dir=\"ltr\">" +
 					"Loading Tweet" +
 				"</p>" + 
-				"<a href=\"https://twitter.com/" + itemRequestIdentified.getUserId() + "/status/" + itemId + "\"></a></blockquote>" +
+				"<a href=\"https://twitter.com/" + userId + "/status/" + itemId + "\"></a></blockquote>" +
 				"<script async src=\"//platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>");
 		}
 

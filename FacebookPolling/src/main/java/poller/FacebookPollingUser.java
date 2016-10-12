@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 
 /**
-* The information of a user as used by a PIM {@link poller.Poller}.
+* The information of a user as used by a {@link poller.FacebookPoller}.
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -25,7 +25,7 @@ public class FacebookPollingUser implements Serializable {
 	private String userId = null;
 
 	/**
-	* The access token that can be used to generate new access tokens.
+	* The access token that can be used to authenticate the Facebook service.
 	*/
 	private String accessToken = null;
 
@@ -67,9 +67,10 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Constructor that initializes some mamber variables.
+	* Constructor that initializes some member variables.
 	* @param userId Id of the user as used by the PIM.
-	* @param accessToken The access token that can be used to generate new access tokens.
+	* @param accessToken The access token that can be used to authenticate the Facebook service.
+	* @param expireTime The time the accessToken expires.
 	*/
 	public FacebookPollingUser(String userId, String accessToken, long expireTime) {
 		super();
@@ -82,7 +83,7 @@ public class FacebookPollingUser implements Serializable {
 	* Constructor that initializes some mamber variables.
 	* @param id Id of the user as used by the database.
 	* @param userId Id of the user as used by the PIM.
-	* @param accessToken The access token that can be used to generate new access tokens.
+	* @param accessToken The access token that can be used to authenticate the Facebook service.
 	*/
 	public FacebookPollingUser(String id, String userId, String accessToken) {
 		super();
@@ -92,7 +93,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of id
+	* Returns value of id.
 	* @return ID used in the repository.
 	*/
 	public String getId() {
@@ -100,7 +101,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of id
+	* Sets new value of id.
 	* @param id ID used in the repository.
 	*/
 	public void setId(String id) {
@@ -108,7 +109,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of userId
+	* Returns value of userId.
 	* @return ID of the user used by the poller.
 	*/
 	public String getUserId() {
@@ -116,7 +117,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of userId
+	* Sets new value of userId.
 	* @param userId ID of the user used by the poller.
 	*/
 	public void setUserId(String userId) {
@@ -124,23 +125,23 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of accessToken
-	* @return Token used to get a new access token.
+	* Returns value of accessToken.
+	* @return The access token that can be used to authenticate the Facebook service.
 	*/
 	public String getAccessToken() {
 		return accessToken;
 	}
 
 	/**
-	* Sets new value of accessToken
-	* @param accessToken Token used to get a new access token.
+	* Sets new value of accessToken.
+	* @param accessToken The access token that can be used to authenticate the Facebook service.
 	*/
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
 	/**
-	* Returns value of expireTime
+	* Returns value of expireTime.
 	* @return The time the accessToken expires.
 	*/
 	public long getExpireTime() {
@@ -148,7 +149,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of expireTime
+	* Sets new value of expireTime.
 	* @param expireTime The time the accessToken expires.
 	*/
 	public void setExpireTime(long expireTime) {
@@ -156,7 +157,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of startOfBlockPostId
+	* Returns value of startOfBlockPostId.
 	* @return The ID of the post that indicates the start of the block of posts that is currently being processed.
 	*/
 	public String getStartOfBlockPostId() {
@@ -164,7 +165,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of startOfBlockPostId
+	* Sets new value of startOfBlockPostId.
 	* @param startOfBlockPostId The ID of the post that indicates the start of the block of posts that is currently being processed.
 	*/
 	public void setStartOfBlockPostId(String startOfBlockPostId) {
@@ -172,7 +173,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of currentPostId
+	* Returns value of currentPostId.
 	* @return The ID of the post that indicates the current post in the block of posts that is currently being processed.
 	*/
 	public String getCurrentPostId() {
@@ -180,7 +181,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of currentPostId
+	* Sets new value of currentPostId.
 	* @param currentPostId The ID of the post that indicates the current post in the block of posts that is currently being processed.
 	*/
 	public void setCurrentPostId(String currentPostId) {
@@ -188,7 +189,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of endOfBlockPostId
+	* Returns value of endOfBlockPostId.
 	* @return The ID of the post that indicates the end of the block of posts that is currently being processed.
 	*/
 	public String getEndOfBlockPostId() {
@@ -196,7 +197,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of endOfBlockPostId
+	* Sets new value of endOfBlockPostId.
 	* @param endOfBlockPostId The ID of the post that indicates the end of the block of posts that is currently being processed.
 	*/
 	public void setEndOfBlockPostId(String endOfBlockPostId) {
@@ -204,7 +205,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of currentlyPolling
+	* Returns value of currentlyPolling.
 	* @return Indicates whether this user has a poller running on this account.
 	*/
 	public boolean getCurrentlyPolling() {
@@ -212,7 +213,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of currentlyPolling
+	* Sets new value of currentlyPolling.
 	* @param currentlyPolling Indicates whether this user has a poller running on this account.
 	*/
 	public void setCurrentlyPolling(boolean currentlyPolling) {
@@ -220,7 +221,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Returns value of numberOfPosts
+	* Returns value of numberOfPosts.
 	* @return Number of posts processed for this user.
 	*/
 	public int getNumberOfPosts() {
@@ -228,7 +229,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Sets new value of numberOfPosts
+	* Sets new value of numberOfPosts.
 	* @param numberOfPosts Number of posts processed for this user.
 	*/
 	public void setNumberOfPosts(int numberOfPosts) {
@@ -236,8 +237,7 @@ public class FacebookPollingUser implements Serializable {
 	}
 
 	/**
-	* Increment the value of numberOfPosts
-	* @param numberOfPosts Number of posts processed for this user.
+	* Increment the value of numberOfPosts.
 	*/
 	public void incrementNumberOfPosts() {
 		numberOfPosts++;
@@ -245,7 +245,7 @@ public class FacebookPollingUser implements Serializable {
 
 	/**
 	* A thread safe way to determine whether the user has a poller running for them.
-	* @return False if no poller is running (this will automatically change the state to currently polling) other wise true.
+	* @return False if no poller is running (this will automatically change the state to currently polling) otherwise true.
 	*/
 	public synchronized boolean checkAndStart() {
 		if (currentlyPolling)

@@ -1,26 +1,28 @@
 package poller;
 
-import java.util.List;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
+import com.unclutter.poller.RawData;
+
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import repositories.TwitterRepository;
 
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.TwitterException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import data.*;
-import com.unclutter.poller.*;
-import repositories.TwitterRepository;
 
 /**
 * Uses the Twitter API to retrieve new activity and add them to a queue that lets them be processed.
@@ -28,7 +30,7 @@ import repositories.TwitterRepository;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class TwitterPoller implements Runnable, Poller {
+public class TwitterPoller implements Runnable {
 	private static final String CONSUMER_KEY = "6PVgLYY8uIa3zBAwqss3ogPkA";
 	private static final String CONSUMER_SECRET = "v8PiSDzChX9qo4nirNsI26oGbSvIvrKKx9iM3fNHeAWbSYSXSS";
 	private static final String ACCESS_TOKEN = "782990014204502018-WNCVqfNC4onMAjdA0iJbAQX9vqZCouo";
@@ -47,6 +49,12 @@ public class TwitterPoller implements Runnable, Poller {
 	private long lastId = -1;
 	private TwitterPollingUser pollingUser;
 
+	/**
+	* Constructor.
+	* @param twitterRepository The repository that will be used to persist information of each user that is being polled for. {@link poller.TwitterPollingUser}
+	* @param messageBroker Used to send messages with.
+	* @param userId The Twitter ID of the user for which this poller is polling for.
+	*/
 	public TwitterPoller(TwitterRepository twitterRepository, MessageBroker messageBroker, String userId) throws AlreadyPollingForUserException {
 		this.twitterRepository = twitterRepository;
 		this.messageBroker = messageBroker;
@@ -72,6 +80,10 @@ public class TwitterPoller implements Runnable, Poller {
 		}
 	}
 
+	/**
+	* Creates am authenticated FacebookTwitter service.
+	* @return An authenticated Twitter service.
+	*/
 	public Twitter getService() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setOAuthConsumerKey(CONSUMER_KEY);
@@ -81,6 +93,12 @@ public class TwitterPoller implements Runnable, Poller {
 		return new TwitterFactory(cb.build()).getInstance();
 	}
 
+	/**
+	* Runs the poller on a loop.
+	* <p>
+	*	A {@link java.util.concurrent.ScheduledExecutorService} will be used to schedule the poller to run with a {@link DELAY_BETWEEN_POLLS} delay.
+	* </p>
+	*/
 	@Override
 	public void run() {
 		try {
@@ -102,6 +120,9 @@ public class TwitterPoller implements Runnable, Poller {
 		}	
 	}
 
+	/**
+	* Gets a list of posts and checks to see if the have been processed. If they have not yet been, then it extracts the raw text and creates a RawData object that is pushed to the RawDataQueue.
+	*/
 	public void poll() throws TwitterException {
 		System.out.println("Polling for " + userId);
 		ResponseList<Status> timeline = getMoreTweets();
@@ -146,6 +167,13 @@ public class TwitterPoller implements Runnable, Poller {
 		}
 	}
 
+	/**
+	* Gets a list of tweets that has to be processed.
+	* <p>
+	*	If the poller has previously crashed this method will be able to get only the tweets that should be processed next.
+	* </p>
+	* @return A list of tweets to be processed. The size will be 0 if there are no new tweets.
+	*/
 	public ResponseList<Status> getMoreTweets() throws TwitterException {
 		ResponseList<Status> response = null;
 
@@ -199,6 +227,11 @@ public class TwitterPoller implements Runnable, Poller {
 		return response;
 	}
 
+	/**
+	* Extract the text from a tweet and parse it as an RawData object.
+	* @param tweet The tweet that has to be processed.
+	* @return Object that contains the details of the tweet or null if no data is found.
+	*/
 	public RawData getRawData(Status tweet) {
 		if (tweet.getText() == null || tweet.getText().length() == 0)
 			return null;
@@ -214,6 +247,13 @@ public class TwitterPoller implements Runnable, Poller {
 		return rawData;
 	}
 
+	/**
+	* Takes a RawData object and add it to a RawDataQueue.
+	* <p>
+	*	If the {@link poller.TwitterPollingUser#numberOfPosts} is less than {@link MAX_PRIORITY_TWEETS} then the object will be sent on the priority queue.
+	* </p>
+	* @param rawData The rawData object that should be added to the queue.
+	*/
 	public void addToQueue(RawData rawData) {
 		try {
 			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " tweetCount: " + (pollingUser.getNumberOfTweets() + 1));

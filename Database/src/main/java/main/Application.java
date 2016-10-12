@@ -1,41 +1,45 @@
 package main;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.CommandLineRunner;
+import listeners.ProcessedDataListener;
+import listeners.TopicListener;
+import listeners.UserListener;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
-
-import org.springframework.stereotype.Component;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import repositories.*;
-import listeners.*;
-import data.*;
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
@@ -55,9 +59,6 @@ public class Application implements CommandLineRunner {
 
 	@Autowired
 	private TopicRepository topicRepository;
-
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
 
 	@Bean
 	Queue topicRequestQueue() {
@@ -145,8 +146,8 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public BusinessListener businessListener() {
-		return new BusinessListener();
+	public UserListener userListener() {
+		return new UserListener();
 	}
 
 	@Bean
@@ -165,18 +166,18 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public MessageListenerAdapter userRegisterAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveUserRegister");
+	public MessageListenerAdapter userRegisterAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveUserRegister");
 	}
 
 	@Bean
-	public MessageListenerAdapter userCheckAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveCheckIfRegistered");
+	public MessageListenerAdapter userCheckAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveCheckIfRegistered");
 	}
 
 	@Bean
-	public MessageListenerAdapter userUpdateAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveUserUpdate");
+	public MessageListenerAdapter userUpdateAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveUserUpdate");
 	}
 
 	@Bean
@@ -252,6 +253,15 @@ public class Application implements CommandLineRunner {
 		ctx.getEnvironment().setActiveProfiles("production");
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean all the repositories.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
 		for (String arg : args) {

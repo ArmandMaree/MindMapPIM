@@ -1,19 +1,17 @@
 package nlp;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
+import com.unclutter.poller.RawData;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import data.ProcessedData;
 
-import org.springframework.beans.factory.annotation.*;
-
-import data.*;
 import nlp.NaturalLanguageProcessor;
 
-import com.unclutter.poller.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
 * Receives {@link data.RawData} and processes it with a {@link nlp.NaturalLanguageProcessor}.

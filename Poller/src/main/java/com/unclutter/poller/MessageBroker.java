@@ -1,7 +1,7 @@
 package com.unclutter.poller;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
 * A simplified interface to interact with the backend. This class should be used by the pollers and should be instantiated by the MessageBrokerFactory.
