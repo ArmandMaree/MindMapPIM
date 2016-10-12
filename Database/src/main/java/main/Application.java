@@ -45,6 +45,7 @@ public class Application implements CommandLineRunner {
 	private final String userRegisterQueueName = "user-register.database.rabbit";
 	private final String userCheckQueueName = "user-check.database.rabbit";
 	private final String userUpdateQueueName = "user-update-request.database.rabbit";
+	private final String topicUpdateQueueName = "topic-update-request.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -89,6 +90,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue topicUpdateQueue() {
+		return new Queue(topicUpdateQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
@@ -121,6 +127,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	Binding userUpdateBinding(@Qualifier("userUpdateQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userUpdateQueueName);
+	}
+
+	@Bean
+	Binding topicUpdateBinding(@Qualifier("topicUpdateQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicUpdateQueueName);
 	}
 
 	@Bean
@@ -166,6 +177,11 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public MessageListenerAdapter userUpdateAdapter(BusinessListener businessListener) {
 		return new MessageListenerAdapter(businessListener, "receiveUserUpdate");
+	}
+
+	@Bean
+	public MessageListenerAdapter topicUpdateAdapter(TopicListener topicListener) {
+		return new MessageListenerAdapter(topicListener, "receiveTopicUpdate");
 	}
 
 	@Bean
@@ -222,6 +238,15 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
+	@Bean
+	public SimpleMessageListenerContainer topicUpdateContainer(ConnectionFactory connectionFactory, @Qualifier("topicUpdateAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicUpdateQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
 	public static void main(String[] args) {
 		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
 		ctx.getEnvironment().setActiveProfiles("production");
@@ -238,7 +263,7 @@ public class Application implements CommandLineRunner {
 					topicRepository.deleteAll();
 					break;
 				default:
-					System.out.println("Invalid argument.");
+					System.out.println("Invalid argument: " + arg);
 					break;
 			}
 		}

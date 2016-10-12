@@ -52,6 +52,11 @@ public class Topic implements Serializable, Comparable<Topic> {
 	private boolean person = false;
 
 	/**
+	* Indicates whether the user chose to hide the topic.
+	*/
+	private boolean hidden = false;
+
+	/**
 	* Default constructor
 	*/
 	public Topic() {
@@ -233,6 +238,22 @@ public class Topic implements Serializable, Comparable<Topic> {
 		this.person = person;
 	}
 
+	/**
+	* Returns the value of hidden.
+	* @return Indicates whether the user chose to hide the topic.
+	*/
+	public boolean getHidden() {
+		return hidden;
+	}
+
+	/**
+	* Set the value of hidden.
+	* @param hidden Indicates whether the user chose to hide the topic.
+	*/
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
 	/*
 	* Implements Comparable and allows topics to sorted by weight.
 	* @param other The topic this one is compared to.
@@ -287,6 +308,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 			s += "\t]\n" +
 			"\ttime: " + time + ",\n" +
 			"\tperson: " + person + "\n" +
+			"\thidden: " + hidden + "\n" +
 		"}";
 
 		return s;

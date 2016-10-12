@@ -107,7 +107,7 @@ public class BusinessListener {
 		else {
 			if (userIdentified.getPimIds() != null)
 				for (PimId pimId : userIdentified.getPimIds())
-					if (pimId.uId.equals("")) // remove pimId from user
+					if (pimId.uId.equals("") || pimId.uId.startsWith("stop:")) // remove pimId from user
 						userInRepo.removePimId(pimId.uId);
 					else // update pimID
 						userInRepo.addPimId(pimId.pim, pimId.uId);
@@ -126,6 +126,7 @@ public class BusinessListener {
 
 			userRepository.save(userInRepo);
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.SUCCESS);
+			System.out.println("USER AFTER MODIFICATION: " + userInRepo);
 		}
 
 		System.out.println("Respond from update: " + userUpdateResponseIdentified);

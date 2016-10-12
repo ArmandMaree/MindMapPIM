@@ -321,13 +321,13 @@ public class User implements Serializable {
 		String u = "";
 
 		for (PimId pimId : pimIds)
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+			u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
 
 		return "User {\n" +
 			"\tid:" + userId + ",\n" +
 			"\tfirstName:" + firstName  + ",\n" +
 			"\tlastName:" + lastName + ",\n" +
-			"\tids: {\n" + u + "\n\t}\n" +
+			"\tids: {\n" + u + "\t}\n" +
 			"\tinitialDepth:" + initialDepth + "\n" +
 			"\tbranchingFactor:" + branchingFactor + "\n" +
 			"\tisActive:" + isActive + "\n" +
