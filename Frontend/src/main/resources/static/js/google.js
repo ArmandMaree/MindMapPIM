@@ -35,6 +35,7 @@ var startApp = function() {
  * @param {id} googleLogin - ID of the element for the custom button
  */
 var initSigninV2 = function() {
+	//alert("Here")
   auth2 = gapi.auth2.init({
 	  client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
 	  scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
@@ -97,7 +98,16 @@ var sendUserReg = function(){
  * A function that checks where any sign in activity for Google has happened and responds.
  * @param {boolean} val - true if a sign in has occured.
  */
-
+var signinChanged = function (val) {
+  console.log('Signin state changed to ', val);
+  if(val === true){
+	//alert(googleUser.w3.U3);
+	  googleUser = auth2.currentUser.get();
+	  var gmailAuthCode = {id:googleUser.w3.U3,pimSource:"gmail",authCode:getCookie("auth")}
+	  UpdateSourcesObject.authcodes.push(gmailAuthCode);
+	  console.log("added new AuthCode");
+  }
+};
 /**
  * A function that checks if the user is already logged in to Google or if the user has just logged in and responds
  */
@@ -109,6 +119,7 @@ var refreshValues = function() {
 
 	console.log(JSON.stringify(googleUser, undefined, 2));
 	console.log(auth2.isSignedIn.get());
+	
   }
 }
 /**
@@ -122,6 +133,7 @@ var onSuccess = function(user) {
 	  document.cookie= "googleUser="+user.getBasicProfile().getEmail();
 	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
 	//document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
+	refreshValues();
  };
 /**
  * A Google callback function when a request has failed.
@@ -146,12 +158,14 @@ function googleretrieve(){
   function signInCallback(authResult) {
 	if (authResult['code']) {
 		console.log("authResult:" +JSON.stringify(authResult));
+		
 	  console.log(authResult['code']);
+	  document.cookie = "auth=" + authResult['code'];
 	  $('#tickGoogle').show();
-	  var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"gmail",authCode:authResult['code']}
-	  UpdateSourcesObject.authcodes.push(gmailAuthCode);
-	  console.log("added new AuthCode");
-
+	  // var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"gmail",authCode:authResult['code']}
+	  // UpdateSourcesObject.authcodes.push(gmailAuthCode);
+	  // console.log("added new AuthCode");
+	  	onSuccess();
 	} else {
 	  	console.log("An error occurred!");
 	}

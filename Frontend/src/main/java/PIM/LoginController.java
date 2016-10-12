@@ -155,30 +155,36 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified sendNewDataSources(UpdateSources message) throws Exception {
         String id = UUID.randomUUID().toString();
+        System.out.println(message.toString());
+        if(message == null)
+            System.out.println("Message object was null");
         if(message.getUserId() == null)
             System.out.println("No userId");
         else
             System.out.println("User id: "+message.getUserId());
+
         if(message.getAuthcodes() == null)
             System.out.println("No authcodes");
 
-        //System.out.println("Java auth codes length:"+ message.getAuthcodes().length);
-        // List<PimId> pimIds = message.getAuthcodes();
-        // if(twitterUsername != "")
-        //     pimIds.add(new PimId("Twitter",twitterUsername));  
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),message.getAuthcodes());
+        if(request.getAuthCodes() == null)
+            System.out.println("Setting authcodes error");
         request.setTheme(null);
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        System.out.println(request);
+       for(int i = 0 ; i < request.getAuthCodes().length; i++)
+            {
+                System.out.println(request.getAuthCodes()[i].getPimSource()+ " id:  "+request.getAuthCodes()[i].getId());
+            }
+        System.out.println("Update source request: " + request);
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
 
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        System.out.println("Update data sourcesresponse:" +response);
-        twitterUsername="";
+        System.out.println("Update data sources response:" + response);
+
         return response;
     }
 

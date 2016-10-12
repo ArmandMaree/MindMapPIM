@@ -298,39 +298,41 @@ window.onload = function()
 */
 function checkDatabase()
 {
+	console.log("Checking database........");
 		$("#Loading").fadeIn(3000,function(){
 		});
 
 	var socket = new SockJS('/hello');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
+	    console.log('Connected: ' + frame);
 	    connected = true;
-	  	var userReg = {};
-	  	var pimIds = JSON.parse(getCookie("pimIds"));
-	  	if(pimIds[0].pim =="gmail")
-			userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:pimIds[0].uId,pimSource:"gmail",authCode:null},]};
-		else
-			userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:pimIds[0].uId,pimSource:"facebook",authCode:null},]};
-
-	  
+				
+		if(findPim("gmail") != ""){
+			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:findPim("gmail"),pimSource:"gmail",authCode:null}]};
+			
+		
+		}else if(findPim("facebook") != ""){
+			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:getCookie("facebookId"),pimSource:"facebook",authCode:null}]};
+		}
 		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
 			var jsonresponse = JSON.parse(serverResponse.body);
+			console.log("ServerResponse is : "+JSON.stringify(jsonresponse.pimIds));
+				
 			
-			document.cookie="pimIds="+JSON.stringify(jsonresponse.pimIds);
-			
-			$("#loadingAlert").fadeOut(1000, function() {
-				 
-			});
-		}, function(error) {
-	    		console.log(error.headers.message);
-  		});
+			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
+			}, function(error) {
+		    		console.log(error.headers.message);
+	  		});
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-	});
-		 pimIds = JSON.parse(getCookie("pimIds"));
-		
+		});
+		var pimIds = JSON.parse(getCookie("pimIds"));
+		//alert("pimIds length:" +pimIds.length )
 		for(var i = 0 ; i < pimIds.length; i++)
 		{
 			var current = pimIds[i];
+			//alert("Pim name: "+current.pim +"\nPim id: "+ current.uId);
+
 			var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();			
 			if(current.pim == "gmail" && current.uId != "")
 			{
@@ -339,6 +341,7 @@ function checkDatabase()
 			}
 			if(current.pim == "facebook" && current.uId != "")
 			{
+
 				$(id).show();
 				$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
 			}
@@ -444,14 +447,16 @@ var refreshValues = function() {
 /**
 *	@var {Array} pimIds -  an array that stores the id of each corresponding data source
 */
-var pimIds = getCookie("pimIds");
+var pimIds;
 function findPim(name)
 {
+	var pimIds = JSON.parse(getCookie("pimIds"));
 	for(var i = 0; i < pimIds.length;i++)
 	{
 		if(pimIds[i].pim == name)
 			return pimIds[i].uId;
 	} 
+	return "";
 }
 /**
 *	Function that is called when a user clicks on the Gmail button on the account settings page.
@@ -510,7 +515,8 @@ function onTwitterLogin()
 function setTwitterAuthCode(twitter)
 {
 	clearInterval(interval);
-	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	//alert("added twitter authcode");
+	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"000"});
 	$("#tickTwitter").show();	
  	$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
   	$("#Loading").fadeOut(1000, function(){}); 	
@@ -525,7 +531,7 @@ function checkTwitter()
 		$("#tickTwitter").hide();
 		$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Twitter</span>");
 		var twitterUsername =findPim("twitter");
-		var twitterAuthCode = {id:"stop:"+twitterUsername,pimSource:"twitter",authCode:""};
+		var twitterAuthCode = {id:twitterUsername,pimSource:"twitter",authCode:""};
 		UpdateSourcesObject.authcodes.push(twitterAuthCode);
 		console.log("TwitterAuthCode: " + JSON.stringify(twitterAuthCode));
 		
@@ -535,9 +541,6 @@ function checkTwitter()
 		$("#Loading").fadeIn(1000, function() { 
 		});
 		onTwitterLogin();
- 		// $("#Loading").fadeOut(1000, function(){}); 	
- 		// $("#tickTwitter").show();
- 		// $("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
  		
 	}
 }
@@ -553,7 +556,8 @@ function checkFacebook()
 	if($("#tickFacebook").is(":visible") == true)
 	{
 		var userId =findPim("facebook");
-		var facebookAuthCode = {id:userId,pimSource:"facebook",authCode:null}
+	//	alert("userid: "+ userId)
+		var facebookAuthCode = {id:userId,pimSource:"facebook",authCode:""}
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);
 	}
@@ -598,6 +602,7 @@ function SaveAccountChanges()
 				$("#Saved").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 				});
+				checkDatabase();
 			}
 			else if(response.code == 99 || response.code == 1)
 			{
@@ -610,7 +615,12 @@ function SaveAccountChanges()
 		});
 		console.log(JSON.stringify(UpdateSourcesObject))
 		stompClient.send("/app/datasources", {}, JSON.stringify(UpdateSourcesObject));
+		UpdateSourcesObject = {
+			userId: "", 
+			authcodes:[]
+		}
 	});
+	
 		
 }
 
