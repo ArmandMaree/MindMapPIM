@@ -22,7 +22,6 @@ var AuthResponse;
 		document.cookie = "facebookId="+ String(response.authResponse.userID);
 	 	document.cookie = "fAT="+ response.authResponse.accessToken;
 	  	document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
-		// console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
 		testAPI();
 		return true;
@@ -39,27 +38,6 @@ var AuthResponse;
 	}
 }
 
-/**
-*	This function is called when a client clicks on the Facebook button to login or signup
-*	It prompts the user to log in to Facebook through the Facebook login dialogue
-*/
-// function onFacebookLogin()
-// {
-//   console.log("onFacebookLogin");
-//   FB.login(function(response) {
-// 	if (response.authResponse) {
-// 	  AuthResponse = response.authResponse;
-// 	  facebookAuthCode= {"id":AuthResponse.userID,"pimSource":"Facebook","authCode":AuthResponse.accessToken}
-// 	  console.log(response.authResponse);
-	
-// 	  showtick();
-// 	}
-// 	FB.getLoginStatus(function(response) {
-// 	  statusChangeCallback(response);
-// 		return ;	
-// 	});
-//   });
-// }
 
 /**
 *	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook
@@ -110,7 +88,6 @@ FB.getLoginStatus(function(response) {
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
-	// console.log('Successful login for: ' + response.name);
 	AuthResponse = response.authResponse;
   });
 return;
@@ -125,4 +102,3 @@ function onSuccessFacebook(response) {
   	return true;
   
 }
-////////////////////////////////////////////////////////////////////////////////////////////////End of Facebook Code
