@@ -38,7 +38,7 @@ $( window ).resize(function() {
     }
 });
 $(document).ready(function(){
-
+	startApp();
 	var navcolour = getCookie("nav");
 	$("#nav").css("backgroundColor",navcolour);
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -308,50 +308,45 @@ function checkDatabase()
 	    console.log('Connected: ' + frame);
 	    connected = true;
 				
-		// if(findPim("gmail") != ""){
-			//var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:findPim("gmail"),pimSource:"gmail",authCode:null}]};
+	    document.cookie = "pimIds" +"=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 			var userReg={userId:getCookie("userId"),firstName:getCookie("name"),lastName:getCookie("surname")};
 			
-		
-		// }else if(findPim("facebook") != ""){
-		// 	var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:getCookie("facebookId"),pimSource:"facebook",authCode:null}]};
-		// }
 		stompClient.subscribe('/user/topic/request', function(serverResponse){
 			var jsonresponse = JSON.parse(serverResponse.body);
 			console.log("ServerResponse is : "+JSON.stringify(jsonresponse.pimIds));
 				
 			
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
+			var pimIds = JSON.parse(getCookie("pimIds"));
+			//alert("pimIds length:" +pimIds.length )
+			for(var i = 0 ; i < pimIds.length; i++)
+			{
+				var current = pimIds[i];
+				//alert("Pim name: "+current.pim +"\nPim id: "+ current.uId);
+
+				var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();			
+				if(current.pim == "gmail" && current.uId != "")
+				{
+					$(id).show();
+					$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
+				}
+				if(current.pim == "facebook" && current.uId != "")
+				{
+
+					$(id).show();
+					$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
+				}
+				if(current.pim == "twitter" && !current.uId.includes("stop"))
+				{
+					$(id).show();
+					$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='g' style='font-size:11pt'>Remove Twitter</span>");
+				}
+			} 
 			}, function(error) {
 		    		console.log(error.headers.message);
 	  		});
 			stompClient.send("/app/usercheck", {}, JSON.stringify(userReg));
 		});
-		var pimIds = JSON.parse(getCookie("pimIds"));
-		//alert("pimIds length:" +pimIds.length )
-		for(var i = 0 ; i < pimIds.length; i++)
-		{
-			var current = pimIds[i];
-			//alert("Pim name: "+current.pim +"\nPim id: "+ current.uId);
-
-			var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();			
-			if(current.pim == "gmail" && current.uId != "")
-			{
-				$(id).show();
-				$("#googlesigninButton").html("<span class='fa fa-google'></span> <span id='g' style='font-size:11pt'>Remove Gmail</span>");
-			}
-			if(current.pim == "facebook" && current.uId != "")
-			{
-
-				$(id).show();
-				$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='g' style='font-size:11pt'>Remove Facebook</span>");
-			}
-			if(current.pim == "twitter" && !current.uId.includes("stop"))
-			{
-				$(id).show();
-				$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='g' style='font-size:11pt'>Remove Twitter</span>");
-			}
-		} 
 		$("#Loading").fadeOut(1000,function(){
 
 		});
@@ -473,7 +468,7 @@ function checkPim(name, ids)
 */
 function checkGoogle()
 {
-	startApp();
+	// startApp();
 	if($("#tickGmail").is(":visible") == true)
 	{
 		$("#tickGmail").hide();
@@ -586,9 +581,10 @@ function checkFacebook()
 			});
 		});
 		facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
+		$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='f' style='font-size:11pt'>Remove Facebook</span>");
 		setTimeout(function(){
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);	
-		},2000);
+		},1000);
 	}
 }
 /**
@@ -613,23 +609,9 @@ function SaveAccountChanges()
 				$("#Saved").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 				});
-				// var pimIds = getCookie("pimIds");
-				// var newPimIds;
-				// //Gmail
-				// if(checkPim(UpdateSourcesObject.authcodes,"gmail") != DNE)
-				// {
-				// 	if(checkPim(UpdateSourcesObject.authcodes,"gmail") != "")
-				// 		newPimIds.push({pim:"gmail", uId:checkPim(UpdateSourcesObject.authcodes,"gmail")})
-				// }
-				// //Facebook
-				// if(checkPim(UpdateSourcesObject.authcodes,"gmail") != DNE)
-				// {
-				// 	if(checkPim(UpdateSourcesObject.authcodes,"gmail") != "")
-				// 		newPimIds.push({pim:"gmail", uId:checkPim(UpdateSourcesObject.authcodes,"gmail")})
-				// }
-				//Twitter
-				//document.cookie  = "pimIds"+ "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-				//checkDatabase();
+				setTimeout(function(){
+					checkDatabase();
+				},4000)
 				$("#Loading").hide();
 			}
 			else if(response.code == 99 || response.code == 1)
