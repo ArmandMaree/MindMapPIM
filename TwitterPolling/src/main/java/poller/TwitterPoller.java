@@ -40,13 +40,14 @@ public class TwitterPoller implements Runnable {
 	private TwitterRepository twitterRepository;
 	private MessageBroker messageBroker;
 	private Twitter service = null;
-	private boolean stop = false;
+	private volatile boolean stop = false;
 	private int tweetCount = 0;
 	private int PRIORITY_LIMIT = 25;
 	private int MAX_OLD_TWEETS = 50;
+	private int MAX_TWEETS = 100;
+
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private String userId;
-	private long lastId = -1;
 	private TwitterPollingUser pollingUser;
 
 	/**
@@ -106,10 +107,14 @@ public class TwitterPoller implements Runnable {
 
 			if (service == null)
 				System.out.println("No authorized service for user " + userId);
-			if (!pollingUser.getCurrentlyPolling())
+			else if (stop) {
 				System.out.println("Stopping polling for " + userId + " (probably due to stop request).");
+				pollingUser.setCurrentlyPolling(false);
+				twitterRepository.save(pollingUser);
+			}
+			else if(pollingUser.getNumberOfTweets() > MAX_TWEETS && MAX_TWEETS != -1)
+				System.out.println("Reached maximum number of tweets for user " + userId);
 			else {
-				System.out.println("START");
 				poll();
 
 				final ScheduledFuture<?> pollerHandle = scheduler.schedule(this, DELAY_BETWEEN_POLLS, TimeUnit.SECONDS);
@@ -138,7 +143,7 @@ public class TwitterPoller implements Runnable {
 			for (Status tweet: timeline) {
 				pollingUser = twitterRepository.findByUserId(userId);
 
-				if (!pollingUser.getCurrentlyPolling())
+				if (stop || (pollingUser.getNumberOfTweets() > MAX_TWEETS && MAX_TWEETS != -1))
 					break outerloop;
 
 				if(pollingUser.getNumberOfTweets() >= MAX_OLD_TWEETS && MAX_OLD_TWEETS != -1) {
@@ -250,7 +255,7 @@ public class TwitterPoller implements Runnable {
 	/**
 	* Takes a RawData object and add it to a RawDataQueue.
 	* <p>
-	*	If the {@link poller.TwitterPollingUser#numberOfPosts} is less than {@link MAX_PRIORITY_TWEETS} then the object will be sent on the priority queue.
+	*	If the {@link poller.TwitterPollingUser#numberOfTweets} is less than {@link MAX_PRIORITY_TWEETS} then the object will be sent on the priority queue.
 	* </p>
 	* @param rawData The rawData object that should be added to the queue.
 	*/
@@ -266,5 +271,20 @@ public class TwitterPoller implements Runnable {
 		catch (MessageNotSentException mnse) {
 			mnse.printStackTrace();
 		}
+	}
+
+	/**
+	* Stop the poller.
+	*/
+	public void stopPoller() {
+		stop = true;
+	}
+
+	/**
+	* Get the value of userId.
+	* @return The Twitter ID of the user for which this poller is polling for.
+	*/
+	public String getUserId() {
+		return userId;
 	}
 }

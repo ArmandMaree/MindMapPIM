@@ -4,8 +4,14 @@ import com.unclutter.poller.MessageBroker;
 
 import data.AuthCode;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import poller.AlreadyPollingForUserException;
 import poller.GmailPoller;
 import poller.GmailPollingUser;
+import poller.UserNotFoundException;
 
 import repositories.GmailRepository;
 
@@ -18,6 +24,7 @@ import repositories.GmailRepository;
 public class AuthCodeListener {
 	private MessageBroker messageBroker;
 	private GmailRepository gmailRepository;
+	private static List<GmailPoller> gmailPollers = new ArrayList<>();
 
 	/**
 	* Constructor.
@@ -44,19 +51,31 @@ public class AuthCodeListener {
 	*/
 	public void receiveAuthCode(AuthCode authCode) {
 		System.out.println("Received: " + authCode);
-		GmailPollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
 
-		if (authCode == null || authCode.equals(""))
-			pollingUser.setCurrentlyPolling(false);
-		else
-			if (pollingUser == null || !pollingUser.getCurrentlyPolling()) {
-				try {
-					GmailPoller poller = new GmailPoller(gmailRepository, messageBroker, authCode.getAuthCode(), authCode.getId());
-					new Thread(poller).start();
-				}
-				catch (Exception ioe) {
-					ioe.printStackTrace();
-				}
+		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
+			GmailPollingUser pollingUser = gmailRepository.findByUserId(authCode.getId());
+
+			if (pollingUser != null) {
+				for (GmailPoller gmailPoller : gmailPollers)
+					if (gmailPoller.getUserId().equals(authCode.getId()))
+						gmailPoller.stopPoller();
 			}
+		}
+		else {
+			try {
+				GmailPoller gmailPoller = new GmailPoller(gmailRepository, messageBroker, authCode.getAuthCode(), authCode.getId());
+				gmailPollers.add(gmailPoller);
+				new Thread(gmailPoller).start();
+			}
+			catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+			catch (UserNotFoundException unfe) {
+				unfe.printStackTrace();
+			}
+			catch (AlreadyPollingForUserException apfue) {
+				apfue.printStackTrace();
+			}
+		}
 	}
 }

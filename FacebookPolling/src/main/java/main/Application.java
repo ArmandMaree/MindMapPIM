@@ -99,6 +99,8 @@ public class Application implements CommandLineRunner {
 
 		for (FacebookPollingUser pollingUser : pollingUsers) {
 			try {
+				pollingUser.setCurrentlyPolling(false);
+				facebookRepository.save(pollingUser);
 				new Thread(new FacebookPoller(facebookRepository, messageBrokerFactory.getMessageBroker(), pollingUser.getAccessToken(), pollingUser.getExpireTime(), pollingUser.getUserId())).start();
 			}
 			catch (AlreadyPollingForUserException apfue) {

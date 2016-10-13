@@ -128,11 +128,12 @@ public class UserListener {
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.USER_NOT_FOUND);
 		else {
 			if (userIdentified.getPimIds() != null)
-				for (PimId pimId : userIdentified.getPimIds())
+				for (PimId pimId : userIdentified.getPimIds()) {
 					if (pimId.uId.equals("")) // remove pimId from user
-						userInRepo.removePimId(pimId.uId);
+						userInRepo.removePimId(pimId.pim);
 					else // update pimID
 						userInRepo.addPimId(pimId.pim, pimId.uId);
+				}
 
 			if (userIdentified.getTheme() != null)
 				userInRepo.setTheme(userIdentified.getTheme());

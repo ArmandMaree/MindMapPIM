@@ -34,9 +34,10 @@ public class FacebookPoller implements Runnable {
 	private FacebookRepository facebookRepository;
 	private long expireTime;
 	private Facebook service;
-	private boolean stop = false;
-	private int MAX_PRIORITY_POSTS = 50;
-	private int MAX_POSTS = 200;
+	private volatile boolean stop = false;
+	private int MAX_PRIORITY_POSTS = 25;
+	private int MAX_OLD_POSTS = 50;
+	private int MAX_POSTS = 50;
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private FacebookPollingUser pollingUser;
 	private String userId;
@@ -97,9 +98,12 @@ public class FacebookPoller implements Runnable {
 		try {
 			pollingUser = facebookRepository.findByUserId(pollingUser.getUserId());
 
-			if (!pollingUser.getCurrentlyPolling())
+			if (stop) {
 				System.out.println("Stopping polling for " + userId + " (probably due to stop request).");
-			else if(pollingUser.getNumberOfPosts() > MAX_POSTS)
+				pollingUser.setCurrentlyPolling(false);
+				facebookRepository.save(pollingUser);
+			}
+			else if(pollingUser.getNumberOfPosts() > MAX_POSTS && MAX_POSTS != -1)
 				System.out.println("Reached maximum number of posts for user " + userId);
 			else {
 				poll();
@@ -108,9 +112,8 @@ public class FacebookPoller implements Runnable {
 			}
 		}
 		catch (org.springframework.social.RevokedAuthorizationException rae) {
-			System.out.println("Auth revoked: ");
+			System.out.println("Auth revoked for " + userId);
 			rae.printStackTrace();
-			return;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -136,8 +139,13 @@ public class FacebookPoller implements Runnable {
 			for (Post post : feed) {
 				pollingUser = facebookRepository.findByUserId(userId);
 
-				if (pollingUser.getCurrentlyPolling() || pollingUser.getNumberOfPosts() > MAX_POSTS)
+				if (stop || (pollingUser.getNumberOfPosts() > MAX_POSTS && MAX_POSTS != -1))
 					break outerloop;
+
+				if (pollingUser.getNumberOfPosts() == MAX_OLD_POSTS && MAX_OLD_POSTS != -1) {
+					System.out.println("Reached max number of old posts for user " + userId + ". Now only checking for new posts.");
+					break outerloop;
+				}
 
 				RawData rawData = getRawData(post);
 
@@ -283,7 +291,7 @@ public class FacebookPoller implements Runnable {
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " postCount: " + pollingUser.getNumberOfPosts());
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + userId + " postCount: " + (pollingUser.getNumberOfPosts() + 1));
 
 			if (pollingUser.getNumberOfPosts() <= MAX_PRIORITY_POSTS)
 				messageBroker.sendPriorityRawData(rawData);
@@ -293,5 +301,20 @@ public class FacebookPoller implements Runnable {
 		catch (MessageNotSentException mnse) {
 			mnse.printStackTrace();
 		}
+	}
+
+	/**
+	* Stop the poller.
+	*/
+	public void stopPoller() {
+		stop = true;
+	}
+
+	/**
+	* Get the value of userId.
+	* @return The Facebook ID of the user for which this poller is polling for.
+	*/
+	public String getUserId() {
+		return userId;
 	}
 }

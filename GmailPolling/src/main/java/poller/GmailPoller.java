@@ -30,6 +30,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,12 +65,15 @@ public class GmailPoller implements Runnable{
 	private static HttpTransport HTTP_TRANSPORT;
 	private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
 
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private volatile boolean stop = false;
 	private Gmail service = null;
-	private boolean stop = false;
 	private GmailRepository gmailRepository;
 	private MessageBroker messageBroker;
-	private int MAX_OLD_EMAILS = 200;
+	private int MAX_EMAILS = 100;
+	private int MAX_OLD_EMAILS = 50;
 	private int MAX_PRIORITY_EMAILS = 25;
+	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private GmailPollingUser pollingUser = null;
 
 	static {
@@ -85,7 +92,7 @@ public class GmailPoller implements Runnable{
 	* @param userAuthCode Authentication code received from the login service.
 	* @param userEmail The email address of the user.
 	*/
-	public GmailPoller(GmailRepository gmailRepository, MessageBroker messageBroker, String userAuthCode, String userEmail) throws IOException, UserNotFoundException {
+	public GmailPoller(GmailRepository gmailRepository, MessageBroker messageBroker, String userAuthCode, String userEmail) throws IOException, UserNotFoundException, AlreadyPollingForUserException {
 		this.gmailRepository = gmailRepository;
 		this.messageBroker = messageBroker;
 
@@ -98,6 +105,15 @@ public class GmailPoller implements Runnable{
 				throw new UserNotFoundException("User " + userEmail + " not found in gmailRepository.");
 
 			service = getGmailServiceFromRefreshToken(userEmail); // Build a new authorized API client service.
+		}
+
+		pollingUser = gmailRepository.findByUserId(userEmail);
+
+		if (pollingUser.getCurrentlyPolling())
+			throw new AlreadyPollingForUserException("There is already a poller running for user " + pollingUser.getUserId() + ".");
+		else {
+			pollingUser.setCurrentlyPolling(true);
+			gmailRepository.save(pollingUser);
 		}
 	}
 
@@ -165,33 +181,19 @@ public class GmailPoller implements Runnable{
 	*/
 	public void run() {
 		try {
-			if (service == null)
-				throw new GmailServiceNotSetException("Tried to start polling for user " + pollingUser.getUserId() + " but the Gmail Service was not set.");
-
 			pollingUser = gmailRepository.findByUserId(pollingUser.getUserId());
 
-			if (pollingUser.getCurrentlyPolling())
-				throw new AlreadyPollingForUserException("There is already a poller running for user " + pollingUser.getUserId() + ".");
-			else {
-				pollingUser.setCurrentlyPolling(true);
+			if (stop) {
+				System.out.println("Stopping polling for " + pollingUser.getUserId() + " (probably due to stop request).");
+				pollingUser.setCurrentlyPolling(false);
 				gmailRepository.save(pollingUser);
 			}
-
-			while (!stop) {
+			else if(pollingUser.getNumberOfEmails() > MAX_EMAILS && MAX_EMAILS != -1)
+				System.out.println("Reached maximum number of emails for user " + pollingUser.getUserId());
+			else {
 				poll();
-				pollingUser = gmailRepository.findByUserId(pollingUser.getUserId());
 
-				if (!pollingUser.getCurrentlyPolling()) {
-					System.out.println("Poller stopping for " + pollingUser.getUserId() + " (probably due to stop request).");
-					return;
-				}
-
-				try {
-					java.lang.Thread.sleep(60 * 1000);
-				}
-				catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
+				final ScheduledFuture<?> pollerHandle = scheduler.schedule(this, DELAY_BETWEEN_POLLS, TimeUnit.SECONDS);
 			}
 		}
 		catch (Exception e) {
@@ -346,7 +348,7 @@ public class GmailPoller implements Runnable{
 	*/
 	public void addToQueue(RawData rawData) {
 		try {
-			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + pollingUser.getUserId() + " numberOfEmails: " + pollingUser.getNumberOfEmails() + " MAX_PRIORITY_EMAILS: " + MAX_PRIORITY_EMAILS);
+			System.out.println("Sending RawData: " + rawData.getPimItemId() + " for user: " + pollingUser.getUserId() + " emailCount: " + (pollingUser.getNumberOfEmails() + 1));
 
 			if (pollingUser.getNumberOfEmails() <= MAX_PRIORITY_EMAILS)
 				messageBroker.sendPriorityRawData(rawData);
@@ -673,5 +675,20 @@ public class GmailPoller implements Runnable{
 	*/
 	public void printEmail(MimeMessage message) {
 		System.out.println(message);
+	}
+
+	/**
+	* Stop the poller.
+	*/
+	public void stopPoller() {
+		stop = true;
+	}
+
+	/**
+	* Get the value of userEmail.
+	* @return The email address of the user for which this poller is polling for.
+	*/
+	public String getUserId() {
+		return pollingUser.getUserId();
 	}
 }

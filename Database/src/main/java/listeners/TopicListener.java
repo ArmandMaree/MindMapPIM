@@ -66,10 +66,19 @@ public class TopicListener {
 		// finds the topics related to the node specified in path
 		System.out.println("RECEIVED: " + topicRequest);
 		Topic lastTopicInPath = null;
-		lastTopicInPath = findTopicAtEndOfPath(topicRequest.getPath(), topicRequest.getUserId());
-		// topics that need to be returned.
-		List<List<Topic>> topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId()); 
+		List<List<Topic>> topicsAndContacts = null;
 
+		try {
+			lastTopicInPath = findTopicAtEndOfPath(topicRequest.getPath(), topicRequest.getUserId());
+			// topics that need to be returned.
+			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId()); 
+		}
+		catch (NoSuchTopicException nste) {
+			nste.printStackTrace();
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), null, null, null); // create topic response without topics objects
+			System.out.println("Respond from topicListener: " + topicResponse);
+			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); 
+		}
 
 		// PIM IDs of each of the topics that will be returned
 		List<List<List<String>>> nodes = new ArrayList<>();
@@ -211,8 +220,13 @@ public class TopicListener {
 					}		
 				}
 
-				if (!found) // else if related topics does not contain next node in path then stop
-					throw new NoSuchTopicException(path[i] + "->" + path[i + 1]);
+				try {
+					if (!found) // else if related topics does not contain next node in path then stop
+						throw new NoSuchTopicException(path[i] + "->" + path[i + 1]);
+				}
+				catch (NoSuchTopicException nste) {
+					nste.printStackTrace();
+				}
 			}
 		}
 

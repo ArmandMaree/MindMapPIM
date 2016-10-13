@@ -4,6 +4,9 @@ import com.unclutter.poller.MessageBroker;
 
 import data.AuthCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import poller.AlreadyPollingForUserException;
 import poller.FacebookPoller;
 import poller.FacebookPollingUser;
@@ -19,6 +22,7 @@ import repositories.FacebookRepository;
 public class AuthCodeListener {
 	private MessageBroker messageBroker;
 	private FacebookRepository facebookRepository;
+	private static List<FacebookPoller> facebookPollers = new ArrayList<>();
 
 	/**
 	* Constructor.
@@ -46,18 +50,19 @@ public class AuthCodeListener {
 	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
 		System.out.println("Received: " + authCode);
 
-
 		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
 			FacebookPollingUser pollingUser = facebookRepository.findByUserId(authCode.getId());
 
 			if (pollingUser != null) {
-				pollingUser.setCurrentlyPolling(false);
-				facebookRepository.save(pollingUser);
+				for (FacebookPoller facebookPoller : facebookPollers)
+					if (facebookPoller.getUserId().equals(authCode.getId()))
+						facebookPoller.stopPoller();
 			}
 		}
 		else {
-			FacebookPoller poller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
-			new Thread(poller).start();
+			FacebookPoller facebookPoller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+			facebookPollers.add(facebookPoller);
+			new Thread(facebookPoller).start();
 		}
 	}
 }

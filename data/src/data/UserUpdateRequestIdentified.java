@@ -62,7 +62,7 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 		String u = "";
 
 		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+			u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
 
 		return "UserUpdateRequestIdentified {\n" +
 			"\treturn: " + returnId + ",\n" +

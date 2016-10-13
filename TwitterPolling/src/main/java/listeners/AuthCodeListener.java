@@ -4,6 +4,9 @@ import com.unclutter.poller.MessageBroker;
 
 import data.AuthCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import poller.AlreadyPollingForUserException;
 import poller.TwitterPoller;
 import poller.TwitterPollingUser;
@@ -19,6 +22,7 @@ import repositories.TwitterRepository;
 public class AuthCodeListener {
 	private MessageBroker messageBroker;
 	private TwitterRepository twitterRepository;
+	private static List<TwitterPoller> twitterPollers = new ArrayList<>();
 
 	/**
 	* Constructor.
@@ -45,19 +49,17 @@ public class AuthCodeListener {
 	*/
 	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
 		System.out.println("Received: " + authCode);
+		TwitterPollingUser pollingUser = twitterRepository.findByUserId(authCode.getId());
 
-		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
-			String id = authCode.getId().substring(6);
-			TwitterPollingUser pollingUser = twitterRepository.findByUserId(id);
-
-			if (pollingUser != null) {
-				pollingUser.setCurrentlyPolling(false);
-				twitterRepository.save(pollingUser);
+		if (pollingUser == null || !pollingUser.getCurrentlyPolling()) {
+			TwitterPoller twitterPoller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
+			twitterPollers.add(twitterPoller);
+			new Thread(twitterPoller).start();
+		}
+		else if (pollingUser != null) {
+				for (TwitterPoller twitterPoller : twitterPollers)
+					if (twitterPoller.getUserId().equals(authCode.getId())) 
+						twitterPoller.stopPoller();
 			}
-		}
-		else {
-			TwitterPoller poller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
-			new Thread(poller).start();
-		}
 	}
 }
