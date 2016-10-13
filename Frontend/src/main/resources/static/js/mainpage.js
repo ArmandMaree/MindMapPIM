@@ -134,13 +134,8 @@ var network;
 */
 
 $(document).ready(function(){
-
-    $('.tab').click(function () {
-        $('.tabopen').removeClass('tabopen');
-        $(this).addClass('tabopen');
-        $("#cards").children().hide();
-        $("."+($(this).attr('id')).replace("tab","card")).show();
-    });
+    $('#overlay').hide();
+    $('#overlay').fadeOut();
     if(getCookie("mustreload")!=""){
         localStorage.setItem('nodes', "");
         localStorage.setItem('edges', "");
@@ -842,9 +837,9 @@ $(document).ready(function(){
             $('#sidepanelTitle').addClass("blurclass");
             $('#sidepanelTitlewords').css("color","black");
 
-            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true", function(data, status){
+            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
                 // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                    avatarlink = data.hits[1].previewURL;
+                    avatarlink = data.hits[0].previewURL;
                     $('#avatar').css("background","#eee url('"+avatarlink+"')");
                     $('#avatar').css("background-size","cover");
                     $('#avatar').css("background-position","center");
