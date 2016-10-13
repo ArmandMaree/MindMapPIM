@@ -116,6 +116,7 @@ $( window ).resize(function() {
         $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
 });
+
 /**
 *   @var nodes - An array of node objects
 */
@@ -133,6 +134,13 @@ var network;
 */
 
 $(document).ready(function(){
+
+    $('.tab').click(function () {
+        $('.tabopen').removeClass('tabopen');
+        $(this).addClass('tabopen');
+        $("#cards").children().hide();
+        $("."+($(this).attr('id')).replace("tab","card")).show();
+    });
     if(getCookie("mustreload")!=""){
         localStorage.setItem('nodes', "");
         localStorage.setItem('edges', "");
@@ -180,7 +188,7 @@ $(document).ready(function(){
         $("#nav").css("backgroundColor",nav+" !important");
         $("#sidepanelTitle").css("backgroundColor",nav);
         $(".panel-group").css("backgroundColor",nav);
-        $(".breadcrumb").css("backgroundColor",nav+" !important");
+        // $(".breadcrumb").css("backgroundColor",nav+" !important");
     }
     if(map!= "")
         $("#mynetwork").css("backgroundColor", map+" !important");
@@ -390,8 +398,10 @@ $(document).ready(function(){
                 }else{
                     $("#backfromsidebar").html(navbarReloadTextCondensed)
                 }
+
                 var selectedID = getCookie("lastselectednode");
-                $("#sidepanel").show();
+                
+                showsidebar()
 
                 var pathtoselectednode=[];
                 if(selectedID!=0)
@@ -682,7 +692,8 @@ $(document).ready(function(){
         $("#settings").html("");
         $("#logout").html("");
     }
-    $("#sidepanel").hide();
+    // $("#sidepanel").hide();
+    hidesidebar();
     //A function that disables the default event that occurs on rightclick event
     document.oncontextmenu = function() {return false;};
     function showValue(newValue)
@@ -777,7 +788,9 @@ $(document).ready(function(){
        $("#twitter").html("");
        $("#linkedIn").html("");
        $("#sidepanelTitle").html("");
-       $("#sidepanel").hide();
+       $("#sidepanelTitlewords").html("");
+       // $("#sidepanel").hide();
+       hidesidebar();
         sidebarexpanded=false;
         if($(window).width()<=768){
             $("#backfromsidebar").html(navbarReloadTextCondensed)
@@ -816,18 +829,29 @@ $(document).ready(function(){
         var node = getCookie("lastselectednode");
         console.log(node);
         selectedID = node;
-        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
         var avatarlink =""; 
         var nodeswithplus = nodes[node].label;
+
             $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
-            $('#avatar').css("background-size","cover");
+            $('#avatar').css("background-size","cover"); 
             $('#avatar').css("background-position","center");
+            $("#sidepanelTitle").css("background","#eee url('/images/back.jpg')");
+            $('#sidepanelTitle').css("background-size","cover");
+            $('#sidepanelTitle').css("background-position","center");
+            $('#sidepanelTitle').addClass("blurclass");
+            $('#sidepanelTitlewords').css("color","black");
+
             $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true", function(data, status){
-                console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                    avatarlink = data.hits[1].webformatURL;
+                // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                    avatarlink = data.hits[1].previewURL;
                     $('#avatar').css("background","#eee url('"+avatarlink+"')");
                     $('#avatar').css("background-size","cover");
                     $('#avatar').css("background-position","center");
+                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                    $('#sidepanelTitle').css("background-size","cover");
+                    $('#sidepanelTitle').css("background-position","center");
+                    $('#sidepanelTitle').addClass("blurclass");
             });
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];

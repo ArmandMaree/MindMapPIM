@@ -47,13 +47,22 @@ function initialiliseSidebar(items){
 function populateSidePanel(array)
 {
     var t = array[0];
-    var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase()
-    var id = "#"+array[0];
-    if(array.length >1)
-        $("#accordion").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
-    for(var i = 1 ; i < array.length; i++ )
-    {
-        $(id).append("<div class='email panel'>"+array[i]+"</div>");
+    var title = t.charAt(0).toUpperCase() +array[0].substr(1).toLowerCase();
+    var id = "#"+array[0]+"tab";
+    // if(array.length >1)
+    //     $("#tabs").append('<div class="panel panel-default"><div class="panel-heading"><h3 data-toggle="collapse" data-parent="#accordion" href="#collapse'+array[0]+'" class="panel-title">'+title+'</h3></div><div id="collapse'+array[0]+'" class="panel-collapse collapse"><div id="'+array[0]+'" class="panel-body"  style="max-height: 50vh;overflow-y: scroll;"></div></div></div>');
+    // for(var i = 1 ; i < array.length; i++ )
+    // {
+    //     $(id).append("<div class='email panel'>"+array[i]+"</div>");
+    // }
+    if(array.length >1){
+        $(".tabs").append('<div id="'+id+'" class="tab">'+title+'</div>');
+        $($(".tabs").children()[0]).addClass('tabopen')
+    }
+    
+    for(var i = 1 ; i < array.length; i++ ){
+        var temp = $("."+(id).replace("tab","card").replace("#",""));
+         $("#cards").append("<div class='"+temp+"' id='card'>"+array[i]+"</div>");
     }
 
 	$(".panel-heading").css("backgroundColor",getCookie("nav"));
@@ -71,5 +80,17 @@ function hidesidebar()
    $("#linkedIn").html("");
    $("#sidepanelTitle").html("");
    $("#sidepanel").hide();
+   $("#cards").empty();
+   $(".tabs").empty();
    $("#backfromsidebar").html(navbarReloadTextCondensed)
+}
+var sidebarAni;
+function showsidebar(){
+    $("#sidepanel").show();
+    $("#sidepanel").width(0);
+    sidebarAni = setInterval(function(){
+        if($("#sidepanel").width()<700){
+           $("#sidepanel").width($("#sidepanel").width()+1) 
+        }
+    }, 500);
 }

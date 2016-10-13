@@ -113,3 +113,12 @@ function initialiseContextMenu(){
         }
     });
 }
+/**
+*   A function that coverts a string to title case
+*   @param str The string to convert.
+*/
+function toTitleCase(str) {
+    return str.replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+    });
+}

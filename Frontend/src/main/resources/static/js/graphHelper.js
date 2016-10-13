@@ -39,6 +39,7 @@ function expandBubble(nextID){
     try{
         network.selectNodes([nextID]);
     }catch(err){
+        return;
     }
     var pathtoselectednode=[];
     if(selectedID!=0)
@@ -55,7 +56,7 @@ function expandBubble(nextID){
     if((pathtoselectednode.length+1)<=initialdepth){
         var pos=0;
         var branchinglimit = 4;
-
+        console.log("selectedID: "+selectedID)
         var thiscolor = nodes[selectedID].color;
 
         var pathtoselectednodelabels =[]
