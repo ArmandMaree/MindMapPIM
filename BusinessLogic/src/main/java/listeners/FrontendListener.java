@@ -106,8 +106,12 @@ public class FrontendListener {
 					user.addPimId(authCode.getPimSource(), authCode.getId());
 
 				rabbitTemplate.convertAndSend("auth-code." + authCode.getPimSource() + ".rabbit", authCode);
-				System.out.println("Sent to " + authCode.getAuthCode() + " poller: " + authCode);
-				user.addPimId(authCode.getPimSource(), "");
+				System.out.println("Sent to " + authCode.getPimSource() + " poller: " + authCode);
+
+				if (authCode.getAuthCode() == null || authCode.getAuthCode().equals(""))
+					user.addPimId(authCode.getPimSource(), "");
+				else
+					user.addPimId(authCode.getPimSource(), authCode.getId());
 			}
 		}
 

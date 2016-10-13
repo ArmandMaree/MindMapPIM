@@ -49,17 +49,20 @@ public class AuthCodeListener {
 	*/
 	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
 		System.out.println("Received: " + authCode);
-		TwitterPollingUser pollingUser = twitterRepository.findByUserId(authCode.getId());
 
-		if (pollingUser == null || !pollingUser.getCurrentlyPolling()) {
-			TwitterPoller twitterPoller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
+		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
+			TwitterPollingUser pollingUser = twitterRepository.findByUserId(authCode.getId());
+
+			if (pollingUser != null) {
+				for (TwitterPoller twitterPoller : twitterPollers)
+					if (twitterPoller.getUserId().equals(authCode.getId()))
+						twitterPoller.stopPoller();
+			}
+		}
+		else {
+			TwitterPoller twitterPoller = new TwitterPoller(twitterRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
 			twitterPollers.add(twitterPoller);
 			new Thread(twitterPoller).start();
 		}
-		else if (pollingUser != null) {
-				for (TwitterPoller twitterPoller : twitterPollers)
-					if (twitterPoller.getUserId().equals(authCode.getId())) 
-						twitterPoller.stopPoller();
-			}
 	}
 }
