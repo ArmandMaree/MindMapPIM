@@ -302,20 +302,21 @@ function checkDatabase()
 		$("#Loading").fadeIn(3000,function(){
 		});
 
-	var socket = new SockJS('/hello');
+	var socket = new SockJS('/usercheck');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
 	    console.log('Connected: ' + frame);
 	    connected = true;
 				
-		if(findPim("gmail") != ""){
-			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:findPim("gmail"),pimSource:"gmail",authCode:null}]};
+		// if(findPim("gmail") != ""){
+			//var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:findPim("gmail"),pimSource:"gmail",authCode:null}]};
+			var userReg={userId:getCookie("userId"),firstName:getCookie("name"),lastName:getCookie("surname")};
 			
 		
-		}else if(findPim("facebook") != ""){
-			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:getCookie("facebookId"),pimSource:"facebook",authCode:null}]};
-		}
-		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
+		// }else if(findPim("facebook") != ""){
+		// 	var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:getCookie("facebookId"),pimSource:"facebook",authCode:null}]};
+		// }
+		stompClient.subscribe('/user/topic/request', function(serverResponse){
 			var jsonresponse = JSON.parse(serverResponse.body);
 			console.log("ServerResponse is : "+JSON.stringify(jsonresponse.pimIds));
 				
@@ -324,7 +325,7 @@ function checkDatabase()
 			}, function(error) {
 		    		console.log(error.headers.message);
 	  		});
-			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
+			stompClient.send("/app/usercheck", {}, JSON.stringify(userReg));
 		});
 		var pimIds = JSON.parse(getCookie("pimIds"));
 		//alert("pimIds length:" +pimIds.length )
@@ -458,6 +459,15 @@ function findPim(name)
 	} 
 	return "";
 }
+function checkPim(name, ids)
+{
+	for(var i = 0; i < ids.length;i++)
+	{
+		if(ids[i].pim == name)
+			return ids[i].uId;
+	} 
+	return "DNE";
+}
 /**
 *	Function that is called when a user clicks on the Gmail button on the account settings page.
 */
@@ -516,7 +526,7 @@ function setTwitterAuthCode(twitter)
 {
 	clearInterval(interval);
 	//alert("added twitter authcode");
-	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"000"});
+	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"start"});
 	$("#tickTwitter").show();	
  	$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
   	$("#Loading").fadeOut(1000, function(){}); 	
@@ -558,6 +568,7 @@ function checkFacebook()
 		var userId =findPim("facebook");
 	//	alert("userid: "+ userId)
 		var facebookAuthCode = {id:userId,pimSource:"facebook",authCode:""}
+		$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='f' style='font-size:11pt'>Facebook</span>");
 		$("#tickFacebook").hide();
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);
 	}
@@ -602,13 +613,31 @@ function SaveAccountChanges()
 				$("#Saved").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 				});
-				checkDatabase();
+				// var pimIds = getCookie("pimIds");
+				// var newPimIds;
+				// //Gmail
+				// if(checkPim(UpdateSourcesObject.authcodes,"gmail") != DNE)
+				// {
+				// 	if(checkPim(UpdateSourcesObject.authcodes,"gmail") != "")
+				// 		newPimIds.push({pim:"gmail", uId:checkPim(UpdateSourcesObject.authcodes,"gmail")})
+				// }
+				// //Facebook
+				// if(checkPim(UpdateSourcesObject.authcodes,"gmail") != DNE)
+				// {
+				// 	if(checkPim(UpdateSourcesObject.authcodes,"gmail") != "")
+				// 		newPimIds.push({pim:"gmail", uId:checkPim(UpdateSourcesObject.authcodes,"gmail")})
+				// }
+				//Twitter
+				//document.cookie  = "pimIds"+ "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+				//checkDatabase();
+				$("#Loading").hide();
 			}
 			else if(response.code == 99 || response.code == 1)
 			{
 				$("#Error").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Error").hide(); }, 4000);
 				});
+				location.reload();
 			}
 		}, function(error) {
 	  		console.log(error.headers.message);
