@@ -139,29 +139,29 @@ $(document).ready(function(){
         document.cookie="lastrefreshtime="+ Date.now();
         document.cookie = "mustreload=; expires=Thu, 01 Jan 1970 00:00:00 UTC";   
     }
-    if(getCookie("branch")!= "")
-    {
-        var initialbranching = getCookie("branch");
-        $("#Branchrange").html(getCookie("branch"));
-        $("#brange").attr("value",getCookie("branch"));
-    }
-    else
-    {
-        $("#Branchrange").html("4");
-        $("#brange").attr("value","4");
-    }
+    // if(getCookie("branch")!= "")
+    // {
+    //     var initialbranching = getCookie("branch");
+    //     $("#Branchrange").html(getCookie("branch"));
+    //     $("#brange").attr("value",getCookie("branch"));
+    // }
+    // else
+    // {
+    //     $("#Branchrange").html("4");
+    //     $("#brange").attr("value","4");
+    // }
 
-    if(getCookie("depth") != "")
-    {
-        var initialdepth = getCookie("depth");
-        $("#Depthrange").html(getCookie("depth"));
-        $("#drange").attr("value",getCookie("depth"));
-    }
-    else
-    {
-        $("#Depthrange").html("2");
-        $("#drange").attr("value","2");
-    }
+    // if(getCookie("depth") != "")
+    // {
+    //     var initialdepth = getCookie("depth");
+    //     $("#Depthrange").html(getCookie("depth"));
+    //     $("#drange").attr("value",getCookie("depth"));
+    // }
+    // else
+    // {
+    //     $("#Depthrange").html("2");
+    //     $("#drange").attr("value","2");
+    // }
 
     var nav=getCookie("nav");
     var map=getCookie("map");
@@ -661,10 +661,7 @@ $(document).ready(function(){
     $("#sidepanel").hide();
     //A function that disables the default event that occurs on rightclick event
     document.oncontextmenu = function() {return false;};
-    function showValue(newValue)
-    {
-        document.getElementById("range").innerHTML=newValue;
-    }
+    
 
     //menu - variable that is assigned the context menu
     menu = new ax5.ui.menu({
