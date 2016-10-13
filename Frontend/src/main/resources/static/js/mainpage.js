@@ -139,29 +139,6 @@ $(document).ready(function(){
         document.cookie="lastrefreshtime="+ Date.now();
         document.cookie = "mustreload=; expires=Thu, 01 Jan 1970 00:00:00 UTC";   
     }
-    // if(getCookie("branch")!= "")
-    // {
-    //     var initialbranching = getCookie("branch");
-    //     $("#Branchrange").html(getCookie("branch"));
-    //     $("#brange").attr("value",getCookie("branch"));
-    // }
-    // else
-    // {
-    //     $("#Branchrange").html("4");
-    //     $("#brange").attr("value","4");
-    // }
-
-    // if(getCookie("depth") != "")
-    // {
-    //     var initialdepth = getCookie("depth");
-    //     $("#Depthrange").html(getCookie("depth"));
-    //     $("#drange").attr("value",getCookie("depth"));
-    // }
-    // else
-    // {
-    //     $("#Depthrange").html("2");
-    //     $("#drange").attr("value","2");
-    // }
 
     var nav=getCookie("nav");
     var map=getCookie("map");
@@ -732,9 +709,7 @@ $(document).ready(function(){
                     });
                     $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
                 }
-                    // $("#loadingAlert").fadeOut(1000, function() {
-                    //     // body...
-                    // });
+                   
             }
 
             if(this.label=="Remove Bubble"){
@@ -814,7 +789,6 @@ $(document).ready(function(){
             else
                 var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
             
-            // setTimeout(function(){
             try{
                 stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
             }catch(err){

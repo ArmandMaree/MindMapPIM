@@ -35,7 +35,6 @@ var startApp = function() {
  * @param {id} googleLogin - ID of the element for the custom button
  */
 var initSigninV2 = function() {
-	//alert("Here")
   auth2 = gapi.auth2.init({
 	  client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
 	  scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
@@ -62,37 +61,6 @@ var sendUserReg = function(){
 	$("#loadingAlert").fadeIn(1000, function() {
 		// body...
 	});
-	// var socket = new SockJS('/hello');
-	// stompClient = Stomp.over(socket);
-	// stompClient.connect({}, function(frame) {
-	//     console.log('Connected: ' + frame);
-	//     connected = true;
-	//   	var userReg = {};
-	//   	if(gmailUser!=null){
-	// 		userReg={firstName:gmailUser.wc.Za,lastName:gmailUser.wc.Na,authCodes:authCodes};
-	// 		console.log("User registration object:" +JSON.stringify(userReg));
-	//   	}
-	//   	setTimeout(function(){
-	// 		stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-	// 		stompClient.subscribe('/topic/greetings', function(serverResponse){
-	// 			var jsonresponse = JSON.parse(serverResponse.body);
-	// 			console.log("Server says: "+jsonresponse.content);
-	// 			document.cookie="userId="+jsonresponse.content;
-	// 			$("#loadingAlert").fadeOut(1000, function() {
-	// 				// body...
-	// 			});
-	// 			// if (stompClient != null) {
-	// 	  //           stompClient.disconnect();
-	// 	  //       }
-	// 			window.location.assign('/mainpage');
-	// 		}, function(error) {
-	// 	    		// display the error's message header:
-	// 	    		console.log(error.headers.message);
-	//   			});
-	//   	}, 3000);
-	
-	// });
-
 }
 /**
  * A function that checks where any sign in activity for Google has happened and responds.
@@ -101,7 +69,6 @@ var sendUserReg = function(){
 var signinChanged = function (val) {
   console.log('Signin state changed to ', val);
   if(val === true){
-	//alert(googleUser.w3.U3);
 	  googleUser = auth2.currentUser.get();
 	  var gmailAuthCode = {id:googleUser.w3.U3,pimSource:"gmail",authCode:getCookie("auth")}
 	  UpdateSourcesObject.authcodes.push(gmailAuthCode);
@@ -129,10 +96,8 @@ var refreshValues = function() {
 var onSuccess = function(user) {
 	gmailUser = user;
 	console.log('Signed in as ' + user.getBasicProfile().getName());
-	//Create cooki
 	  document.cookie= "googleUser="+user.getBasicProfile().getEmail();
 	  console.log(gmailUser.wc.Za+","+ gmailUser.wc.Na);
-	//document.getElementById('welcome').innerHTML += ", " + user.getBasicProfile().getName();
 	refreshValues();
  };
 /**
@@ -162,14 +127,18 @@ function googleretrieve(){
 	  console.log(authResult['code']);
 	  document.cookie = "auth=" + authResult['code'];
 	  $('#tickGoogle').show();
-	  // var gmailAuthCode = {id:getCookie("googleUser"),pimSource:"gmail",authCode:authResult['code']}
-	  // UpdateSourcesObject.authcodes.push(gmailAuthCode);
-	  // console.log("added new AuthCode");
+	  
 	  	onSuccess();
 	} else {
 	  	console.log("An error occurred!");
 	}
   }
+  /**
+  *		Function that retrieves the value of a cookie
+  *		@param {String} cname The name of the cookie
+  *		@return The value of the cookie
+  */
+
   function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
