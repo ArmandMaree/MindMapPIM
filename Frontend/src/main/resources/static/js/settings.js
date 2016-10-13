@@ -285,7 +285,7 @@ $(document).ready(function(){
 			});
 	});
 
-}); //End of on load
+}); 
 /**
 *	Function is called when the page loads.
 */
@@ -318,11 +318,9 @@ function checkDatabase()
 			
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
 			var pimIds = JSON.parse(getCookie("pimIds"));
-			//alert("pimIds length:" +pimIds.length )
 			for(var i = 0 ; i < pimIds.length; i++)
 			{
 				var current = pimIds[i];
-				//alert("Pim name: "+current.pim +"\nPim id: "+ current.uId);
 
 				var id = "#tick" +  current.pim.charAt(0).toUpperCase() + current.pim.substr(1).toLowerCase();			
 				if(current.pim == "gmail" && current.uId != "")
@@ -444,6 +442,11 @@ var refreshValues = function() {
 *	@var {Array} pimIds -  an array that stores the id of each corresponding data source
 */
 var pimIds;
+/**
+*	Function returns the id of the data source sent to it as stored in the cookie
+*	@param {String} name The name of the data source
+*	@return The id of the data source as stored in the cookie or an empty string if not in the cookie
+*/
 function findPim(name)
 {
 	var pimIds = JSON.parse(getCookie("pimIds"));
@@ -454,21 +457,11 @@ function findPim(name)
 	} 
 	return "";
 }
-function checkPim(name, ids)
-{
-	for(var i = 0; i < ids.length;i++)
-	{
-		if(ids[i].pim == name)
-			return ids[i].uId;
-	} 
-	return "DNE";
-}
 /**
 *	Function that is called when a user clicks on the Gmail button on the account settings page.
 */
 function checkGoogle()
 {
-	// startApp();
 	if($("#tickGmail").is(":visible") == true)
 	{
 		$("#tickGmail").hide();
@@ -496,7 +489,14 @@ function checkGoogle()
 			},2000);
 	} 
 }
+/**
+*	@var {Reference} interval Has a reference to an Interval
+*/
+
 var interval;
+/**
+*	Function that is called when a user clicks on the Twitter button on the account settings page.
+*/
 function onTwitterLogin()
 {
 	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
@@ -510,17 +510,17 @@ function onTwitterLogin()
 	  			console.log("Local storage has been set")
 				var twitter = localStorage.getItem("twitterUser");
 				setTwitterAuthCode(twitter);
-
 	  		}
 	  	}
-		
 	},1000)  		
 
 }
+/**
+*	Function the sets the authcode for twitter
+*/
 function setTwitterAuthCode(twitter)
 {
 	clearInterval(interval);
-	//alert("added twitter authcode");
 	UpdateSourcesObject.authcodes.push({id:twitter,pimSource:"twitter",authCode:"start"});
 	$("#tickTwitter").show();	
  	$("#twittersignin").html("<span class='fa fa-twitter'></span> <span id='t' style='font-size:11pt'>Remove Twitter</span>");
@@ -561,7 +561,6 @@ function checkFacebook()
 	if($("#tickFacebook").is(":visible") == true)
 	{
 		var userId =findPim("facebook");
-	//	alert("userid: "+ userId)
 		var facebookAuthCode = {id:userId,pimSource:"facebook",authCode:""}
 		$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='f' style='font-size:11pt'>Facebook</span>");
 		$("#tickFacebook").hide();
