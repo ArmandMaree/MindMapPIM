@@ -35,6 +35,8 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
       <script src="/js/stomp.min.js"></script>
       <script type='text/javascript' src='/js/fpsmeter.js'></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/background-blur/0.1.3/background-blur.min.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
       
       
       
@@ -121,7 +123,6 @@
                     <li role="separator" class="divider"></li>                    
 
                     <li><a onclick="refreshGraph()"><span  style="font-size:10pt" class="glyphicon glyphicon-refresh" ></span> Refresh graph</a></li>
-
                     <li role="separator" class="divider"></li>
                     <li><a href="/settings"><span style="font-size:10pt" class="glyphicon glyphicon-wrench"></span> Account settings</a></li>
                   </ul>
@@ -133,17 +134,53 @@
         </nav>
          <div id="mynetwork"> <!-- ui-widget-content -->
             <div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                <canvas style="position: relative; touch-action: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);background-color: rgba(0, 0, 0, 0);"></canvas>
+                <canvas style="position: relative; touch-action: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);background-color: rgba(0, 0, 0, 0);"></canvas> 
             </div>
         </div>
+        <div id="overlay" onclick="hidesidebar()"></div>
         <div id="sidepanel" style="width:500px;margin: 0;">
-            <div id= "sidepanelTitle" class="panel" ><h2>Title</h2></div>
+            <div id= "sidepanelTitle" ></div>
+            <div class="avatar" id="avatar" Style = "position:relative"></div>
+            <div id= "sidepanelTitlewords" style="color:black;font-family: 'Raleway';"></div>
+
             <ol class="breadcrumb" id="breadcrumb">
               
             </ol>
-            
-            <div class="panel-group" id="accordion">
+
+            <div class="tabs">
+<!--          <div id="gmailtab" class="tab tabopen">
+                Gmail
+              </div>
+              <div id="facebooktab" class="tab">
+                Facebook
+              </div>
+              <div id="twittertab" class="tab">
+                Twitter
+              </div>
+              <div id="linkedintab" class="tab">
+                LinkedIn
+              </div> -->
             </div>
+            <div id="cards">
+<!--               <div class="gmailcard" id="card">
+                this is an example text email
+              </div>
+              <div class="gmailcard" id="card">
+                The second email will be an html email. Be prepared!
+              </div>
+              <div class="gmailcard" id="card">
+                never mind it didnt work...
+              </div>
+              <div class="facebookcard" id="card">
+                <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3D172521503177457%26id%3D146346169128324%26substory_index%3D0&amp;width=500" width="500" height="527" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true"></iframe>
+              </div>
+              <div class="facebookcard" id="card">
+                <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3D310257432675554%26id%3D270676383300326%26substory_index%3D0&amp;width=500" width="500" height="632" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true"></iframe>
+              </div> -->
+            </div>
+            
+<!--             <div class="panel-group" id="accordion">
+            </div> -->
         </div>
         <div class="alert alert-success" id="loadingAlert" style="bottom: 0; right: 0; width: 300px; position: fixed; margin-right: 15px;">
           <!-- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> -->
