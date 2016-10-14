@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-
 /**
 * MongoDB repository for {@link data.Topic} objects.
 *

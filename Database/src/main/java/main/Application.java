@@ -1,5 +1,6 @@
 package main;
 
+import listeners.ImageListener;
 import listeners.ProcessedDataListener;
 import listeners.TopicListener;
 import listeners.UserListener;
@@ -46,10 +47,12 @@ public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final static String priorityProcessedDataQueueName = "priority-processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
-	private final String userRegisterQueueName = "user-register.database.rabbit";
-	private final String userCheckQueueName = "user-check.database.rabbit";
-	private final String userUpdateQueueName = "user-update-request.database.rabbit";
-	private final String topicUpdateQueueName = "topic-update-request.database.rabbit";
+	private final static String imageRequestQueueName = "image-request.database.rabbit";
+	private final static String imageSaveQueueName = "image-save.database.rabbit";
+	private final static String userRegisterQueueName = "user-register.database.rabbit";
+	private final static String userCheckQueueName = "user-check.database.rabbit";
+	private final static String userUpdateQueueName = "user-update-request.database.rabbit";
+	private final static String topicUpdateQueueName = "topic-update-request.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -59,6 +62,16 @@ public class Application implements CommandLineRunner {
 
 	@Autowired
 	private TopicRepository topicRepository;
+
+	@Bean
+	Queue imageRequestQueue() {
+		return new Queue(imageRequestQueueName, false);
+	}
+
+	@Bean
+	Queue imageSaveQueue() {
+		return new Queue(imageRequestQueueName, false);
+	}
 
 	@Bean
 	Queue topicRequestQueue() {
@@ -101,6 +114,16 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding imageRequestBinding(@Qualifier("imageRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(imageRequestQueueName);
+	}
+
+	@Bean
+	Binding imageSaveBinding(@Qualifier("imageSaveQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(imageSaveQueueName);
+	}
+
+	@Bean
 	Binding topicRequestBinding(@Qualifier("topicRequestQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
 	}
@@ -136,6 +159,11 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	public ImageListener imageListener() {
+		return new ImageListener();
+	}
+
+	@Bean
 	public TopicListener topicListener() {
 		return new TopicListener();
 	}
@@ -148,6 +176,16 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public UserListener userListener() {
 		return new UserListener();
+	}
+
+	@Bean
+	public MessageListenerAdapter imageRequestAdapter(ImageListener imageListener) {
+		return new MessageListenerAdapter(imageListener, "receiveImageRequest");
+	}
+
+	@Bean
+	public MessageListenerAdapter imageSaveAdapter(ImageListener imageListener) {
+		return new MessageListenerAdapter(imageListener, "receiveImageSave");
 	}
 
 	@Bean
@@ -183,6 +221,24 @@ public class Application implements CommandLineRunner {
 	@Bean
 	public MessageListenerAdapter topicUpdateAdapter(TopicListener topicListener) {
 		return new MessageListenerAdapter(topicListener, "receiveTopicUpdate");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer imageRequestContainer(ConnectionFactory connectionFactory, @Qualifier("imageRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(imageRequestQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer imageSaveContainer(ConnectionFactory connectionFactory, @Qualifier("imageSaveAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(imageSaveQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
 	}
 
 	@Bean
