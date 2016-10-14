@@ -437,7 +437,7 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
-
+	startApp()
 
 /**
 *	This function initialises the JavaScript SDK
@@ -455,7 +455,7 @@ FB.init({
 });
 
 };
-
+ 
 /**
 *	This loads the Facebook SDK asynchronously
 */
@@ -629,9 +629,9 @@ function onSuccessFacebook() {
 var interval;
 function onTwitterLogin()
 {
-<<<<<<< HEAD
+
 	window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
-=======
+
 	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
   	win.focus();
   	
@@ -649,7 +649,6 @@ function onTwitterLogin()
 		
 	},1000)  		 
 
->>>>>>> develop
 }
 function setTwitterAuthCode(twitter)
 {

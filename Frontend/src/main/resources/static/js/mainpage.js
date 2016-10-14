@@ -74,11 +74,12 @@ var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
+var allPimIDlist = new Array();
+var sidebarexpanded =false;
 var nodecolor= 'white'
 var fontcolor= 'black'
 
 var nodePosition =0;
-var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
@@ -245,7 +246,25 @@ $(document).ready(function(){
         }
     }else{
         console.log(localStorage.getItem('edges'))
-        edges =JSON.parse(localStorage.getItem('edges'));
+
+        var temp = localStorage.getItem('edges');
+        // {"from":1,"to":0}
+
+        while(temp.indexOf('{"from":1,"to":0}')!=-1){
+
+            temp =temp.replace('{"from":1,"to":0},','');
+
+        }
+        edges =JSON.parse(temp);
+        edges.push({
+            id: 0,
+            from:  1,
+            to: 0
+        });
+
+        $("#loadingAlert").fadeOut(1000, function() {
+            // body...
+        });
     }
 
     tempparent = localStorage.getItem('parentlist');
@@ -581,11 +600,13 @@ $(document).ready(function(){
 
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
+                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
+                    localStorage.setItem('pimlist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -853,6 +874,10 @@ $(document).ready(function(){
             ax5.util.stopEvent(e);
         }
 
+    });
+    network.on("selectNode", function(e){
+        console.log(e.nodes);
+        document.cookie="lastselectednode="+e.nodes[0];
     });
  
 });
