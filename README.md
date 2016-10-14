@@ -1,5 +1,8 @@
 # Unclutter (Mindmap PIM)
 
+Master branch build status: <a href="https://travis-ci.com/ArmandMaree/MindMapPIM" target="_blank"><img src="https://travis-ci.com/ArmandMaree/MindMapPIM.svg?token=EDzLz4Cfsmpc3FQfSzFR&branch=master" alt="Travis Status Image"></a>
+
+Develop branch build status: <a href="https://travis-ci.com/ArmandMaree/MindMapPIM" target="_blank"><img src="https://travis-ci.com/ArmandMaree/MindMapPIM.svg?token=EDzLz4Cfsmpc3FQfSzFR&branch=develop" alt="Travis Status Image"></a>
 
 Unclutter is a personal information manager. It collects information about you from various other sources (like your Gmail and Facebook account) and finds relationships between events, people and objects that you frequently come in contact with. This collected information is displayed back to you in the form of an interactive mind map that allows you to explore recent events and the people that shared these events with you.
 

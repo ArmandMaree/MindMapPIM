@@ -39,6 +39,7 @@ function expandBubble(nextID){
     try{
         network.selectNodes([nextID]);
     }catch(err){
+        return;
     }
     var pathtoselectednode=[];
     if(selectedID!=0)
@@ -50,12 +51,10 @@ function expandBubble(nextID){
             pathtoselectednode.push(i);
     }
     initialdepth = getCookie("depth");
-    console.log((pathtoselectednode.length+1)<=initialdepth)
-     console.log(!flagHasNodesToLoad)
-    if((pathtoselectednode.length+1)<=initialdepth){
+    if((pathtoselectednode.length+1)<=initialdepth && !flagHasNodesToLoad){
         var pos=0;
         var branchinglimit = 4;
-
+        console.log("selectedID: "+selectedID)
         var thiscolor = nodes[selectedID].color;
 
         var pathtoselectednodelabels =[]
@@ -128,20 +127,20 @@ setInterval(function(){
                 datenow = c.substring(name1.length,c.length);
             }
         }
-        
-        if(Date.now()-datenow > 600000){
+    
+        if(Date.now()-datenow > 60000){
             $("#loadingAlert").fadeOut(1000, function() {
                     // body...
             });
             $("#loadingAlertWarning").fadeIn(1000, function() {
                 // body...
             });
-            $("#loadingAlertWarning").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type="button" class="button btn btn-warning btn-block" onclick="refreshGraph()" >Refresh</button> ');
+            $("#loadingAlertWarning").html("You havent refreshed the Bubble Map in a while. This could mean some of the bubbles are outdated. Would you like to refresh now? <br/><br/><button type='button' class='button btn btn-warning btn-block' onclick='refreshGraph()' >Refresh</button> ");
         }
     }
 
 
-}, 1000);
+}, 10000);
 /**
 *   A function that will expand a bubble
 *   @param nextID The ID of the node that needs to be expanded
@@ -151,7 +150,6 @@ function deleteBranch(selectedID){
         localStorage.setItem('nodes', "");
         localStorage.setItem('edges', "");
         localStorage.setItem('parentlist', "");
-        localStorage.setItem('pimlist', "");
         var deletelist =[]
         var templist = []
         deletelist.push(selectedID);
@@ -174,10 +172,6 @@ function deleteBranch(selectedID){
 
 
     }else{
-        localStorage.setItem('nodes', "");
-        localStorage.setItem('edges', "");
-        localStorage.setItem('parentlist', "");
-        localStorage.setItem('pimlist', "");
         parentlist[0] = -1;
         parentlist[1] = -1;
 
@@ -214,7 +208,7 @@ function deleteBranch(selectedID){
         parentlist[0] = 0;
         parentlist[1] = 0;
 
-        flagHasNodesToLoad = true;
+
         initialbranching = getCookie("branch");
         if(mocktesting)
             topicRequest = {userId: "mocktesting"+x1, path:[], exclude:excludelist, maxNumberOfTopics:initialbranching};

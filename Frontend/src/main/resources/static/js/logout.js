@@ -3,7 +3,6 @@
 */
 function logout()
 {
-    console.log("Logout");
     /**
     *   Function to delete all cookies
     */
@@ -15,11 +14,6 @@ function logout()
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
 
-    localStorage.setItem('nodes', "");
-    localStorage.setItem('edges', "");
-    localStorage.setItem('parentlist', "");
-    localStorage.setItem('pimlist', "");
-    
     window.location.assign('/');
 
 }

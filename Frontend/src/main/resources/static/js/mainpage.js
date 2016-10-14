@@ -74,12 +74,11 @@ var canExpand = false;
 /**
 *   @var {} allPimIDlist - List to hold all the processed item ID'selectedID, used for populating the side bar, first indice is the node ID, second is the PIM data source and third is the processed ID item.
 */
-var allPimIDlist = new Array();
-var sidebarexpanded =false;
 var nodecolor= 'white'
 var fontcolor= 'black'
 
 var nodePosition =0;
+var allPimIDlist = new Array();
 allPimIDlist[0] = new Array();
 allPimIDlist[0][0] = new Array();
 allPimIDlist[0]=[null][null];
@@ -116,6 +115,7 @@ $( window ).resize(function() {
         $("#backfromsidebar").html(navbarReloadTextExpanded)
     }
 });
+
 /**
 *   @var nodes - An array of node objects
 */
@@ -133,35 +133,14 @@ var network;
 */
 
 $(document).ready(function(){
+    $('#overlay').hide();
+    $('#overlay').fadeOut();
     if(getCookie("mustreload")!=""){
         localStorage.setItem('nodes', "");
         localStorage.setItem('edges', "");
         localStorage.setItem('parentlist', "");
         document.cookie="lastrefreshtime="+ Date.now();
         document.cookie = "mustreload=; expires=Thu, 01 Jan 1970 00:00:00 UTC";   
-    }
-    if(getCookie("branch")!= "")
-    {
-        var initialbranching = getCookie("branch");
-        $("#Branchrange").html(getCookie("branch"));
-        $("#brange").attr("value",getCookie("branch"));
-    }
-    else
-    {
-        $("#Branchrange").html("4");
-        $("#brange").attr("value","4");
-    }
-
-    if(getCookie("depth") != "")
-    {
-        var initialdepth = getCookie("depth");
-        $("#Depthrange").html(getCookie("depth"));
-        $("#drange").attr("value",getCookie("depth"));
-    }
-    else
-    {
-        $("#Depthrange").html("2");
-        $("#drange").attr("value","2");
     }
 
     var nav=getCookie("nav");
@@ -180,7 +159,7 @@ $(document).ready(function(){
         $("#nav").css("backgroundColor",nav+" !important");
         $("#sidepanelTitle").css("backgroundColor",nav);
         $(".panel-group").css("backgroundColor",nav);
-        $(".breadcrumb").css("backgroundColor",nav+" !important");
+        // $(".breadcrumb").css("backgroundColor",nav+" !important");
     }
     if(map!= "")
         $("#mynetwork").css("backgroundColor", map+" !important");
@@ -253,6 +232,7 @@ $(document).ready(function(){
         flagHasNodesToLoad =true;
     }
 
+    // tempedges =getCookie("edges");
     tempedges = localStorage.getItem('edges')
     if(tempedges==""||tempedges==null){
         if(mocktesting){
@@ -265,34 +245,13 @@ $(document).ready(function(){
         }
     }else{
         console.log(localStorage.getItem('edges'))
-
-        var temp = localStorage.getItem('edges');
-        // {"from":1,"to":0}
-        var count=0;
-        for(var i =0;i<2;i++){
-            if(temp.indexOf('{"from":1,"to":0}')!=-1){
-                count++;
-            }
-        }
-        if(count == 2){
-            temp =temp.replace('{"from":1,"to":0},','');
-            edges =JSON.parse(temp);
-
-        }else{
-            edges =JSON.parse(localStorage.getItem('edges'));
-        }
-        $("#loadingAlert").fadeOut(1000, function() {
-            // body...
-        });
+        edges =JSON.parse(localStorage.getItem('edges'));
     }
 
     tempparent = localStorage.getItem('parentlist');
     // alert(localStorage.getItem('parentlist')==null)
     if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
-
-    if(tempparent!="" &&tempparent!=null)
-        allPimIDlist = JSON.parse(localStorage.getItem('pimlist'));
 
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
@@ -383,15 +342,16 @@ $(document).ready(function(){
         //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
             if(JSON.parse(serverResponse.body).items!=null){
-                sidebarexpanded =true;
                 var items = JSON.parse(serverResponse.body).items;
                 if($(window).width()<=768){
                     $("#backfromsidebar").html("<a class='navbar-brand' onclick='hidesidebar()'><span  style='position:fixed;width:30px;height:30px;top:16px;left:-0px;cursor:pointer;padding:5px' class='glyphicon glyphicon-chevron-left' src=''/></a><p class='navbar-text' onclick='hidesidebar()' style='cursor:pointer'>Back</p>")
                 }else{
                     $("#backfromsidebar").html(navbarReloadTextCondensed)
                 }
+
                 var selectedID = getCookie("lastselectednode");
-                $("#sidepanel").show();
+                
+                showsidebar()
 
                 var pathtoselectednode=[];
                 if(selectedID!=0)
@@ -621,13 +581,11 @@ $(document).ready(function(){
 
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
-                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
-                    localStorage.setItem('pimlist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -682,13 +640,11 @@ $(document).ready(function(){
         $("#settings").html("");
         $("#logout").html("");
     }
-    $("#sidepanel").hide();
+    // $("#sidepanel").hide();
+    hidesidebar();
     //A function that disables the default event that occurs on rightclick event
     document.oncontextmenu = function() {return false;};
-    function showValue(newValue)
-    {
-        document.getElementById("range").innerHTML=newValue;
-    }
+    
 
     //menu - variable that is assigned the context menu
     menu = new ax5.ui.menu({
@@ -759,9 +715,7 @@ $(document).ready(function(){
                     });
                     $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
                 }
-                    // $("#loadingAlert").fadeOut(1000, function() {
-                    //     // body...
-                    // });
+                   
             }
 
             if(this.label=="Remove Bubble"){
@@ -777,7 +731,9 @@ $(document).ready(function(){
        $("#twitter").html("");
        $("#linkedIn").html("");
        $("#sidepanelTitle").html("");
-       $("#sidepanel").hide();
+       $("#sidepanelTitlewords").html("");
+       // $("#sidepanel").hide();
+       hidesidebar();
         sidebarexpanded=false;
         if($(window).width()<=768){
             $("#backfromsidebar").html(navbarReloadTextCondensed)
@@ -802,7 +758,8 @@ $(document).ready(function(){
     });
      // A function that handles the doubleClick event on the BubbleMap
     
-    network.on("doubleClick", function(e){
+    network.on("doubleClick", function(){
+
         $("#accordion").html("");
         $("#facebook").html("");
         $("#gmail").html("");
@@ -816,22 +773,44 @@ $(document).ready(function(){
         var node = getCookie("lastselectednode");
         console.log(node);
         selectedID = node;
-        $("#sidepanelTitle").html("<h2>"+nodes[node].label+"</h2>");
+        $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
+        var avatarlink =""; 
+        var nodeswithplus = nodes[node].label;
 
+            $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
+            $('#avatar').css("background-size","cover"); 
+            $('#avatar').css("background-position","center");
+            $("#sidepanelTitle").css("background","#eee url('/images/back.jpg')");
+            $('#sidepanelTitle').css("background-size","cover");
+            $('#sidepanelTitle').css("background-position","center");
+            $('#sidepanelTitle').addClass("blurclass");
+            $('#sidepanelTitlewords').css("color","black");
+
+            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
+                // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                    avatarlink = data.hits[0].previewURL;
+                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                    $('#avatar').css("background-size","cover");
+                    $('#avatar').css("background-position","center");
+                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                    $('#sidepanelTitle').css("background-size","cover");
+                    $('#sidepanelTitle').css("background-position","center");
+                    $('#sidepanelTitle').addClass("blurclass");
+            });
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
-                $.each(allPimIDlist[selectedID][i], function(j, el){
-                    if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
-                });
-                // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
-             var pimIds = JSON.parse(getCookie("pimIds"));
+            $.each(allPimIDlist[selectedID][i], function(j, el){
+                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
+            });
+            // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+            var pimIds = JSON.parse(getCookie("pimIds"));
             var ID = "";
-            for(var i = 0 ; i < pimIds.length; i++)
+            for(var j = 0 ; j < pimIds.length; j++)
             {
-                var current = pimIds[i];        
+                var current = pimIds[j];        
                 if(current.pim == allPimIDlist[selectedID][i][0])
                 {
-                    ID =current.uId
+                    ID =current.uId;
                 }
             }
             if(!mocktesting)
@@ -839,7 +818,6 @@ $(document).ready(function(){
             else
                 var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
             
-            // setTimeout(function(){
             try{
                 stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
             }catch(err){
@@ -876,9 +854,5 @@ $(document).ready(function(){
         }
 
     });
-
-    network.on("selectNode", function(e){
-        console.log(e.nodes);
-        document.cookie="lastselectednode="+e.nodes[0];
-    });
+ 
 });

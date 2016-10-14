@@ -79,11 +79,7 @@ var sendUserReg = function(){
 			document.cookie="userId="+jsonresponse.userId;
 			document.cookie="branch="+jsonresponse.branchingFactor;
 			document.cookie="depth="+jsonresponse.initialDepth;
-			document.cookie = "nav="+jsonresponse.theme[0];
-			document.cookie = "map="+jsonresponse.theme[1];
-			document.cookie = "sidepanel="+jsonresponse.theme[2];
-			document.cookie = "persistMap="+jsonresponse.persistMap;
-			document.cookie = "pimIds=" +JSON.stringify(jsonresponse.pimIds);
+			document.cookie="pimIds="+JSON.stringify(jsonresponse.pimIds);
 			
 			$("#loadingAlert").fadeOut(1000, function() {
 				
@@ -271,55 +267,31 @@ function loadTos(){
 *	Function that animates the log in screen
 */
 function loadReg(){
-	$("#googleLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#facebookLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos2").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#web").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
+	$("#googleLogin").hide();
+	$("#facebookLogin").hide();
+	$("#tos").hide();
+	$("#tos2").hide();
+	$("#web").hide();
 	$("#errr").hide();
 	$("#tos").hide();
 	$("#tos2").hide();
 	$("#web").hide();
 
-	$("#avatar").delay("slow").animate({
-	  top: '70px',
-	  opacity: '0.3'
-
-	});
-	$("#welcome").show();
-	$("#welcome").delay(1000).animate({
-	  opacity: '1'
-	});
-	$('#avatar').fadeOut(0, function() {
-	  $('#avatar').fadeIn(0);
-	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	  $('#avatar').css("background-size","cover");
-	  $('#avatar').css("opacity","1");
-	});
-	$("#continue").show();
-	$("#continue").delay(2000).animate({
-	  opacity: '1'
-	});
+	$("#avatar").hide();
+	// $("#welcome").show();
+	// $("#welcome").delay(1000).animate({
+	//   opacity: '1'
+	// });
+	// $('#avatar').fadeOut(0, function() {
+	//   $('#avatar').fadeIn(0);
+	//   $('#avatar').css("background","#eee url('/images/avatar3.png')");
+	//   $('#avatar').css("background-size","cover");
+	//   $('#avatar').css("opacity","1");
+	// });
+	// $("#continue").hide();
+	// $("#continue").delay(2000).animate({
+	//   opacity: '1'
+	// });
 	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {
@@ -424,7 +396,6 @@ function loadXMLDoc(){
 			document.cookie = "sidepanel="+jsonresponse.theme[2];
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
-			document.cookie = "persistMap="+jsonresponse.persistMap;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
 
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
@@ -466,7 +437,7 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
-	startApp()
+
 
 /**
 *	This function initialises the JavaScript SDK
@@ -655,12 +626,39 @@ function onSuccessFacebook() {
 
   });
 }
-////////////////////////////////////////////////////////
+var interval;
 function onTwitterLogin()
 {
+<<<<<<< HEAD
 	window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
+=======
+	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
+  	win.focus();
+  	
+   	interval = setInterval(function(){ 
+  		if(win.closed == true)
+	  	{
+	  		if(localStorage.getItem("twitterUser"))
+	  		{
+	  			console.log("Local storage has been set")
+				var twitter = localStorage.getItem("twitterUser");
+				setTwitterAuthCode(twitter);
+
+	  		}
+	  	}
+		
+	},1000)  		 
+
+>>>>>>> develop
 }
-///////////////////////////////////////////////////////
+function setTwitterAuthCode(twitter)
+{
+	clearInterval(interval);
+	authCodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	$("#tickTwitter").show();
+	//$("#nextButton").show();
+  	//alert(JSON.stringify(authCodes));
+}
 /**
 *	@var {HTMLContainer} divClone - This holds an html element that can be used to restore state of another html element
 */

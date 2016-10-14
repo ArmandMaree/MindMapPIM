@@ -3,7 +3,12 @@ package PIM;
 import java.util.UUID;
 import java.util.concurrent.*;
 import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
+// import org.springframework.ui.Model;
+// import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.ModelAttribute;
+// import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,17 +46,18 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Autowired
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
-//////////////////
+
     @Autowired
     @Qualifier("editUserSettingsResponseLL")
     LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
 
-/////////////////////
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+    String twitterUsername = "";
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -66,6 +72,27 @@ public class LoginController extends WebMvcConfigurerAdapter {
     public String showLogin() {
         return "mainpage";
     }
+    @RequestMapping(value="/login", method=RequestMethod.GET)
+    public String showMain() {
+        return "login";
+    }
+
+    @RequestMapping(value="/settings", method=RequestMethod.GET)
+    public String showSettings() {
+        return "settings";
+    }
+
+    @RequestMapping(value="/help", method=RequestMethod.GET)
+    public String showHelp() {
+        return "help";
+    }
+    
+    @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    public String showTwitter() {
+        return "twitter";
+    }
+
+ 
  
     @MessageMapping("/hello")
     @SendToUser("/topic/greetings")
@@ -89,6 +116,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             {
                 pimIds.add(new PimId(message.getAuthCodes()[i].getPimSource(),message.getAuthCodes()[i].getId()));
             }
+            // if(twitterUsername != "")
+            //     pimIds.add(new PimId("Twitter",twitterUsername));
             UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName());
             userIdentified.setPimIds(pimIds);
             rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
@@ -102,6 +131,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return user;
         }
     }
+////////////// AMY
 
     @MessageMapping("/usercheck")
     @SendToUser("/topic/request")
@@ -125,25 +155,36 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified sendNewDataSources(UpdateSources message) throws Exception {
         String id = UUID.randomUUID().toString();
+        System.out.println(message.toString());
+        if(message == null)
+            System.out.println("Message object was null");
         if(message.getUserId() == null)
             System.out.println("No userId");
         else
             System.out.println("User id: "+message.getUserId());
+
         if(message.getAuthcodes() == null)
             System.out.println("No authcodes");
 
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),message.getAuthcodes());
-         request.setTheme(null);
+        if(request.getAuthCodes() == null)
+            System.out.println("Setting authcodes error");
+        request.setTheme(null);
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        System.out.println(request);
+       for(int i = 0 ; i < request.getAuthCodes().length; i++)
+            {
+                System.out.println(request.getAuthCodes()[i].getPimSource()+ " id:  "+request.getAuthCodes()[i].getId());
+            }
+        System.out.println("Update source request: " + request);
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
 
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        System.out.println("Update data sourcesresponse:" +response);
+        System.out.println("Update data sources response:" + response);
+
         return response;
     }
 
@@ -164,18 +205,22 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received response!");
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response.getCode());
 
         return response;
     }
     @MessageMapping("/mapsettings")
+    // @SendTo("/topic/request")
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme (MapSettings message) throws Exception {
         String id = UUID.randomUUID().toString();
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
-        request.setPersistMap(message.getPersistMap());
+        
         System.out.println(request);
         
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
@@ -185,6 +230,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
+        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response);
 
         return response;
@@ -209,11 +257,15 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received request with id: " +id);
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-       System.out.println("Settings response: " +response);
+        //erUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
+        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
+        System.out.println("Settings response: " +response);
 
         return response;
     }
 
+/////////////////
     public ServerResponse userchecktest(User message) throws Exception {
         String id = "123456";
         UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
@@ -342,7 +394,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         catch (InterruptedException ie){}
     }
-///////////////
      public void receiveEditSettingsResponse(UserUpdateResponseIdentified response) {
         try {
             editUserSettingsResponseLL.put(response);
@@ -350,21 +401,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
     }
 
-///////////////////
-    @RequestMapping(value="/login", method=RequestMethod.GET)
-    public String showMain() {
-        return "login";
-    }
-
-    @RequestMapping(value="/settings", method=RequestMethod.GET)
-    public String showSettings() {
-        return "settings";
-    }
-
-    @RequestMapping(value="/help", method=RequestMethod.GET)
-    public String showHelp() {
-        return "help";
-    }
+    
 
     @RequestMapping(value="/twitter", method=RequestMethod.GET)
     public String showTwitter() {
