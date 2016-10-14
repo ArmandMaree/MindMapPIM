@@ -9,10 +9,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.context.annotation.Bean;
 
 import org.springframework.stereotype.Component;
 
@@ -59,11 +59,6 @@ public class MessageBrokerFactory {
 	}
 
 	@Bean
-	private MessageListenerAdapter authCodeAdapter() {
-		return new MessageListenerAdapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
-	}
-
-	@Bean
 	private Queue authCodeQueue() {
 		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
 		return new Queue(queueName, false);
@@ -76,8 +71,15 @@ public class MessageBrokerFactory {
 	}
 
 	@Bean
+	private MessageListenerAdapter authCodeAdapter() {
+		System.out.println("Creating authCodeAdapter for: " + pollerConfig.getAuthCodeListener() + "   " + pollerConfig.getAuthCodeMethod());
+		return new MessageListenerAdapter(pollerConfig.getAuthCodeListener(), pollerConfig.getAuthCodeMethod());
+	}
+
+	@Bean
 	private SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeAdapter") MessageListenerAdapter listenerAdapter) {
 		String queueName = "auth-code." + pollerConfig.getPollerName() + ".rabbit";
+		System.out.println("Creating authCodeContainer for: " + queueName);
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(queueName);

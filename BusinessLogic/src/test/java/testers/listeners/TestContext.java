@@ -25,6 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Configuration
 public class TestContext {
 	public final static String topicRequestBusinessQueueName = "topic-request.business.rabbit";
+	public final static String topicRequestDatabaseQueueName = "topic-request.database.rabbit";
+	public final static String topicResponseFrontendQueueName = "topic-response.frontend.rabbit";
 	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
 	public final static String registerBusinessQueueName = "register.business.rabbit";
 	public final static String userUpdateDatabaseQueueName = "user-update-request.database.rabbit";
@@ -33,7 +35,86 @@ public class TestContext {
 	// test beans start
 	private final String userRegisterDatabaseQueueName = "user-register.database.rabbit";
 	private final String authCodeGmailQueueName = "auth-code.gmail.rabbit";
+	private final String authCodeFacebookQueueName = "auth-code.facebook.rabbit";
 
+	// topic
+	@Autowired
+	@Qualifier("testTopicRequestQueueDev")
+	private LinkedBlockingQueue<TopicRequest> topicRequestQueue;
+
+	@Autowired
+	@Qualifier("testTopicResponseQueueDev")
+	private LinkedBlockingQueue<TopicResponse> topicResponseQueue;
+
+	@Bean
+	LinkedBlockingQueue<TopicRequest> testTopicRequestQueueDev() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	LinkedBlockingQueue<TopicResponse> testTopicResponseQueueDev() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	Queue topicRequestDatabaseQueue() {
+		return new Queue(topicRequestDatabaseQueueName, false);
+	}
+
+	@Bean
+	Queue topicResponseFrontendQueue() {
+		return new Queue(topicResponseFrontendQueueName, false);
+	}
+
+	@Bean
+	Binding topicRequestDatabaseBinding(@Qualifier("topicRequestDatabaseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicRequestDatabaseQueueName);
+	}
+
+	@Bean
+	Binding topicResponseFrontendBinding(@Qualifier("topicResponseFrontendQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicResponseFrontendQueueName);
+	}
+
+	@Bean
+	public MessageListenerAdapter topicRequestDatabaseAdapter() {
+		return new MessageListenerAdapter(this, "receiveTopicRequestDatabaseResponse");
+	}
+
+	@Bean
+	public MessageListenerAdapter topicResponseFrontendAdapter() {
+		return new MessageListenerAdapter(this, "receiveTopicResponseFrontendResponse");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicRequestDatabaseContainer(ConnectionFactory connectionFactory, @Qualifier("topicRequestDatabaseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicRequestDatabaseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer topicResponseFrontendContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseFrontendAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicResponseFrontendQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	public void receiveTopicRequestDatabaseResponse(TopicRequest topicRequest) throws InterruptedException {
+		System.out.println("Test Context Received: " + topicRequest);
+		topicRequestQueue.put(topicRequest);
+	}
+
+	public void receiveTopicResponseFrontendResponse(TopicResponse topicResponse) throws InterruptedException {
+		System.out.println("Test Context Received: " + topicResponse);
+		topicResponseQueue.put(topicResponse);
+	}
+
+	// register beans
 	@Autowired
 	@Qualifier("testUserQueueDev")
 	private LinkedBlockingQueue<UserIdentified> userIdentifiedQueue;
@@ -98,8 +179,18 @@ public class TestContext {
 	}
 
 	@Bean
+	Queue authCodeFacebookQueue() {
+		return new Queue(authCodeFacebookQueueName, false);
+	}
+
+	@Bean
 	Binding authCodeGmailBinding(@Qualifier("authCodeGmailQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(authCodeGmailQueueName);
+	}
+
+	@Bean
+	Binding authCodeFacebookBinding(@Qualifier("authCodeFacebookQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(authCodeFacebookQueueName);
 	}
 
 	@Bean
@@ -111,7 +202,7 @@ public class TestContext {
 	public SimpleMessageListenerContainer authCodeGmailContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeGmailAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(authCodeGmailQueueName);
+		container.setQueueNames(authCodeGmailQueueName, authCodeFacebookQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

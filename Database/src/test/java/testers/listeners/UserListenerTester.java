@@ -38,7 +38,7 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=testers.listeners.TestContext.class)
-public class BusinessListenerTester extends AbstractTester {
+public class UserListenerTester extends AbstractTester {
 	private boolean setUpDone = false;
 	private final String userRegisterQueueName = TestContext.userRegisterQueueName;
 	private final String userCheckQueueName = TestContext.userCheckQueueName;

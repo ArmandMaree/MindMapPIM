@@ -403,5 +403,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     
 
+    @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    public String showTwitter() {
+        return "twitter";
+    }
 
 }

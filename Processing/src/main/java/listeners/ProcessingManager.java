@@ -1,19 +1,21 @@
 package listeners;
 
+import com.unclutter.poller.RawData;
+
+import nlp.NaturalLanguageProcessor;
+import nlp.Processor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.io.*;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-
-import data.*;
-import nlp.*;
-import com.unclutter.poller.*;
 
 /**
 * Receives {@link data.RawData} and adds it to a queue where worker threads will dequeue and process it.

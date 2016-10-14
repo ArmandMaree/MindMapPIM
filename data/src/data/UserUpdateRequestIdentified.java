@@ -60,9 +60,15 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 	*/
 	public String toString() {
 		String u = "";
+		String a = "";
 
 		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+			u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
+
+		if (a != null) {
+			for (AuthCode authCode : getAuthCodes())
+				a += "\t\t" + authCode.getPimSource() + ": " + authCode.getId() + " - " + authCode.getAuthCode() + "\n";
+		}
 
 		return "UserUpdateRequestIdentified {\n" +
 			"\treturn: " + returnId + ",\n" +
@@ -73,7 +79,7 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 			"\tinitialDepth:" + getInitialDepth() + "\n" +
 			"\tbranchingFactor:" + getBranchingFactor() + "\n" +
 			"\tisActive:" + getIsActive() + "\n" +
-			"\tauthCodes size: " + ((getAuthCodes() == null) ? "null" : getAuthCodes().length) + "\n" +
+			"\tauthCodes: {\n" + a + "\t}\n" +
 		"}";
 	}
 }

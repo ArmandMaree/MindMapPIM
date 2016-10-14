@@ -1,6 +1,6 @@
 package listeners;
 
-import data.*;
+import data.ProcessedData;
 
 import java.util.List;
 

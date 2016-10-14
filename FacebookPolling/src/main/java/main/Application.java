@@ -1,54 +1,68 @@
 package main;
 
+import com.unclutter.poller.PollingConfiguration;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageBrokerFactory;
+
+import listeners.AuthCodeListener;
+import listeners.ItemListener;
+
+import java.util.List;
+
+import poller.AlreadyPollingForUserException;
+import poller.FacebookPoller;
+import poller.FacebookPollingUser;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
-import poller.*;
-import listeners.*;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.unclutter.poller.*;
+import repositories.FacebookRepository;
 
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
 @ComponentScan({"com.unclutter.poller"})
+@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
+	@Autowired
+	private MessageBrokerFactory messageBrokerFactory;
+
+	@Autowired
+	private FacebookRepository facebookRepository;
+
 	@Bean
-	public BusinessListener authCodeReceiver() {
-		return new BusinessListener();
+	public AuthCodeListener authCodeReceiver(FacebookRepository facebookRepository) {
+		return new AuthCodeListener(facebookRepository);
 	}
 
 	@Bean
-	public FrontendListener itemRequestReceiver() {
-		return new FrontendListener();
+	public ItemListener itemRequestReceiver() {
+		return new ItemListener();
 	}
 
 	@Bean
-	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, BusinessListener business, FrontendListener frontend) {
-		PollingConfiguration pollingConfig = new PollingConfiguration("facebook", business, "receiveAuthCode", frontend, "receiveItemRequest");
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, AuthCodeListener authCodeListener, ItemListener itemListener) {
+		PollingConfiguration pollingConfig = new PollingConfiguration("facebook", authCodeListener, "receiveAuthCode", itemListener, "receiveItemRequest");
 		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
 		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);
 
 		try {
-			business.setMessageBroker(messageBrokerFactory.getMessageBroker());
-			frontend.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			authCodeListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			itemListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
 		}
 		catch (MessageBrokerFactory.BeansNotSetUpException bnsue) {
 			bnsue.printStackTrace();
@@ -61,8 +75,37 @@ public class Application implements CommandLineRunner {
 		SpringApplication.run(Application.class, args);
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean the repository used by this poller.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
+		for (String arg : args) {
+			switch (arg) {
+				case "cleandb":
+					System.out.println("Cleaning Facebook's database.");
+					facebookRepository.deleteAll();
+					break;
+			}
+		}
 
+		List<FacebookPollingUser> pollingUsers = facebookRepository.findByCurrentlyPolling(true);
+
+		for (FacebookPollingUser pollingUser : pollingUsers) {
+			try {
+				pollingUser.setCurrentlyPolling(false);
+				facebookRepository.save(pollingUser);
+				new Thread(new FacebookPoller(facebookRepository, messageBrokerFactory.getMessageBroker(), pollingUser.getAccessToken(), pollingUser.getExpireTime(), pollingUser.getUserId())).start();
+			}
+			catch (AlreadyPollingForUserException apfue) {
+				apfue.printStackTrace();
+			}
+		}
 	}
 }

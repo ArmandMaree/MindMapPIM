@@ -52,6 +52,11 @@ public class Topic implements Serializable, Comparable<Topic> {
 	private boolean person = false;
 
 	/**
+	* Indicates whether the user chose to hide the topic.
+	*/
+	private boolean hidden = false;
+
+	/**
 	* Default constructor
 	*/
 	public Topic() {
@@ -221,7 +226,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Returns the value of person.
 	* @return Indicates whether this topic is a person.
 	*/
-	public boolean isPerson() {
+	public boolean getPerson() {
 		return person;
 	}
 
@@ -229,8 +234,24 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* Set the value of person.
 	* @param person Indicates whether this topic is a person.
 	*/
-	public void setIsPerson(boolean person) {
+	public void setPerson(boolean person) {
 		this.person = person;
+	}
+
+	/**
+	* Returns the value of hidden.
+	* @return Indicates whether the user chose to hide the topic.
+	*/
+	public boolean getHidden() {
+		return hidden;
+	}
+
+	/**
+	* Set the value of hidden.
+	* @param hidden Indicates whether the user chose to hide the topic.
+	*/
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 
 	/*
@@ -257,9 +278,9 @@ public class Topic implements Serializable, Comparable<Topic> {
 	* @return The weight of this topic in terms of a temperal component and a frequency component.
 	*/
 	public double getWeight() {
-		long secs = time / 1000; // seconds between time and current time
+		long secs = time / 1000; // seconds between time and EPOCH
 		double hours = secs / 3600 - 306816; // hours since 01/01/2005
-		double weight = 100 * hours * processedDataIds.size(); // inverse of hourse * 100 * number of data associated with topic.
+		double weight = hours * hours * processedDataIds.size(); // hours * 100 * number of data associated with topic.
 		return weight;
 	}
 
@@ -286,7 +307,8 @@ public class Topic implements Serializable, Comparable<Topic> {
 
 			s += "\t]\n" +
 			"\ttime: " + time + ",\n" +
-			"\tisPerson: " + person + "\n" +
+			"\tperson: " + person + "\n" +
+			"\thidden: " + hidden + "\n" +
 		"}";
 
 		return s;

@@ -31,6 +31,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 @ContextConfiguration(classes = testers.listeners.TestContext.class)
 public class TopicListenerTester extends AbstractTester {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
+	private final static String topicUpdateQueueName = "topic-update-request.database.rabbit";
 	private final String userRegisterQueueName = TestContext.userRegisterQueueName;
 	private boolean setUpDone = false;
 
@@ -162,5 +163,51 @@ public class TopicListenerTester extends AbstractTester {
 		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
 		Assert.assertEquals("Failure - topicResponse does not have correct amount of involvedContacts.", 2, topicResponse.getInvolvedContacts().length);
+	}
+
+	@Test
+	public void receiveTopicUpdateRequest() {
+		User user = new User("Acuben", "Cos");
+		user.addPimId("gmail", "acubencos@gmail.com");
+		user.addPimId("facebook", "acubenfacebook");
+		UserIdentified userIdentified = new UserIdentified(UUID.randomUUID().toString(), false, user);
+		rabbitTemplate.convertAndSend(userRegisterQueueName, userIdentified);
+		UserIdentified userIdentifiedResponse = queue.poll(5, TimeUnit.SECONDS);
+
+		Assert.assertNotNull("Failed - userIdentifiedResponse is null.", userIdentifiedResponse);
+		List<ProcessedData> processedData = new ArrayList<>();
+
+		String[][] processedDataTopics = {
+			{"horse", "photo"},
+			{"horse", "pizza", "pizza", "pizza"},
+			{"horse", "pizza", "pizza"},
+			{"horse", "saddle"},
+			{"horse", "pizza"},
+			{"horse", "computer"},
+			{"pizza", "book"},
+			{"glass", "phone"},
+			{"mouse", "pizza"},
+			{"computer", "handle"}
+		};
+
+		for (String[] ts : processedDataTopics)
+			processedData.add(new ProcessedData("gmail", user.getPimId("gmail"), null, UUID.randomUUID().toString(), ts, System.currentTimeMillis()));
+
+		processedData.add(new ProcessedData("facebook", user.getPimId("facebook"), null, UUID.randomUUID().toString(), processedDataTopics[1], System.currentTimeMillis()));
+
+		for (ProcessedData pd : processedData)
+			rabbitTemplate.convertAndSend(processedDataQueueName, pd);
+
+		Topic topic = new Topic();
+		topic.setTopic("horse");
+		topic.setUserId(userIdentifiedResponse.getUserId());
+		topic.setHidden(true);
+		rabbitTemplate.convertAndSend(topicUpdateQueueName, topic);
+		Thread.sleep(5000);
+
+		topic = topicRepository.findByTopicAndUserId(topic.getTopic(), topic.getUserId());
+
+		Assert.assertNotNull("Failure - topic is null.", topic);
+		Assert.assertTrue("Failure - topic is not hidden after update.", topic.getHidden());
 	}
 }

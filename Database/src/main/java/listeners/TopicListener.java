@@ -1,16 +1,26 @@
 package listeners;
 
-import java.util.*;
+import data.PimId;
+import data.ProcessedData;
+import data.Topic;
+import data.TopicRequest;
+import data.TopicResponse;
+import data.User;
 
-import repositories.*;
-import data.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
-* Receives topic requests from a queue messaging application and responds to it.
+* Receives requests from a queue messaging service that requires some operation with topics.
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -47,111 +57,37 @@ public class TopicListener {
 	*	</ul>
 	*	<br>
 	*	How the topic selection algorithm works:<br>
-	*	The most relevant topic will always be added to the returnTopics list. It then looks at the remaining topics and if the next topic does not appear in any of the related topics of the topics in the returnTopics list then the current topic will be added to the returnTopic list. This allows a more diverse selection of topics.
+	*	The most relevant topic will always be added to the returnTopics list. It then looks at the remaining topics and if the next topic does not appear in any of the related topics of the topics in the returnTopics list then the current topic will be added to the returnTopic list. This allows a more diverse selection of topics.<br>
+	*	The contacts are selected in the same manner.
 	* </p>
-	* @param topicRequest Request for topics dequeued form messaging application.
+	* @param topicRequest Request for topics dequeued form messaging service.
 	*/
-	public void receiveTopicRequest(TopicRequest topicRequest) {
-		List<Topic> topics = new ArrayList<>(); // topics that need to be returned.
-
+	public void receiveTopicRequest(TopicRequest topicRequest) throws NoSuchTopicException {
 		// finds the topics related to the node specified in path
-		if (topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) { // if a path is not specified
-			topics = topicRepository.findByUserId(topicRequest.getUserId()); // get all topics from repo of this user
-			List<String> excludeList = Arrays.asList(topicRequest.getExclude());
+		System.out.println("RECEIVED: " + topicRequest);
+		Topic lastTopicInPath = null;
+		List<List<Topic>> topicsAndContacts = null;
 
-			for (int i = 0; i < topics.size(); i++)
-				if (excludeList.contains(topics.get(i).getTopic())) {
-					topics.remove(i);
-					i--;
-				}
+		try {
+			lastTopicInPath = findTopicAtEndOfPath(topicRequest.getPath(), topicRequest.getUserId());
+			// topics that need to be returned.
+			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId()); 
 		}
-		else { // a path is specified
-			for (int i = 0; i < topicRequest.getPath().length; i++) { // iterate all nodes in path
-				String pathTopic = topicRequest.getPath()[i]; // current node in path
-				Topic topic = topicRepository.findByTopicAndUserId(pathTopic, topicRequest.getUserId()); // find topic for specified user
-
-				if (topic == null) // user does not have a topic with this name
-					break;
-
-				List<String> relatedTopics = topic.getRelatedTopics(); // store the related topics of the topic retrieved from repo
-
-				if (i == topicRequest.getPath().length - 1) { // if on last node of path
-					if (topicRequest.getExclude() != null && topicRequest.getExclude().length != 0) // if exclude contains nodes, then remove them from related topics
-						relatedTopics.removeAll(Arrays.asList(topicRequest.getExclude()));
-
-					relatedTopics.removeAll(Arrays.asList(topicRequest.getPath())); // remove all topics that occur in path
-					for (String relatedTopic : relatedTopics) {
-						Topic t = topicRepository.findByTopicAndUserId(relatedTopic, topicRequest.getUserId());
-
-						if (t != null)
-							topics.add(t);
-					}
-				}
-				else if (!relatedTopics.contains(topicRequest.getPath()[i + 1])) // else if related topics does not contain next node in path then stop
-					break;
-			}
-		}
-
-		if (topics == null || topics.size() == 0) { // no related topics exist for the given path
-			rabbitTemplate.convertAndSend(topicResponseQueueName, new TopicResponse(topicRequest.getUserId(), new String[0], null, null)); // send topic response that contains no topics
-			System.out.println("No topics found for user: " + topicRequest.getUserId());
+		catch (NoSuchTopicException nste) {
+			nste.printStackTrace();
+			String[] emptyArray = new String[0];
+			String[][][] emptyArray3D = new String[0][0][0];
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), emptyArray, emptyArray, emptyArray3D); // create topic response without topics objects
+			System.out.println("Respond from topicListener: " + topicResponse);
+			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 			return;
-		}
-
-		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight descending
-		List<Topic> returnTopics = new ArrayList<>();
-		List<Topic> returnContacts = new ArrayList<Topic>();
-
-		// extracts the contacts and most relevant topics until both have topicRequest.getMaxNumberOfTopics() or there are no more topics
-		if (topics.size() <= topicRequest.getMaxNumberOfTopics()) {
-			for (int i = 0; i < topics.size(); i++) {
-				while (topics.size() > i && topics.get(i).isPerson())
-					returnContacts.add(topics.remove(i));
-			}
-
-			returnTopics = topics;
-		}
-		else {
-			while (topics.size() > 0 && topics.get(0).isPerson())
-				returnContacts.add(topics.remove(0));
-
-			if (topics.size() != 0) {
-				returnTopics.add(topics.get(0));
-
-				for (int i = 1; i < topics.size() && (returnTopics.size() < topicRequest.getMaxNumberOfTopics() || returnContacts.size() < topicRequest.getMaxNumberOfTopics()); i++) { // take the most relevant topics but also try to reduce closely related topics
-					while (returnContacts.size() < topicRequest.getMaxNumberOfTopics() && topics.size() > i && topics.get(i).isPerson()) {
-						returnContacts.add(topics.remove(i));
-						// System.out.println("Topic[" + i + "]: " + topics.get(i).getTopic() + " is a person.");
-					}
-
-					if (topics.size() > i && returnTopics.size() < topicRequest.getMaxNumberOfTopics() && !topics.get(i).isPerson()) {
-						// System.out.println("Topic[" + i + "]: " + topics.get(i).getTopic() + " is not a person.");
-						boolean found = false;
-
-						for (Topic returnTopic : returnTopics) {
-							for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
-								if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
-									found = true;
-									break;
-								}
-							}
-
-							if (found)
-								break;
-						}
-
-						if (!found)
-							returnTopics.add(topics.get(i));
-					}
-				}
-			}
 		}
 
 		// PIM IDs of each of the topics that will be returned
 		List<List<List<String>>> nodes = new ArrayList<>();
 		User user = userRepository.findByUserId(topicRequest.getUserId());
 
-		for (Topic topic : returnTopics) {
+		for (Topic topic : topicsAndContacts.get(0)) {
 			List<List<String>> nodeIds = new ArrayList<>();
 
 			for (PimId pimId : user.getPimIds()) {
@@ -162,7 +98,7 @@ public class TopicListener {
 
 			for (String processedDataId : topic.getProcessedDataIds()) {
 				ProcessedData pd = processedDataRepository.findById(processedDataId);
-
+				
 				for (int i = 0; i < nodeIds.size(); i++) {
 					String pSource = nodeIds.get(i).get(0);
 
@@ -177,7 +113,7 @@ public class TopicListener {
 		}
 
 		// PIM IDs of each of the contacts that will be returned
-		for (Topic topic : returnContacts) {
+		for (Topic topic : topicsAndContacts.get(1)) {
 			List<List<String>> nodeIds = new ArrayList<>();
 
 			for (PimId pimId : user.getPimIds()) {
@@ -203,24 +139,29 @@ public class TopicListener {
 		}
 
 		String[][][] nodesArr = listToArray3D(nodes);
-		String[] topicsText = new String[returnTopics.size()];
+		String[] topicsText = new String[topicsAndContacts.get(0).size()];
 
 		// gets the text of the topics to be returned
-		for (int i = 0; i < returnTopics.size(); i++)
-			topicsText[i] = returnTopics.get(i).getTopic();
+		for (int i = 0; i < topicsAndContacts.get(0).size(); i++)
+			topicsText[i] = topicsAndContacts.get(0).get(i).getTopic();
 
-		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0|| topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), returnContacts.size());
+		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0|| topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), topicsAndContacts.get(1).size());
 		String[] involvedContacts = new String[involvedContactsSize];
 
 		// gets the text of of the contacts that will be returned
 		for(int i = 0; i < involvedContactsSize; i++)
-			involvedContacts[i] = returnContacts.get(i).getTopic();
+			involvedContacts[i] = topicsAndContacts.get(1).get(i).getTopic();
 
 		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, involvedContacts, nodesArr); // create topic response without topics objects
 		System.out.println("Respond from topicListener: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
 
+	/**
+	* Converts a 3D {@link java.util.list} of {@link java.lang.String}s to a 3D {@link java.lang.String} array.
+	* @param list The list that has to be converted.
+	* @return The converted array.
+	*/
 	private String[][][] listToArray3D(List<List<List<String>>> list) {
 		List<String[][]> tmp3d = new ArrayList<>();
 
@@ -234,6 +175,169 @@ public class TopicListener {
 		}
 
 		return tmp3d.toArray(new String[0][0][0]);
+	}
 
+	/**
+	* Finds the last topic in the provided path.
+	* <p>
+	*	The path is traversed and at each index it is checked whether the user provided has a topic with the same name stored in the database. It also checks whether the topic has a related topic that has the same name as the topic name specified in the next index.<br>
+	*	If the path is null, an empty array, or the first element is an empty string then null will be returned.
+	* </p>
+	* @param path The path that has to be followed to find the last node.
+	* @param userId The user to which this path applies.
+	* @return The topic at the end of the path or null if the path is null, an empty array, or the first element is an empty string.
+	* @throws NoSuchTopicException If at any point during the traversal a node is found that either does not exist for the given user or it is not related to the topic in the previous index.
+	*/
+	public Topic findTopicAtEndOfPath(String[] path, String userId) throws NoSuchTopicException {
+		if (path == null || path.length == 0 || path[0].equals(""))
+			return null;
+
+		Topic returnTopic = null;
+
+		for (int i = 0; i < path.length; i++) { // iterate all nodes in path
+			Topic topic = topicRepository.findByTopicAndUserIdAndHidden(path[i], userId, false); // find topic for specified user
+
+			if (topic == null) // user does not have a topic with this name
+				throw new NoSuchTopicException(path[i]);
+
+
+			if (i == path.length - 1) { // if on last node of path
+				returnTopic = topic;
+			}
+			else { 
+				List<Topic> relatedTopics = new ArrayList<>(); // store the related topics of the topic retrieved from repo
+
+				for (String t : topic.getRelatedTopics()) {
+					Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
+
+					if (relatedTopicInRepo != null)
+						relatedTopics.add(relatedTopicInRepo);
+				}
+
+				boolean found = false;
+
+				for (Topic t : relatedTopics) {
+					if (t.equals(path[i + 1])) {
+						found = true;
+						break;
+					}		
+				}
+
+				if (!found) // else if related topics does not contain next node in path then stop
+					throw new NoSuchTopicException(path[i] + "->" + path[i + 1]);
+			}
+		}
+
+		return returnTopic;
+	}
+
+	/**
+	* Gets the topics and contacts related to the provided topic.
+	* <p>
+	*	The topics that will be returned will be sorted in decending order based on {@link data.Topic#getWeight} method.
+	* </p>
+	* @param topic The topic for which the related topics has to be found.
+	* @param maxNumberOfTopics The maximum number of topics and contacts that will be returned.
+	* @param userId The user for which the topics must be retrieved.
+	* @return A 2D {@link java.util.List} that contains 2 {@link java.util.List}. The first is the related topics and the second is the contacts.
+	*/
+	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId) {
+		List<Topic> topics;
+
+		if (topic == null) {
+			topics = topicRepository.findByUserIdAndHidden(userId, false);
+		}
+		else {
+			topics = new ArrayList<>();
+
+			for (String t : topic.getRelatedTopics()) {
+				Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
+
+				if (relatedTopicInRepo != null)
+					topics.add(relatedTopicInRepo);
+			}
+		}
+
+		Collections.sort(topics, Collections.reverseOrder()); // sort according to weight descending
+		List<Topic> returnTopics = new ArrayList<>();
+		List<Topic> returnContacts = new ArrayList<Topic>();
+
+		// extracts the contacts and most relevant topics until both have topicRequest.getMaxNumberOfTopics() or there are no more topics
+		if (topics.size() <= maxNumberOfTopics) {
+			for (int i = 0; i < topics.size(); i++) {
+				while (topics.size() > i && topics.get(i).getPerson())
+					returnContacts.add(topics.remove(i));
+			}
+
+			returnTopics = topics;
+		}
+		else {
+			while (topics.size() > 0 && topics.get(0).getPerson())
+				returnContacts.add(topics.remove(0));
+
+			if (topics.size() != 0) {
+				returnTopics.add(topics.get(0));
+
+				for (int i = 1; i < topics.size() && (returnTopics.size() < maxNumberOfTopics || returnContacts.size() < maxNumberOfTopics); i++) { // take the most relevant topics but also try to reduce closely related topics
+					while (topics.size() > i && topics.get(i).getPerson()) {
+						if (returnContacts.size() < maxNumberOfTopics)
+							returnContacts.add(topics.remove(i));
+						else
+							topics.remove(i);
+					}
+
+					if (topics.size() > i && returnTopics.size() < maxNumberOfTopics) {
+						boolean found = false;
+
+						outerloop:
+						for (Topic returnTopic : returnTopics) {
+							for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
+								if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
+									found = true;
+									break outerloop;
+								}
+							}
+						}
+
+						if (!found)
+							returnTopics.add(topics.get(i));
+					}
+				}
+			}
+		}
+
+		List<List<Topic>> topicsAndContacts = new ArrayList<>();
+		topicsAndContacts.add(returnTopics);
+		topicsAndContacts.add(returnContacts);
+		return topicsAndContacts;
+	}
+
+	/**
+	* Receives a topic that must be updated.
+	* <p>
+	*	It updates the topic in the database that has the same {@link data.Topic#topic} as the one in the parameter. Currently the fields that can be updated are:
+	*	<ul>
+	*		<li>{@link data.Topic#person}</li>
+	*		<li>{@link data.Topic#hidden}</li>
+	*	</ul>
+	* </p>
+	* @param topic The topic that contains the updated information.
+	*/
+	public void receiveTopicUpdate(Topic topic) {
+		System.out.println("Received: " + topic);
+		Topic topicInRepo = topicRepository.findByTopicAndUserId(topic.getTopic(), topic.getUserId());
+
+		if (topicInRepo == null)
+			System.out.println("No topic found with name " + topic.getTopic());
+		else {
+			if (topic.getPerson() != topicInRepo.getPerson())
+				topicInRepo.setPerson(topic.getPerson());
+
+			if (topic.getHidden() != topicInRepo.getHidden())
+				topicInRepo.setPerson(topic.getHidden());
+
+			topicRepository.save(topicInRepo);
+			System.out.println("TOPIC AFTER MODIFICATION: " + topicInRepo);
+		}
 	}
 }

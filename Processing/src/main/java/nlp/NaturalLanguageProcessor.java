@@ -1,7 +1,6 @@
 package nlp;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
 * Interface that defines what a language processor should look like.

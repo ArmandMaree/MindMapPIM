@@ -1,5 +1,9 @@
 package com.unclutter.poller;
 
+/**
+* Exception that is thrown when a message could not be sent on RabbitMQ.
+*
+*/
 public class MessageNotSentException extends Exception {
 	public MessageNotSentException() {
 		super();
