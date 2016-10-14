@@ -44,44 +44,46 @@
       <link rel="icon" href="/images/favicon.ico" type="image/x-icon"></link>
 
       <script>
-     $( function() {
-      var handle = $( "#Branchrange" );
-      $( "#brange" ).slider({
-        range: "max",
-        min: 2,
-        max: 8,
-        value: getCookie("branch"),
-        create: function() {
-          handle.text( $( this ).slider( "value" ) );
-        },
-        slide: function( event, ui ) {
-          handle.text( ui.value );
-          document.cookie ="branch="+ui.value;
-        }
-      });
-    } );
-       $( function() {
-      var handle = $( "#Depthrange" );
-      $( "#drange" ).slider({
-        range: "max",
-        min: 2,
-        max: 8,
-        value: getCookie("depth"),
-        create: function() {
-          handle.text( $( this ).slider( "value" ) );
-        },
-        slide: function( event, ui ) {
-          handle.text( ui.value );
-           document.cookie ="depth="+ui.value;
-        }
-      });
-    } );
-        $(function() {  
-          $( "#sidepanel" ).resizable({ handles: 'w' });
-        });
-        var handles = $( ".selector" ).resizable( "option", "handles" );
-        //setter
-        $( ".selector" ).resizable( "option", "handles", 'w' );
+         $( function() {
+          var handle = $( "#Branchrange" );
+          $( "#brange" ).slider({
+                range: "max",
+                min: 2,
+                max: 8,
+                value: getCookie("branch"),
+                create: function() {
+                  handle.text( $( this ).slider( "value" ) );
+                },
+                slide: function( event, ui ) {
+                  handle.text( ui.value );
+                  document.cookie ="branch="+ui.value;
+                }
+              });
+          });
+           $( function() {
+              var handle = $( "#Depthrange" );
+              $( "#drange" ).slider({
+                range: "max",
+                min: 2,
+                max: 8,
+                value: getCookie("depth"),
+                create: function() {
+                  handle.text( $( this ).slider( "value" ) );
+                },
+                slide: function( event, ui ) {
+                  handle.text( ui.value );
+                   document.cookie ="depth="+ui.value;
+                }
+              });
+            } );
+
+            $(function() {  
+              $( "#sidepanel" ).resizable({ handles: 'w' });
+            });
+
+            var handles = $( ".selector" ).resizable( "option", "handles" );
+            //setter
+            $( ".selector" ).resizable( "option", "handles", 'w' );
       </script>
   </head>
   <body>
@@ -148,35 +150,8 @@
             </ol>
 
             <div class="tabs">
-<!--          <div id="gmailtab" class="tab tabopen">
-                Gmail
-              </div>
-              <div id="facebooktab" class="tab">
-                Facebook
-              </div>
-              <div id="twittertab" class="tab">
-                Twitter
-              </div>
-              <div id="linkedintab" class="tab">
-                LinkedIn
-              </div> -->
             </div>
             <div id="cards">
-<!--               <div class="gmailcard" id="card">
-                this is an example text email
-              </div>
-              <div class="gmailcard" id="card">
-                The second email will be an html email. Be prepared!
-              </div>
-              <div class="gmailcard" id="card">
-                never mind it didnt work...
-              </div>
-              <div class="facebookcard" id="card">
-                <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3D172521503177457%26id%3D146346169128324%26substory_index%3D0&amp;width=500" width="500" height="527" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true"></iframe>
-              </div>
-              <div class="facebookcard" id="card">
-                <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3D310257432675554%26id%3D270676383300326%26substory_index%3D0&amp;width=500" width="500" height="632" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true"></iframe>
-              </div> -->
             </div>
             
 <!--             <div class="panel-group" id="accordion">

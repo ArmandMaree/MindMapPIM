@@ -670,18 +670,25 @@ $(document).ready(function(){
     //menu - variable that is assigned the context menu
     menu = new ax5.ui.menu({
         position: "absolute", // default position is "fixed"
-        theme: "info",
+        theme: "primary",
         icons: {
             'arrow': '<i class="fa fa-caret-right"></i>'
         },
         items: [
             {
-                icon: '<i class="fa fa-comment"></i>',
-                label: "Expand Bubble",
+                label: "Expand Bubble"
             },
             {
-                icon: '<i class="fa fa-comments"></i>',
-                label: "Remove Bubble",
+                label: "Remove Bubble"
+            },
+            {
+                label: "Refresh"
+            },
+            {
+                label: "Delete topic"
+            },
+            {
+                label: "Toggle topic/contact bubble"
             }
         ],
         onClick: function(){
@@ -736,11 +743,32 @@ $(document).ready(function(){
                     });
                     $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
                 }
-                   
+                    // $("#loadingAlert").fadeOut(1000, function() {
+                    //     // body...
+                    // });
             }
 
-            if(this.label=="Remove Bubble"){
-                deleteBranch(selectedID)
+            if(this.label=="Refresh"){
+                refreshGraph();
+            }
+            if(this.label=="Delete topic"){
+                // alert("hello!")
+                var socket = new SockJS('/update');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    connected = true;
+                    var userId = getCookie("userId");
+                    // alert(selectedID);
+                    topicWrapperRequest = {"userId": getCookie("userId"), topicname:nodes[selectedID].label, "hidden":true};
+                    alert(JSON.stringify(topicWrapperRequest))
+                    stompClient.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+
+                });
+                
+            }
+            if(this.label=="Toggle topic/contact bubble"){ 
+                
             }
         }
     });
@@ -806,18 +834,21 @@ $(document).ready(function(){
             $('#sidepanelTitle').css("background-position","center");
             $('#sidepanelTitle').addClass("blurclass");
             $('#sidepanelTitlewords').css("color","black");
-
-            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
-                // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                    avatarlink = data.hits[0].previewURL;
-                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
-                    $('#avatar').css("background-size","cover");
-                    $('#avatar').css("background-position","center");
-                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-                    $('#sidepanelTitle').css("background-size","cover");
-                    $('#sidepanelTitle').css("background-position","center");
-                    $('#sidepanelTitle').addClass("blurclass");
-            });
+            // $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
+                // console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
+                // avatarlink = data.items[0].link;
+                $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
+                    // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                        avatarlink = data.hits[0].previewURL;
+                        $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                        $('#avatar').css("background-size","cover");
+                        $('#avatar').css("background-position","center");
+                        $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                        $('#sidepanelTitle').css("background-size","cover");
+                        $('#sidepanelTitle').css("background-position","center");
+                        $('#sidepanelTitle').addClass("blurclass");
+                });
+            // }
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
             $.each(allPimIDlist[selectedID][i], function(j, el){

@@ -28,6 +28,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/mapsettings").setAllowedOrigins("*").withSockJS();
 		registry.addEndpoint("/datasources").setAllowedOrigins("*").withSockJS();
 		registry.addEndpoint("/deactivate").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/update").setAllowedOrigins("*").withSockJS();
+		
 		
 	}
 

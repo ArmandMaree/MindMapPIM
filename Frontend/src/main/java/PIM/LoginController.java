@@ -238,6 +238,27 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return response;
     }
 
+    @MessageMapping("/update")
+    public void updateNode(TopicWrapper message) throws Exception {
+        // String id = "123456";
+        // UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
+        // System.out.println("recieved================");
+        System.out.println(message.getHidden());
+        System.out.println(message.getUserId());
+        System.out.println(message.getTopicName());
+        Topic topic = new Topic(message.getUserId());
+        topic.setTopic(message.getTopicName());
+        topic.setHidden(message.getHidden());
+        System.out.println(topic);
+        rabbitTemplate.convertAndSend("topic-update-request.database.rabbit",topic);
+        // while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
+        //     Thread.sleep(1000);
+        // }
+        // UserIdentified user = userCheckResponseLL.poll();
+        // // Thread.sleep(2000);
+        // return new ServerResponse(user.getIsRegistered());
+    }
+    
     @MessageMapping("/deactivate")
     // @SendTo("/topic/request")
     @SendToUser("/topic/request")
@@ -403,9 +424,9 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     
 
-    @RequestMapping(value="/twitter", method=RequestMethod.GET)
-    public String showTwitter() {
-        return "twitter";
-    }
+    // @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    // public String showTwitter() {
+    //     return "twitter";
+    // }
 
 }
