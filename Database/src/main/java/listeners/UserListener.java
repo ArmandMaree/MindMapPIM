@@ -92,12 +92,16 @@ public class UserListener {
 		System.out.println("Receive in check: " + user);
 		User userReturn = null;
 
-		for (PimId pimId : user.getPimIds()) {
-			userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
-
-			if (userReturn != null)
-				break;
+		if (user.getUserId() != null) {
+			userReturn = userRepository.findByUserId(user.getUserId());
 		}
+		else
+			for (PimId pimId : user.getPimIds()) {
+				userReturn = userRepository.findByPimId(pimId.pim, pimId.uId);
+
+				if (userReturn != null)
+					break;
+			}
 
 		if (userReturn == null || !userReturn.getIsActive())
 			user.setIsRegistered(false);

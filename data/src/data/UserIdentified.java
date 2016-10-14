@@ -107,7 +107,7 @@ public class UserIdentified extends User {
 		String u = "";
 
 		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+			u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
 
 		return "UserIdentified {\n" +
 		"\treturnId: " + returnId + ",\n" +
@@ -115,7 +115,7 @@ public class UserIdentified extends User {
 		"\tid: " + getUserId() + ",\n" +
 		"\tfirstName: " + getFirstName()  + ",\n" +
 		"\tlastName: " + getLastName() + ",\n" +
-		"\tids: {\n" + u + "\n\t}\n" +
+		"\tids: {\n" + u + "\t}\n" +
 		"\tinitialDepth:" + getInitialDepth() + "\n" +
 		"\tbranchingFactor:" + getBranchingFactor() + "\n" +
 		"\tisActive:" + getIsActive() + "\n" +

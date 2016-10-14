@@ -60,7 +60,7 @@ public class AuthCodeListener {
 			}
 		}
 		else {
-			TwitterPoller twitterPoller = new TwitterPoller(twitterRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+			TwitterPoller twitterPoller = new TwitterPoller(twitterRepository, messageBroker, authCode.getId());
 			twitterPollers.add(twitterPoller);
 			new Thread(twitterPoller).start();
 		}

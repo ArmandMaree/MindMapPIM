@@ -75,9 +75,12 @@ public class TopicListener {
 		}
 		catch (NoSuchTopicException nste) {
 			nste.printStackTrace();
-			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), null, null, null); // create topic response without topics objects
+			String[] emptyArray = new String[0];
+			String[][][] emptyArray3D = new String[0][0][0];
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), emptyArray, emptyArray, emptyArray3D); // create topic response without topics objects
 			System.out.println("Respond from topicListener: " + topicResponse);
-			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); 
+			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
+			return;
 		}
 
 		// PIM IDs of each of the topics that will be returned
@@ -220,13 +223,8 @@ public class TopicListener {
 					}		
 				}
 
-				try {
-					if (!found) // else if related topics does not contain next node in path then stop
-						throw new NoSuchTopicException(path[i] + "->" + path[i + 1]);
-				}
-				catch (NoSuchTopicException nste) {
-					nste.printStackTrace();
-				}
+				if (!found) // else if related topics does not contain next node in path then stop
+					throw new NoSuchTopicException(path[i] + "->" + path[i + 1]);
 			}
 		}
 
