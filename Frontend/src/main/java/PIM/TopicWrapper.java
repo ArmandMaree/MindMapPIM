@@ -65,38 +65,38 @@ public class TopicWrapper implements Serializable {
 		this.hidden = hidden;
 	}
 	/**
-	* Returns the value of hidden.
-	* @return Indicates whether the user chose to hide the topic.
+	* Returns the value of user id.
+	* @return returns user ID.
 	*/
 	public String getUserId() {
 		return userId;
 	}
 
 	// /**
-	// * Set the value of hidden.
-	// * @param hidden Indicates whether the user chose to hide the topic.
+	// * Set the value of user id.
+	// * @param Sets user Id.
 	// */
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 		/**
-	* Returns the value of hidden.
-	* @return Indicates whether the user chose to hide the topic.
+	* Returns the value of tapics label.
+	* @return Returns the value of tapics label.
 	*/
 	public String getTopicName() {
 		return topicName;
 	}
 
 	// /**
-	// * Set the value of hidden.
-	// * @param hidden Indicates whether the user chose to hide the topic.
+	// * Set the value of topic label.
+	// * @param topicName Set the value of topic label.
 	// */
 	public void setTopicName(String topicName) {
 		this.topicName = topicName;
 	}
 
 	/**
-	* Returns a string representation of a user used for printing.
+	* Returns a string representation of a topic wrapper used for printing.
 	* @return User as a string.
 	*/
 	@Override

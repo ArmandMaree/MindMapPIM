@@ -1,3 +1,9 @@
+var tempTopicList =[];
+var globalurl = "";
+var globalsrc = "";
+var globaltopiclastuse ="";
+var imageUrlList = {};
+
 //mainpage
 /**
 *   @var {String} name - varible to hold where the user is current logged in.
@@ -402,7 +408,23 @@ $(document).ready(function(){
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
-            }else{
+            }else if (JSON.parse(serverResponse.body).imageDetails!=null) {
+                //=============================================================================================================
+                alert("returned here right");
+                var imageDetails=JSON.parse(serverResponse.body).imageDetails;
+                console.log(imageDetails);
+
+                for(var i=0;i<imageDetails.length;i++){
+                    var obj = {}
+                    obj[imageDetails.topic] = imageDetails.url;
+                    imageUrlList.add(imageDetails.url);
+                }
+                console.log(imageUrlList);
+                if(tempTopicList.length!=0){
+                    sendNextImageRequest(tempTopicList.pop());  
+                }
+            }
+            else{
                 canExpand=true;
                 //name2 - a variable that contains the data for the last selected node for the cookie
                 var name2 = "lastselectednode=";
@@ -452,6 +474,8 @@ $(document).ready(function(){
                         }
                     }
                 }
+                tempTopicList.push(topicsall)
+                console.log(tempTopicList);
 
                 if(topicsall != null && topicsall.length >0){
                     for(var k=0;k<topicsall.length;k++)
@@ -465,7 +489,6 @@ $(document).ready(function(){
                 for(var i=0 ;i<branchinglimit;i++){
                     if(contactsAll.indexOf(topicsall[nodePosition]) >=0)
                         thiscolour = {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
-
                     var pimSourceIds = JSONServerResponse.pimSourceIds;
                     allPimIDlist[nodes.length]=pimSourceIds[i];
                     if(topicsall[nodePosition]!="undefined" && topicsall[i]!=undefined){
@@ -676,23 +699,20 @@ $(document).ready(function(){
         },
         items: [
             {
-                label: "Expand Bubble"
+                label: "Expand bubble"
             },
             {
-                label: "Remove Bubble"
+                label: "Hide bubble"
             },
             {
                 label: "Refresh"
-            },
-            {
-                label: "Delete topic"
             },
             {
                 label: "Toggle topic/contact bubble"
             }
         ],
         onClick: function(){
-            if(this.label=="Expand Bubble"){
+            if(this.label=="Expand bubble"){
                 $("#loadingAlert").fadeIn(1000, function() {
                     // body...
                 });
@@ -714,6 +734,9 @@ $(document).ready(function(){
                 if(pathtoselectednodelabels.indexOf("Contacts") >=0){
                     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
                 }
+                // if(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")) >=0){
+                //     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")),1);
+                // }
 
                 var excludelist=[]
                 for(var i = 1; i < parentlist.length;i++){
@@ -751,24 +774,130 @@ $(document).ready(function(){
             if(this.label=="Refresh"){
                 refreshGraph();
             }
-            if(this.label=="Delete topic"){
+            if(this.label=="Hide bubble"){
                 // alert("hello!")
-                var socket = new SockJS('/update');
-                stompClient = Stomp.over(socket);
-                stompClient.connect({}, function(frame) {
+                $("#loadingAlert").fadeIn(1000, function() {
+                // body...
+                });
+                var socket2 = new SockJS('/update');
+                var stompClient2 = Stomp.over(socket2);
+                stompClient2.connect({}, function(frame) {
                     console.log('Connected: ' + frame);
                     connected = true;
                     var userId = getCookie("userId");
                     // alert(selectedID);
-                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label, "hidden":true};
-                    alert(JSON.stringify(topicWrapperRequest))
-                    stompClient.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+                    if(nodes[selectedID].color.border == "#1999d6")
+                        var personnode = false;
+                    else
+                        var personnode = true;
+
+                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":true};
+                    stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+                    deleteBranch(selectedID);
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
 
                 });
+                if(shouldRebuild){
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
+
+                    localStorage.setItem('nodes', JSON.stringify(nodes));
+
+                    console.log(parentlist)
+                    var tempedges=[];
+                    if(tempedges.indexOf({from:1,to:0})==-1)
+                        tempedges.push({from:1,to:0})
+
+
+                    for(var i=1;i<parentlist.length;i++){
+                        if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
+                            tempedges.push({from:i,to:parentlist[i]})
+                    }
+                    console.log(JSON.stringify(tempedges))
+
+                    localStorage.setItem('edges', JSON.stringify(tempedges));
+                    localStorage.setItem('parentlist', parentlist);
+                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+
+                }else{
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
+                    localStorage.setItem('pimlist', "");
+                }
                 
             }
-            if(this.label=="Toggle topic/contact bubble"){ 
-                
+            if(this.label=="Toggle topic/contact bubble"){
+                if(selectedID==0 ||selectedID==1 || nodes[selectedID].color.border == "purple"){
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+                    $("#loadingAlertError").fadeIn(1000, function() {
+                    });
+                    $("#loadingAlertError").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Error: Only blue topic bubbles or green contact bubbles can be converted. Please select an appropriate bubble and try again.')
+                    return;
+                }
+                $("#loadingAlert").fadeIn(1000, function() {
+                // body...
+                });
+                var socket2 = new SockJS('/update');
+                var stompClient2 = Stomp.over(socket2);
+                stompClient2.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    connected = true;
+                    var userId = getCookie("userId");
+                    if(nodes[selectedID].color.border == "#1999d6"){
+                        var personnode = true;
+                        nodes[selectedID].color= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        var newcolor= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                        data.nodes.update([{id:selectedID, color:newcolor}]);
+                    }else{
+                        var personnode = false;
+                        nodes[selectedID].color= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
+                        var newcolor= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
+                        data.nodes.update([{id:selectedID, color:newcolor}]);
+
+                    }
+
+                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":false};
+                    stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+
+                });
+                if(shouldRebuild){
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
+
+                    localStorage.setItem('nodes', JSON.stringify(nodes));
+
+                    console.log(parentlist)
+                    var tempedges=[];
+                    if(tempedges.indexOf({from:1,to:0})==-1)
+                        tempedges.push({from:1,to:0})
+
+
+                    for(var i=1;i<parentlist.length;i++){
+                        if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
+                            tempedges.push({from:i,to:parentlist[i]})
+                    }
+                    console.log(JSON.stringify(tempedges))
+
+                    localStorage.setItem('edges', JSON.stringify(tempedges));
+                    localStorage.setItem('parentlist', parentlist);
+                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+
+                }else{
+                    localStorage.setItem('nodes', "");
+                    localStorage.setItem('edges', "");
+                    localStorage.setItem('parentlist', "");
+                    localStorage.setItem('pimlist', "");
+                }
             }
         }
     });
@@ -825,7 +954,8 @@ $(document).ready(function(){
         $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
         var avatarlink =""; 
         var nodeswithplus = nodes[node].label;
-
+        alert(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")])
+        if(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")]==null){
             $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
             $('#avatar').css("background-size","cover"); 
             $('#avatar').css("background-position","center");
@@ -834,21 +964,52 @@ $(document).ready(function(){
             $('#sidepanelTitle').css("background-position","center");
             $('#sidepanelTitle').addClass("blurclass");
             $('#sidepanelTitlewords').css("color","black");
-            // $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
+            var globalurl = "googleapis";
+            var globaltopiclastuse =nodes[selectedID].label.replace(/ /g,"").replace("\n"," ");
+            $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
                 // console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
-                // avatarlink = data.items[0].link;
-                $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
-                    // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                        avatarlink = data.hits[0].previewURL;
-                        $('#avatar').css("background","#eee url('"+avatarlink+"')");
-                        $('#avatar').css("background-size","cover");
-                        $('#avatar').css("background-position","center");
-                        $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-                        $('#sidepanelTitle').css("background-size","cover");
-                        $('#sidepanelTitle').css("background-position","center");
-                        $('#sidepanelTitle').addClass("blurclass");
-                });
-            // }
+                avatarlink = data.items[0].link;
+                globalsrc = avatarlink;
+                if(data.items.length== 0){
+                    globalurl = "pixabay";
+
+                    $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
+                        // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                            avatarlink = data.hits[0].previewURL;
+                            globalsrc = avatarlink;
+
+                            $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                            $('#avatar').css("background-size","cover");
+                            $('#avatar').css("background-position","center");
+                            $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                            $('#sidepanelTitle').css("background-size","cover");
+                            $('#sidepanelTitle').css("background-position","center");
+                            $('#sidepanelTitle').addClass("blurclass");
+                    });
+                }else{
+                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                    $('#avatar').css("background-size","cover");
+                    $('#avatar').css("background-position","center");
+                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                    $('#sidepanelTitle').css("background-size","cover");
+                    $('#sidepanelTitle').css("background-position","center");
+                    $('#sidepanelTitle').addClass("blurclass");
+                }
+            });
+        }else{
+            avatarlink = imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")];
+            $('#avatar').css("background","#eee url('"+avatarlink+"')");
+            $('#avatar').css("background-size","cover");
+            $('#avatar').css("background-position","center");
+            $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+            $('#sidepanelTitle').css("background-size","cover");
+            $('#sidepanelTitle').css("background-position","center");
+            $('#sidepanelTitle').addClass("blurclass");  
+        }
+
+            $("#loadingAlert").fadeIn(1000, function() {
+            // body...
+            });
         for(var i=0;i<allPimIDlist[selectedID].length;i++){
             var uniqueIds = [];
             $.each(allPimIDlist[selectedID][i], function(j, el){
@@ -865,10 +1026,24 @@ $(document).ready(function(){
                     ID =current.uId;
                 }
             }
-            if(!mocktesting)
+            if(!mocktesting){
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
-            else
+                var socket3 = new SockJS('/saveimage');
+                var stompClient3 = Stomp.over(socket3);
+                stompClient3.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    connected = true;
+                    var userId = getCookie("userId");
+
+
+                    imageDetails = {topic:globaltopiclastuse, url:globalsrc, source:globalurl};
+                    stompClient3.send("/app/saveimage", {}, JSON.stringify(imageDetails));
+
+                });
+     
+            }else{
                 var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
+            }
             
             try{
                 stompClient.send("/app/items", {}, JSON.stringify(itemRequest));

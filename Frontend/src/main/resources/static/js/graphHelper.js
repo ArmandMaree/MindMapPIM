@@ -71,9 +71,14 @@ function expandBubble(nextID){
         for(var i=pathtoselectednode.length-1;i>=0;i--){
            pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
         }
+        // alert(nodes[selectedID].label.replace(/ /g,"").replace("\n"," "))
         // pathtoselectednodelabels.push()
         pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
-
+        var uniqueNames = [];
+        $.each(pathtoselectednodelabels, function(i, el){
+            if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+        });
+        pathtoselectednodelabels = uniqueNames;
         var excludelist=[]
         for(var i = 1; i < parentlist.length;i++){
             if(parentlist[i]==selectedID){
@@ -96,10 +101,17 @@ function expandBubble(nextID){
             });
             $("#loadingAlertError").fadeIn(1000, function() {
             });
-            $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+            $("#loadingAlertError").html("<a href='#'' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Error: We could not talk to the server. Please try again.")
         }
     }else{
-         network.selectNodes([0]);
+        network.selectNodes([0]);
+        var ttt = tempTopicList[0];
+
+        console.log(tempTopicList.length)
+        tempTopicList.splice(0,1);
+        console.log(tempTopicList.length)
+
+        sendNextImageRequest(ttt);
     }
     canExpand=false;
 }
@@ -239,4 +251,24 @@ function deleteBranch(selectedID){
         
 
     }
+}
+
+function sendNextImageRequest(topics){
+        console.log(topics);
+        if(topics.length ==0 && tempTopicList!=0){
+            sendNextImageRequest(tempTopicList.pop());
+        }
+        var socket2 = new SockJS('/requestimage');
+        var stompClient2 = Stomp.over(socket2);
+        stompClient2.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            connected = true;
+            for(var j =0;j<topics.length;j++){
+                while(topics[j].indexOf("\n")!=-1)
+                    topics[j]=topics[j].replace(/ /g,"").replace("\n"," ")
+            }
+            var imageRequestIdentified = {returnId: 0, topics:topics,source:"googleapis"};
+            stompClient2.send("/app/requestimage", {}, JSON.stringify(imageRequestIdentified));
+            tempTopicList =[];
+        });
 }

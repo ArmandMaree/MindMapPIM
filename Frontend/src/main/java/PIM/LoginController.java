@@ -37,7 +37,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     @Autowired
     @Qualifier("itemResponseLL")
-    LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL;
+    LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL;    
+
+    @Autowired
+    @Qualifier("imageResponseLL")
+    LinkedBlockingQueue<ImageResponseIdentified> imageResponseLL;
 
     @Autowired
     @Qualifier("userResponseLL")
@@ -240,21 +244,20 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     @MessageMapping("/update")
     public void updateNode(TopicWrapper message) throws Exception {
-        // String id = "123456";
-        // UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
-        // System.out.println("recieved================");
         System.out.println("Received from update: " + message);
         Topic topic = new Topic(message.getUserId());
         topic.setTopic(message.getTopicName());
         topic.setHidden(message.getHidden());
+        topic.setPerson(message.getPerson());
         System.out.println("Sending to DB: " + topic);
         rabbitTemplate.convertAndSend("topic-update-request.database.rabbit",topic);
-        // while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
-        //     Thread.sleep(1000);
-        // }
-        // UserIdentified user = userCheckResponseLL.poll();
-        // // Thread.sleep(2000);
-        // return new ServerResponse(user.getIsRegistered());
+    }
+    @MessageMapping("/saveimage")
+    public void saveImage(ImageDetails message) throws Exception {
+        System.out.println("Sending to DB: " + message);
+        ImageSaveRequest newimage = new ImageSaveRequest();
+        newimage.addImage(message);
+        rabbitTemplate.convertAndSend("image-save.database.rabbit",newimage);
     }
     
     @MessageMapping("/deactivate")
@@ -383,6 +386,25 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return ir;
         }
     }
+    @MessageMapping("/requestimage")
+    @SendToUser("/topic/request")
+    public ImageResponse recieveImageRequest(ImageRequest request) throws Exception {
+        String id = UUID.randomUUID().toString();
+        ImageRequestIdentified  imageRequestIdentified = new ImageRequestIdentified(id,request.getTopics(),request.getSource());
+        System.out.println(imageRequestIdentified);
+        System.out.println("Sent to "+ "image-request.database.rabbit");
+        rabbitTemplate.convertAndSend("image-request.database.rabbit",imageRequestIdentified);
+        while(imageResponseLL.peek()==null || !id.equals(imageResponseLL.peek().getReturnId())){//wait for imageResponseLL for new topics with user ID
+            Thread.sleep(1000);
+        }
+
+        ImageResponseIdentified imageResponseID = imageResponseLL.poll();
+        ImageResponse imageResponse = new ImageResponse(imageResponseID.getImageDetails());
+        System.out.println(imageResponse);
+        return imageResponse;
+
+    }
+    
 
     public void receiveTopicResponse(TopicResponse topicResponse) {
         try {
