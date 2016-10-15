@@ -71,7 +71,7 @@ public class ImageListener {
 				imageDetailsInRepo.setSource(imageDetails.getSource());
 			}
 
-			imageRepository.save(imageDetails);
+			imageRepository.save(imageDetailsInRepo);
 			System.out.println("Saved: " + imageDetailsInRepo);
 		}
 	}

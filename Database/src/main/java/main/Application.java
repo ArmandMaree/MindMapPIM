@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import repositories.ImageDetailsRepository;
 import repositories.PimProcessedDataRepository;
 import repositories.TopicRepository;
 import repositories.UserRepository;
@@ -59,6 +60,9 @@ public class Application implements CommandLineRunner {
 
 	@Autowired
 	private PimProcessedDataRepository processedDataRepository;
+
+	@Autowired
+	private ImageDetailsRepository imageRepository;
 
 	@Autowired
 	private TopicRepository topicRepository;
@@ -322,6 +326,10 @@ public class Application implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		for (String arg : args) {
 			switch (arg) {
+				case "cleanimages":
+					System.out.println("Cleaning images...");
+					imageRepository.deleteAll();
+					break;
 				case "cleandb":
 					System.out.println("Cleaning all databases...");
 					userRepository.deleteAll();
