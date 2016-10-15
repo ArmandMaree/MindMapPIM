@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class ImageResponse {
+public class ImageResponse implements Serializable {
 	private static final long serialVersionUID = 1156251884479771L;
 
 	private List<ImageDetails> imageDetails;

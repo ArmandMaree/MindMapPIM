@@ -1,6 +1,8 @@
 package data;
 
-public class ImageDetails {
+import java.io.Serializable;
+
+public class ImageDetails implements Serializable {
 	private static final long serialVersionUID = 8918345105947968L;
 
 	private String topic;

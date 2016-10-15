@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class ImageResponseIdentified extends ImageResponse {
+public class ImageResponseIdentified extends ImageResponse implements Serializable {
 	private static final long serialVersionUID = 4428195657980846L;
 
 	private String returnId;
@@ -37,6 +38,7 @@ public class ImageResponseIdentified extends ImageResponse {
 	*/
 	public ImageResponseIdentified(String returnId, List<ImageDetails> topics) {
 		super(topics);
+		this.returnId = returnId;
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class ImageResponseIdentified extends ImageResponse {
 
 		return "ImageResponseIdentified {\n" +
 			"\treturnId: " + returnId + "\n" +
-			"\ttopics: [" + t + "\t]\n" +
+			"\ttopics: [\n" + t + "\t]\n" +
 		"}";
 	}
 }

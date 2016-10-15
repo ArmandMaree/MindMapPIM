@@ -1,9 +1,10 @@
 package data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageSaveRequest {
+public class ImageSaveRequest implements Serializable {
 	private static final long serialVersionUID = 5912853921916622L;
 
 	private List<ImageDetails> imageDetails;

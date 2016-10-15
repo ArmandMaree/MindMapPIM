@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class ImageRequest {
+public class ImageRequest implements Serializable {
 	private static final long serialVersionUID = 6435312483721195L;
 
 	private List<String> topics;
@@ -96,7 +97,7 @@ public class ImageRequest {
 
 		return "ImageRequest {\n" +
 			"\tsource: " + source + "\n" +
-			"\ttopics: [" + t + "\t]\n" +
+			"\ttopics: [\n" + t + "\t]\n" +
 		"}";
 	}
 }

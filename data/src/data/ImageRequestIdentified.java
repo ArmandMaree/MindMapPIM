@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
 * @author  Armand Maree
 * @since   1.0.0
 */
-public class ImageRequestIdentified extends ImageRequest {
+public class ImageRequestIdentified extends ImageRequest implements Serializable {
 	private static final long serialVersionUID = 7295802455448705L;
 
 	private String returnId;
@@ -28,6 +29,7 @@ public class ImageRequestIdentified extends ImageRequest {
 	*/
 	public ImageRequestIdentified(String returnId, List<String> topics) {
 		super(topics);
+		this.returnId = returnId;
 	}
 
 	/**
@@ -38,6 +40,7 @@ public class ImageRequestIdentified extends ImageRequest {
 	*/
 	public ImageRequestIdentified(String returnId, List<String> topics, String source) {
 		super(topics, source);
+		this.returnId = returnId;
 	}
 
 	/**
@@ -71,7 +74,7 @@ public class ImageRequestIdentified extends ImageRequest {
 		return "ImageRequestIdentified {\n" +
 			"\treturnId: " + returnId + "\n" +
 			"\tsource: " + getSource() + "\n" +
-			"\ttopics: [" + t + "\t]\n" +
+			"\ttopics: [\n" + t + "\t]\n" +
 		"}";
 	}
 }

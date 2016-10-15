@@ -70,7 +70,7 @@ public class Application implements CommandLineRunner {
 
 	@Bean
 	Queue imageSaveQueue() {
-		return new Queue(imageRequestQueueName, false);
+		return new Queue(imageSaveQueueName, false);
 	}
 
 	@Bean
