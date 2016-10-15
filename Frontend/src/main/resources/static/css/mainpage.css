@@ -74,7 +74,19 @@ body
     -moz-box-shadow: 0 10px 30px -10px black;
          box-shadow: 0 10px 30px -10px black;
 }
-
+.tabsdark {
+  position:absolute;
+  left:0px;
+  top:255px;
+  width: 100%;
+  height: 50px;
+  z-index: 1000;
+  background-color: white;
+  z-index=1;
+ -webkit-box-shadow: 0 10px 30px -10px black;
+    -moz-box-shadow: 0 10px 30px -10px black;
+         box-shadow: 0 10px 30px -10px black;
+}
 .tabopen {
   border-bottom: 5px #3DA0D6 solid;
 
@@ -90,7 +102,17 @@ body
   text-align: center;
   
 }
-
+.tabdark{
+  font-family: Raleway;
+  float: left;
+  width: 25% !important;
+  height: 100% !important;
+  padding-top:15px;
+  color: white;
+  background-color:#1E2019; 
+  text-align: center;
+  
+}
 
   
 .blurclass {
@@ -108,6 +130,18 @@ body
     margin: 10px auto 30px;
     border-radius: 100%;
     border: 4px solid white;
+    background-size: cover;
+    top:55px;
+    position: absolute !important;
+    left :50%;
+    transform: translate(-40%);
+} 
+.avatardark{
+    background: #eee url("/images/bubblelogo.png");
+    width: 100px;height: 100px;
+    margin: 10px auto 30px;
+    border-radius: 100%;
+    border: 4px solid #1E2019;
     background-size: cover;
     top:55px;
     position: absolute !important;
@@ -136,7 +170,22 @@ body
     border-bottom: 0px !important;
     border-width: 4px !important;
 }
-
+.sidepaneldark{ 
+    /*padding: 0.5em;*/
+    background-color: #1E2019 ;
+    height:93.5vh;
+    position: fixed !important;
+    left: auto !important;
+    right: 0px !important;
+    width: 700px;
+    vertical-align: middle !important;
+    color: white !important;
+    border: solid;
+    border-right: 0px !important;
+    border-top: 0px !important;
+    border-bottom: 0px !important;
+    border-width: 4px !important;
+}
 #sidepanelTitle{
     position: absolute !important;
     top:20px;
@@ -155,6 +204,19 @@ body
     border-top: 0px !important;
     border-left: 0px !important;
     border-width: 2px !important;
+}
+
+.sidepanelTitlewordsdark{
+    position: absolute !important;
+    top:160px;
+    background-color: #1E2019 !important;
+    color:white !important;
+    vertical-align: middle !important;
+    text-align: center;
+    font-size: 10pt;
+    width:100%;
+    height:auto;
+
 }
 #sidepanelTitlewords{
     position: absolute !important;
@@ -201,9 +263,19 @@ h2{
     padding-left: 3%;
     vertical-align: center;
 }
+
 .breadcrumb{
     color: black !important;
     background-color: gba(256,256,256,0.0) ; 
+    position: absolute !important;
+    top:230px;
+    width:100%;
+    vertical-align: middle !important;
+    text-align: center;
+}
+.breadcrumbdark{
+    color: white !important;
+    background-color: #1E2019  ; 
     position: absolute !important;
     top:230px;
     width:100%;
@@ -224,6 +296,15 @@ h2{
   bottom: 0px;
   width: 100%;
   background-color: #F8F8F8 ;
+  overflow: auto;
+
+}
+.cardsdark{
+  position: absolute !important;
+  top:290px;
+  bottom: 0px;
+  width: 100%;
+  background-color: black ;
   overflow: auto;
 
 }

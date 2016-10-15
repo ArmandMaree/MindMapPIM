@@ -359,13 +359,13 @@ $(document).ready(function(){
     //A function that connects the stompClient
     stompClient.connect({}, function(frame) {
         x1 =getCookie("userId");
-
         //SelectedID - contains the id of the last selected node
         selectedID=0;
         document.cookie="lastselectednode="+selectedID;
 
         //A function that subscribes to a destination that the requests are sent to
         stompClient.subscribe('/user/topic/request', function(serverResponse){
+            console.log("hello:"+serverResponse.body)
             if(JSON.parse(serverResponse.body).items!=null){
                 var items = JSON.parse(serverResponse.body).items;
                 if($(window).width()<=768){

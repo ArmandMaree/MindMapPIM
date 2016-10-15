@@ -100,6 +100,17 @@ function hidesidebar()
 }
 var sidebarAni;
 function showsidebar(){
+  var sidepanelcolor = getCookie("sidepanel");
+  var hilightcolor = getCookie("nav");
+  if(sidepanelcolor == "rgba(255,255,255,1)"){
+  }else{
+    $(".avatar").addClass("avatardark")
+    $(".sidebar").addClass("sidebardark")
+
+  }
+
+
+
    if(!$("#sidepanel").is(":visible")){
         $("#sidepanel").show();
         $("#sidepanel").width(0);

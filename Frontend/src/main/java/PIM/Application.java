@@ -199,7 +199,7 @@ public class Application {
 	public SimpleMessageListenerContainer imageResponseContainer(ConnectionFactory connectionFactory, @Qualifier("imageResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(itemResponseQueueName);
+		container.setQueueNames(imageResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
