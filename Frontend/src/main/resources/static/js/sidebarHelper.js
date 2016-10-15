@@ -103,9 +103,13 @@ function showsidebar(){
   var sidepanelcolor = getCookie("sidepanel");
   var hilightcolor = getCookie("nav");
   if(sidepanelcolor == "rgba(255,255,255,1)"){
+    $(".avatar").removeClass("avatardark")
+    $(".sidepanel").removeClass("sidepaneldark")
+    $(".sidepanelTitlewords").removeClass("sidepanelTitlewordsdark")
   }else{
     $(".avatar").addClass("avatardark")
-    $(".sidebar").addClass("sidebardark")
+    $(".sidepanel").addClass("sidepaneldark")
+    $(".sidepanelTitlewords").addClass("sidepanelTitlewordsdark")
 
   }
 

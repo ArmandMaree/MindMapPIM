@@ -421,7 +421,13 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
         // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
     }
-
+    public void receiveImageResponse(ImageResponseIdentified imageResponse) {
+        try {
+            imageResponseLL.put(imageResponse);
+        }
+        catch (InterruptedException ie){}
+        // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
+    }
 	public void receiveUserRegistrationResponse(UserIdentified user) {
 		try {
             userRegistrationResponseLL.put(user);
