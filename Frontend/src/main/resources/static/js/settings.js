@@ -47,6 +47,11 @@ $(document).ready(function(){
 	$("#userPreferences").hide();
 	$("#Saved").hide();
 	$("#Error").hide();
+	if(getCookie("persistMap") == true)
+	{
+		$("reloadGraph").attr("checked",true);
+	}
+	alert(getCookie("persistMap"));
 	
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
