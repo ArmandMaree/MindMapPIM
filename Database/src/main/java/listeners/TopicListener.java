@@ -324,7 +324,7 @@ public class TopicListener {
 	* @param topic The topic that contains the updated information.
 	*/
 	public void receiveTopicUpdate(Topic topic) {
-		System.out.println("Received: " + topic);
+		System.out.println("Received for modify: " + topic);
 		Topic topicInRepo = topicRepository.findByTopicAndUserId(topic.getTopic(), topic.getUserId());
 
 		if (topicInRepo == null)
@@ -334,7 +334,7 @@ public class TopicListener {
 				topicInRepo.setPerson(topic.getPerson());
 
 			if (topic.getHidden() != topicInRepo.getHidden())
-				topicInRepo.setPerson(topic.getHidden());
+				topicInRepo.setHidden(topic.getHidden());
 
 			topicRepository.save(topicInRepo);
 			System.out.println("TOPIC AFTER MODIFICATION: " + topicInRepo);
