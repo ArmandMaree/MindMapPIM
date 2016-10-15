@@ -51,7 +51,7 @@ $(document).ready(function(){
 	{
 		$("reloadGraph").attr("checked",true);
 	}
-	alert(getCookie("persistMap"));
+	//alert(getCookie("persistMap"));
 	
 	$("li[role='presentation']").on("click", function(){
 		$("li[role='presentation']").removeClass("active");
