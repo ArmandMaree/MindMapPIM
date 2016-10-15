@@ -397,7 +397,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         while(imageResponseLL.peek()==null || !id.equals(imageResponseLL.peek().getReturnId())){//wait for imageResponseLL for new topics with user ID
             Thread.sleep(1000);
         }
-
+        System.out.println("out of the while");
         ImageResponseIdentified imageResponseID = imageResponseLL.poll();
         ImageResponse imageResponse = new ImageResponse(imageResponseID.getImageDetails());
         System.out.println(imageResponse);
@@ -423,6 +423,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
     }
     public void receiveImageResponse(ImageResponseIdentified imageResponse) {
         try {
+            System.out.println(imageResponse);
             imageResponseLL.put(imageResponse);
         }
         catch (InterruptedException ie){}

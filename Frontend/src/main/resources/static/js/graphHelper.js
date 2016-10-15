@@ -255,6 +255,9 @@ function deleteBranch(selectedID){
 
 function sendNextImageRequest(topics){
         console.log(topics);
+        if(topics == undefined){
+            return;
+        }
         if(topics.length ==0 && tempTopicList!=0){
             sendNextImageRequest(tempTopicList.pop());
         }

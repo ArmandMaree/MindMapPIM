@@ -94,21 +94,31 @@ function hidesidebar()
    $("#cards").empty();
    $(".tabs").empty();
    $("#backfromsidebar").html(navbarReloadTextCondensed)
-   $("#overlay").fadeOut(300, function() {
-       $("#overlay").hide();
-   });
+   if($(window).width()>=768){
+     $("#overlay").fadeOut(300, function() {
+         $("#overlay").hide();
+     });
+   }
 }
 var sidebarAni;
 function showsidebar(){
   var sidepanelcolor = getCookie("sidepanel");
   var hilightcolor = getCookie("nav");
-  if(sidepanelcolor == "rgba(255,255,255,1)"){
+  if(sidepanelcolor== undefined || sidepanelcolor == "rgb(255, 255, 255,1)"){
     $(".avatar").removeClass("avatardark")
     $(".sidepanel").removeClass("sidepaneldark")
+    $(".breadcrumb").removeClass("breadcrumbdark")
+    $(".cards").removeClass("cardsdark")
+    $(".tabs").removeClass("tabsdark")
+    $(".tab").removeClass("tabsark")
     $(".sidepanelTitlewords").removeClass("sidepanelTitlewordsdark")
   }else{
     $(".avatar").addClass("avatardark")
     $(".sidepanel").addClass("sidepaneldark")
+    $(".breadcrumb").addClass("breadcrumbdark")
+    $(".cards").addClass("cardsdark")
+    $(".tabs").addClass("tabsdark")
+    $(".tab").addClass("tabsark")
     $(".sidepanelTitlewords").addClass("sidepanelTitlewordsdark")
 
   }
@@ -119,11 +129,15 @@ function showsidebar(){
         $("#sidepanel").show();
         $("#sidepanel").width(0);
         console.log("sidebar show started")
-       $("#overlay").fadeIn(300)
+        if($(window).width()>=768){
+          $("#overlay").fadeIn(300)
+        }
         sidebarAni = setInterval(function(){
             if($("#sidepanel").width()<700){
                $("#sidepanel").width($("#sidepanel").width()+40);
-               $("#overlay").show();
+               if($(window).width()>=768){
+                 $("#overlay").show();
+               }
             }else{
                clearInterval(sidebarAni);
             }
