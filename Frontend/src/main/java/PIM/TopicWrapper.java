@@ -16,7 +16,7 @@ import org.springframework.data.annotation.Id;
 public class TopicWrapper implements Serializable {
 	private static final long serialVersionUID = 7823655319489247L;
 	private String userId;
-	private String topicname;
+	private String topicName;
 	/**
 	* Indicates whether this topic is a person.
 	*/
@@ -31,14 +31,6 @@ public class TopicWrapper implements Serializable {
 	*/
 	public TopicWrapper() {
 		super();
-	}
-	/**
-	* Default constructor
-	*/
-	public TopicWrapper(String userId, String topicname, boolean hidden) {
-		this.hidden = hidden;
-		this.userId = userId;
-		this.topicname = topicname;
 	}
 
 	// /**
@@ -77,7 +69,7 @@ public class TopicWrapper implements Serializable {
 	* @return Indicates whether the user chose to hide the topic.
 	*/
 	public String getUserId() {
-		return userId+topicname;
+		return userId;
 	}
 
 	// /**
@@ -92,26 +84,28 @@ public class TopicWrapper implements Serializable {
 	* @return Indicates whether the user chose to hide the topic.
 	*/
 	public String getTopicName() {
-		return topicname;
+		return topicName;
 	}
 
 	// /**
 	// * Set the value of hidden.
 	// * @param hidden Indicates whether the user chose to hide the topic.
 	// */
-	public void setTopicName(String topicname) {
-		this.topicname = topicname;
+	public void setTopicName(String topicName) {
+		this.topicName = topicName;
 	}
-	// /**
-	// * Returns a string representation of a user used for printing.
-	// * @return User as a string.
-	// */
-	// @Override
-	// public String toString() {
-	// 	String u = "";
 
-	// 	return "User {\n" +
-	// 		"\tTopic Class:" + topic   + ",\n"+
-	// 	"}";
-	// }
+	/**
+	* Returns a string representation of a user used for printing.
+	* @return User as a string.
+	*/
+	@Override
+	public String toString() {
+		return "TopicWrapper {\n"+
+			"\tuserId:" + userId + "\n" +
+			"\ttopicName:" + topicName + "\n" +
+			"\thidden:" + hidden + "\n" +
+			"\tperson:" + person + "\n" +
+		"}";
+	}
 }

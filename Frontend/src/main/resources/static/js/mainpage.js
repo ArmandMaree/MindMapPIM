@@ -760,7 +760,7 @@ $(document).ready(function(){
                     connected = true;
                     var userId = getCookie("userId");
                     // alert(selectedID);
-                    topicWrapperRequest = {"userId": getCookie("userId"), topicname:nodes[selectedID].label, "hidden":true};
+                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label, "hidden":true};
                     alert(JSON.stringify(topicWrapperRequest))
                     stompClient.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
 

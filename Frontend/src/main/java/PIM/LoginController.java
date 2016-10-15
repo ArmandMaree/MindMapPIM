@@ -243,13 +243,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
         // String id = "123456";
         // UserIdentified userRegistrationIdentified = new UserIdentified(id,false, message);
         // System.out.println("recieved================");
-        System.out.println(message.getHidden());
-        System.out.println(message.getUserId());
-        System.out.println(message.getTopicName());
+        System.out.println("Received from update: " + message);
         Topic topic = new Topic(message.getUserId());
         topic.setTopic(message.getTopicName());
         topic.setHidden(message.getHidden());
-        System.out.println(topic);
+        System.out.println("Sending to DB: " + topic);
         rabbitTemplate.convertAndSend("topic-update-request.database.rabbit",topic);
         // while(userCheckResponseLL.peek()==null || !id.equals(userCheckResponseLL.peek().getReturnId())){
         //     Thread.sleep(1000);
