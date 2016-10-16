@@ -172,7 +172,7 @@ $(document).ready(function(){
 	*/
 	var themeObject={
 		"userId":"",
-		"theme":["#0f4d71","#ffffff","#0f4d71"]
+		"theme":[getCookie("nav"),getCookie("map"),getCookie("sidepanel")]
 	};
 	
 	/**
