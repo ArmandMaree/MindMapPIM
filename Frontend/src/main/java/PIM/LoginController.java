@@ -201,9 +201,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
         request.setTheme(message.getTheme());
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        System.out.println(request);
+        // System.out.println(request);
  
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+        System.out.println("Sent theme update request");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
@@ -225,10 +226,10 @@ public class LoginController extends WebMvcConfigurerAdapter {
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
         
-        System.out.println(request);
+        //System.out.println(request);
         
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
-       System.out.println("After send");
+       System.out.println("Sent map settings request");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
