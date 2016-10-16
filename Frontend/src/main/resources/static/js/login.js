@@ -630,7 +630,7 @@ var interval;
 function onTwitterLogin()
 {
 
-	window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
+	// window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
 
 	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
   	win.focus();
