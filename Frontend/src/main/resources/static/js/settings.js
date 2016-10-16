@@ -39,6 +39,7 @@ $( window ).resize(function() {
 });
 $(document).ready(function(){
 	startApp();
+	$('#reloadGraph').bootstrapSwitch();
 	var navcolour = getCookie("nav");
 	$("#nav").css("backgroundColor",navcolour);
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -49,8 +50,10 @@ $(document).ready(function(){
 	$("#Error").hide();
 	if(getCookie("persistMap") == true)
 	{
-		$("reloadGraph").attr("checked",true);
+		$("#insertCheckbox").html("<input type='checkbox' checked='true' id='reloadGraph' />");
 	}
+	else
+		$("#insertCheckbox").html("<input type='checkbox' id='reloadGraph' />");
 	//alert(getCookie("persistMap"));
 	
 	$("li[role='presentation']").on("click", function(){
