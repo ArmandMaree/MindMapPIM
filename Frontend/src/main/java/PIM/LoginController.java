@@ -197,11 +197,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme(Theme message) throws Exception {
         String id = UUID.randomUUID().toString();
-        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        AuthCode[] authcodes = new AuthCode[0];
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),authcodes);
         request.setTheme(message.getTheme());
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        // System.out.println(request);
+        System.out.println("Update request:" + request);
  
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
         System.out.println("Sent theme update request");
@@ -210,9 +211,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         System.out.println("Received response!");
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response.getCode());
 
         return response;
@@ -222,11 +220,12 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme (MapSettings message) throws Exception {
         String id = UUID.randomUUID().toString();
-        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        AuthCode[] authcodes = new AuthCode[0];
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),authcodes);
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
         
-        //System.out.println(request);
+       System.out.println("Update request:" + request);
         
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
        System.out.println("Sent map settings request");
