@@ -174,15 +174,7 @@ $(document).ready(function(){
 		"userId":"",
 		"theme":["#0f4d71","#ffffff","#0f4d71"]
 	};
-	/**
-	*	@var {JsonObject} userPreferences - The object that contains the users preferences
-	*/
-	var userPreferences={
-		userId:"",
-		initialDepth:0,
-		initialBranchFactor:0,
-		persistMap:true
-	};
+	
 	/**
 	*	Function that obtains the new theme selected by the user and constructs the object to send via the websocket
 	*/
@@ -364,6 +356,15 @@ var depth=0;
 */
 var branch=0;
 /**
+*	@var {JsonObject} userPreferences - The object that contains the users preferences
+*/
+var userPreferences={
+	userId:"",
+	initialDepth:0,
+	initialBranchFactor:0,
+	persistMap:true
+};
+/**
 *	Function that is called when the user clicks Save on the user preferences page
 */
 function saveUserPreferences()
@@ -408,6 +409,7 @@ function saveUserPreferences()
 				});
 				document.cookie = "depth="+ depth;
 				document.cookie = "branch="+branch;
+				document.cookie = "persistMap="+userPreferences.persistMap;
 			}
 			else if(response.code == 99 || response.code ==1)
 			{
