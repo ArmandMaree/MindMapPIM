@@ -1,6 +1,6 @@
 package testers.listeners;
 
-import listeners.FrontendListener;
+import listeners.ItemListener;
 import testers.AbstractTester;
 import data.*;
 import com.unclutter.poller.*;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = main.Application.class)
-public class FrontendListenerTester extends AbstractTester {
+public class ItemListenerTester extends AbstractTester {
 	private final String itemRequestQueueName = "item-request.gmail.rabbit";
 	private boolean setUpDone = false;
 

@@ -1,6 +1,6 @@
 package testers.listeners;
 
-import listeners.FrontendListener;
+import listeners.ItemListener;
 import testers.AbstractTester;
 import data.*;
 import com.unclutter.poller.*;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = testers.listeners.TestContext.class)
-public class FrontendListenerTester extends AbstractTester {
+public class ItemListenerTester extends AbstractTester {
 	private final String itemRequestQueueName = "item-request.facebook.rabbit";
 	private boolean setUpDone = false;
 

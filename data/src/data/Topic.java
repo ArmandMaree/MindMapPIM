@@ -296,14 +296,20 @@ public class Topic implements Serializable, Comparable<Topic> {
 			"\tuserId: " + userId + "\n" +
 			"\trelatedTopics: [\n";
 
-			for (String relatedTopic : relatedTopics)
-				s += "\t\t" + relatedTopic + "\n";
+			if (relatedTopics != null)
+				for (String relatedTopic : relatedTopics)
+					s += "\t\t" + relatedTopic + "\n";
+			else
+				s += "\t\tNULL\n";
 
 			s += "\t]\n" +
 			"\tprocessedDataIds: [\n";
 
-			for (String processedDataId : processedDataIds)
-				s += "\t\t" + processedDataId + ",\n";
+			if (processedDataIds != null)
+				for (String processedDataId : processedDataIds)
+					s += "\t\t" + processedDataId + ",\n";
+			else
+				s += "\t\tNULL\n";
 
 			s += "\t]\n" +
 			"\ttime: " + time + ",\n" +

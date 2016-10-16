@@ -166,7 +166,7 @@ public class TopicListenerTester extends AbstractTester {
 	}
 
 	@Test
-	public void receiveTopicUpdateRequest() {
+	public void receiveTopicUpdateRequest() throws InterruptedException {
 		User user = new User("Acuben", "Cos");
 		user.addPimId("gmail", "acubencos@gmail.com");
 		user.addPimId("facebook", "acubenfacebook");
@@ -202,6 +202,7 @@ public class TopicListenerTester extends AbstractTester {
 		topic.setTopic("horse");
 		topic.setUserId(userIdentifiedResponse.getUserId());
 		topic.setHidden(true);
+		Thread.sleep(5000);
 		rabbitTemplate.convertAndSend(topicUpdateQueueName, topic);
 		Thread.sleep(5000);
 

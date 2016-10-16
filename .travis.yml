@@ -44,3 +44,5 @@ script:
   - ./gradlew test -i
   - cd ../FacebookPolling/
   - ./gradlew test -i
+  - cd ../TwitterPolling/
+  - ./gradlew test -i
