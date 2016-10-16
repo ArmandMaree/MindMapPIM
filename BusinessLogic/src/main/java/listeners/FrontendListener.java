@@ -97,25 +97,30 @@ public class FrontendListener {
 	* @param userUpdateIdentified Contains all the information needed to update a user.
 	*/
 	public void receiveUserUpdate(UserUpdateRequestIdentified userUpdateIdentified) {
-		System.out.println("Received: " + userUpdateIdentified);
-		UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
+		try {
+			System.out.println("Received: " + userUpdateIdentified);
+			UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
 
-		if (userUpdateIdentified.getAuthCodes() != null) {
-			for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
-				if (authCode.getAuthCode() != null && !authCode.getAuthCode().equals(""))
-					user.addPimId(authCode.getPimSource(), authCode.getId());
+			if (userUpdateIdentified.getAuthCodes() != null) {
+				for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
+					if (authCode.getAuthCode() != null && !authCode.getAuthCode().equals(""))
+						user.addPimId(authCode.getPimSource(), authCode.getId());
 
-				rabbitTemplate.convertAndSend("auth-code." + authCode.getPimSource() + ".rabbit", authCode);
-				System.out.println("Sent to " + authCode.getPimSource() + " poller: " + authCode);
+					rabbitTemplate.convertAndSend("auth-code." + authCode.getPimSource() + ".rabbit", authCode);
+					System.out.println("Sent to " + authCode.getPimSource() + " poller: " + authCode);
 
-				if (authCode.getAuthCode() == null || authCode.getAuthCode().equals(""))
-					user.addPimId(authCode.getPimSource(), "");
-				else
-					user.addPimId(authCode.getPimSource(), authCode.getId());
+					if (authCode.getAuthCode() == null || authCode.getAuthCode().equals(""))
+						user.addPimId(authCode.getPimSource(), "");
+					else
+						user.addPimId(authCode.getPimSource(), authCode.getId());
+				}
 			}
-		}
 
-		System.out.println("Send to DB: " + user);
-		rabbitTemplate.convertAndSend(userUpdateQueueName, user);
+			System.out.println("Send to DB: " + user);
+			rabbitTemplate.convertAndSend(userUpdateQueueName, user);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -61,25 +61,39 @@ public class UserUpdateRequestIdentified extends UserUpdateRequest implements Se
 	public String toString() {
 		String u = "";
 		String a = "";
+		String t = "";
 
-		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
+		if (getPimIds() == null)
+			u = "NULL\n";
+		else
+			for (PimId pimId : getPimIds())
+				u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
 
-		if (a != null) {
+		if (getTheme() == null)
+			t = "NULL\n";
+		else
+			for (String themeS : getTheme())
+				t += "\t\t" + themeS + "\n";
+
+		if (getAuthCodes() != null) {
 			for (AuthCode authCode : getAuthCodes())
 				a += "\t\t" + authCode.getPimSource() + ": " + authCode.getId() + " - " + authCode.getAuthCode() + "\n";
 		}
+		else 
+			a = "NULL\n";
 
 		return "UserUpdateRequestIdentified {\n" +
 			"\treturn: " + returnId + ",\n" +
 			"\tid: " + getUserId() + ",\n" +
 			"\tfirstName: " + getFirstName()  + ",\n" +
 			"\tlastName: " + getLastName() + ",\n" +
-			"\tids: {\n" + u + "\t}\n" +
+			"\tids: [\n" + u + "\t]\n" +
+			"\ttheme: [\n" + t + "\t]\n" +
 			"\tinitialDepth:" + getInitialDepth() + "\n" +
 			"\tbranchingFactor:" + getBranchingFactor() + "\n" +
 			"\tisActive:" + getIsActive() + "\n" +
-			"\tauthCodes: {\n" + a + "\t}\n" +
+			"\tpersistMap:" + getPersistMap() + "\n" +
+			"\tauthCodes: [\n" + a + "\t]\n" +
 		"}";
 	}
 }

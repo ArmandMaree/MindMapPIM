@@ -151,6 +151,9 @@ public class UserListener {
 			if (userIdentified.getIsActive() != userInRepo.getIsActive())
 				userInRepo.setIsActive(userIdentified.getIsActive());
 
+			if (userIdentified.getPersistMap() != userInRepo.getPersistMap())
+				userInRepo.setPersistMap(userIdentified.getPersistMap());
+
 			userRepository.save(userInRepo);
 			userUpdateResponseIdentified.setCode(UserUpdateResponse.SUCCESS);
 			System.out.println("USER AFTER MODIFICATION: " + userInRepo);
