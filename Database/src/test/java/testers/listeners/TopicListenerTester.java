@@ -113,7 +113,7 @@ public class TopicListenerTester extends AbstractTester {
 		TopicResponse topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
-		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopics().length);
 
 		path = new String[1];
 		path[0] = "horse";
@@ -123,7 +123,7 @@ public class TopicListenerTester extends AbstractTester {
 		topicResponse = topicResponseLinkedQueue.poll(5, TimeUnit.SECONDS);
 
 		Assert.assertNotNull("Failure - topicResponse is null.", topicResponse);
-		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopicsText().length);
+		Assert.assertEquals("Failure - topicResponse does not have correct amount of topics.", 4, topicResponse.getTopics().length);
 	}
 
 	@Test

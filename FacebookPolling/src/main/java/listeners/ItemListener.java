@@ -88,7 +88,7 @@ public class ItemListener {
 
 					Post post = service.feedOperations().getPost(itemId);
 
-					if (privacy.equals("EVERYONE")) {
+					if (privacy.equals("EVERYONE") || post.getMessage() == null) {
 						if (itemId.contains("_"))
 							itemId = itemId.substring(itemId.indexOf("_") + 1, itemId.length());
 						

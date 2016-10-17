@@ -69,101 +69,100 @@ public class TopicListener {
 	* </p>
 	* @param topicRequest Request for topics dequeued form messaging service.
 	*/
-	public void receiveTopicRequest(TopicRequest topicRequest) throws NoSuchTopicException {
-		// finds the topics related to the node specified in path
-		System.out.println("RECEIVED: " + topicRequest);
-		Topic lastTopicInPath = null;
-		List<List<Topic>> topicsAndContacts = null;
-
+	public void receiveTopicRequest(TopicRequest topicRequest) {
 		try {
+			// finds the topics related to the node specified in path
+			System.out.println("RECEIVED: " + topicRequest);
+			Topic lastTopicInPath = null;
+			List<List<Topic>> topicsAndContacts = null;
+
 			lastTopicInPath = findTopicAtEndOfPath(topicRequest.getPath(), topicRequest.getUserId());
 			// topics that need to be returned.
-			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId(), topicRequest.getExclude()); 
+			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId(), topicRequest.getExclude(), topicRequest.getPath());
+
+			// PIM IDs of each of the topics that will be returned
+			List<List<List<String>>> nodes = new ArrayList<>();
+			User user = userRepository.findByUserId(topicRequest.getUserId());
+
+			for (Topic topic : topicsAndContacts.get(0)) {
+				List<List<String>> nodeIds = new ArrayList<>();
+
+				for (PimId pimId : user.getPimIds()) {
+					List<String> ids = new ArrayList<>();
+					ids.add(pimId.pim);
+					nodeIds.add(ids);
+				}
+
+				for (String processedDataId : topic.getProcessedDataIds()) {
+					ProcessedData pd = processedDataRepository.findById(processedDataId);
+					
+					for (int i = 0; i < nodeIds.size(); i++) {
+						String pSource = nodeIds.get(i).get(0);
+
+						if (pSource.equals(pd.getPimSource())) {
+							nodeIds.get(i).add(pd.getPimItemId());
+							break;
+						}
+					}
+				}
+
+				nodes.add(nodeIds);
+			}
+
+			// PIM IDs of each of the contacts that will be returned
+			for (Topic topic : topicsAndContacts.get(1)) {
+				List<List<String>> nodeIds = new ArrayList<>();
+
+				for (PimId pimId : user.getPimIds()) {
+					List<String> ids = new ArrayList<>();
+					ids.add(pimId.pim);
+					nodeIds.add(ids);
+				}
+
+				for (String processedDataId : topic.getProcessedDataIds()) {
+					ProcessedData pd = processedDataRepository.findById(processedDataId);
+
+					for (int i = 0; i < nodeIds.size(); i++) {
+						String pSource = nodeIds.get(i).get(0);
+
+						if (pSource.equals(pd.getPimSource())) {
+							nodeIds.get(i).add(pd.getPimItemId());
+							break;
+						}
+					}
+				}
+
+				nodes.add(nodeIds);
+			}
+
+			String[][][] nodesArr = listToArray3D(nodes);
+			String[] topicsText = new String[topicsAndContacts.get(0).size()];
+
+			// gets the text of the topics to be returned
+			for (int i = 0; i < topicsAndContacts.get(0).size(); i++)
+				topicsText[i] = topicsAndContacts.get(0).get(i).getTopic();
+
+			int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), topicsAndContacts.get(1).size());
+			String[] involvedContacts = new String[involvedContactsSize];
+
+			// gets the text of of the contacts that will be returned
+			for(int i = 0; i < involvedContactsSize; i++)
+				involvedContacts[i] = topicsAndContacts.get(1).get(i).getTopic();
+
+			ImageDetails[] imageDetailsArr = getImageDetails(topicsText);
+
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), imageDetailsArr, involvedContacts, nodesArr); // create topic response without topics objects
+			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
+			System.out.println("Respond from topicListener: " + topicResponse);
 		}
-		catch (NoSuchTopicException nste) {
-			nste.printStackTrace();
+		catch (Exception e) {
+			e.printStackTrace();
 			String[] emptyArray = new String[0];
 			String[][][] emptyArray3D = new String[0][0][0];
 			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), new ImageDetails[0], emptyArray, emptyArray3D); // create topic response without topics objects
 			System.out.println("Respond from topicListener: " + topicResponse);
 			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
-			return;
 		}
-
-		// PIM IDs of each of the topics that will be returned
-		List<List<List<String>>> nodes = new ArrayList<>();
-		User user = userRepository.findByUserId(topicRequest.getUserId());
-
-		for (Topic topic : topicsAndContacts.get(0)) {
-			List<List<String>> nodeIds = new ArrayList<>();
-
-			for (PimId pimId : user.getPimIds()) {
-				List<String> ids = new ArrayList<>();
-				ids.add(pimId.pim);
-				nodeIds.add(ids);
-			}
-
-			for (String processedDataId : topic.getProcessedDataIds()) {
-				ProcessedData pd = processedDataRepository.findById(processedDataId);
-				
-				for (int i = 0; i < nodeIds.size(); i++) {
-					String pSource = nodeIds.get(i).get(0);
-
-					if (pSource.equals(pd.getPimSource())) {
-						nodeIds.get(i).add(pd.getPimItemId());
-						break;
-					}
-				}
-			}
-
-			nodes.add(nodeIds);
-		}
-
-		// PIM IDs of each of the contacts that will be returned
-		for (Topic topic : topicsAndContacts.get(1)) {
-			List<List<String>> nodeIds = new ArrayList<>();
-
-			for (PimId pimId : user.getPimIds()) {
-				List<String> ids = new ArrayList<>();
-				ids.add(pimId.pim);
-				nodeIds.add(ids);
-			}
-
-			for (String processedDataId : topic.getProcessedDataIds()) {
-				ProcessedData pd = processedDataRepository.findById(processedDataId);
-
-				for (int i = 0; i < nodeIds.size(); i++) {
-					String pSource = nodeIds.get(i).get(0);
-
-					if (pSource.equals(pd.getPimSource())) {
-						nodeIds.get(i).add(pd.getPimItemId());
-						break;
-					}
-				}
-			}
-
-			nodes.add(nodeIds);
-		}
-
-		String[][][] nodesArr = listToArray3D(nodes);
-		String[] topicsText = new String[topicsAndContacts.get(0).size()];
-
-		// gets the text of the topics to be returned
-		for (int i = 0; i < topicsAndContacts.get(0).size(); i++)
-			topicsText[i] = topicsAndContacts.get(0).get(i).getTopic();
-
-		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), topicsAndContacts.get(1).size());
-		String[] involvedContacts = new String[involvedContactsSize];
-
-		// gets the text of of the contacts that will be returned
-		for(int i = 0; i < involvedContactsSize; i++)
-			involvedContacts[i] = topicsAndContacts.get(1).get(i).getTopic();
-
-		ImageDetails[] imageDetailsArr = getImageDetails(topicsText);
-
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), imageDetailsArr, involvedContacts, nodesArr); // create topic response without topics objects
-		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
-		System.out.println("Respond from topicListener: " + topicResponse);
 	}
 
 	/**
@@ -204,32 +203,21 @@ public class TopicListener {
 		Topic returnTopic = null;
 
 		for (int i = 0; i < path.length; i++) { // iterate all nodes in path
-			Topic topic = topicRepository.findByTopicAndUserIdAndHidden(path[i], userId, false); // find topic for specified user
+			returnTopic = topicRepository.findByTopicAndUserIdAndHidden(path[i], userId, false); // find topic for specified user
 
-			if (topic == null) // user does not have a topic with this name
+			if (returnTopic == null) // user does not have a topic with this name
 				throw new NoSuchTopicException(path[i]);
 
-
-			if (i == path.length - 1) { // if on last node of path
-				returnTopic = topic;
-			}
-			else { 
-				List<Topic> relatedTopics = new ArrayList<>(); // store the related topics of the topic retrieved from repo
-
-				for (String t : topic.getRelatedTopics()) {
-					Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
-
-					if (relatedTopicInRepo != null)
-						relatedTopics.add(relatedTopicInRepo);
-				}
-
+			if (i != path.length - 1) {
 				boolean found = false;
 
-				for (Topic t : relatedTopics) {
-					if (t.equals(path[i + 1])) {
+				for (String t : returnTopic.getRelatedTopics()) {
+					Topic relatedTopicInRepo = topicRepository.findByTopicAndUserIdAndHidden(t, userId, false);
+
+					if (relatedTopicInRepo.getTopic().equals(path[i + 1])) {
 						found = true;
 						break;
-					}		
+					}
 				}
 
 				if (!found) // else if related topics does not contain next node in path then stop
@@ -250,7 +238,7 @@ public class TopicListener {
 	* @param userId The user for which the topics must be retrieved.
 	* @return A 2D {@link java.util.List} that contains 2 {@link java.util.List}. The first is the related topics and the second is the contacts.
 	*/
-	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId, String[] excludeList) {
+	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId, String[] excludeList, String[] path) {
 		List<Topic> topics;
 
 		if (topic == null) {
@@ -273,11 +261,27 @@ public class TopicListener {
 
 		// extracts the contacts and most relevant topics until both have topicRequest.getMaxNumberOfTopics() or there are no more topics
 		while (topics.size() > 0) {
-			if (!checkExcludeList(excludeList, topics.get(0))) {
-				if (topics.get(0).getPerson() && returnContacts.size() < maxNumberOfTopics)
+			if (!checkExcludeList(excludeList, path, topics.get(0))) {
+				if (topics.get(0).getPerson() && returnContacts.size() < maxNumberOfTopics) 
 					returnContacts.add(topics.remove(0));
-				else if(!topics.get(0).getPerson() && returnTopics.size() < maxNumberOfTopics)
-					returnTopics.add(topics.remove(0));
+				else if(!topics.get(0).getPerson() && returnTopics.size() < maxNumberOfTopics) {
+					boolean found = false;
+
+					outerloop:
+					for (Topic t : returnTopics) {
+						for (String related : t.getRelatedTopics()) {
+							if (related.equals(topics.get(0).getTopic())) {
+								found = true;
+								break outerloop;
+							}
+						}
+					}
+
+					if (!found)
+						returnTopics.add(topics.remove(0));
+					else
+						topics.remove(0);
+				}
 				else
 					topics.remove(0);
 
@@ -294,11 +298,18 @@ public class TopicListener {
 		return topicsAndContacts;
 	}
 
-	public boolean checkExcludeList(String[] excludeList, Topic topic) {
+	public boolean checkExcludeList(String[] excludeList, String[] path, Topic topic) {
 		if (excludeList == null)
 			return false;
 		
 		for (String ex : excludeList)
+			if (ex.equals(topic.getTopic()))
+				return true;
+
+		if (path == null)
+			return false;
+		
+		for (String ex : path)
 			if (ex.equals(topic.getTopic()))
 				return true;
 

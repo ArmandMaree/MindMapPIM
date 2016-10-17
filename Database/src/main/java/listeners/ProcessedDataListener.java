@@ -120,24 +120,34 @@ public class ProcessedDataListener {
 	* Receives low priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
-	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received processedData for user: " + processedData.getUserId());
-		List<PendingTopic> pt = processProcessedData(processedData);
+	public void receiveProcessedData(ProcessedData processedData) {
+		try {
+			System.out.println("Received processedData for user: " + processedData.getUserId());
+			List<PendingTopic> pt = processProcessedData(processedData);
 
-		for (PendingTopic pendingTopic : pt)
-			pendingTopics.put(pendingTopic);
+			for (PendingTopic pendingTopic : pt)
+				pendingTopics.put(pendingTopic);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	* Receives high priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
-	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
-		List<PendingTopic> pt = processProcessedData(processedData);
+	public void receivePriorityProcessedData(ProcessedData processedData) {
+		try {
+			System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
+			List<PendingTopic> pt = processProcessedData(processedData);
 
-		for (PendingTopic pendingTopic : pt)
-			priorityPendingTopics.put(pendingTopic);
+			for (PendingTopic pendingTopic : pt)
+				priorityPendingTopics.put(pendingTopic);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -145,19 +155,17 @@ public class ProcessedDataListener {
 	* @param processedData The {@link data.ProcessedData} object that has to be processed.
 	* @return A list of smaller topics processed and contained in a {@link java.util.List} of {@link listeners.PendingTopic}.
 	*/
-	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
+	public List<PendingTopic> processProcessedData(ProcessedData processedData) throws NoSuchUserException {
 		List<PendingTopic> pt = new ArrayList<>();
 
 		try {
 			User user = userRepository.findByPimId(processedData.getPimSource(), processedData.getUserId());
-			
-			if (user == null)
-				return pt;
+
+			if (user == null) // no user exists with this pim id
+				throw new NoSuchUserException(processedData.getUserId() + " for " + processedData.getPimSource());
 
 			processedData.setUserId(user.getUserId());
 
-			if (user == null) // no user exists with this gmail id
-				return pt;
 
 			List<String> cleanedTopics = new ArrayList<>();
 
