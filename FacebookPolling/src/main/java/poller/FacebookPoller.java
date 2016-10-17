@@ -106,7 +106,13 @@ public class FacebookPoller implements Runnable {
 			else if(pollingUser.getNumberOfPosts() > MAX_POSTS && MAX_POSTS != -1)
 				System.out.println("Reached maximum number of posts for user " + userId);
 			else {
-				poll();
+				try {
+					poll();
+				}
+				catch (org.springframework.social.RevokedAuthorizationException rae) {
+					pollingUser = facebookRepository.findByUserId(pollingUser.getUserId());
+					poll();
+				}
 
 				final ScheduledFuture<?> pollerHandle = scheduler.schedule(this, DELAY_BETWEEN_POLLS, TimeUnit.SECONDS);
 			}

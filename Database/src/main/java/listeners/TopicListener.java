@@ -9,8 +9,10 @@ import data.TopicResponse;
 import data.User;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import repositories.ImageDetailsRepository;
 import repositories.PimProcessedDataRepository;
@@ -28,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 * @since   1.0.0
 */
 public class TopicListener {
-	private final String topicResponseQueueName = "topic-response.business.rabbit";
+	private final String topicResponseQueueName = "topic-response.frontend.rabbit";
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -82,7 +84,7 @@ public class TopicListener {
 			nste.printStackTrace();
 			String[] emptyArray = new String[0];
 			String[][][] emptyArray3D = new String[0][0][0];
-			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), emptyArray, emptyArray, emptyArray3D, new ImageDetails[0]); // create topic response without topics objects
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), new ImageDetails[0], emptyArray, emptyArray3D); // create topic response without topics objects
 			System.out.println("Respond from topicListener: " + topicResponse);
 			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 			return;
@@ -157,11 +159,11 @@ public class TopicListener {
 		for(int i = 0; i < involvedContactsSize; i++)
 			involvedContacts[i] = topicsAndContacts.get(1).get(i).getTopic();
 
-		ImageDetails[] imageDetails = getImageDetails(topicsText);
+		ImageDetails[] imageDetailsArr = getImageDetails(topicsText);
 
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, involvedContacts, nodesArr, imageDetails); // create topic response without topics objects
-		System.out.println("Respond from topicListener: " + topicResponse);
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), imageDetailsArr, involvedContacts, nodesArr); // create topic response without topics objects
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
+		System.out.println("Respond from topicListener: " + topicResponse);
 	}
 
 	/**

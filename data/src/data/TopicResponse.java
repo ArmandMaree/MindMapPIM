@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import data.Topic;
-
 /**
 * A response for new topics based on a TopicRequest.
 *
@@ -17,25 +15,22 @@ public class TopicResponse implements Serializable {
 	private static final long serialVersionUID = 1479600095184605L;
 
 	private String userId;
-	private String[] topicsText;
+	private ImageDetails[] topics;
 	private String[] involvedContacts;
 	private String[][][] pimSourceIds;
-	private ImageDetails[] imageDetails;
 
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
-	* @param topicsText The array of topics retrieved from the database in String form.
+	* @param topics The array of images for the topics in the topicText array.
 	* @param involvedContacts The array of contacts retrieved from the database in String form.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
-	* @param imageDetails The array of images for the topics in the topicText array.
 	*/
-	public TopicResponse(String userId, String[] topicsText, String[] involvedContacts, String[][][] pimSourceIds, ImageDetails[] imageDetails) {
+	public TopicResponse(String userId, ImageDetails[] topics, String[] involvedContacts, String[][][] pimSourceIds) {
 		this.userId = userId;
-		this.topicsText = topicsText;
+		this.topics = topics;
 		this.pimSourceIds = pimSourceIds;
 		this.involvedContacts = involvedContacts;
-		this.imageDetails = imageDetails;
 	}
 
 	/**
@@ -55,25 +50,24 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
-	* Get the value of topicsText.
-	* @return The array of topics retrieved from the database in String form.
+	* Get the value of topics.
+	* @return The array of images for the topics in the topicText array.
 	*/
-	public String[] getTopicsText() {
-		return topicsText;
+	public ImageDetails[] getTopics() {
+		return topics;
 	}
 
-
 	/**
-	* Set the value of topicsText.
-	* @param topicsText The array of topics retrieved from the database in String form.
+	* Set the value of topics.
+	* @param topics The array of images for the topics in the topicText array.
 	*/
-	public void setTopics(String[] topicsText) {
-		this.topicsText = topicsText;
+	public void setTopics(ImageDetails[] topics) {
+		this.topics = topics;
 	}
 
 	/**
 	* Get the value of involvedContacts.
-	* @return The array of topics retrieved from the database in String form.
+	* @return The array of contacts retrieved from the database in String form.
 	*/
 	public String[] getInvolvedContacts() {
 		return involvedContacts;
@@ -104,37 +98,20 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
-	* Get the value of imageDetails.
-	* @return The array of images for the topics in the topicText array.
-	*/
-	public ImageDetails[] getImageDetails() {
-		return imageDetails;
-	}
-	
-	/**
-	* Set the value of imageDetails.
-	* @param imageDetails The array of images for the topics in the topicText array.
-	*/
-	public void setImageDetails(ImageDetails[] imageDetails) {
-		this.imageDetails = imageDetails;
-	}
-
-	/**
 	* Create string representation of TopicRequest for printing
 	* @return TopicRequest as a string.
 	*/
 	@Override
 	public String toString() {
-		String t = "";
+		String id = "";
 
-		if (topicsText != null)
-			for (String item : topicsText) {
-				if (t.equals(""))
-					t += item;
-				else {
-					t += "-" + item;
-				}
+		if (topics != null) {
+			for (ImageDetails t : topics) {
+				id += "\t\t" + t.getTopic() + " (" + t.getSource() + "): " + t.getUrl() + "\n";
 			}
+		}
+		else
+			id = "\t\tNULL\n";
 
 		String c = "";
 
@@ -183,20 +160,11 @@ public class TopicResponse implements Serializable {
 		else
 			p = "\t\tnull or empty\n";
 
-		String i = "";
-
-		if (imageDetails != null)
-			for (ImageDetails image : imageDetails)
-				i += "\t\t" + image.getTopic() + " (" + image.getSource() + "): " + image.getUrl() + "\n";
-		else
-			i = "\t\tNULL\n";
-
 		return "TopicResponse {\n" +
 			"\tuserId: " + userId + "\n" +
-			"\ttopics: " + t + "\n" +
-			"\timageDetails: {\n" + i + "\t}\n" +
+			"\ttopics: [\n" + id + "\t]\n" +
 			"\tinvolvedContacts: " + c + "\n" +
-			"\tpimSourceIds: {\n" + p + "\t}\n" +
+			"\tpimSourceIds: [\n" + p + "\t]\n" +
 		"}";
 	}
 }
