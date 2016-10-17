@@ -451,13 +451,15 @@ function loadXMLDoc(){
 					document.cookie = "login=1";
 					if(findPim("facebook") != "")
 					{
-						document.cookie=  "FBrefresh=true";
+						document.cookie ="FBrefresh=true";
 						FB.getLoginStatus(function(response) {
 						  statusChangeCallback(response);
 						   var facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
 						   UpdateSourcesObject.authcodes.push(facebookAuthCode);
 						   SaveAccountChanges();
+						   document.cookie ="FBrefresh=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
 						});
+
 					}
 					else
 						window.location.assign('/');
@@ -576,8 +578,10 @@ var FacebookUser;
 */
 var  facebookId = "";
 var fAT = "";
+
 function onFacebookLogin()
 {
+	document.cookie = "FB=true";
   console.log("onFacebookLogin");
   FB.login(function(response) {
 	if (response.authResponse) {
