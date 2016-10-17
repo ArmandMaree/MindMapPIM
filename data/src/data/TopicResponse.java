@@ -1,6 +1,8 @@
 package data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import data.Topic;
 
@@ -18,18 +20,22 @@ public class TopicResponse implements Serializable {
 	private String[] topicsText;
 	private String[] involvedContacts;
 	private String[][][] pimSourceIds;
+	private ImageDetails[] imageDetails;
+
 	/**
 	* Default constructor.
 	* @param userId the id of the user the request is for.
 	* @param topicsText The array of topics retrieved from the database in String form.
 	* @param involvedContacts The array of contacts retrieved from the database in String form.
 	* @param pimSourceIds The array of ids for the ids of the items used by the pims.
+	* @param imageDetails The array of images for the topics in the topicText array.
 	*/
-	public TopicResponse(String userId, String[] topicsText, String[] involvedContacts, String[][][] pimSourceIds) {
+	public TopicResponse(String userId, String[] topicsText, String[] involvedContacts, String[][][] pimSourceIds, ImageDetails[] imageDetails) {
 		this.userId = userId;
 		this.topicsText = topicsText;
 		this.pimSourceIds = pimSourceIds;
 		this.involvedContacts = involvedContacts;
+		this.imageDetails = imageDetails;
 	}
 
 	/**
@@ -98,6 +104,22 @@ public class TopicResponse implements Serializable {
 	}
 
 	/**
+	* Get the value of imageDetails.
+	* @return The array of images for the topics in the topicText array.
+	*/
+	public ImageDetails[] getImageDetails() {
+		return imageDetails;
+	}
+	
+	/**
+	* Set the value of imageDetails.
+	* @param imageDetails The array of images for the topics in the topicText array.
+	*/
+	public void setImageDetails(ImageDetails[] imageDetails) {
+		this.imageDetails = imageDetails;
+	}
+
+	/**
 	* Create string representation of TopicRequest for printing
 	* @return TopicRequest as a string.
 	*/
@@ -161,9 +183,18 @@ public class TopicResponse implements Serializable {
 		else
 			p = "\t\tnull or empty\n";
 
+		String i = "";
+
+		if (imageDetails != null)
+			for (ImageDetails image : imageDetails)
+				i += "\t\t" + image.getTopic() + " (" + image.getSource() + "): " + image.getUrl() + "\n";
+		else
+			i = "\t\tNULL\n";
+
 		return "TopicResponse {\n" +
 			"\tuserId: " + userId + "\n" +
 			"\ttopics: " + t + "\n" +
+			"\timageDetails: {\n" + i + "\t}\n" +
 			"\tinvolvedContacts: " + c + "\n" +
 			"\tpimSourceIds: {\n" + p + "\t}\n" +
 		"}";
