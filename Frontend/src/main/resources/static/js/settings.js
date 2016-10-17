@@ -597,7 +597,7 @@ function checkFacebook()
 		$("#facebooksignin").html("<span class='fa fa-facebook'></span> <span id='f' style='font-size:11pt'>Remove Facebook</span>");
 		setTimeout(function(){
 		UpdateSourcesObject.authcodes.push(facebookAuthCode);	
-		},1000);
+		},500);
 	}
 }
 /**
