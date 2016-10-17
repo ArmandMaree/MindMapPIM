@@ -336,78 +336,106 @@ h2{
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 @media (max-width: 700px) {
-          #title
-          {
-              padding-bottom: 0;
-              height: 100%;
-              margin-bottom: 0;
-              margin-top: 0;
-              vertical-align: center;
-          }
-          #Branchrange{
-            color:white !important;
-          }
-          #Depthrange{
-            color:white !important;
-          }
-          .email
-          {
-              background-color: white !important;
-              color: black;
-              padding : 2%;
-          }
-          body
-          {
-              color: #34a8d2!important;
-              font: 10pt arial;
-              background-color:  white !important;
-          }
+  #Branchrange {
+    width: 2em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+    color: black !important;
+  }
+  #brange
+  {
+    width:75%;
+    left:10%;
+  }
+  #Depthrange {
+      width: 2em;
+      height: 1.6em;
+      top: 50%;
+      margin-top: -.8em;
+      text-align: center;
+      line-height: 1.6em;
+      color: black !important; 
+    }
+  #drange
+  {
+    width:75%;
+    left:10%;
+  }
+  #title
+  {
+      padding-bottom: 0;
+      height: 100%;
+      margin-bottom: 0;
+      margin-top: 0;
+      vertical-align: center;
+  }
+  #Branchrange{
+    color:white !important;
+  }
+  #Depthrange{
+    color:white !important;
+  }
+  .email
+  {
+      background-color: white !important;
+      color: black;
+      padding : 2%;
+  }
+  body
+  {
+      color: #34a8d2!important;
+      font: 10pt arial;
+      background-color:  white !important;
+  }
 
-          #mynetwork {
-              display:block;
-              position: fixed;
-              width: 100%;
-              height:93.5vh;
+  #mynetwork {
+      display:block;
+      position: fixed;
+      width: 100%;
+      height:93.5vh;
 
-              /*z-index: -1000;*/
-          }
+      /*z-index: -1000;*/
+  }
 
-          #sidepanel{
-              padding: 0.5em;
-              /*opacity: 0.9;*/
-              height:93.5vh;
-              position: fixed !important;
-              left: auto !important;
-              right: 0px !important;
-              width: 100% !important;
-              vertical-align: middle !important;
-              color: black !important;
-              border: solid;
-              border-right: 0px !important;
-              border-top: 0px !important;
-              border-bottom: 0px !important;
-              border-width: 2px !important;
-              overflow:scroll; 
-          }
+  #sidepanel{
+      padding: 0.5em;
+      /*opacity: 0.9;*/
+      height:93.5vh;
+      position: fixed !important;
+      left: auto !important;
+      right: 0px !important;
+      width: 100% !important;
+      vertical-align: middle !important;
+      color: black !important;
+      border: solid;
+      border-right: 0px !important;
+      border-top: 0px !important;
+      border-bottom: 0px !important;
+      border-width: 2px !important;
+      overflow:scroll; 
+  }
 
-          .panel-default{
-              color: white !important;
-              background-color: rgba(15, 77, 113, 0.4) !important; 
-              font-size: 12pt;/*
-              cursor: auto !important;*/
-          }
-          .panel-body
-          {
-            cursor: default !important;
-            font-size: 12pt;
-          }
-          .panel-heading {
-              color: white !important;
-              background-color: rgba(15, 77, 113, 0.4) !important; 
-              font-size: 18pt;
-              cursor: pointer !important;
-              text-align: center;
-          }
+  .panel-default{
+      color: white !important;
+      background-color: rgba(15, 77, 113, 0.4) !important; 
+      font-size: 12pt;/*
+      cursor: auto !important;*/
+  }
+  .panel-body
+  {
+    cursor: default !important;
+    font-size: 12pt;
+  }
+  .panel-heading {
+      color: white !important;
+      background-color: rgba(15, 77, 113, 0.4) !important; 
+      font-size: 18pt;
+      cursor: pointer !important;
+      text-align: center;
+  }
 
 
 }
