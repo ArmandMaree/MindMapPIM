@@ -104,7 +104,7 @@ var sidebarAni;
 function showsidebar(){
   var sidepanelcolor = getCookie("sidepanel");
   var hilightcolor = getCookie("nav");
-  if(sidepanelcolor== undefined || sidepanelcolor == "rgba(255,255,255,0.8)"){
+  if(sidepanelcolor== undefined || sidepanelcolor == "rgba(255,255,255,0.8)"|| sidepanelcolor == "rgba(255, 255, 255,1)"){
     $(".avatar").removeClass("avatardark")
     $(".sidepanel").removeClass("sidepaneldark")
     $(".breadcrumb").removeClass("breadcrumbdark")
