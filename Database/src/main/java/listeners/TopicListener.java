@@ -1,5 +1,6 @@
 package listeners;
 
+import data.ImageDetails;
 import data.PimId;
 import data.ProcessedData;
 import data.Topic;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
+import repositories.ImageDetailsRepository;
 import repositories.PimProcessedDataRepository;
 import repositories.TopicRepository;
 import repositories.UserRepository;
@@ -30,6 +32,9 @@ public class TopicListener {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private ImageDetailsRepository imageRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -77,7 +82,7 @@ public class TopicListener {
 			nste.printStackTrace();
 			String[] emptyArray = new String[0];
 			String[][][] emptyArray3D = new String[0][0][0];
-			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), emptyArray, emptyArray, emptyArray3D); // create topic response without topics objects
+			TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), emptyArray, emptyArray, emptyArray3D, new ImageDetails[0]); // create topic response without topics objects
 			System.out.println("Respond from topicListener: " + topicResponse);
 			rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
 			return;
@@ -145,14 +150,16 @@ public class TopicListener {
 		for (int i = 0; i < topicsAndContacts.get(0).size(); i++)
 			topicsText[i] = topicsAndContacts.get(0).get(i).getTopic();
 
-		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0|| topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), topicsAndContacts.get(1).size());
+		int involvedContactsSize = Math.min(((topicRequest.getPath() == null || topicRequest.getPath().length == 0 || topicRequest.getPath()[0].equals("")) ? topicRequest.getMaxNumberOfTopics() : 2), topicsAndContacts.get(1).size());
 		String[] involvedContacts = new String[involvedContactsSize];
 
 		// gets the text of of the contacts that will be returned
 		for(int i = 0; i < involvedContactsSize; i++)
 			involvedContacts[i] = topicsAndContacts.get(1).get(i).getTopic();
 
-		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, involvedContacts, nodesArr); // create topic response without topics objects
+		ImageDetails[] imageDetails = getImageDetails(topicsText);
+
+		TopicResponse topicResponse = new TopicResponse(topicRequest.getUserId(), topicsText, involvedContacts, nodesArr, imageDetails); // create topic response without topics objects
 		System.out.println("Respond from topicListener: " + topicResponse);
 		rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse); // send topic response to queue
 	}
@@ -339,5 +346,21 @@ public class TopicListener {
 			topicRepository.save(topicInRepo);
 			System.out.println("TOPIC AFTER MODIFICATION: " + topicInRepo);
 		}
+	}
+
+	public ImageDetails[] getImageDetails(String[] topics) {
+		ImageDetails[] imageDetailsArr = new ImageDetails[topics.length];
+
+		for (int i = 0; i < topics.length; i++) {
+			String topic = topics[i];
+			ImageDetails imageDetails = imageRepository.findByTopic(topic);
+
+			if (imageDetails == null)
+				imageDetails = new ImageDetails(topic);
+
+			imageDetailsArr[i] = imageDetails;
+		}
+
+		return imageDetailsArr;
 	}
 }
