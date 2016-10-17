@@ -458,6 +458,7 @@ function loadXMLDoc(){
 						   UpdateSourcesObject.authcodes.push(facebookAuthCode);
 						   SaveAccountChanges();
 						   document.cookie ="FBrefresh=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+						    document.cookie = "login=1";
 						});
 
 					}
