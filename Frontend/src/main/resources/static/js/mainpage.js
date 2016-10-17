@@ -4,7 +4,13 @@ var globalsrc = "";
 var globaltopiclastuse ="";
 var imageUrlList = {};
 
-//mainpage
+/**
+*   @var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
+*/
+var UpdateSourcesObject = {
+    userId: "", 
+    authcodes:[]
+}
 /**
 *   @var {String} name - varible to hold where the user is current logged in.
 */
@@ -95,7 +101,55 @@ x =getCookie("login");
 if(x!="1"){
     window.location.assign('/login');
 }
-
+/**
+*   Function that is called when the user clicks on save on the account settings page
+*/
+function SaveAccountChanges()
+{
+    document.cookie = "mustreload=true";
+    UpdateSourcesObject.userId = getCookie("userId");
+    var socket = new SockJS('/datasources');
+    stompClient5 = Stomp.over(socket);
+    if(UpdateSourcesObject.userId != "")
+    {
+        stompClient5.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            connected = true;
+        
+            stompClient5.subscribe('/user/topic/request', function(Response){
+                var response = JSON.parse(Response.body);
+                console.log("Response is : "+ response);
+        
+                if(response.code == 0)
+                {
+                   console.log("Updated facebook auth code");
+                }
+                else if(response.code == 99 || response.code == 1)
+                {
+                    console.log("Something went wrong");
+                }
+            }, function(error) {
+                console.log(error.headers.message);
+            });
+            console.log(JSON.stringify(UpdateSourcesObject))
+            
+            stompClient5.send("/app/datasources", {}, JSON.stringify(UpdateSourcesObject));
+            UpdateSourcesObject = {
+                userId: "", 
+                authcodes:[]
+            }
+        });  
+    } 
+    // stompClient5.disconnect(); 
+}
+setInterval(function(){
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+       var facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
+       UpdateSourcesObject.authcodes.push(facebookAuthCode);
+       SaveAccountChanges();
+    });
+},2000000);
 /**
 *   A JQuery function that allows the sidepanel to be resizeable
 */
