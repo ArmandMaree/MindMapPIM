@@ -111,7 +111,7 @@ function expandBubble(nextID){
         tempTopicList.splice(0,1);
         console.log(tempTopicList.length)
 
-        sendNextImageRequest(ttt);
+
     }
     canExpand=false;
 }
@@ -165,6 +165,7 @@ function deleteBranch(selectedID){
         localStorage.setItem('edges', "");
         localStorage.setItem('parentlist', "");
         localStorage.setItem('pimlist', "");
+        localStorage.setItem('imglist', "");
         var deletelist =[]
         var templist = []
         deletelist.push(selectedID);
@@ -191,6 +192,7 @@ function deleteBranch(selectedID){
         localStorage.setItem('edges', "");
         localStorage.setItem('parentlist', "");
         localStorage.setItem('pimlist', "");
+        localStorage.setItem('imglist', "");
         parentlist[0] = -1;
         parentlist[1] = -1;
 
@@ -253,25 +255,25 @@ function deleteBranch(selectedID){
     }
 }
 
-function sendNextImageRequest(topics){
-        console.log(topics);
-        if(topics == undefined){
-            return;
-        }
-        if(topics.length ==0 && tempTopicList!=0){
-            sendNextImageRequest(tempTopicList.pop());
-        }
-        var socket2 = new SockJS('/requestimage');
-        var stompClient2 = Stomp.over(socket2);
-        stompClient2.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            connected = true;
-            for(var j =0;j<topics.length;j++){
-                while(topics[j].indexOf("\n")!=-1)
-                    topics[j]=topics[j].replace(/ /g,"").replace("\n"," ")
-            }
-            var imageRequestIdentified = {returnId: 0, topics:topics,source:"googleapis"};
-            stompClient2.send("/app/requestimage", {}, JSON.stringify(imageRequestIdentified));
-            tempTopicList =[];
-        });
-}
+// function sendNextImageRequest(topics){
+//         console.log(topics);
+//         if(topics == undefined){
+//             return;
+//         }
+//         if(topics.length ==0 && tempTopicList!=0){
+//             sendNextImageRequest(tempTopicList.pop());
+//         }
+//         var socket2 = new SockJS('/requestimage');
+//         var stompClient2 = Stomp.over(socket2);
+//         stompClient2.connect({}, function(frame) {
+//             console.log('Connected: ' + frame);
+//             connected = true;
+//             for(var j =0;j<topics.length;j++){
+//                 while(topics[j].indexOf("\n")!=-1)
+//                     topics[j]=topics[j].replace(/ /g,"").replace("\n"," ")
+//             }
+//             var imageRequestIdentified = {returnId: 0, topics:topics,source:"googleapis"};
+//             stompClient2.send("/app/requestimage", {}, JSON.stringify(imageRequestIdentified));
+//             tempTopicList =[];
+//         });
+// }

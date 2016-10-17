@@ -304,46 +304,19 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
-        if(!request.getUserId().contains("mocktesting")){
-            rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
+            rabbitTemplate.convertAndSend("topic-request.database.rabbit",request);
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
                 Thread.sleep(1000);
             }
  
     		TopicResponse topicResponse = topicResponseLL.poll();
+            // System.out.println("Image Details: "+topicResponse.getImageDetails());
             System.out.println(topicResponse);
             // Thread.sleep(2000);
             // this.simpMessagingTemplate.convertAndSend("/queue/chats-" + request.getUserId(), topicResponse);
             return topicResponse;
-        }
-        else{
-            String [][][] mockpimIds =  new String[4][2][2];
-            mockpimIds[0][0][0] = "gmail";
-            mockpimIds[0][0][1] = "1";
-            mockpimIds[0][0][2] = "2";
-            mockpimIds[0][1][0] = "facebook";
-            mockpimIds[0][1][1] = "9";
 
-            mockpimIds[1][0][0] = "gmail";
-            mockpimIds[1][0][1] = "3";
-            mockpimIds[1][0][2] = "4";
-            mockpimIds[1][1][0] = "facebook";
-            mockpimIds[1][1][1] = "9";
-            
-            mockpimIds[2][0][0] = "gmail";
-            mockpimIds[2][0][1] = "5";
-            mockpimIds[2][0][2] = "6";
-            
-            mockpimIds[3][0][0] = "gmail";
-            mockpimIds[3][0][1] = "7";
-            mockpimIds[3][0][2] = "8";
-            // TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
-            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Horse","cos301","photo","recipe"},new String[]{"Horse","cos301","photo","recipe"},mockpimIds);
-            System.out.println(topicResponse);
-            // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
-            // thread.sleep(2000);
-            return topicResponse;
-        }
+       
     }
 
     @MessageMapping("/items")
@@ -397,7 +370,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         while(imageResponseLL.peek()==null || !id.equals(imageResponseLL.peek().getReturnId())){//wait for imageResponseLL for new topics with user ID
             Thread.sleep(1000);
         }
-        System.out.println("out of the while");
         ImageResponseIdentified imageResponseID = imageResponseLL.poll();
         ImageResponse imageResponse = new ImageResponse(imageResponseID.getImageDetails());
         System.out.println(imageResponse);

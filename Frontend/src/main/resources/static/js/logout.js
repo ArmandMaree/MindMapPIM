@@ -19,6 +19,7 @@ function logout()
     localStorage.setItem('edges', "");
     localStorage.setItem('parentlist', "");
     localStorage.setItem('pimlist', "");
+    localStorage.setItem('imglist', "");
     
     window.location.assign('/');
 

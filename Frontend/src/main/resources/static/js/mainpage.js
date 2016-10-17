@@ -347,15 +347,16 @@ $('#cards').scroll(function(event){
     }
 
     tempparent = localStorage.getItem('parentlist');
-    // alert(localStorage.getItem('parentlist')==null)
     if(tempparent!="" &&tempparent!=null)
         parentlist =tempparent.split(',');
 
     pimlist = localStorage.getItem('pimlist');
-    // alert(localStorage.getItem('parentlist')==null)
     if(pimlist!="" &&pimlist!=null)
         allPimIDlist =JSON.parse(pimlist);
 
+    imglist = localStorage.getItem('imglist');
+    if(imglist!="" &&imglist!=null)
+        imageUrlList =JSON.parse(imglist);
     //container - A variable that holds the html element that contains the BubbleMap
     var container = document.getElementById('mynetwork');
 
@@ -486,24 +487,7 @@ $('#cards').scroll(function(event){
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
-            }else if (JSON.parse(serverResponse.body).imageDetails!=null) {
-                //=============================================================================================================
-                alert("returned here right");
-                var imageDetails=JSON.parse(serverResponse.body).imageDetails;
-                console.log(imageDetails);
-
-                for(var i=0;i<imageDetails.length;i++){
-                    var obj = {}
-                    obj[imageDetails.topic] = imageDetails.url;
-                    imageUrlList.add(imageDetails.url);
-                }
-                console.log(imageUrlList);
-                if(tempTopicList.length!=0){
-                    sendNextImageRequest(tempTopicList.pop());  
-                }
-            }
-            else{
-                canExpand=true;
+            }else{
                 //name2 - a variable that contains the data for the last selected node for the cookie
                 var name2 = "lastselectednode=";
                 //ca2 - Splits the document cookie on semicolons into an array
@@ -524,9 +508,18 @@ $('#cards').scroll(function(event){
                 //JSONServerResponse - contains the parsed response from the websocket
                 var JSONServerResponse = JSON.parse(serverResponse.body);
                 // topicsall - an array that contains names for the topics of the items used by the pims.
-                var topicsall = JSONServerResponse.topicsText;
+                var topicsall = [];
                 //contactsAll - an array that contains names for the contatcs of the items used by the pims.
                 var contactsAll = JSONServerResponse.involvedContacts;
+                var imageDetails = (JSONServerResponse.topics)
+                if(imageDetails!=null){
+                    for(var i=0;i<imageDetails.length;i++){
+                        imageUrlList[imageDetails[i].topic] = imageDetails[i].url;
+                        topicsall.push(imageDetails[i].topic);
+                    }
+                }
+                console.log(imageUrlList)
+                canExpand=true;
 
                 //pos - a variable that contains the position
                 nodePosition=0;
@@ -685,6 +678,7 @@ $('#cards').scroll(function(event){
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
                     localStorage.setItem('pimlist', "");
+                    localStorage.setItem('imglist', "");
                     localStorage.setItem('nodes', JSON.stringify(nodes));
 
                     console.log(parentlist)
@@ -702,12 +696,14 @@ $('#cards').scroll(function(event){
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
                     localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+                    localStorage.setItem('imglist', JSON.stringify(imageUrlList));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
                     localStorage.setItem('pimlist', "");
+                    localStorage.setItem('imglist', "");
                 }
             }
             expandBubble(expandlist.shift());
@@ -899,12 +895,14 @@ $('#cards').scroll(function(event){
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
                     localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+                    localStorage.setItem('imglist', JSON.stringify(imageUrlList));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
                     localStorage.setItem('pimlist', "");
+                    localStorage.setItem('imglist', "");
                 }
                 
             }
@@ -969,12 +967,14 @@ $('#cards').scroll(function(event){
                     localStorage.setItem('edges', JSON.stringify(tempedges));
                     localStorage.setItem('parentlist', parentlist);
                     localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+                    localStorage.setItem('imglist', JSON.stringify(imageUrlList));
 
                 }else{
                     localStorage.setItem('nodes', "");
                     localStorage.setItem('edges', "");
                     localStorage.setItem('parentlist', "");
                     localStorage.setItem('pimlist', "");
+                    localStorage.setItem('imglist', "");
                 }
             }
         }
@@ -1032,7 +1032,6 @@ $('#cards').scroll(function(event){
         $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
         var avatarlink =""; 
         var nodeswithplus = nodes[node].label;
-        // alert(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")])
         if(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")]==null){
             $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
             $('#avatar').css("background-size","cover"); 
@@ -1048,9 +1047,21 @@ $('#cards').scroll(function(event){
             $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
                 // console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
                 statusgoogle = status;
+                console.log("loading from google")
                 avatarlink = data.items[0].link;
                 globalsrc = avatarlink;
-                if(data.items.length== 0){
+                $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                $('#avatar').css("background-size","cover");
+                $('#avatar').css("background-position","center");
+                $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                $('#sidepanelTitle').css("background-size","cover");
+                $('#sidepanelTitle').css("background-position","center");
+                $('#sidepanelTitle').addClass("blurclass");
+            }).always(function() {
+               
+                console.log(avatarlink+ " avatarlink");
+                console.log(avatarlink+ " avatarlink");
+                if(avatarlink ==""){
                     globalurl = "pixabay";
 
                     $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
@@ -1065,18 +1076,24 @@ $('#cards').scroll(function(event){
                             $('#sidepanelTitle').css("background-size","cover");
                             $('#sidepanelTitle').css("background-position","center");
                             $('#sidepanelTitle').addClass("blurclass");
-                    });
-                }else{
-                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
-                    $('#avatar').css("background-size","cover");
-                    $('#avatar').css("background-position","center");
-                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-                    $('#sidepanelTitle').css("background-size","cover");
-                    $('#sidepanelTitle').css("background-position","center");
-                    $('#sidepanelTitle').addClass("blurclass");
+                        });
                 }
-            });
+                    imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")] = avatarlink; 
+                    var socket3 = new SockJS('/saveimage');
+                    var stompClient3 = Stomp.over(socket3);
+                    stompClient3.connect({}, function(frame) {
+                        console.log('Connected: ' + frame);
+                        connected = true;
+                        var userId = getCookie("userId");
+
+
+                        imageDetails = {topic:globaltopiclastuse, url:globalsrc, source:globalurl};
+                        stompClient3.send("/app/saveimage", {}, JSON.stringify(imageDetails));
+
+                    });
+              });
         }else{
+            // alert("loaded from cache")
             avatarlink = imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")];
             $('#avatar').css("background","#eee url('"+avatarlink+"')");
             $('#avatar').css("background-size","cover");
@@ -1085,24 +1102,6 @@ $('#cards').scroll(function(event){
             $('#sidepanelTitle').css("background-size","cover");
             $('#sidepanelTitle').css("background-position","center");
             $('#sidepanelTitle').addClass("blurclass");  
-        }
-        console.log(statusgoogle+ " googlestatus");
-        if(statusgoogle==undefined){
-            globalurl = "pixabay";
-
-            $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
-                // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                    avatarlink = data.hits[0].previewURL;
-                    globalsrc = avatarlink;
-
-                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
-                    $('#avatar').css("background-size","cover");
-                    $('#avatar').css("background-position","center");
-                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-                    $('#sidepanelTitle').css("background-size","cover");
-                    $('#sidepanelTitle').css("background-position","center");
-                    $('#sidepanelTitle').addClass("blurclass");
-                });
         }
             $("#loadingAlert").fadeIn(1000, function() {
             // body...
@@ -1125,19 +1124,6 @@ $('#cards').scroll(function(event){
             }
             if(!mocktesting){
                 var itemRequest = {itemIds:uniqueIds,userId:ID};
-                var socket3 = new SockJS('/saveimage');
-                var stompClient3 = Stomp.over(socket3);
-                stompClient3.connect({}, function(frame) {
-                    console.log('Connected: ' + frame);
-                    connected = true;
-                    var userId = getCookie("userId");
-
-
-                    imageDetails = {topic:globaltopiclastuse, url:globalsrc, source:globalurl};
-                    stompClient3.send("/app/saveimage", {}, JSON.stringify(imageDetails));
-
-                });
-     
             }else{
                 var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
             }
