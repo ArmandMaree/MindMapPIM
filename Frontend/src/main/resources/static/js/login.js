@@ -278,20 +278,7 @@ function loadReg(){
 	$("#web").hide();
 
 	$("#avatar").hide();
-	// $("#welcome").show();
-	// $("#welcome").delay(1000).animate({
-	//   opacity: '1'
-	// });
-	// $('#avatar').fadeOut(0, function() {
-	//   $('#avatar').fadeIn(0);
-	//   $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	//   $('#avatar').css("background-size","cover");
-	//   $('#avatar').css("opacity","1");
-	// });
-	// $("#continue").hide();
-	// $("#continue").delay(2000).animate({
-	//   opacity: '1'
-	// });
+	
 	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {
@@ -336,6 +323,64 @@ function loadReg(){
 	xmlhttp.open("GET","ajax/selectdata.html");
 	xmlhttp.send();
 	var filename;
+}
+/**
+*	Function returns the id of the data source sent to it as stored in the cookie
+*	@param {String} name The name of the data source
+*	@return The id of the data source as stored in the cookie or an empty string if not in the cookie
+*/
+function findPim(name)
+{
+	var pimIds = JSON.parse(getCookie("pimIds"));
+	for(var i = 0; i < pimIds.length;i++)
+	{
+		if(pimIds[i].pim == name)
+			return pimIds[i].uId;
+	} 
+	return "";
+}
+/**
+*	@var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
+*/
+var UpdateSourcesObject = {
+	userId: "", 
+	authcodes:[]
+}
+/**
+*	Function that is called when the user clicks on save on the account settings page
+*/
+function SaveAccountChanges()
+{
+	UpdateSourcesObject.userId = getCookie("userId");
+	var socket = new SockJS('/datasources');
+	stompClient = Stomp.over(socket);
+	stompClient.connect({}, function(frame) {
+	    console.log('Connected: ' + frame);
+	    connected = true;
+	
+		stompClient.subscribe('/user/topic/request', function(Response){
+			var response = JSON.parse(Response.body);
+			console.log("Response is : "+ response);
+	
+			if(response.code == 0)
+			{
+				window.location.assign('/');
+			}
+			else if(response.code == 99 || response.code == 1)
+			{
+				console.log("Opps something went wrong!");
+			}
+		}, function(error) {
+	  		console.log(error.headers.message);
+		});
+		console.log(JSON.stringify(UpdateSourcesObject))
+		stompClient.send("/app/datasources", {}, JSON.stringify(UpdateSourcesObject));
+		UpdateSourcesObject = {
+			userId: "", 
+			authcodes:[]
+		}
+	});
+	stompClient.disconnect();
 }
 /**
  * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
@@ -404,8 +449,20 @@ function loadXMLDoc(){
 				
 				if(jsonresponse.isRegistered){
 					document.cookie = "login=1";
+					if(findPim("facebook") != "")
+					{
+						document.cookie=  "FBrefresh=true";
+						FB.getLoginStatus(function(response) {
+						  statusChangeCallback(response);
+						   var facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
+						   UpdateSourcesObject.authcodes.push(facebookAuthCode);
+						   SaveAccountChanges();
+						});
+					}
+					else
+						window.location.assign('/');
+						
 
-					window.location.assign('/');
 				}else{
 					liftdown();
 					$('#myModal').modal('show') 
@@ -418,6 +475,7 @@ function loadXMLDoc(){
 		});
 
 }
+
 /**
  * A Google function to sign the user out if they are signed in.
  */
@@ -496,7 +554,11 @@ var FacebookUser;
 
 		console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
-		testAPI();
+		document.cookie = "facebookId="+ String(response.authResponse.userID);
+	  	document.cookie = "fAT="+ response.authResponse.accessToken;
+	  	document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
+	  	if(getCookie("FBrefresh") != "true")
+			testAPI();
 	}
 	else if (response.status === 'not_authorized')
 	{
@@ -532,6 +594,7 @@ function onFacebookLogin()
 }
 function sendUserObjectForFacebook()
 {
+	alert("here");
 	authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
 }
 /**
