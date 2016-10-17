@@ -84,6 +84,7 @@ var sendUserReg = function(){
 			$("#loadingAlert").fadeOut(1000, function() {
 				
 			});
+			document.cookie = "login=1";
 			window.location.assign('/help');
 		}, function(error) {
 	    		console.log(error.headers.message);
@@ -447,7 +448,8 @@ function loadXMLDoc(){
 
 			document.cookie="userId="+jsonresponse.userId;
 				
-				if(jsonresponse.isRegistered){
+				if(jsonresponse.isRegistered)
+				{
 					document.cookie = "login=1";
 					if(findPim("facebook") != "")
 					{
@@ -458,15 +460,14 @@ function loadXMLDoc(){
 						   UpdateSourcesObject.authcodes.push(facebookAuthCode);
 						   SaveAccountChanges();
 						   document.cookie ="FBrefresh=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-						    document.cookie = "login=1";
 						});
 
 					}
 					else
-						window.location.assign('/');
-						
-
-				}else{
+						window.location.assign('/');	
+				}
+				else
+				{
 					liftdown();
 					$('#myModal').modal('show') 
 					loadError();
