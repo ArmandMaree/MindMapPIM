@@ -280,7 +280,7 @@ public class Topic implements Serializable, Comparable<Topic> {
 	public double getWeight() {
 		long secs = time / 1000; // seconds between time and EPOCH
 		double hours = secs / 3600 - 306816; // hours since 01/01/2005
-		double weight = hours * hours * processedDataIds.size(); // hours * 100 * number of data associated with topic.
+		double weight = hours * hours * (processedDataIds.size() / 10); // hours ^ 2 * number of data associated with topic.
 		return weight;
 	}
 

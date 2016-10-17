@@ -47,22 +47,46 @@ public class AuthCodeListener {
 	* </p>
 	* @param authCode The AuthCode that contains all the information needed to start the poller.
 	*/
-	public void receiveAuthCode(AuthCode authCode) throws AlreadyPollingForUserException {
-		System.out.println("Received: " + authCode);
+	public void receiveAuthCode(AuthCode authCode) {
+		try {
+			System.out.println("Received: " + authCode);
 
-		if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
-			FacebookPollingUser pollingUser = facebookRepository.findByUserId(authCode.getId());
+			if (authCode.getAuthCode() == null || authCode.getAuthCode().equals("")) {
+				FacebookPollingUser pollingUser = facebookRepository.findByUserId(authCode.getId());
 
-			if (pollingUser != null) {
-				for (FacebookPoller facebookPoller : facebookPollers)
-					if (facebookPoller.getUserId().equals(authCode.getId()))
-						facebookPoller.stopPoller();
+				if (pollingUser != null) {
+					for (FacebookPoller facebookPoller : facebookPollers)
+						if (facebookPoller.getUserId().equals(authCode.getId()))
+							facebookPoller.stopPoller();
+				}
+			}
+			else {
+				FacebookPollingUser pollingUser = facebookRepository.findByUserId(authCode.getId());
+
+				if (pollingUser == null) {
+					FacebookPoller facebookPoller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+					facebookPollers.add(facebookPoller);
+					new Thread(facebookPoller).start();
+				}
+				else {
+					if (pollingUser.getCurrentlyPolling()) {
+						pollingUser = facebookRepository.findByUserId(authCode.getId());
+						pollingUser.setAccessToken(authCode.getAuthCode());
+						facebookRepository.save(pollingUser);
+					}
+					else {
+						pollingUser.setAccessToken(authCode.getAuthCode());
+						facebookRepository.save(pollingUser);
+						FacebookPoller facebookPoller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
+						facebookPollers.add(facebookPoller);
+						new Thread(facebookPoller).start();
+					}
+
+				}
 			}
 		}
-		else {
-			FacebookPoller facebookPoller = new FacebookPoller(facebookRepository, messageBroker, authCode.getAuthCode(), authCode.getExpireTime(), authCode.getId());
-			facebookPollers.add(facebookPoller);
-			new Thread(facebookPoller).start();
+		catch (AlreadyPollingForUserException apfue) {
+			apfue.printStackTrace();
 		}
 	}
 }

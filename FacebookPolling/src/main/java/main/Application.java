@@ -50,8 +50,8 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public ItemListener itemRequestReceiver() {
-		return new ItemListener();
+	public ItemListener itemRequestReceiver(FacebookRepository facebookRepository) {
+		return new ItemListener(facebookRepository);
 	}
 
 	@Bean

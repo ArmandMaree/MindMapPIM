@@ -78,7 +78,7 @@ public class TopicListener {
 		try {
 			lastTopicInPath = findTopicAtEndOfPath(topicRequest.getPath(), topicRequest.getUserId());
 			// topics that need to be returned.
-			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId()); 
+			topicsAndContacts = getRelatedTopics(lastTopicInPath, topicRequest.getMaxNumberOfTopics(), topicRequest.getUserId(), topicRequest.getExclude()); 
 		}
 		catch (NoSuchTopicException nste) {
 			nste.printStackTrace();
@@ -250,7 +250,7 @@ public class TopicListener {
 	* @param userId The user for which the topics must be retrieved.
 	* @return A 2D {@link java.util.List} that contains 2 {@link java.util.List}. The first is the related topics and the second is the contacts.
 	*/
-	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId) {
+	public List<List<Topic>> getRelatedTopics(Topic topic, int maxNumberOfTopics, String userId, String[] excludeList) {
 		List<Topic> topics;
 
 		if (topic == null) {
@@ -272,53 +272,37 @@ public class TopicListener {
 		List<Topic> returnContacts = new ArrayList<Topic>();
 
 		// extracts the contacts and most relevant topics until both have topicRequest.getMaxNumberOfTopics() or there are no more topics
-		if (topics.size() <= maxNumberOfTopics) {
-			for (int i = 0; i < topics.size(); i++) {
-				while (topics.size() > i && topics.get(i).getPerson())
-					returnContacts.add(topics.remove(i));
+		while (topics.size() > 0) {
+			if (!checkExcludeList(excludeList, topics.get(0))) {
+				if (topics.get(0).getPerson() && returnContacts.size() < maxNumberOfTopics)
+					returnContacts.add(topics.remove(0));
+				else if(!topics.get(0).getPerson() && returnTopics.size() < maxNumberOfTopics)
+					returnTopics.add(topics.remove(0));
+				else
+					topics.remove(0);
+
+				if(returnContacts.size() >= maxNumberOfTopics && returnTopics.size() >= maxNumberOfTopics)
+					break;
 			}
-
-			returnTopics = topics;
-		}
-		else {
-			while (topics.size() > 0 && topics.get(0).getPerson())
-				returnContacts.add(topics.remove(0));
-
-			if (topics.size() != 0) {
-				returnTopics.add(topics.get(0));
-
-				for (int i = 1; i < topics.size() && (returnTopics.size() < maxNumberOfTopics || returnContacts.size() < maxNumberOfTopics); i++) { // take the most relevant topics but also try to reduce closely related topics
-					while (topics.size() > i && topics.get(i).getPerson()) {
-						if (returnContacts.size() < maxNumberOfTopics)
-							returnContacts.add(topics.remove(i));
-						else
-							topics.remove(i);
-					}
-
-					if (topics.size() > i && returnTopics.size() < maxNumberOfTopics) {
-						boolean found = false;
-
-						outerloop:
-						for (Topic returnTopic : returnTopics) {
-							for (String singleRelatedTopic : returnTopic.getRelatedTopics()) {
-								if (singleRelatedTopic.equals(topics.get(i).getTopic())) {
-									found = true;
-									break outerloop;
-								}
-							}
-						}
-
-						if (!found)
-							returnTopics.add(topics.get(i));
-					}
-				}
-			}
+			else
+				topics.remove(0);
 		}
 
 		List<List<Topic>> topicsAndContacts = new ArrayList<>();
 		topicsAndContacts.add(returnTopics);
 		topicsAndContacts.add(returnContacts);
 		return topicsAndContacts;
+	}
+
+	public boolean checkExcludeList(String[] excludeList, Topic topic) {
+		if (excludeList == null)
+			return false;
+		
+		for (String ex : excludeList)
+			if (ex.equals(topic.getTopic()))
+				return true;
+
+		return false;
 	}
 
 	/**

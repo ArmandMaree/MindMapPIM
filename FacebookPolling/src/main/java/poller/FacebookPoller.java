@@ -71,8 +71,10 @@ public class FacebookPoller implements Runnable {
 			if (pollingUser.checkAndStart()) {
 				throw new AlreadyPollingForUserException("There is already a poller running for user " + pollingUser.getUserId() + ".");
 			}
-			else
+			else {
+				pollingUser.setAccessToken(authCode);
 				facebookRepository.save(pollingUser);
+			}
 		}
 	}
 
@@ -110,6 +112,7 @@ public class FacebookPoller implements Runnable {
 					poll();
 				}
 				catch (org.springframework.social.RevokedAuthorizationException rae) {
+					System.out.println("Auth code revoked. Trying again with code in database.");
 					pollingUser = facebookRepository.findByUserId(pollingUser.getUserId());
 					poll();
 				}
@@ -251,20 +254,19 @@ public class FacebookPoller implements Runnable {
 	public RawData getRawData(Post post) {
 		if (post.getMessage() == null || post.getMessage().length() == 0)
 			return null;
-		else
-			System.out.println("Post from: " + post.getFrom().getId());
 		
 		List<String> text = new ArrayList<>();
 		List<String> contacts = new ArrayList<>();
 		text.add(post.getMessage());
 
-		String postId;
+		String postId = ((post.getPrivacy() != null) ? post.getPrivacy().getValue() : "") + ":";
+		// String postId = "";
 
 		if (post.getFrom().getId().equals(userId))
-			postId = post.getId();
+			postId += post.getId();
 		else {
 			contacts.add(post.getFrom().getName());
-			postId = post.getId() + ":" + post.getFrom().getId();
+			postId += post.getId() + ":" + post.getFrom().getId();
 		}
 
 		PagedList<Comment> comments = service.commentOperations().getComments(post.getId(), new PagingParameters(null, null, null, null));
