@@ -3,7 +3,8 @@ var globalurl = "";
 var globalsrc = "";
 var globaltopiclastuse ="";
 var imageUrlList = {};
-
+var busy = false;
+var continueexpanding =true;
 /**
 *   @var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
 */
@@ -200,12 +201,13 @@ var network;
 
 $(document).ready(function(){
 var lastScrollTop = 0;
-changed =false;
+var changed =false;
 $('#cards').scroll(function(event){
     var st = $(this).scrollTop();
         console.log("down "+st)
         // text-shadow: 0 0 3px #FF0000;
-        if(st!=0){
+        var change
+        if(st>0 && !changed){
             $("#sidepanelTitle").animate({
                   height: '80px'
             });
@@ -231,7 +233,7 @@ $('#cards').scroll(function(event){
             $(".cards").animate({
                   top: '125px'
             });
-            change=true;
+            changed=true;
         }
         if(st==0){
             $("#sidepanelTitle").animate({
@@ -261,7 +263,7 @@ $('#cards').scroll(function(event){
             $(".cards").animate({
                   top: '290px'
             });
-            change=false;
+            changed=false;
 
         }
 
@@ -276,7 +278,9 @@ $('#cards').scroll(function(event){
         document.cookie="lastrefreshtime="+ Date.now();
         document.cookie = "mustreload=; expires=Thu, 01 Jan 1970 00:00:00 UTC";   
     }
-
+    var persistMap = getCookie("persistMap");
+    if(persistMap!=undefined)
+        shouldRebuild = persistMap
     var nav=getCookie("nav");
     var map=getCookie("map");
     nodecolor= 'white'
@@ -310,7 +314,7 @@ $('#cards').scroll(function(event){
         $("#settings").html("   Settings");
         $("#settings").css('font-family','Raleway');
         $("#settings").css('font-size','14pt');
-
+ 
         $("#logout").html("   Logout");
         $("#logout").css('font-family','Raleway');
         $("#logout").css('font-size','14pt');
@@ -696,33 +700,6 @@ $('#cards').scroll(function(event){
                         nodePosition++;
                     }
                 }
-                for(var j=0;j<refreshContactList.length;j++){
-                    selectedID = refreshContactList[j];
-                    var deletelist =[];
-                    var templist = [];
-                    deletelist.push(selectedID);
-                    templist.push(selectedID);
-                    var count =0;
-                    while(templist.length>0 || count > 10000){
-                        count++;
-                        var parent = templist.pop();
-
-                        for(var i=0;i<parentlist.length;i++){
-
-                            if(parentlist[i] == parent){
-                                templist.push(i);
-                                deletelist.push(i);
-                            }
-                        }
-
-
-                    }
-                    parentlist[refreshContactList[j]]=-1;
-                    try{
-                        network.selectNodes(deletelist);
-                        network.deleteSelected();
-                    }catch(err){}
-                }
                 $("#loadingAlert").fadeOut(1000, function() {
                     // body...
                 });
@@ -759,8 +736,40 @@ $('#cards').scroll(function(event){
                     localStorage.setItem('pimlist', "");
                     localStorage.setItem('imglist', "");
                 }
+                for(var j=0;j<refreshContactList.length;j++){
+                //     selectedID = refreshContactList[j];
+                //     var deletelist =[];
+                //     var templist = [];
+                //     deletelist.push(selectedID);
+                //     templist.push(selectedID);
+                //     var count =0;
+                //     while(templist.length>0 || count > 10000){
+                //         count++;
+                //         var parent = templist.pop();
+
+                //         for(var i=0;i<parentlist.length;i++){
+
+                //             if(parentlist[i] == parent){
+                //                 templist.push(i);
+                //                 deletelist.push(i);
+                //             }
+                //         }
+
+
+                //     }
+                //     parentlist[refreshContactList[j]]=-1;
+                //     try{
+                //         network.selectNodes(deletelist);
+                //         network.deleteSelected();
+                //     }catch(err){}
+                    deleteBranch(refreshContactList[j])
+                }
+                refreshContactList =[]
             }
-            expandBubble(expandlist.shift());
+
+            busy = false;
+            if(continueexpanding)
+                expandBubble(expandlist.shift());
         });
         var excludelist =[]
         for(var i = 1; i < parentlist.length;i++){
@@ -782,6 +791,7 @@ $('#cards').scroll(function(event){
         if(!flagHasNodesToLoad){
             try{
                 stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                busy= true;
             }catch(err){
                 $("#loadingAlert").fadeOut(1000, function() {
                 // body...
@@ -840,195 +850,199 @@ $('#cards').scroll(function(event){
             }
         ],
         onClick: function(){
-            if(this.label=="Expand bubble"){
-                $("#loadingAlert").fadeIn(1000, function() {
-                    // body...
-                });
-                var pathtoselectednode=[];
-                if(selectedID!=0)
-                    var pathtoselectednode =[];
-                var pathtoselectednodelabels =[]
+            if(busy==false){
+                if(this.label=="Expand bubble"){
+                    continueexpanding = false;
+                    $("#loadingAlert").fadeIn(1000, function() {
+                        // body...
+                    });
+                    var pathtoselectednode=[];
+                    if(selectedID!=0)
+                        var pathtoselectednode =[];
+                    var pathtoselectednodelabels =[]
 
-                for(var i = selectedID; i > 0; i = parentlist[i]){
-                    pathtoselectednode.push(i);
-                }
+                    for(var i = selectedID; i > 0; i = parentlist[i]){
+                        pathtoselectednode.push(i);
+                    }
 
-                var pos=0;
-                var branchinglimit = 4;
-                var thiscolor = nodes[selectedID].color;
-                for(var i=pathtoselectednode.length-1;i>=0;i--){
-                   pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
-                }
-                if(pathtoselectednodelabels.indexOf("Contacts") >=0){
-                    pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
-                }
-                // if(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")) >=0){
-                //     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")),1);
-                // }
+                    var pos=0;
+                    var branchinglimit = 4;
+                    var thiscolor = nodes[selectedID].color;
+                    for(var i=pathtoselectednode.length-1;i>=0;i--){
+                       pathtoselectednodelabels.push(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," "));
+                    }
+                    if(pathtoselectednodelabels.indexOf("Contacts") >=0){
+                        pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf("Contacts"),1);
+                    }
+                    // if(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")) >=0){
+                    //     pathtoselectednodelabels.splice(pathtoselectednodelabels.indexOf(nodes[pathtoselectednode[i]].label.replace(/ /g,"").replace("\n"," ")),1);
+                    // }
 
-                var excludelist=[]
-                for(var i = 1; i < parentlist.length;i++){
-                    if(parentlist[i]==selectedID){
-                        try{
-                            excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
-                        }catch(err){
+                    var excludelist=[]
+                    for(var i = 1; i < parentlist.length;i++){
+                        if(parentlist[i]==selectedID){ 
+                            try{ 
+                                excludelist.push(nodes[i].label.replace(/ /g,"").replace("\n"," "));
+                            }catch(err){
 
+                            }
                         }
                     }
-                }
 
-                initialbranching = getCookie("branch");
-                if(mocktesting)
-                    topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
-                else
-                    topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
-
-                document.cookie="lastselectednode="+selectedID;
-                try{
-                    stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
-                }catch(err){
-                    $("#loadingAlert").fadeOut(1000, function() {
-                    // body...
-                    });
-                    $("#loadingAlertError").fadeIn(1000, function() {
-                    });
-                    $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
-                }
-                    // $("#loadingAlert").fadeOut(1000, function() {
-                    //     // body...
-                    // });
-            }
-
-            if(this.label=="Refresh"){
-                refreshGraph();
-            }
-            if(this.label=="Hide bubble"){
-                // alert("hello!")
-                $("#loadingAlert").fadeIn(1000, function() {
-                // body...
-                });
-                var socket2 = new SockJS('/update');
-                var stompClient2 = Stomp.over(socket2);
-                stompClient2.connect({}, function(frame) {
-                    console.log('Connected: ' + frame);
-                    connected = true;
-                    var userId = getCookie("userId");
-                    // alert(selectedID);
-                    if(nodes[selectedID].color.border == "#1999d6")
-                        var personnode = false;
+                    initialbranching = getCookie("branch");
+                    if(mocktesting)
+                        topicRequest = {userId: "mocktesting"+x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
                     else
-                        var personnode = true;
+                        topicRequest = {userId: x1, path:pathtoselectednodelabels, exclude:excludelist, maxNumberOfTopics:initialbranching};
 
-                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":true};
-                    stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
-                    deleteBranch(selectedID);
-                    $("#loadingAlert").fadeOut(1000, function() {
-                    // body...
-                    });
-
-                });
-                if(shouldRebuild){
-                    localStorage.setItem('nodes', "");
-                    localStorage.setItem('edges', "");
-                    localStorage.setItem('parentlist', "");
-
-                    localStorage.setItem('nodes', JSON.stringify(nodes));
-
-                    console.log(parentlist)
-                    var tempedges=[];
-                    if(tempedges.indexOf({from:1,to:0})==-1)
-                        tempedges.push({from:1,to:0})
-
-
-                    for(var i=1;i<parentlist.length;i++){
-                        if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
-                            tempedges.push({from:i,to:parentlist[i]})
+                    document.cookie="lastselectednode="+selectedID;
+                    try{
+                        stompClient.send("/app/request", {}, JSON.stringify(topicRequest));
+                        busy= true;
+                    }catch(err){
+                        $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                        });
+                        $("#loadingAlertError").fadeIn(1000, function() {
+                        });
+                        $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
                     }
-                    console.log(JSON.stringify(tempedges))
-
-                    localStorage.setItem('edges', JSON.stringify(tempedges));
-                    localStorage.setItem('parentlist', parentlist);
-                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
-                    localStorage.setItem('imglist', JSON.stringify(imageUrlList));
-
-                }else{
-                    localStorage.setItem('nodes', "");
-                    localStorage.setItem('edges', "");
-                    localStorage.setItem('parentlist', "");
-                    localStorage.setItem('pimlist', "");
-                    localStorage.setItem('imglist', "");
+                        // $("#loadingAlert").fadeOut(1000, function() {
+                        //     // body...
+                        // });
                 }
-                
-            }
-            if(this.label=="Toggle topic/contact bubble"){
-                if(selectedID==0 ||selectedID==1 || nodes[selectedID].color.border == "purple"){
-                    $("#loadingAlert").fadeOut(1000, function() {
+
+                if(this.label=="Refresh"){
+                    refreshGraph();
+                }
+                if(this.label=="Hide bubble"){
+                    // alert("hello!")
+                    $("#loadingAlert").fadeIn(1000, function() {
                     // body...
                     });
-                    $("#loadingAlertError").fadeIn(1000, function() {
+                    var socket2 = new SockJS('/update');
+                    var stompClient2 = Stomp.over(socket2);
+                    stompClient2.connect({}, function(frame) {
+                        console.log('Connected: ' + frame);
+                        connected = true;
+                        var userId = getCookie("userId");
+                        // alert(selectedID);
+                        if(nodes[selectedID].color.border == "#1999d6")
+                            var personnode = false;
+                        else
+                            var personnode = true;
+
+                        topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":true};
+                        stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+                        deleteBranch(selectedID);
+                        $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                        });
+
                     });
-                    $("#loadingAlertError").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Error: Only blue topic bubbles or green contact bubbles can be converted. Please select an appropriate bubble and try again.')
-                    return;
-                }
-                $("#loadingAlert").fadeIn(1000, function() {
-                // body...
-                });
-                var socket2 = new SockJS('/update');
-                var stompClient2 = Stomp.over(socket2);
-                stompClient2.connect({}, function(frame) {
-                    console.log('Connected: ' + frame);
-                    connected = true;
-                    var userId = getCookie("userId");
-                    if(nodes[selectedID].color.border == "#1999d6"){
-                        var personnode = true;
-                        nodes[selectedID].color= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
-                        var newcolor= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
-                        data.nodes.update([{id:selectedID, color:newcolor}]);
+                    if(shouldRebuild){
+                        localStorage.setItem('nodes', "");
+                        localStorage.setItem('edges', "");
+                        localStorage.setItem('parentlist', "");
+
+                        localStorage.setItem('nodes', JSON.stringify(nodes));
+
+                        console.log(parentlist)
+                        var tempedges=[];
+                        if(tempedges.indexOf({from:1,to:0})==-1)
+                            tempedges.push({from:1,to:0})
+
+
+                        for(var i=1;i<parentlist.length;i++){
+                            if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
+                                tempedges.push({from:i,to:parentlist[i]})
+                        }
+                        console.log(JSON.stringify(tempedges))
+
+                        localStorage.setItem('edges', JSON.stringify(tempedges));
+                        localStorage.setItem('parentlist', parentlist);
+                        localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+                        localStorage.setItem('imglist', JSON.stringify(imageUrlList));
+
                     }else{
-                        var personnode = false;
-                        nodes[selectedID].color= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
-                        var newcolor= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
-                        data.nodes.update([{id:selectedID, color:newcolor}]);
-
+                        localStorage.setItem('nodes', "");
+                        localStorage.setItem('edges', "");
+                        localStorage.setItem('parentlist', "");
+                        localStorage.setItem('pimlist', "");
+                        localStorage.setItem('imglist', "");
                     }
-
-                    topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":false};
-                    stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
-                    $("#loadingAlert").fadeOut(1000, function() {
+                    
+                }
+                if(this.label=="Toggle topic/contact bubble"){
+                    if(selectedID==0 ||selectedID==1 || nodes[selectedID].color.border == "purple"){
+                        $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                        });
+                        $("#loadingAlertError").fadeIn(1000, function() {
+                        });
+                        $("#loadingAlertError").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Error: Only blue topic bubbles or green contact bubbles can be converted. Please select an appropriate bubble and try again.')
+                        return;
+                    }
+                    $("#loadingAlert").fadeIn(1000, function() {
                     // body...
                     });
+                    var socket2 = new SockJS('/update');
+                    var stompClient2 = Stomp.over(socket2);
+                    stompClient2.connect({}, function(frame) {
+                        console.log('Connected: ' + frame);
+                        connected = true;
+                        var userId = getCookie("userId");
+                        if(nodes[selectedID].color.border == "#1999d6"){
+                            var personnode = true;
+                            nodes[selectedID].color= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                            var newcolor= {background:nodecolor, border:'#8AC926',highlight:{background:'#8AC926', border:'#8AC926'},hover:{background:'#8AC926', border:'#8AC926'}};
+                            data.nodes.update([{id:selectedID, color:newcolor}]);
+                        }else{
+                            var personnode = false;
+                            nodes[selectedID].color= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
+                            var newcolor= {background:nodecolor, border:'#1999d6',highlight:{background:'#1999d6', border:'#1999d6'},hover:{background:'#1999d6', border:'#1999d6'}};
+                            data.nodes.update([{id:selectedID, color:newcolor}]);
 
-                });
-                if(shouldRebuild){
-                    localStorage.setItem('nodes', "");
-                    localStorage.setItem('edges', "");
-                    localStorage.setItem('parentlist', "");
+                        }
 
-                    localStorage.setItem('nodes', JSON.stringify(nodes));
+                        topicWrapperRequest = {"userId": getCookie("userId"), "topicName":nodes[selectedID].label.replace(/ /g,"").replace("\n"," "),"person": personnode, "hidden":false};
+                        stompClient2.send("/app/update", {}, JSON.stringify(topicWrapperRequest));
+                        $("#loadingAlert").fadeOut(1000, function() {
+                        // body...
+                        });
 
-                    console.log(parentlist)
-                    var tempedges=[];
-                    if(tempedges.indexOf({from:1,to:0})==-1)
-                        tempedges.push({from:1,to:0})
+                    });
+                    if(shouldRebuild){
+                        localStorage.setItem('nodes', "");
+                        localStorage.setItem('edges', "");
+                        localStorage.setItem('parentlist', "");
+
+                        localStorage.setItem('nodes', JSON.stringify(nodes));
+
+                        console.log(parentlist)
+                        var tempedges=[];
+                        if(tempedges.indexOf({from:1,to:0})==-1)
+                            tempedges.push({from:1,to:0})
 
 
-                    for(var i=1;i<parentlist.length;i++){
-                        if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
-                            tempedges.push({from:i,to:parentlist[i]})
+                        for(var i=1;i<parentlist.length;i++){
+                            if(parentlist[i]!=-1||!(i==1&&parentlist[i]==0))
+                                tempedges.push({from:i,to:parentlist[i]})
+                        }
+                        console.log(JSON.stringify(tempedges))
+
+                        localStorage.setItem('edges', JSON.stringify(tempedges));
+                        localStorage.setItem('parentlist', parentlist);
+                        localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
+                        localStorage.setItem('imglist', JSON.stringify(imageUrlList));
+
+                    }else{
+                        localStorage.setItem('nodes', "");
+                        localStorage.setItem('edges', "");
+                        localStorage.setItem('parentlist', "");
+                        localStorage.setItem('pimlist', "");
+                        localStorage.setItem('imglist', "");
                     }
-                    console.log(JSON.stringify(tempedges))
-
-                    localStorage.setItem('edges', JSON.stringify(tempedges));
-                    localStorage.setItem('parentlist', parentlist);
-                    localStorage.setItem('pimlist', JSON.stringify(allPimIDlist));
-                    localStorage.setItem('imglist', JSON.stringify(imageUrlList));
-
-                }else{
-                    localStorage.setItem('nodes', "");
-                    localStorage.setItem('edges', "");
-                    localStorage.setItem('parentlist', "");
-                    localStorage.setItem('pimlist', "");
-                    localStorage.setItem('imglist', "");
                 }
             }
         }
@@ -1069,128 +1083,130 @@ $('#cards').scroll(function(event){
      // A function that handles the doubleClick event on the BubbleMap
     
     network.on("doubleClick", function(){
+        if(busy==false){
+            $("#accordion").html("");
+            $("#facebook").html("");
+            $("#gmail").html("");
+            $("#twitter").html("");
+            $("#linkedIn").html("");
 
-        $("#accordion").html("");
-        $("#facebook").html("");
-        $("#gmail").html("");
-        $("#twitter").html("");
-        $("#linkedIn").html("");
+            // A function that displays the loading bar
+            $("#loadingAlert").fadeIn(1000, function() {
+                // body...
+            });
+            var node = getCookie("lastselectednode");
+            console.log(node);
+            selectedID = node;
+            $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
+            var avatarlink =""; 
+            var nodeswithplus = nodes[node].label;
+            if(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")]==null){
+                $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
+                $('#avatar').css("background-size","cover"); 
+                $('#avatar').css("background-position","center");
+                $("#sidepanelTitle").css("background","#eee url('/images/back.jpg')");
+                $('#sidepanelTitle').css("background-size","cover");
+                $('#sidepanelTitle').css("background-position","center");
+                $('#sidepanelTitle').addClass("blurclass");
+                $('#sidepanelTitlewords').css("color","black");
+                var globalurl = "googleapis";
+                var globaltopiclastuse =nodes[selectedID].label.replace(/ /g,"").replace("\n"," ");
+                var statusgoogle;
+                $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
+                    // console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
+                    statusgoogle = status;
+                    console.log("loading from google")
+                    avatarlink = data.items[0].link;
+                    globalsrc = avatarlink;
+                    $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                    $('#avatar').css("background-size","cover");
+                    $('#avatar').css("background-position","center");
+                    $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                    $('#sidepanelTitle').css("background-size","cover");
+                    $('#sidepanelTitle').css("background-position","center");
+                    $('#sidepanelTitle').addClass("blurclass");
+                }).always(function() {
+                   
+                    console.log(avatarlink+ " avatarlink");
+                    console.log(avatarlink+ " avatarlink");
+                    if(avatarlink ==""){
+                        globalurl = "pixabay";
 
-        // A function that displays the loading bar
-        $("#loadingAlert").fadeIn(1000, function() {
-            // body...
-        });
-        var node = getCookie("lastselectednode");
-        console.log(node);
-        selectedID = node;
-        $("#sidepanelTitlewords").html("<h2><b>"+toTitleCase(nodes[node].label)+"</b></h2>");
-        var avatarlink =""; 
-        var nodeswithplus = nodes[node].label;
-        if(imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")]==null){
-            $('#avatar').css("background","#eee url('/images/bubblelogo3.png')");
-            $('#avatar').css("background-size","cover"); 
-            $('#avatar').css("background-position","center");
-            $("#sidepanelTitle").css("background","#eee url('/images/back.jpg')");
-            $('#sidepanelTitle').css("background-size","cover");
-            $('#sidepanelTitle').css("background-position","center");
-            $('#sidepanelTitle').addClass("blurclass");
-            $('#sidepanelTitlewords').css("color","black");
-            var globalurl = "googleapis";
-            var globaltopiclastuse =nodes[selectedID].label.replace(/ /g,"").replace("\n"," ");
-            var statusgoogle;
-            $.get("https://www.googleapis.com/customsearch/v1?q="+nodeswithplus.replace(" ","+")+"&cx=004184724144738447691%3Aahmdf8he_fu&imgSize=medium&num=1&safe=high&searchType=image&key=AIzaSyCukG3Zs_BoObdL5NEUqA7uZeouPc7Xpf4", function(data, status){
-                // console.log("Data: " + JSON.stringify(data)+ "link: " +data.items[0].link+ "\nStatus: " + status);
-                statusgoogle = status;
-                console.log("loading from google")
-                avatarlink = data.items[0].link;
-                globalsrc = avatarlink;
+                        $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
+                            // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
+                                avatarlink = data.hits[0].previewURL;
+                                globalsrc = avatarlink;
+
+                                $('#avatar').css("background","#eee url('"+avatarlink+"')");
+                                $('#avatar').css("background-size","cover");
+                                $('#avatar').css("background-position","center");
+                                $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
+                                $('#sidepanelTitle').css("background-size","cover");
+                                $('#sidepanelTitle').css("background-position","center");
+                                $('#sidepanelTitle').addClass("blurclass");
+                            });
+                    }
+                        imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")] = avatarlink; 
+                        var socket3 = new SockJS('/saveimage');
+                        var stompClient3 = Stomp.over(socket3);
+                        stompClient3.connect({}, function(frame) {
+                            console.log('Connected: ' + frame);
+                            connected = true;
+                            var userId = getCookie("userId");
+
+
+                            imageDetails = {topic:globaltopiclastuse, url:globalsrc, source:globalurl};
+                            stompClient3.send("/app/saveimage", {}, JSON.stringify(imageDetails));
+
+                        });
+                  });
+            }else{
+                // alert("loaded from cache")
+                avatarlink = imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")];
                 $('#avatar').css("background","#eee url('"+avatarlink+"')");
                 $('#avatar').css("background-size","cover");
                 $('#avatar').css("background-position","center");
                 $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
                 $('#sidepanelTitle').css("background-size","cover");
                 $('#sidepanelTitle').css("background-position","center");
-                $('#sidepanelTitle').addClass("blurclass");
-            }).always(function() {
-               
-                console.log(avatarlink+ " avatarlink");
-                console.log(avatarlink+ " avatarlink");
-                if(avatarlink ==""){
-                    globalurl = "pixabay";
-
-                    $.get("https://pixabay.com/api/?key=3499301-3dec69a66cfd20291e8a03c40&q="+nodeswithplus.replace(" ","+")+"&safesearch=true&order=latest", function(data, status){
-                        // console.log("Data: " + JSON.stringify(data)+ "\nStatus: " + status);
-                            avatarlink = data.hits[0].previewURL;
-                            globalsrc = avatarlink;
-
-                            $('#avatar').css("background","#eee url('"+avatarlink+"')");
-                            $('#avatar').css("background-size","cover");
-                            $('#avatar').css("background-position","center");
-                            $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-                            $('#sidepanelTitle').css("background-size","cover");
-                            $('#sidepanelTitle').css("background-position","center");
-                            $('#sidepanelTitle').addClass("blurclass");
-                        });
-                }
-                    imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")] = avatarlink; 
-                    var socket3 = new SockJS('/saveimage');
-                    var stompClient3 = Stomp.over(socket3);
-                    stompClient3.connect({}, function(frame) {
-                        console.log('Connected: ' + frame);
-                        connected = true;
-                        var userId = getCookie("userId");
-
-
-                        imageDetails = {topic:globaltopiclastuse, url:globalsrc, source:globalurl};
-                        stompClient3.send("/app/saveimage", {}, JSON.stringify(imageDetails));
-
-                    });
-              });
-        }else{
-            // alert("loaded from cache")
-            avatarlink = imageUrlList[nodes[selectedID].label.replace(/ /g,"").replace("\n"," ")];
-            $('#avatar').css("background","#eee url('"+avatarlink+"')");
-            $('#avatar').css("background-size","cover");
-            $('#avatar').css("background-position","center");
-            $("#sidepanelTitle").css("background","#eee url('"+avatarlink+"')");
-            $('#sidepanelTitle').css("background-size","cover");
-            $('#sidepanelTitle').css("background-position","center");
-            $('#sidepanelTitle').addClass("blurclass");  
-        }
-            $("#loadingAlert").fadeIn(1000, function() {
-            // body...
-            });
-        for(var i=0;i<allPimIDlist[selectedID].length;i++){
-            var uniqueIds = [];
-            $.each(allPimIDlist[selectedID][i], function(j, el){
-                if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
-            });
-            // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
-            var pimIds = JSON.parse(getCookie("pimIds"));
-            var ID = "";
-            for(var j = 0 ; j < pimIds.length; j++)
-            {
-                var current = pimIds[j];        
-                if(current.pim == allPimIDlist[selectedID][i][0])
-                {
-                    ID =current.uId;
-                }
+                $('#sidepanelTitle').addClass("blurclass");  
             }
-            if(!mocktesting){
-                var itemRequest = {itemIds:uniqueIds,userId:ID};
-            }else{
-                var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
-            }
-            
-            try{
-                stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
-            }catch(err){
-                $("#loadingAlert").fadeOut(1000, function() {
+                $("#loadingAlert").fadeIn(1000, function() {
                 // body...
                 });
-                $("#loadingAlertError").fadeIn(1000, function() {
+            for(var i=0;i<allPimIDlist[selectedID].length;i++){
+                var uniqueIds = [];
+                $.each(allPimIDlist[selectedID][i], function(j, el){
+                    if($.inArray(el, uniqueIds) === -1) uniqueIds.push(el);
                 });
-                $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+                // var ID =getCookie(allPimIDlist[selectedID][i][0]+"Id")
+                var pimIds = JSON.parse(getCookie("pimIds"));
+                var ID = "";
+                for(var j = 0 ; j < pimIds.length; j++)
+                {
+                    var current = pimIds[j];        
+                    if(current.pim == allPimIDlist[selectedID][i][0])
+                    {
+                        ID =current.uId;
+                    }
+                }
+                if(!mocktesting){
+                    var itemRequest = {itemIds:uniqueIds,userId:ID};
+                }else{
+                    var itemRequest = {itemIds:uniqueIds,userId:"mocktesting"+ID};
+                }
+                
+                try{
+                    stompClient.send("/app/items", {}, JSON.stringify(itemRequest));
+                    busy= true;
+                }catch(err){
+                    $("#loadingAlert").fadeOut(1000, function() {
+                    // body...
+                    });
+                    $("#loadingAlertError").fadeIn(1000, function() {
+                    });
+                    $("#loadingAlertError").html("Error: We could not talk to the server. Please try again.")
+                }
             }
         }
     });

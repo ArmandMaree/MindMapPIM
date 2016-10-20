@@ -105,31 +105,45 @@ var signinChanged = function (val) {
 		  opacity: '0.0'
 
 	  });
+	  $("#googleLogin").attr('disabled','disabled');
+
+	  
 	  $("#facebookLogin").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#facebookLogin").attr('disabled','disabled');
+
 	  $("#errr").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#errr").attr('disabled','disabled');
+	  
+
 	  $("#tos").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#tos").attr('disabled','disabled');
+
 	  $("#tos2").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#tos2").attr('disabled','disabled');
+
 	  $("#web").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#web").attr('disabled','disabled');
+
 	  $("#tos").hide();
 	  $("#tos2").hide();
 	  $("#web").hide();
@@ -641,59 +655,73 @@ function testAPI() {
 *	unction to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
 */
 function onSuccessFacebook() {
-  $("#googleLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	 $("#googleLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
+	  });
+	  $("#googleLogin").attr('disabled','disabled');
 
-  $("#facebookLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  
+	  $("#facebookLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
-  $("#web").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  });
+	  $("#facebookLogin").attr('disabled','disabled');
 
-  });
+	  $("#errr").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#avatar").delay("slow").animate({
-	  top: '70px',
-	  opacity: '0.3'
+	  });
+	  $("#errr").attr('disabled','disabled');
+	  
 
-  });
-   $("#errr").animate({
-	  top: '100px',
-	  opacity: '0.0'
-  });
+	  $("#tos").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#tos").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  });
+	  $("#tos").attr('disabled','disabled');
 
-  });
-  $("#tos2").animate({
-	top: '100px',
-	opacity: '0.0'
-  });
+	  $("#tos2").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#welcome").show();
-  $("#welcome").delay(1000).animate({
-	  opacity: '1'
+	  });
+	  $("#tos2").attr('disabled','disabled');
 
-  });
-  $('#avatar').fadeOut(0, function() {
-	  $('#avatar').fadeIn(0);
-	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	   $('#avatar').css("background-size","cover");
-		$('#avatar').css("opacity","1");
-  });
-  $("#continue").show();
-  $("#continue").delay(2000).animate({
-	  opacity: '1'
+	  $("#web").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
+	  });
+	  $("#web").attr('disabled','disabled');
+
+	  $("#tos").hide();
+	  $("#tos2").hide();
+	  $("#web").hide();
+
+	  $("#avatar").delay("slow").animate({
+		  top: '70px',
+		  opacity: '0.3'
+
+	  });
+	  $("#welcome").show();
+	  $("#welcome").delay(1000).animate({
+		  opacity: '1'
+	  });
+	  $('#avatar').fadeOut(0, function() {
+		  $('#avatar').fadeIn(0);
+		  $('#avatar').css("background","#eee url('/images/avatar3.png')");
+		  $('#avatar').css("background-size","cover");
+		  $('#avatar').css("opacity","1");
+	  });
+	  $("#continue").show();
+	  $("#continue").delay(2000).animate({
+		  opacity: '1'
+	  });
 }
 var interval;
 function onTwitterLogin()

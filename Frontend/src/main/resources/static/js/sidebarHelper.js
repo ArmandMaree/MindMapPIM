@@ -55,6 +55,9 @@ function populateSidePanel(array)
     // {
     //     $(id).append("<div class='email panel'>"+array[i]+"</div>");
     // }
+    var hilightcolor = getCookie("nav");
+    $(".tabopen").css("border-bottom","5px "+hilightcolor+" solid");
+
     if(array.length >1){
         $(".tabs").append('<div id="'+id+'" class="tab">'+title+'</div>');
         $($(".tabs").children()[0]).addClass('tabopen')
@@ -65,19 +68,22 @@ function populateSidePanel(array)
         $("#cards").children().hide();
         // alert("."+($(this).attr('id')).replace("tab","card").replace("#",""))
 
+        $(".tabopen").css("border-bottom","5px "+hilightcolor+" solid");
         $("."+($(this).attr('id')).replace("tab","card").replace("#","")).show();
         // $(".facebookcard").show();
     });
     for(var i = 1 ; i < array.length; i++ ){
         var temp = (id).replace("tab","card").replace("#","");
         // alert(temp)
-        $("#cards").append("<div class='"+temp+"' id='card'>"+array[i]+"</div>");
+        $("#cards").append("<div class='"+temp+"' id='card' hidden>"+array[i]+"</div>");
 
     }
+     $("#cards").append('<p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)">When we have loaded your information, please click on one of the tabs above that you would like to view.</p>')
 
+  // $("#cards").children().hide();
 
-	$(".panel-heading").css("backgroundColor",getCookie("nav"));
-	$(".panel-default").css("backgroundColor",getCookie("nav"));
+  $(".panel-heading").css("backgroundColor",getCookie("nav"));
+  $(".panel-default").css("backgroundColor",getCookie("nav"));
 }
 
 /**
@@ -104,7 +110,6 @@ var sidebarAni;
 function showsidebar(){
   var sidepanelcolor = getCookie("sidepanel");
   var hilightcolor = getCookie("nav");
-
   if(sidepanelcolor== "" || sidepanelcolor== undefined || sidepanelcolor == "rgba(255,255,255,0.8)"|| sidepanelcolor == "rgba(255, 255, 255,1)"){
     $(".avatar").removeClass("avatardark")
     $(".sidepanel").removeClass("sidepaneldark")
