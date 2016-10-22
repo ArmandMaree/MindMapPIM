@@ -13,6 +13,7 @@
     margin-top: -.8em;
     text-align: center;
     line-height: 1.6em;
+    cursor: pointer;
   }
 #brange
 {
@@ -26,6 +27,7 @@
     margin-top: -.8em;
     text-align: center;
     line-height: 1.6em;
+    cursor: pointer;
   }
 #drange
 {
@@ -58,6 +60,7 @@ body
     position: fixed;
     width: 100%;
     height:93.5vh;
+    cursor: pointer;
     /*border: 1px solid #444444;*/
     /*z-index: -1000;*/ 
 }
@@ -70,6 +73,7 @@ body
   z-index: 1000;
   background-color: white;
   z-index=1;
+  cursor: pointer;
  -webkit-box-shadow: 0 10px 30px -10px black;
     -moz-box-shadow: 0 10px 30px -10px black;
          box-shadow: 0 10px 30px -10px black;
@@ -100,6 +104,7 @@ body
   padding-top:15px;
   color: black;
   text-align: center;
+  cursor: pointer;
   
 }
 .tabdark{
@@ -111,6 +116,7 @@ body
   color: white;
   background-color:#1E2019; 
   text-align: center;
+  cursor: pointer;
   
 }
 
@@ -207,6 +213,7 @@ body
     border-top: 0px !important;
     border-left: 0px !important;
     border-width: 2px !important;
+    cursor: default;
 }
 
 .sidepanelTitlewordsdark{
@@ -219,6 +226,7 @@ body
     font-size: 10pt;
     width:100%;
     height:auto;
+    cursor: default;
 
 }
 .sidepanelTitlewords{
@@ -230,7 +238,7 @@ body
     font-size: 10pt;
     width:100%;
     height:auto;
-
+    cursor: default;
 }
 #accordion{
     position: absolute !important;
@@ -275,6 +283,7 @@ h2{
     width:100%;
     vertical-align: middle !important;
     text-align: center;
+    cursor: default;
 }
 .breadcrumbdark{
     color: white !important;
@@ -284,6 +293,7 @@ h2{
     width:100%;
     vertical-align: middle !important;
     text-align: center;
+    cursor: default;
 }
 .breadcrumb > li{
     color: black !important;
@@ -397,7 +407,7 @@ h2{
       position: fixed;
       width: 100%;
       height:93.5vh;
-
+      cursor: pointer;
       /*z-index: -1000;*/
   }
 
