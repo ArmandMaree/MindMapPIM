@@ -440,3 +440,28 @@ h2{
 
 
 }
+@media (min-width: 200px) {
+  #Branchrange {
+    width: 2em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+    color: black !important;
+  }
+  #brange
+  {
+    width:75%;
+    left:10%;
+  }
+  #Depthrange {
+      width: 2em;
+      height: 1.6em;
+      top: 50%;
+      margin-top: -.8em;
+      text-align: center;
+      line-height: 1.6em;
+      color: black !important; 
+    }
+}
