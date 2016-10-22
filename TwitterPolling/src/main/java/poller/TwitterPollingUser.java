@@ -59,7 +59,6 @@ public class TwitterPollingUser implements Serializable {
 	/**
 	* Constructor that initializes some mamber variables.
 	* @param userId Id of the user as used by the PIM.
-	* @param accessToken The access token that can be used to generate new access tokens.
 	*/
 	public TwitterPollingUser(String userId) {
 		super();
@@ -70,7 +69,6 @@ public class TwitterPollingUser implements Serializable {
 	* Constructor that initializes some mamber variables.
 	* @param id Id of the user as used by the database.
 	* @param userId Id of the user as used by the PIM.
-	* @param accessToken The access token that can be used to generate new access tokens.
 	*/
 	public TwitterPollingUser(String id, String userId) {
 		super();

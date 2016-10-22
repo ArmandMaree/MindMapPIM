@@ -63,3 +63,12 @@ javadoc {
 	failOnError = false
 	options.addStringOption("author")
 }
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}

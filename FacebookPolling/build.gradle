@@ -49,19 +49,14 @@ dependencies {
 	compile("org.springframework.social:spring-social-core:1.1.4.RELEASE")
 	compile("org.springframework.social:spring-social-facebook:2.0.3.RELEASE")
 
-	// FasterXML
-	compile("com.fasterxml.jackson.core:jackson-databind:2.8.1")
-	compile("com.fasterxml.jackson.core:jackson-annotations:2.8.1")
-	compile("com.fasterxml.jackson.core:jackson-core:2.8.1")
-
 	// Queue messaging stuff
 	compile("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE")
 
 	// javadoc dependencies
 	doc files("../data/data-javadoc.jar")
+	doc files("../Poller/poller-javadoc.jar")
+	doc("org.springframework.boot:spring-boot-starter-data-mongodb:1.4.0.RELEASE:sources")
 	doc("org.springframework.boot:spring-boot-starter-amqp:1.4.0.RELEASE:sources")
-	doc("org.springframework.social:spring-social-core:1.1.4.RELEASE:sources")
-	doc("org.springframework.social:spring-social-facebook:2.0.3.RELEASE:sources")
 }
 
 task wrapper(type: Wrapper) {

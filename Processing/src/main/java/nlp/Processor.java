@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
-* Receives {@link data.RawData} and processes it with a {@link nlp.NaturalLanguageProcessor}.
+* Receives {@link com.unclutter.poller.RawData} and processes it with a {@link nlp.NaturalLanguageProcessor}.
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -36,12 +36,12 @@ public class Processor implements Runnable {
 	private NaturalLanguageProcessor nlp;
 
 	/**
-	* A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	* A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link com.unclutter.poller.RawData} objects while they wait for processor threads to dequeue them.
 	*/
 	private LinkedBlockingQueue<RawData> rawDataQueue;
 
 	/**
-	* A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	* A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link com.unclutter.poller.RawData} objects while they wait for processor threads to dequeue them.
 	*/
 	private LinkedBlockingQueue<RawData> priorityRawDataQueue;
 
@@ -49,8 +49,8 @@ public class Processor implements Runnable {
 
 	/**
 	* Constructor used by the {@link listeners.ProcessingManager} to initialize some variables.
-	* @param rawDataQueue A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
-	* @param priorityRawDataQueue A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link data.RawData} objects while they wait for processor threads to dequeue them.
+	* @param rawDataQueue A low priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link com.unclutter.poller.RawData} objects while they wait for processor threads to dequeue them.
+	* @param priorityRawDataQueue A high priority {@link java.util.concurrent.LinkedBlockingQueue} that temporarily stores {@link com.unclutter.poller.RawData} objects while they wait for processor threads to dequeue them.
 	* @param rabbitTemplate RabbitMQ template used to send messages with.
 	* @param nlp The {@link nlp.NaturalLanguageProcessor} that should be used.
 	*/
@@ -62,7 +62,7 @@ public class Processor implements Runnable {
 	}
 
 	/**
-	* Polls the {@link java.util.concurrent.LinkedBlockingQueue}s for new {@link data.RawData} to process.
+	* Polls the {@link java.util.concurrent.LinkedBlockingQueue}s for new {@link com.unclutter.poller.RawData} to process.
 	* <p>
 	*	The priority queue will always first be emptied before the low priority queue will be processed. If the priority queue is empty then the low priority queue will be polled for 10 seconds at a time before checking whether it should stop.
 	* </p>
