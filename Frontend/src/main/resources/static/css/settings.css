@@ -2,6 +2,12 @@ body
 {
 	background-color: #FFFFFF ;
 }
+.dark
+{
+	background-color:rgb(34, 34, 34) !important;
+	color :white !important;
+
+}
 /*table
 {
 	margin-left: 20%;
