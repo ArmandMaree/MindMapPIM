@@ -56,14 +56,15 @@ function populateSidePanel(array)
     //     $(id).append("<div class='email panel'>"+array[i]+"</div>");
     // }
     var hilightcolor = getCookie("nav");
-    $(".tabopen").css("border-bottom","5px "+hilightcolor+" solid");
+    // $(".tabopen").css("border-bottom","5px "+hilightcolor+" solid");
 
     if(array.length >1){
         $(".tabs").append('<div id="'+id+'" class="tab">'+title+'</div>');
-        $($(".tabs").children()[0]).addClass('tabopen')
+        // $($(".tabs").children()[0]).addClass('tabopen')
     }
     $('.tab').click(function () {
-        $('.tabopen').removeClass('tabopen');
+        $(".tabopen").css("border-bottom","5px "+"white"+" solid");
+        $('div').removeClass('tabopen');
         $(this).addClass('tabopen');
         $("#cards").children().hide();
         // alert("."+($(this).attr('id')).replace("tab","card").replace("#",""))
