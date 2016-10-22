@@ -54,24 +54,7 @@ public class ItemListenerTester extends AbstractTester {
 	}
 
 	@Test
-	public void testReceiveItemRequest() throws InterruptedException { // manual test
-		String userId = "acubencos@gmail.com";
-		String[] itemIds = {"facebook", UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
-		ItemRequestIdentified itemRequestIdentified = new ItemRequestIdentified(UUID.randomUUID().toString(), itemIds, userId);
+	public void test() {
 
-		rabbitTemplate.convertAndSend(itemRequestQueueName, itemRequestIdentified);
-		ItemResponseIdentified itemResponseIdentified = itemResponseQueue.poll(5, TimeUnit.SECONDS);
-		System.out.println("Received: " + itemResponseIdentified);
-		Assert.assertNotNull("Failure - itemResponseIdentified is null.", itemResponseIdentified);
-		Assert.assertEquals("Failure - itemResponseIdentified did not return the correct amount of items", itemIds.length, itemResponseIdentified.getItems().length);
-
-		for (int i = 0; i < itemResponseIdentified.getItems().length; i++) {
-			String testString = "<iframe class=\"facebook-iframe\" src=\"https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/" + userId + "/posts/" + itemIds[i] + "/&amp;width=500\"></iframe>";
-
-			if (i == 0)
-				testString = "facebook";
-
-			Assert.assertEquals("Failure - itemResponseIdentified item[" + i + "] does not contain the correct item.", testString, itemResponseIdentified.getItems()[i]);
-		}
 	}
 }

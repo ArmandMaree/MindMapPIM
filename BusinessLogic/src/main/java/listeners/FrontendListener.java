@@ -100,6 +100,7 @@ public class FrontendListener {
 		try {
 			System.out.println("Received: " + userUpdateIdentified);
 			UserIdentified user = new UserIdentified(userUpdateIdentified.getReturnId(), false, (User)userUpdateIdentified);
+			user.setPersistMap(userUpdateIdentified.getPersistMap());
 
 			if (userUpdateIdentified.getAuthCodes() != null) {
 				for (AuthCode authCode : userUpdateIdentified.getAuthCodes()) {
