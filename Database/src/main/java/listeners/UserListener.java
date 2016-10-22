@@ -105,8 +105,13 @@ public class UserListener {
 
 		if (userReturn == null || !userReturn.getIsActive())
 			user.setIsRegistered(false);
-		else
+		else {
 			user = new UserIdentified(user.getReturnId(), true, userReturn);
+			user.setPersistMap(userReturn.getPersistMap());
+			user.setTheme(userReturn.getTheme());
+			user.setInitialDepth(userReturn.getInitialDepth());
+			user.setBranchingFactor(userReturn.getBranchingFactor());
+		}
 
 		System.out.println("Respond from check: " + user);
 		rabbitTemplate.convertAndSend(userCheckResponseQueueName, user);

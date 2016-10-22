@@ -42,8 +42,6 @@ script:
   - ./gradlew test -i
   - cd ../GmailPolling/
   - ./gradlew test -i
-  - cd ../Processing/
-  - ./gradlew test -i
   - cd ../FacebookPolling/
   - ./gradlew test -i
   - cd ../TwitterPolling/
