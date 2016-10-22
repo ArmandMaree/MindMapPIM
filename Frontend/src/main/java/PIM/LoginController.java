@@ -224,6 +224,7 @@ public class LoginController extends WebMvcConfigurerAdapter {
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),authcodes);
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
+        request.setPersistMap(message.getPersistMap());
         
        System.out.println("Update request:" + request);
         
