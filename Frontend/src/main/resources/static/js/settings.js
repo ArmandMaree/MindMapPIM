@@ -49,8 +49,8 @@ $(document).ready(function(){
 		$("body").css("color","white");
 		$("h5").css("color","white !important");
 		$("p").css("color","white !important");
-		$("#spinner").css("color","white !important");
-		$("#spinner2").css("color","white !important");
+		// $("input").css("color","white !important");
+		// $("#spinner2").css("color","white !important");
 	}
 
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -262,8 +262,8 @@ $(document).ready(function(){
 							$("body").css("color","black");
 							$("h5").css("color","black !important");
 							$("p").css("color","black !important");
-							$("#spinner").css("color","black !important");
-							$("#spinner2").css("color","black !important");
+							$("input").css("color","black !important");
+							$("input").css("color","black !important");
 						}
 
 					}

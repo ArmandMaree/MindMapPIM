@@ -8,10 +8,14 @@ body
 	color :white !important;
 
 }
-/*table
+
+iframe
 {
-	margin-left: 20%;
-}*/
+  border: none;
+  overflow: hidden;
+  width : 100%;
+  height: auto;
+}
 #settings
 {
 	border:solid;
@@ -29,10 +33,19 @@ td
 .nav-tabs > li
 {
 	font-size: 10pt;
+	cursor: pointer;
 }
 input[type='checkbox']
 {
 	font-size: 14pt;
+}
+input
+{
+	color: black !important;
+}
+#logout
+{
+	cursor: pointer !important;
 }
 .checkbox
 {
