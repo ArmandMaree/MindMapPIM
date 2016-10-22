@@ -40,13 +40,26 @@ $( window ).resize(function() {
 $(document).ready(function(){
 	startApp();
 	var navcolour = getCookie("nav");
+	$("iframe").hide();
 	$("#nav").css("backgroundColor",navcolour);
+	$("body").css("backgroundColor",getCookie("map"));
+	$("#settings").css("backgroundColor",getCookie("map"));
+	if(getCookie("map") == "#1E2019")
+	{
+		$("body").css("color","white");
+		$("h5").css("color","white !important");
+		$("p").css("color","white !important");
+		$("#spinner").css("color","white !important");
+		$("#spinner2").css("color","white !important");
+	}
+
 	document.cookie = "G_AUTHUSER_H=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	document.cookie = "G_ENABLED_IDPS=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	$("#theme").hide();
 	$("#userPreferences").hide();
 	$("#Saved").hide();
 	$("#Error").hide();
+	$("#Saving").hide();
 	if(getCookie("persistMap") == "true")
 	{
 		//alert("persist is true");
@@ -211,6 +224,8 @@ $(document).ready(function(){
 	*/
 	$("#saveTheme").on("click",
 		function(){
+			$("#Saving").fadeIn(1000, function() {
+			});
 			var socket = new SockJS('/theme');
 			stompClient = Stomp.over(socket);
 			stompClient.connect({}, function(frame) {
@@ -228,13 +243,33 @@ $(document).ready(function(){
 					var response = JSON.parse(Response.body);
 					if(response.code == 0)
 					{
+						$("#Saving").hide();
 						$("#Saved").fadeIn(1000, function() {
 					   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 						});
+						$("body").css("backgroundColor",getCookie("map"));
+						$("#settings").css("backgroundColor",getCookie("map"));
+						if(getCookie("map") == "#1E2019")
+						{
+							$("body").css("color","white");
+							$("h5").css("color","white !important");
+							$("p").css("color","white !important");
+							$("#spinner").css("color","white !important");
+							$("#spinner2").css("color","white !important");
+						}
+						else
+						{
+							$("body").css("color","black");
+							$("h5").css("color","black !important");
+							$("p").css("color","black !important");
+							$("#spinner").css("color","black !important");
+							$("#spinner2").css("color","black !important");
+						}
 
 					}
 					else if(response.code == 99 || response.code == 1)
 					{
+						$("#Saving").hide();
 						$("#Error").fadeIn(1000, function() {
 					   		setTimeout(function(){$("#Error").hide(); }, 4000);
 						});
@@ -371,11 +406,25 @@ var userPreferences={
 	initialBranchFactor:0,
 	persistMap:true
 };
+$("#reloadGraph").on("click",function(){
+	if(getCookie("persistMap") == "true")
+	{
+		document.cookie = "persistMap=false";
+		userPreferences.persistMap = false;
+	}
+	else
+	{
+		document.cookie = "persistMap=true";
+		userPreferences.persistMap = true;
+	}
+})
 /**
 *	Function that is called when the user clicks Save on the user preferences page
 */
 function saveUserPreferences()
 {
+	$("#Saving").fadeIn(1000, function() {
+	});
     document.cookie = "mustreload=true";
 	branch = $("#spinner").val();
 	console.log("Branch: "+branch);
@@ -392,6 +441,7 @@ function saveUserPreferences()
 	}
 	if($("#reloadGraph").attr("checked") == "checked")
 	{
+
 		userPreferences.persistMap= true;
 	}
 	else
@@ -411,6 +461,7 @@ function saveUserPreferences()
 	
 			if(response.code == 0)
 			{
+				$("#Saving").hide();
 				$("#Saved").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Saved").hide(); }, 2000); 	
 				});
@@ -420,6 +471,7 @@ function saveUserPreferences()
 			}
 			else if(response.code == 99 || response.code ==1)
 			{
+				$("#Saving").hide();
 				$("#Error").fadeIn(1000, function() {
 			   		setTimeout(function(){$("#Error").hide(); }, 4000);
 				});
