@@ -1,7 +1,7 @@
 package testers.data;
 
 import data.*;
-import com.unclutter.poller.*;
+import com.unclutter.poller.RawData;
 import testers.AbstractTester;
 
 import java.util.List;

@@ -27,7 +27,8 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import listeners.*;
 import data.*;
-import com.unclutter.poller.*;
+import com.unclutter.poller.ItemRequestIdentified;
+import com.unclutter.poller.ItemResponseIdentified;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

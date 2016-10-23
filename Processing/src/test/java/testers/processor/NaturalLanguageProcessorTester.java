@@ -3,7 +3,7 @@ package testers.processor;
 import nlp.*;
 import data.*;
 import testers.AbstractTester;
-import com.unclutter.poller.*;
+import com.unclutter.poller.RawData;
 
 import java.util.List;
 import java.util.ArrayList;

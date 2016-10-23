@@ -4,7 +4,7 @@ import nlp.*;
 import data.*;
 import listeners.*;
 import testers.AbstractTester;
-import com.unclutter.poller.*;
+import com.unclutter.poller.RawData;
 
 import java.util.*;
 import java.util.concurrent.*;
