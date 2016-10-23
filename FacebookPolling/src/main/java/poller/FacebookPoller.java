@@ -37,7 +37,7 @@ public class FacebookPoller implements Runnable {
 	private volatile boolean stop = false;
 	private int MAX_PRIORITY_POSTS = 25;
 	private int MAX_OLD_POSTS = 50;
-	private int MAX_POSTS = 50;
+	private int MAX_POSTS = -1;
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private FacebookPollingUser pollingUser;
 	private String userId;
@@ -151,7 +151,7 @@ public class FacebookPoller implements Runnable {
 				if (stop || (pollingUser.getNumberOfPosts() > MAX_POSTS && MAX_POSTS != -1))
 					break outerloop;
 
-				if (pollingUser.getNumberOfPosts() == MAX_OLD_POSTS && MAX_OLD_POSTS != -1) {
+				if (pollingUser.getNumberOfPosts() == MAX_OLD_POSTS && MAX_OLD_POSTS != -1 && pollingUser.getEndOfBlockPostId() == null) {
 					System.out.println("Reached max number of old posts for user " + userId + ". Now only checking for new posts.");
 					break outerloop;
 				}

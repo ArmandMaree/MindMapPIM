@@ -70,9 +70,10 @@ public class GmailPoller implements Runnable{
 	private Gmail service = null;
 	private GmailRepository gmailRepository;
 	private MessageBroker messageBroker;
-	private int MAX_EMAILS = 100;
+	private int MAX_EMAILS = -1;
 	private int MAX_OLD_EMAILS = 50;
 	private int MAX_PRIORITY_EMAILS = 25;
+	private boolean oldDone = false;
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private GmailPollingUser pollingUser = null;
 

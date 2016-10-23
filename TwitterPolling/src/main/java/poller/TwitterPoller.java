@@ -44,8 +44,7 @@ public class TwitterPoller implements Runnable {
 	private int tweetCount = 0;
 	private int PRIORITY_LIMIT = 25;
 	private int MAX_OLD_TWEETS = 50;
-	private int MAX_TWEETS = 100;
-
+	private int MAX_TWEETS = -1;
 	private int DELAY_BETWEEN_POLLS = 60; // 60 seconds delay between polls
 	private String userId;
 	private TwitterPollingUser pollingUser;
@@ -76,8 +75,10 @@ public class TwitterPoller implements Runnable {
 			if (pollingUser.checkAndStart()) {
 				throw new AlreadyPollingForUserException("There is already a poller running for user " + pollingUser.getUserId() + ".");
 			}
-			else
+			else {
 				twitterRepository.save(pollingUser);
+				this.service = getService();
+			}
 		}
 	}
 
@@ -146,7 +147,7 @@ public class TwitterPoller implements Runnable {
 				if (stop || (pollingUser.getNumberOfTweets() > MAX_TWEETS && MAX_TWEETS != -1))
 					break outerloop;
 
-				if(pollingUser.getNumberOfTweets() >= MAX_OLD_TWEETS && MAX_OLD_TWEETS != -1) {
+				if(pollingUser.getNumberOfTweets() >= MAX_OLD_TWEETS && MAX_OLD_TWEETS != -1 && pollingUser.getEndOfBlockTweetId() == 1) {
 					System.out.println("Reached maximum number of tweets for user " + userId + ". Now only checking for new tweets.");
 					break outerloop;
 				}

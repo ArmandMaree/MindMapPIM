@@ -21,14 +21,21 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import data.*;
-import poller.*;
-import repositories.*;
+// import data.*;
+import poller.GmailPollingUser;
+import repositories.GmailRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.Stack;
 import java.io.*;
 
-import com.unclutter.poller.*;
+import com.unclutter.poller.ItemRequestIdentified;
+import com.unclutter.poller.ItemResponseIdentified;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

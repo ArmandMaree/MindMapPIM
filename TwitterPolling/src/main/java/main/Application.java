@@ -109,6 +109,8 @@ public class Application implements CommandLineRunner {
 
 		for (TwitterPollingUser pollingUser : pollingUsers) {
 			try {
+				pollingUser.setCurrentlyPolling(false);
+				twitterRepository.save(pollingUser);
 				new Thread(new TwitterPoller(twitterRepository, messageBrokerFactory.getMessageBroker(), pollingUser.getUserId())).start();
 			}
 			catch (AlreadyPollingForUserException apfue) {
