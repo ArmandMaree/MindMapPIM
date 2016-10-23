@@ -16,8 +16,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import data.*;
-import com.unclutter.poller.*;
+import com.unclutter.poller.ItemRequestIdentified;
+import com.unclutter.poller.ItemResponseIdentified;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageNotSentException;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

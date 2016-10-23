@@ -107,7 +107,7 @@ public class PollingConfiguration {
 
 	/**
 	* Set the value of itemRequestListener.
-	* @param itemREquestListener The object that will be receiving itemRequests.
+	* @param itemRequestListener The object that will be receiving itemRequests.
 	*/
 	public void getItemRequestListener(Object itemRequestListener) {
 		this.itemRequestListener = itemRequestListener;

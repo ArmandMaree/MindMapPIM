@@ -7,7 +7,7 @@ import java.io.Serializable;
 *
 * @author  Armand Maree
 * @since   1.0.0
-* @see data.ItemRequest
+* @see com.unclutter.poller.ItemRequest
 */
 public class ItemResponse implements Serializable {
 	private static final long serialVersionUID = 3312696172406791L;
