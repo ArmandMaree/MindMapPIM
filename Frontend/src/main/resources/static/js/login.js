@@ -750,7 +750,7 @@ function onTwitterLogin()
 function setTwitterAuthCode(twitter)
 {
 	clearInterval(interval);
-	authCodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	authCodes.push({id:twitter,pimSource:"twitter",authCode:"start",expireTime:""});
 	$("#tickTwitter").show();
 	//$("#nextButton").show();
   	//alert(JSON.stringify(authCodes));
