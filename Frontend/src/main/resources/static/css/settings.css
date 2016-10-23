@@ -2,10 +2,20 @@ body
 {
 	background-color: #FFFFFF ;
 }
-/*table
+.dark
 {
-	margin-left: 20%;
-}*/
+	background-color:rgb(34, 34, 34) !important;
+	color :white !important;
+
+}
+
+iframe
+{
+  border: none;
+  overflow: hidden;
+  width : 100%;
+  height: auto;
+}
 #settings
 {
 	border:solid;
@@ -23,10 +33,19 @@ td
 .nav-tabs > li
 {
 	font-size: 10pt;
+	cursor: pointer;
 }
 input[type='checkbox']
 {
 	font-size: 14pt;
+}
+input
+{
+	color: black !important;
+}
+#logout
+{
+	cursor: pointer !important;
 }
 .checkbox
 {
@@ -80,4 +99,23 @@ li > div:hover
 #tickLinkedin
 {
 	padding: 5%;
+}
+@media (max-width: 700px) {
+	#settings
+	{
+		position:absolute;
+		width:auto !important;
+		height:100%  !important;
+		left:0px !important;
+		border:none;
+		/*border-color:#A3CEF1;*/
+		border-width:0px;
+		/*height:80vh;*/
+		margin-top: 0%; 
+		padding-bottom: 0%;
+		/*background-color: #FFFCEA ;*/
+	}
+	img{
+		position: absolute !important;
+	}
 }

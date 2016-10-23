@@ -16,6 +16,7 @@
 #dropMenu > li
 {
   font-size: 12pt;
+  cursor: pointer;
 }
 /*navbar code*/
 .navbar-default {
@@ -26,6 +27,7 @@
 .navbar-default .navbar-brand {
   color: #d9d9d9;
   color: white !important;
+
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
@@ -82,6 +84,7 @@
   font-family: 'Pacifico', cursive !important;
   top:-5px;
   left: 25px;
+  cursor: default;
 }
 
 

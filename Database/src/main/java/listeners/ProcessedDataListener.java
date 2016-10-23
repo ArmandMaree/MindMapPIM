@@ -1,19 +1,25 @@
 package listeners;
 
-import java.util.List;
+import data.ProcessedData;
+import data.Topic;
+import data.User;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import data.*;
-import repositories.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
 /**
-* Receives processed data from a queue messaging applicatiion and persists it.
+* Receives processed data from a queue messaging service, processes it and then persists it.
+* <p>
+*	This class will receive {@link data.ProcessedData} objects from the Processor service. These {@link data.ProcessedData} objects will be broken down into {@link listeners.PendingTopic} objects that will be persisted.
+* </p>
 *
 * @author  Armand Maree
 * @since   1.0.0
@@ -87,23 +93,21 @@ public class ProcessedDataListener {
 						processedDataIds.add(processedData.getId()); // ids of all topics containing the current topic (only one in this case).
 						topicInRepo = new Topic(processedData.getUserId(), pendingTopic.getTopic(), pendingTopic.getRemainingTopics(), processedDataIds, processedData.getTime());
 
-						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
-							topicInRepo.setIsPerson(true);
+						if (pendingTopic.isPerson() && !topicInRepo.getPerson())
+							topicInRepo.setPerson(true);
 
 						topicRepository.save(topicInRepo); // persist new topic
 						topicInRepo = topicRepository.findByTopicAndUserId(topicInRepo.getTopic(), topicInRepo.getUserId());
-						// System.out.println("Added topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 					else {
 						topicInRepo.addRelatedTopics(pendingTopic.getRemainingTopics());
 						topicInRepo.addProcessedDataId(processedData.getId());
 						topicInRepo.setTime(processedData.getTime());
 
-						if (pendingTopic.isPerson() && !topicInRepo.isPerson())
-							topicInRepo.setIsPerson(true);
+						if (pendingTopic.isPerson() && !topicInRepo.getPerson())
+							topicInRepo.setPerson(true);
 
 						topicRepository.save(topicInRepo);
-						// System.out.println("Updated topic: " + topicInRepo.getTopic() + "  for user: " + userRepository.findByUserId(processedData.getUserId()).getGmailId());
 					}
 				}
 			}
@@ -116,24 +120,34 @@ public class ProcessedDataListener {
 	* Receives low priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
-	public void receiveProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received processedData for user: " + processedData.getUserId());
-		List<PendingTopic> pt = processProcessedData(processedData);
+	public void receiveProcessedData(ProcessedData processedData) {
+		try {
+			System.out.println("Received processedData for user: " + processedData.getUserId());
+			List<PendingTopic> pt = processProcessedData(processedData);
 
-		for (PendingTopic pendingTopic : pt)
-			pendingTopics.put(pendingTopic);
+			for (PendingTopic pendingTopic : pt)
+				pendingTopics.put(pendingTopic);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	* Receives high priority processedData and updates the userId then sends the object to the repositry for persistence.
 	* @param processedData The object that needs to be persisted.
 	*/
-	public void receivePriorityProcessedData(ProcessedData processedData) throws InterruptedException {
-		System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
-		List<PendingTopic> pt = processProcessedData(processedData);
+	public void receivePriorityProcessedData(ProcessedData processedData) {
+		try {
+			System.out.println("Received priorityProcessedData for user: " + processedData.getUserId());
+			List<PendingTopic> pt = processProcessedData(processedData);
 
-		for (PendingTopic pendingTopic : pt)
-			priorityPendingTopics.put(pendingTopic);
+			for (PendingTopic pendingTopic : pt)
+				priorityPendingTopics.put(pendingTopic);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -141,19 +155,17 @@ public class ProcessedDataListener {
 	* @param processedData The {@link data.ProcessedData} object that has to be processed.
 	* @return A list of smaller topics processed and contained in a {@link java.util.List} of {@link listeners.PendingTopic}.
 	*/
-	public List<PendingTopic> processProcessedData(ProcessedData processedData) {
+	public List<PendingTopic> processProcessedData(ProcessedData processedData) throws NoSuchUserException {
 		List<PendingTopic> pt = new ArrayList<>();
 
 		try {
 			User user = userRepository.findByPimId(processedData.getPimSource(), processedData.getUserId());
-			
-			if (user == null)
-				return pt;
+
+			if (user == null) // no user exists with this pim id
+				throw new NoSuchUserException(processedData.getUserId() + " for " + processedData.getPimSource());
 
 			processedData.setUserId(user.getUserId());
 
-			if (user == null) // no user exists with this gmail id
-				return pt;
 
 			List<String> cleanedTopics = new ArrayList<>();
 

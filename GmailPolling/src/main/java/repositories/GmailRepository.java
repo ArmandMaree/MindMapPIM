@@ -2,17 +2,18 @@ package repositories;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-
 import poller.GmailPollingUser;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+
 /**
-* MongoDB repository for processed data.
+* MongoDB repository for {@link poller.GmailPollingUser}.
 *
 * @author  Armand Maree
-* @since   2016-07-24
+* @since   1.0.0
 */
 public interface GmailRepository extends MongoRepository<GmailPollingUser, String> {
 	public GmailPollingUser findByUserId(String userId);
 	public List<GmailPollingUser> findAll();
+	public List<GmailPollingUser> findByCurrentlyPolling(boolean currentlyPolling);
 }

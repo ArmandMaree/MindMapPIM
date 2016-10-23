@@ -43,71 +43,53 @@ var initSigninV2 = function() {
 	  client_id: '570253498384-r14raqpo4lcqpjggmp05h6359dm6ogfo.apps.googleusercontent.com',
 	  scope: 'profile email https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.readonly'
   });
-  /**
- * Function to attach the google api to the custom button
- * @param {string} customButton - Custom button you want to attch the google API code to.
- * @param {string} additionalParams - Any additional parameters needed.
- * @param {function} successFunc - attach a callback function if request succeded
- * @param {function} failFunc - attach a callback function if request fails
- */
-  auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
-  auth2.isSignedIn.listen(signinChanged);
-  if (auth2.isSignedIn.get() == true) {
+/**
+* Function to attach the google api to the custom button
+* @param {string} customButton - Custom button you want to attch the google API code to.
+* @param {string} additionalParams - Any additional parameters needed.
+* @param {function} successFunc - attach a callback function if request succeded
+* @param {function} failFunc - attach a callback function if request fails
+*/
+auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
+auth2.isSignedIn.listen(signinChanged);
+if (auth2.isSignedIn.get() == true) {
 	auth2.signIn();
-  }
-
-  refreshValues();
+}
+refreshValues();
 };
- /**
- * Function to send a User Registration Object through to the frontend application
- */
+/**
+* Function to send a User Registration Object through to the frontend application
+*/
 var sendUserReg = function(){
 	if(getCookie("facebookId") != "")
 	{
 		authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
-		// alert("Here");
 	}
-		// sendUserObjectForFacebook();
 	$("#loadingAlert").fadeIn(1000, function() {
-		// body...
 	});
 	var socket = new SockJS('/hello');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
-	    console.log('Connected: ' + frame);
 	    connected = true;
 	  	var userReg = {};
-	  	// if(gmailUser!=null){
 		userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:authCodes};
-		console.log("User registration object:" +JSON.stringify(userReg));
-	  	// }
-	  	// setTimeout(function(){
-			stompClient.subscribe('/user/topic/greetings', function(serverResponse){
-				var jsonresponse = JSON.parse(serverResponse.body);
-				console.log("Server says: "+jsonresponse.userId);
-				document.cookie="userId="+jsonresponse.userId;
-				document.cookie="branch="+jsonresponse.branchingFactor;
-				document.cookie="depth="+jsonresponse.initialDepth;
-				console.log("PIMIDS: " + JSON.stringify(jsonresponse.pimIds));
-
-				for (var i = 0; i < jsonresponse.pimIds.length; i++) {
-					document.cookie=jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId;
-					console.log("Added PIM: " + jsonresponse.pimIds[i].pim + "Id=" + jsonresponse.pimIds[i].uId); 
-				}
-
-				$("#loadingAlert").fadeOut(1000, function() {
-					// body...
-				});
-				// if (stompClient != null) {
-		  //           stompClient.disconnect();
-		  //       }
-				window.location.assign('/help');
-			}, function(error) {
-		    		// display the error's message header:
-		    		console.log(error.headers.message);
-	  		});
+	  
+		stompClient.subscribe('/user/topic/greetings', function(serverResponse){
+			var jsonresponse = JSON.parse(serverResponse.body);
+			document.cookie="userId="+jsonresponse.userId;
+			document.cookie="branch="+jsonresponse.branchingFactor;
+			document.cookie="depth="+jsonresponse.initialDepth;
+			document.cookie="pimIds="+JSON.stringify(jsonresponse.pimIds);
+			document.cookie = "persistMap=" +jsonresponse.persistMap;
+			$("#loadingAlert").fadeOut(1000, function() {
+				
+			});
+			document.cookie = "login=1";
+			window.location.assign('/help');
+		}, function(error) {
+	    		console.log(error.headers.message);
+  		});
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-	  	// }, 3000);
 	});
 
 }
@@ -123,31 +105,45 @@ var signinChanged = function (val) {
 		  opacity: '0.0'
 
 	  });
+	  $("#googleLogin").attr('disabled','disabled');
+
+	  
 	  $("#facebookLogin").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#facebookLogin").attr('disabled','disabled');
+
 	  $("#errr").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#errr").attr('disabled','disabled');
+	  
+
 	  $("#tos").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#tos").attr('disabled','disabled');
+
 	  $("#tos2").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#tos2").attr('disabled','disabled');
+
 	  $("#web").animate({
 		  top: '100px',
 		  opacity: '0.0'
 
 	  });
+	  $("#web").attr('disabled','disabled');
+
 	  $("#tos").hide();
 	  $("#tos2").hide();
 	  $("#web").hide();
@@ -171,7 +167,6 @@ var signinChanged = function (val) {
 	  $("#continue").delay(2000).animate({
 		  opacity: '1'
 	  });
-	  console.log(auth2.currentUser.get())
 	  googleUser = auth2.currentUser.get();
 	  document.cookie = "login=1";
   }
@@ -181,12 +176,7 @@ var signinChanged = function (val) {
  */
 var refreshValues = function() {
   if (auth2){
-	console.log('Refreshing values...');
-
 	googleUser = auth2.currentUser.get();
-
-	console.log(JSON.stringify(googleUser, undefined, 2));
-	console.log(auth2.isSignedIn.get());
   }
 }
 /**
@@ -195,15 +185,9 @@ var refreshValues = function() {
  */
 var onSuccess = function(user) {
 	gmailUser = user;
-	console.log('Signed in as ' + user.w3.ig);
-	console.log(user)
-	console.log(user.w3.ig)
-	// console.log(gapi.auth2.getToken())
-	//Create cookie
 	document.cookie = "name="+gmailUser.w3.ofa;
 	document.cookie ="surname="+gmailUser.w3.wea;
 	document.cookie= "email="+gmailUser.w3.U3;
-	  console.log(gmailUser.w3.ofa+","+ gmailUser.w3.wea);
 	document.getElementById('welcome').innerHTML += ", " + user.w3.ig;
  };
 /**
@@ -220,50 +204,44 @@ var myVar;
 function googleretrieve(){
 	if(gmailUser==null){
 		$('#googleLogin2').click();
-		// alert("gmailUser2")
-
 		auth2.signIn();
 		myVar = setInterval(function(){ checkofflineprompt() }, 500);
 	}else{
 		auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
 	}
 }
-
+/**
+* Function for gmail which forces a prompt to ask the user for permissions and sets the cookies
+*/
 function checkofflineprompt() {
-	// console.log(auth2.currentUser.get())
 	gmailUser = auth2.currentUser.get();
 	if(gmailUser.w3.U3!=null){
 		auth2.grantOfflineAccess({'approval_prompt': force_prompt, 'redirect_uri': 'postmessage'}).then(signInCallback);
 	  	document.cookie = "name="+gmailUser.w3.ofa;
 		document.cookie ="surname="+gmailUser.w3.wea;
 		document.cookie= "email="+gmailUser.w3.U3;
-	  	clearInterval(myVar);
-		 
+	  	clearInterval(myVar);	 
 	}
 }
 /**
- * Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.
- * @param {string} authResult - the result of calling the google api and signing in
- */
-  function signInCallback(authResult) {
+* Google callback function that returns the access token. This access token is sent via a websocket to the backend where it will be processed.
+* @param {string} authResult - the result of calling the google api and signing in
+*/
+function signInCallback(authResult) {
   	clearInterval(myVar);
-  	// gmailUser= auth2.currentUser.get()
-  	// console.log(JSON.stringify(auth2));
 	if (authResult['code']) {
-	  console.log(authResult['code']);
 	  $('#tickGmail').show();
 	  $('#nextButton').show();
 	  var gmailAuthCode = {id:gmailUser.w3.U3,pimSource:"gmail",authCode:authResult['code']}
 	  authCodes.push(gmailAuthCode);
-	  console.log("added new AuthCode");
 
 	} else {
 	  	console.log("An error occurred!");
 	}
   }
 /**
- * A function to ajax the Privacy Policy document into a modal and display the Privacy policy.
- */
+* A function to ajax the Privacy Policy document into a modal and display the Privacy policy.
+*/
 function loadPrivacy(){
   document.getElementById("modaltitle").innerHTML="Privacy Policy";
   var xmlhttp=new XMLHttpRequest();
@@ -290,66 +268,32 @@ function loadError(){
  * A function to ajax the Terms of service document into a modal and display the Terms of service.
  */
 function loadTos(){
-  document.getElementById("modaltitle").innerHTML="Terms of Service";
-  var xmlhttp=new XMLHttpRequest();
-  xmlhttp.onreadystatechange=function(){
-	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
-		  document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
-		  }
+  	document.getElementById("modaltitle").innerHTML="Terms of Service";
+ 	var xmlhttp=new XMLHttpRequest();
+ 	xmlhttp.onreadystatechange=function(){
+	   	if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			document.getElementById("modelbod").innerHTML=xmlhttp.responseText;
+		}
     }
-  xmlhttp.open("GET","ajax/TermsofService.txt");
-  xmlhttp.send();
+  	xmlhttp.open("GET","ajax/TermsofService.txt");
+  	xmlhttp.send();
 }
+/**
+*	Function that animates the log in screen
+*/
 function loadReg(){
-	$("#googleLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#facebookLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#tos2").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
-	$("#web").animate({
-	  top: '100px',
-	  opacity: '0.0'
-
-	});
+	$("#googleLogin").hide();
+	$("#facebookLogin").hide();
+	$("#tos").hide();
+	$("#tos2").hide();
+	$("#web").hide();
 	$("#errr").hide();
 	$("#tos").hide();
 	$("#tos2").hide();
 	$("#web").hide();
 
-	$("#avatar").delay("slow").animate({
-	  top: '70px',
-	  opacity: '0.3'
-
-	});
-	$("#welcome").show();
-	$("#welcome").delay(1000).animate({
-	  opacity: '1'
-	});
-	$('#avatar').fadeOut(0, function() {
-	  $('#avatar').fadeIn(0);
-	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	  $('#avatar').css("background-size","cover");
-	  $('#avatar').css("opacity","1");
-	});
-	$("#continue").show();
-	$("#continue").delay(2000).animate({
-	  opacity: '1'
-	});
+	$("#avatar").hide();
+	
 	$("#cssload-pgloading").show();
     if($(window).width()<=700)
     {
@@ -383,7 +327,7 @@ function loadReg(){
 	$("#cssload-pgloading").hide();
 
 	$("#loadingAlert").fadeOut(1000, function() {
-		// body...
+		
 	});
 	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function(){
@@ -394,6 +338,64 @@ function loadReg(){
 	xmlhttp.open("GET","ajax/selectdata.html");
 	xmlhttp.send();
 	var filename;
+}
+/**
+*	Function returns the id of the data source sent to it as stored in the cookie
+*	@param {String} name The name of the data source
+*	@return The id of the data source as stored in the cookie or an empty string if not in the cookie
+*/
+function findPim(name)
+{
+	var pimIds = JSON.parse(getCookie("pimIds"));
+	for(var i = 0; i < pimIds.length;i++)
+	{
+		if(pimIds[i].pim == name)
+			return pimIds[i].uId;
+	} 
+	return "";
+}
+/**
+*	@var {JSON object} newDataSources - A JSON object that contains the user ids for the respective selected data sources
+*/
+var UpdateSourcesObject = {
+	userId: "", 
+	authcodes:[]
+}
+/**
+*	Function that is called when the user clicks on save on the account settings page
+*/
+function SaveAccountChanges()
+{
+	UpdateSourcesObject.userId = getCookie("userId");
+	var socket = new SockJS('/datasources');
+	stompClient = Stomp.over(socket);
+	stompClient.connect({}, function(frame) {
+	    console.log('Connected: ' + frame);
+	    connected = true;
+	
+		stompClient.subscribe('/user/topic/request', function(Response){
+			var response = JSON.parse(Response.body);
+			console.log("Response is : "+ response);
+	
+			if(response.code == 0)
+			{
+				window.location.assign('/');
+			}
+			else if(response.code == 99 || response.code == 1)
+			{
+				console.log("Opps something went wrong!");
+			}
+		}, function(error) {
+	  		console.log(error.headers.message);
+		});
+		console.log(JSON.stringify(UpdateSourcesObject))
+		stompClient.send("/app/datasources", {}, JSON.stringify(UpdateSourcesObject));
+		UpdateSourcesObject = {
+			userId: "", 
+			authcodes:[]
+		}
+	});
+	stompClient.disconnect();
 }
 /**
  * A function to load the selectdata.html file data into the login container to dynamically update the element to display the new information to select data sources.
@@ -431,16 +433,12 @@ function loadXMLDoc(){
 
 	});
 
-		// $("#loadingAlert").fadeIn(1000, function() {
-		// // body...
-		// });
-		var socket = new SockJS('/hello');
-		stompClient = Stomp.over(socket);
-		stompClient.connect({}, function(frame) {
-		    console.log('Connected: ' + frame);
-		    connected = true;
+	var socket = new SockJS('/hello');
+	stompClient = Stomp.over(socket);
+	stompClient.connect({}, function(frame) {
+	    console.log('Connected: ' + frame);
+	    connected = true;
 			
-			// var usercheck={firstName:gmailUser.w3.ofa,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
 		if(gmailUser !=null){
 			var userReg={firstName:getCookie("name"),lastName:getCookie("surname"),authCodes:[{id:gmailUser.w3.U3,pimSource:"gmail",authCode:null}]};
 			document.cookie="gmailId="+gmailUser.w3.U3;
@@ -459,47 +457,43 @@ function loadXMLDoc(){
 			document.cookie = "branch="+jsonresponse.branchingFactor;
 			document.cookie = "depth="+jsonresponse.initialDepth;
 			document.cookie = "pimIds="+ JSON.stringify(jsonresponse.pimIds);
-			// alert("PimIds: "+JSON.stringify(jsonresponse.pimIds));
-
+			document.cookie = "persistMap=" + jsonresponse.persistMap;
 			console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
 
 			document.cookie="userId="+jsonresponse.userId;
-				// $("#loadingAlert").fadeOut(1000, function() {
-				// 	// body...
-				// });
-				if(jsonresponse.isRegistered){
+				
+				if(jsonresponse.isRegistered)
+				{
 					document.cookie = "login=1";
+					if(findPim("facebook") != "")
+					{
+						document.cookie ="FBrefresh=true";
+						FB.getLoginStatus(function(response) {
+						  statusChangeCallback(response);
+						   var facebookAuthCode= {"id":getCookie("facebookId"),"pimSource":"facebook","authCode":getCookie("fAT"),"expireTime":getCookie("fExpireTime")};
+						   UpdateSourcesObject.authcodes.push(facebookAuthCode);
+						   SaveAccountChanges();
+						   document.cookie ="FBrefresh=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+						});
 
-					window.location.assign('/');
-				}else{
+					}
+					else
+						window.location.assign('/');	
+				}
+				else
+				{
 					liftdown();
 					$('#myModal').modal('show') 
 					loadError();
-					// $("#cssload-pgloading").hide();
-					// $("#loadingAlert").fadeOut(1000, function() {
-					// 	// body...
-					// });
-					// var xmlhttp=new XMLHttpRequest();
-					// xmlhttp.onreadystatechange=function(){
-					// 	if (xmlhttp.readyState==4 && xmlhttp.status==200){
-					// 		document.getElementById("container").innerHTML=xmlhttp.responseText;
-					// 	}
-					// }
-					// xmlhttp.open("GET","ajax/selectdata.html");
-					// xmlhttp.send();
-					// var filename;
-					// if (stompClient != null) {
-		   //              stompClient.disconnect();
-		   //          }
 				}
 			}, function(error) {
-		    		// display the error's message header:
 		    		console.log(error.headers.message);
 	  		});
 			stompClient.send("/app/hello", {}, JSON.stringify(userReg));
 		});
 
 }
+
 /**
  * A Google function to sign the user out if they are signed in.
  */
@@ -519,6 +513,7 @@ jQuery(document).ready(function($){
 	$("#continue").hide();
 	$("#loadingAlert").hide();
 	$("#cssload-pgloading").hide();
+	startApp()
 
 /**
 *	This function initialises the JavaScript SDK
@@ -535,13 +530,8 @@ FB.init({
   version    : 'v2.5' 
 });
 
-// Cause auto login to facebook
-// FB.getLoginStatus(function(response) {
-//   statusChangeCallback(response);
-// }); 
-
 };
-
+ 
 /**
 *	This loads the Facebook SDK asynchronously
 */
@@ -554,7 +544,6 @@ FB.init({
 }(document, 'script', 'facebook-jssdk'));
 });
 
-////////////////////////////////////////////////////////////////////////////////////////////////// Facebook Code
 /**
 *		@var {} AuthResponse - object containing user information sent by Facebook
 */
@@ -583,7 +572,11 @@ var FacebookUser;
 
 		console.log(response.authResponse);
 		console.log("Connected to facebook, accessToken:"+ response.authResponse);
-		testAPI();
+		document.cookie = "facebookId="+ String(response.authResponse.userID);
+	  	document.cookie = "fAT="+ response.authResponse.accessToken;
+	  	document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
+	  	if(getCookie("FBrefresh") != "true")
+			testAPI();
 	}
 	else if (response.status === 'not_authorized')
 	{
@@ -601,20 +594,17 @@ var FacebookUser;
 */
 var  facebookId = "";
 var fAT = "";
+
 function onFacebookLogin()
 {
+	document.cookie = "FB=true";
   console.log("onFacebookLogin");
   FB.login(function(response) {
 	if (response.authResponse) {
-	  console.log("Auth response:");
 	  AuthResponse = response;
 	  document.cookie = "facebookId="+ String(response.authResponse.userID);
 	  document.cookie = "fAT="+ response.authResponse.accessToken;
 	  document.cookie = "fExpireTime="+ response.authResponse.expiresIn;
-	  // alert(fuid)
-	  // alert(fAT)
-	  alert("response userID: " + response.authResponse.userID)
-	  console.log(response.authResponse);
 	  showtick();
 	}
 	FB.getLoginStatus(function(response) {
@@ -622,77 +612,10 @@ function onFacebookLogin()
 	});
   }, {scope: 'user_posts'});
 }
-function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length,c.length);
-            }
-        }
-        return "";
-    }
 function sendUserObjectForFacebook()
 {
-	// var socket = new SockJS('/hello');
-	// 	stompClient = Stomp.over(socket);
-	// 	stompClient.connect({}, function(frame) {
-	// 	    console.log('Connected: ' + frame);
-	// 	    connected = true;
-			// var name = FacebookUser.name
-			// var fullName = name.split(" ");
-			// var fname = fullName[0];
-			// var lname = fullName[fullName.length-1];
-
-			// document.cookie = "name="+fname;
-	  // 		document.cookie ="surname="+lname;
-	  // 		document.cookie= "facebookId="+ AuthResponse.userID;
-	//   		console.log("hello: "+JSON.stringify(AuthResponse))
-	// 		// var usercheck={firstName:gmailUser.w3.Za,lastName:gmailUser.w3.wea,gmailId:gmailUser.w3.U3};
-	// 		var userReg={firstName:fname,lastName:lname,authCodes:[{id:AuthResponse.userID,pimSource:"facebook",authCode:AuthResponse.accessToken}]};
-			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")}));
-			authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
-			// alert(JSON.stringify({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT")}))
-			// stompClient.subscribe('/useruser/topic/greetings', function(serverResponse){
-			// 	var jsonresponse = JSON.parse(serverResponse.body);
-			// 	console.log("ServerResponse is : "+jsonresponse);
-			// 	console.log("Server asked if user is registered : "+jsonresponse.isRegistered);
-			// 	document.cookie = "nav="+jsonresponse.theme[0];
-			// 	document.cookie = "map="+jsonresponse.theme[1];
-			// 	document.cookie = "sidepanel="+jsonresponse.theme[2];
-			// 	document.cookie = "branch="+jsonresponse.branchingFactor;
-			// 	document.cookie = "depth="+jsonresponse.initialDepth;
-
-		// 		if(jsonresponse.isRegistered){
-		// 			window.location.assign('/');
-		// 		}else{
-		// 			$("#cssload-pgloading").hide();
-		// 			$("#loadingAlert").fadeOut(1000, function() {
-		// 				// body...
-		// 			});
-		// 			var xmlhttp=new XMLHttpRequest();
-		// 			xmlhttp.onreadystatechange=function(){
-		// 				if (xmlhttp.readyState==4 && xmlhttp.status==200){
-		// 					document.getElementById("container").innerHTML=xmlhttp.responseText;
-		// 				}
-		// 			}
-		// 			xmlhttp.open("GET","ajax/selectdata.html");
-		// 			xmlhttp.send();
-		// 			var filename;
-		// 			// if (stompClient != null) {
-		//    //              stompClient.disconnect();
-		//    //          }
-		// 		}
-		// 	}, function(error) {
-		//     		// display the error's message header:
-		//     		console.log(error.headers.message);
-	 //  		});
-		// 	stompClient.send("/app/hello", {}, JSON.stringify(userReg));
-		// });
+	alert("here");
+	authCodes.push({id:getCookie("facebookId"),pimSource:"facebook",authCode:getCookie("fAT"),expireTime:getCookie("fExpireTime")});
 }
 /**
 *	This function is called after a person selects Facebook as a data source and successfully logs in with Facebook
@@ -707,40 +630,6 @@ function showtick()
   }
   $('#nextButton').show();
 }
-
-// /**
-// *	This function initialises the JavaScript SDK
-// *	@property {String} appId - the id assigned to your app by Facebook
-// *	@preperty {Boolean} cookie - enables cookies to allow the server to access the Facebook session
-// *	@property {Boolean} xfbml - allows the page to parse social plugins
-// *	@property {String} version - indicates the graph api version
-// */
-// window.fbAsyncInit = function() {
-// FB.init({
-//   appId      : '1051696778242173',
-//   cookie     : false,  
-//   xfbml      : true, 
-//   version    : 'v2.5' 
-// });
-
-// // Cause auto login to facebook
-// // FB.getLoginStatus(function(response) {
-// //   statusChangeCallback(response);
-// // }); 
-
-// };
-
-// /**
-// *	This loads the Facebook SDK asynchronously
-// */
-// (function(d, s, id) {
-//   var js, fjs = d.getElementsByTagName(s)[0];
-//   if (d.getElementById(id)) return;
-//   js = d.createElement(s); js.id = id;
-//   js.src = "//connect.facebook.net/en_US/sdk.js";
-//   fjs.parentNode.insertBefore(js, fjs);
-// }(document, 'script', 'facebook-jssdk'));
-
 /**
 *	This function test of the Facebook Graph API after login is
 *	successful.
@@ -749,19 +638,12 @@ function showtick()
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
-	console.log('Successful login for: ' + response.name);
-	console.log(response);
 	Facebook = response;
 	var fullName = Facebook.name.split(" ");
 	var fname = fullName[0];
 	var lname = fullName[fullName.length-1];
-	console.log(fullName);
-	console.log(fname);
-	console.log(lname);
-
 	document.cookie = "name="+fname;
 	document.cookie ="surname="+lname;
-	// document.cookie= "facebookId="+ AuthResponse.userID;
 	document.getElementById('welcome').innerHTML += ", " + response.name;
 	onSuccessFacebook();
 
@@ -773,64 +655,113 @@ function testAPI() {
 *	unction to load the selectdata files data into the login container to dynamically update the element to display the new information to select data sources.
 */
 function onSuccessFacebook() {
-  $("#googleLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	 $("#googleLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
+	  });
+	  $("#googleLogin").attr('disabled','disabled');
 
-  $("#facebookLogin").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  
+	  $("#facebookLogin").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
-  $("#web").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  });
+	  $("#facebookLogin").attr('disabled','disabled');
 
-  });
+	  $("#errr").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#avatar").delay("slow").animate({
-	  top: '70px',
-	  opacity: '0.3'
+	  });
+	  $("#errr").attr('disabled','disabled');
+	  
 
-  });
-   $("#errr").animate({
-	  top: '100px',
-	  opacity: '0.0'
-  });
+	  $("#tos").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#tos").animate({
-	  top: '100px',
-	  opacity: '0.0'
+	  });
+	  $("#tos").attr('disabled','disabled');
 
-  });
-  $("#tos2").animate({
-	top: '100px',
-	opacity: '0.0'
-  });
+	  $("#tos2").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  $("#welcome").show();
-  $("#welcome").delay(1000).animate({
-	  opacity: '1'
+	  });
+	  $("#tos2").attr('disabled','disabled');
 
-  });
-  $('#avatar').fadeOut(0, function() {
-	  $('#avatar').fadeIn(0);
-	  $('#avatar').css("background","#eee url('/images/avatar3.png')");
-	   $('#avatar').css("background-size","cover");
-		$('#avatar').css("opacity","1");
-  });
-  $("#continue").show();
-  $("#continue").delay(2000).animate({
-	  opacity: '1'
+	  $("#web").animate({
+		  top: '100px',
+		  opacity: '0.0'
 
-  });
+	  });
+	  $("#web").attr('disabled','disabled');
+
+	  $("#tos").hide();
+	  $("#tos2").hide();
+	  $("#web").hide();
+
+	  $("#avatar").delay("slow").animate({
+		  top: '70px',
+		  opacity: '0.3'
+
+	  });
+	  $("#welcome").show();
+	  $("#welcome").delay(1000).animate({
+		  opacity: '1'
+	  });
+	  $('#avatar').fadeOut(0, function() {
+		  $('#avatar').fadeIn(0);
+		  $('#avatar').css("background","#eee url('/images/avatar3.png')");
+		  $('#avatar').css("background-size","cover");
+		  $('#avatar').css("opacity","1");
+	  });
+	  $("#continue").show();
+	  $("#continue").delay(2000).animate({
+		  opacity: '1'
+	  });
 }
-////////////////////////////////////////////////////////////////////////////////////////////////End of Facebook Code
+var interval;
+function onTwitterLogin()
+{
+
+	// window.open('http://www.unclutter.iminsys.com/twitter', '_blank', 'toolbar=0,location=0,menubar=0,height=700,width=700');
+
+	var win = window.open("https://unclutter.iminsys.com/twitter",'newwindow', 'width=500, height=500, left=400');
+  	win.focus();
+  	
+   	interval = setInterval(function(){ 
+  		if(win.closed == true)
+	  	{
+	  		if(localStorage.getItem("twitterUser"))
+	  		{
+	  			console.log("Local storage has been set")
+				var twitter = localStorage.getItem("twitterUser");
+				setTwitterAuthCode(twitter);
+
+	  		}
+	  	}
+		
+	},1000)  		 
+
+}
+function setTwitterAuthCode(twitter)
+{
+	clearInterval(interval);
+	authCodes.push({id:twitter,pimSource:"twitter",authCode:"",expireTime:""});
+	$("#tickTwitter").show();
+	//$("#nextButton").show();
+  	//alert(JSON.stringify(authCodes));
+}
+/**
+*	@var {HTMLContainer} divClone - This holds an html element that can be used to restore state of another html element
+*/
 var divClone
 function liftup(){
  	divClone = $(".container").clone();
+
  	 $("#centreText4").slideUp( "medium", function() {
   	});
  	  $("#ptext").slideUp( "medium", function() {
@@ -840,7 +771,7 @@ function liftup(){
 	$( "#landingside" ).slideUp( "slow", function() {
 	});
 	$( "#landingpage" ).slideUp( "slow", function() {
-    // Animation complete.
+    
  	});
 }
 function liftdown(){
@@ -853,8 +784,9 @@ function liftdown(){
 	$( "#landingside" ).slideDown( "slow", function() {
 	});
 	$( "#landingpage" ).slideDown( "slow", function() {
-    // Animation complete.
-    window.location.assign("/login")
+	$(".container").replaceWith(divClone);
+    gapi.auth2.getAuthInstance().signOut();
+    auth2.attachClickHandler('googleLogin', {}, onSuccess, onFailure)
  	});
 }
 

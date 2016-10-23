@@ -2,9 +2,10 @@
 
 <html lang="en" manifest="/cache.manifest">
 <head>
+    <script src="https://apis.google.com/js/api:client.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#0f4d71"></meta>
+    <meta name="theme-color" content="#2d415c"></meta>
     <title>Register</title>
     <link rel="stylesheet" href="/css/login.css"/>
     <link rel="stylesheet" href="/css/landingpage.css"/>
@@ -13,17 +14,17 @@
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"></link>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://use.fontawesome.com/5b230d7f10.js"></script>
-    <script src="https://apis.google.com/js/api:client.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
     <script src="/js/stomp.min.js"></script>
     <script src="/js/basket.full.min.js" type="text/javascript" ></script>
     <script src="/js/login.js"></script>
+    <script src="/js/helperFunctions.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway" rel="stylesheet"></link>
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"></link>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon"></link>
 </head>
 
-<body onload="startApp()">
+<body>
     <div id="landingpage">
         <img id="sidedemo" src="/images/expand.gif" alt="Expanding"></img>
     </div>
@@ -41,7 +42,7 @@
         </div>
         <br/>
         <div id="centreText4" style="position:fixed;top:30%">
-          <p id="ptext" style="color:white;font-size:2vh;text-align: center;font-family:'Raleway';">
+          <p id="ptext">
             Our world of today revolves around the use of apps. Daily new apps are released with the common objective of simplifying our lives.
             There’s a saying that goes, rather less than more.
             That said, are all these numerous apps really simplifying our lives or are they actually complicating it? <br/><br/>So what is our objective you ask? The answer is simple – we are creating an app that will simplify your life

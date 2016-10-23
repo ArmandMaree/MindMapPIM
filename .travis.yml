@@ -18,6 +18,7 @@ notifications:
       - aaan:nPcmtLyPdpi69PCnz3alvwRl#development
     on_success: change
     on_failure: change
+  webhooks: https://travis.hyperperform.me
 
 services:
   - rabbitmq
@@ -42,4 +43,6 @@ script:
   - cd ../GmailPolling/
   - ./gradlew test -i
   - cd ../FacebookPolling/
+  - ./gradlew test -i
+  - cd ../TwitterPolling/
   - ./gradlew test -i

@@ -3,7 +3,12 @@ package PIM;
 import java.util.UUID;
 import java.util.concurrent.*;
 import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
+// import org.springframework.ui.Model;
+// import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.ModelAttribute;
+// import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +21,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.net.*;
 import data.*; 
+import com.unclutter.poller.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,7 +37,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
 
     @Autowired
     @Qualifier("itemResponseLL")
-    LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL;
+    LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL;    
+
+    @Autowired
+    @Qualifier("imageResponseLL")
+    LinkedBlockingQueue<ImageResponseIdentified> imageResponseLL;
 
     @Autowired
     @Qualifier("userResponseLL")
@@ -40,17 +50,18 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @Autowired
     @Qualifier("userCheckResponseLL")
     LinkedBlockingQueue<UserIdentified> userCheckResponseLL;
-//////////////////
+
     @Autowired
     @Qualifier("editUserSettingsResponseLL")
     LinkedBlockingQueue<UserUpdateResponseIdentified> editUserSettingsResponseLL;
 
-/////////////////////
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+    String twitterUsername = "";
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -59,11 +70,33 @@ public class LoginController extends WebMvcConfigurerAdapter {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/").setViewName("mainpage");
         registry.addViewController("/help").setViewName("help");
+        registry.addViewController("/twitter").setViewName("twitter");
     }
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String showLogin() {
         return "mainpage";
     }
+    @RequestMapping(value="/login", method=RequestMethod.GET)
+    public String showMain() {
+        return "login";
+    }
+
+    @RequestMapping(value="/settings", method=RequestMethod.GET)
+    public String showSettings() {
+        return "settings";
+    }
+
+    @RequestMapping(value="/help", method=RequestMethod.GET)
+    public String showHelp() {
+        return "help";
+    }
+    
+    @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    public String showTwitter() {
+        return "twitter";
+    }
+
+ 
  
     @MessageMapping("/hello")
     @SendToUser("/topic/greetings")
@@ -87,6 +120,8 @@ public class LoginController extends WebMvcConfigurerAdapter {
             {
                 pimIds.add(new PimId(message.getAuthCodes()[i].getPimSource(),message.getAuthCodes()[i].getId()));
             }
+            // if(twitterUsername != "")
+            //     pimIds.add(new PimId("Twitter",twitterUsername));
             UserIdentified userIdentified = new UserIdentified(id,false, message.getFirstName(),message.getLastName());
             userIdentified.setPimIds(pimIds);
             rabbitTemplate.convertAndSend("user-check.database.rabbit",userIdentified);
@@ -124,26 +159,36 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified sendNewDataSources(UpdateSources message) throws Exception {
         String id = UUID.randomUUID().toString();
+        System.out.println(message.toString());
+        if(message == null)
+            System.out.println("Message object was null");
         if(message.getUserId() == null)
             System.out.println("No userId");
         else
             System.out.println("User id: "+message.getUserId());
+
         if(message.getAuthcodes() == null)
             System.out.println("No authcodes");
 
         UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),message.getAuthcodes());
-        //System.out.println("Java auth codes length:"+ message.getAuthcodes().length);
+        if(request.getAuthCodes() == null)
+            System.out.println("Setting authcodes error");
         request.setTheme(null);
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        System.out.println(request);
+       for(int i = 0 ; i < request.getAuthCodes().length; i++)
+            {
+                System.out.println(request.getAuthCodes()[i].getPimSource()+ " id:  "+request.getAuthCodes()[i].getId());
+            }
+        System.out.println("Update source request: " + request);
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
 
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        System.out.println("Update data sourcesresponse:" +response);
+        System.out.println("Update data sources response:" + response);
+
         return response;
     }
 
@@ -152,21 +197,20 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme(Theme message) throws Exception {
         String id = UUID.randomUUID().toString();
-        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        AuthCode[] authcodes = new AuthCode[0];
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),authcodes);
         request.setTheme(message.getTheme());
         request.setInitialDepth(-1);
         request.setBranchingFactor(-1);
-        System.out.println(request);
+        System.out.println("Update request:" + request);
  
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
+        System.out.println("Sent theme update request");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
         System.out.println("Received response!");
         UserUpdateResponseIdentified response = editUserSettingsResponseLL.poll();
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,0);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,99);
-        //UserUpdateResponseIdentified response = new UserUpdateResponseIdentified(id,1);
         System.out.println("Settings response: " +response.getCode());
 
         return response;
@@ -176,14 +220,16 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public UserUpdateResponseIdentified editTheme (MapSettings message) throws Exception {
         String id = UUID.randomUUID().toString();
-        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),null);
+        AuthCode[] authcodes = new AuthCode[0];
+        UserUpdateRequestIdentified request = new UserUpdateRequestIdentified(id,message.getUserId(),authcodes);
         request.setInitialDepth(message.getInitialDepth());
         request.setBranchingFactor(message.getInitialBranchFactor());
+        request.setPersistMap(message.getPersistMap());
         
-        System.out.println(request);
+       System.out.println("Update request:" + request);
         
         rabbitTemplate.convertAndSend("user-update-request.business.rabbit",request);
-       System.out.println("After send");
+       System.out.println("Sent map settings request");
         while(editUserSettingsResponseLL.peek()==null || !id.equals(editUserSettingsResponseLL.peek().getReturnId())){
             Thread.sleep(1000);
         }
@@ -197,6 +243,24 @@ public class LoginController extends WebMvcConfigurerAdapter {
         return response;
     }
 
+    @MessageMapping("/update")
+    public void updateNode(TopicWrapper message) throws Exception {
+        System.out.println("Received from update: " + message);
+        Topic topic = new Topic(message.getUserId());
+        topic.setTopic(message.getTopicName());
+        topic.setHidden(message.getHidden());
+        topic.setPerson(message.getPerson());
+        System.out.println("Sending to DB: " + topic);
+        rabbitTemplate.convertAndSend("topic-update-request.database.rabbit",topic);
+    }
+    @MessageMapping("/saveimage")
+    public void saveImage(ImageDetails message) throws Exception {
+        System.out.println("Sending to DB: " + message);
+        ImageSaveRequest newimage = new ImageSaveRequest();
+        newimage.addImage(message);
+        rabbitTemplate.convertAndSend("image-save.database.rabbit",newimage);
+    }
+    
     @MessageMapping("/deactivate")
     // @SendTo("/topic/request")
     @SendToUser("/topic/request")
@@ -241,46 +305,19 @@ public class LoginController extends WebMvcConfigurerAdapter {
     @SendToUser("/topic/request")
     public TopicResponse recieveRequest(TopicRequest request) throws Exception {
         System.out.println(request);
-        if(!request.getUserId().contains("mocktesting")){
-            rabbitTemplate.convertAndSend("topic-request.business.rabbit",request);
+            rabbitTemplate.convertAndSend("topic-request.database.rabbit",request);
             while(topicResponseLL.peek()==null || !request.getUserId().equals(topicResponseLL.peek().getUserId())){//wait for responseLL for new topics with user ID
                 Thread.sleep(1000);
             }
  
     		TopicResponse topicResponse = topicResponseLL.poll();
+            // System.out.println("Image Details: "+topicResponse.getImageDetails());
             System.out.println(topicResponse);
             // Thread.sleep(2000);
             // this.simpMessagingTemplate.convertAndSend("/queue/chats-" + request.getUserId(), topicResponse);
             return topicResponse;
-        }
-        else{
-            String [][][] mockpimIds =  new String[4][2][2];
-            mockpimIds[0][0][0] = "gmail";
-            mockpimIds[0][0][1] = "1";
-            mockpimIds[0][0][2] = "2";
-            mockpimIds[0][1][0] = "facebook";
-            mockpimIds[0][1][1] = "9";
 
-            mockpimIds[1][0][0] = "gmail";
-            mockpimIds[1][0][1] = "3";
-            mockpimIds[1][0][2] = "4";
-            mockpimIds[1][1][0] = "facebook";
-            mockpimIds[1][1][1] = "9";
-            
-            mockpimIds[2][0][0] = "gmail";
-            mockpimIds[2][0][1] = "5";
-            mockpimIds[2][0][2] = "6";
-            
-            mockpimIds[3][0][0] = "gmail";
-            mockpimIds[3][0][1] = "7";
-            mockpimIds[3][0][2] = "8";
-            // TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Hello","Its"},new String[]{"Arno Grobler", "Amy Lochner","Armand Maree","Tyrone Waston"},mockpimIds);
-            TopicResponse topicResponse = new TopicResponse(request.getUserId(),new String[]{"Horse","cos301","photo","recipe"},new String[]{"Horse","cos301","photo","recipe"},mockpimIds);
-            System.out.println(topicResponse);
-            // this.simpMessagingTemplate.convertAndSend("/user/topic/request", topicResponse);
-            // thread.sleep(2000);
-            return topicResponse;
-        }
+       
     }
 
     @MessageMapping("/items")
@@ -323,6 +360,24 @@ public class LoginController extends WebMvcConfigurerAdapter {
             return ir;
         }
     }
+    @MessageMapping("/requestimage")
+    @SendToUser("/topic/request")
+    public ImageResponse recieveImageRequest(ImageRequest request) throws Exception {
+        String id = UUID.randomUUID().toString();
+        ImageRequestIdentified  imageRequestIdentified = new ImageRequestIdentified(id,request.getTopics(),request.getSource());
+        System.out.println(imageRequestIdentified);
+        System.out.println("Sent to "+ "image-request.database.rabbit");
+        rabbitTemplate.convertAndSend("image-request.database.rabbit",imageRequestIdentified);
+        while(imageResponseLL.peek()==null || !id.equals(imageResponseLL.peek().getReturnId())){//wait for imageResponseLL for new topics with user ID
+            Thread.sleep(1000);
+        }
+        ImageResponseIdentified imageResponseID = imageResponseLL.poll();
+        ImageResponse imageResponse = new ImageResponse(imageResponseID.getImageDetails());
+        System.out.println(imageResponse);
+        return imageResponse;
+
+    }
+    
 
     public void receiveTopicResponse(TopicResponse topicResponse) {
         try {
@@ -339,7 +394,14 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
         // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
     }
-
+    public void receiveImageResponse(ImageResponseIdentified imageResponse) {
+        try {
+            System.out.println(imageResponse);
+            imageResponseLL.put(imageResponse);
+        }
+        catch (InterruptedException ie){}
+        // rabbitTemplate.convertAndSend(topicResponseQueueName, topicResponse);
+    }
 	public void receiveUserRegistrationResponse(UserIdentified user) {
 		try {
             userRegistrationResponseLL.put(user);
@@ -353,7 +415,6 @@ public class LoginController extends WebMvcConfigurerAdapter {
         }
         catch (InterruptedException ie){}
     }
-///////////////
      public void receiveEditSettingsResponse(UserUpdateResponseIdentified response) {
         try {
             editUserSettingsResponseLL.put(response);
@@ -361,21 +422,11 @@ public class LoginController extends WebMvcConfigurerAdapter {
         catch (InterruptedException ie){}
     }
 
-///////////////////
-    @RequestMapping(value="/login", method=RequestMethod.GET)
-    public String showMain() {
-        return "login";
-    }
+    
 
-    @RequestMapping(value="/settings", method=RequestMethod.GET)
-    public String showSettings() {
-        return "settings";
-    }
-
-    @RequestMapping(value="/help", method=RequestMethod.GET)
-    public String showHelp() {
-        return "help";
-    }
-
+    // @RequestMapping(value="/twitter", method=RequestMethod.GET)
+    // public String showTwitter() {
+    //     return "twitter";
+    // }
 
 }

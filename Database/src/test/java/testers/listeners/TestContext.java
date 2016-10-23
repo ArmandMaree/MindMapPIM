@@ -31,6 +31,7 @@ public class TestContext {
 	public final static String userRegisterResponseQueueName = "user-registration-response.frontend.rabbit";
 	public final static String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 	public final static String topicResponseBusinessQueueName = "topic-response.business.rabbit";
+	public final static String topicResponseFrontendQueueName = "topic-response.frontend.rabbit";
 	public final static String processedDataQueueName = "processed-data.database.rabbit";
 	public final static String userUpdateResponseQueueName = "user-update-response.frontend.rabbit";
 
@@ -129,12 +130,12 @@ public class TestContext {
 
 	@Bean
 	Queue topicResponseQueue() {
-		return new Queue(topicResponseBusinessQueueName, false);
+		return new Queue(topicResponseFrontendQueueName, false);
 	}
 
 	@Bean
 	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(topicResponseBusinessQueueName);
+		return BindingBuilder.bind(queue).to(exchange).with(topicResponseFrontendQueueName);
 	}
 
 	@Bean
@@ -146,7 +147,7 @@ public class TestContext {
 	public SimpleMessageListenerContainer topicResponseContainer(ConnectionFactory connectionFactory, @Qualifier("topicResponseAdapter") MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(topicResponseBusinessQueueName);
+		container.setQueueNames(topicResponseFrontendQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

@@ -18,7 +18,7 @@ public class Deactivate implements Serializable {
 	/*
 	*	Array of strings which contain hexadecimal values
 	*/
-	private Boolean isActive= true;
+	private boolean isActive= true;
 
 	/**
 	* Default empty constructor.
@@ -32,7 +32,7 @@ public class Deactivate implements Serializable {
 	* 	@param userId Contains the value for the userId
 	*	@param isActive The value for isActive
 	*/
-	public Deactivate(String userId,Boolean isActive)
+	public Deactivate(String userId,boolean isActive)
 	{
 		this.userId = userId;
 		this.isActive = isActive;
@@ -49,7 +49,7 @@ public class Deactivate implements Serializable {
 	*	Returns the theme
 	*	@return The theme
 	*/
-	public Boolean getIsActive()
+	public boolean getIsActive()
 	{
 		return this.isActive;
 	} 

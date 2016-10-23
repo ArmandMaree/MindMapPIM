@@ -56,21 +56,6 @@ public class ProcessedData implements Serializable {
 	}
 
 	/**
-	* Constructor that initializes its fields from raw data and new topics.
-	* @param rawData The RawData object where the information of the topics were extracted from.
-	* @param topics Array of topics as extracted from the data of the rawObject.
-	* @see data.RawData
-	*/
-	public ProcessedData(RawData rawData, String[] topics) {
-		this.pimSource = rawData.getPimSource();
-		this.userId = rawData.getUserId();
-		this.involvedContacts = rawData.getInvolvedContacts().toArray(new String[0]);
-		this.pimItemId = rawData.getPimItemId();
-		this.topics = topics;
-		this.time = rawData.getTime();
-	}
-
-	/**
 	* Default ProcessedData constructor
 	* @param id Id used in database.
 	* @param pimSource PIM where the data was retrieved from.

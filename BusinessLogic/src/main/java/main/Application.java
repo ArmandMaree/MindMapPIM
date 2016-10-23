@@ -1,32 +1,31 @@
 package main;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.CommandLineRunner;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
-
-import org.springframework.stereotype.Component;
+import listeners.FrontendListener;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import listeners.*;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.context.annotation.Bean;
+
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	private final String topicRequestQueueName = "topic-request.business.rabbit";
@@ -35,50 +34,50 @@ public class Application implements CommandLineRunner {
 	private final String userUpdateQueueName = "user-update-request.business.rabbit";
 
 	@Autowired
-	RabbitTemplate rabbitTemplate;
+	public RabbitTemplate rabbitTemplate;
 
 	@Bean
-	Queue topicRequestQueue() {
+	public Queue topicRequestQueue() {
 		return new Queue(topicRequestQueueName, false);
 	}
 
 	@Bean
-	Queue topicResponseQueue() {
+	public Queue topicResponseQueue() {
 		return new Queue(topicResponseQueueName, false);
 	}
 
 	@Bean
-	Queue registerQueue() {
+	public Queue registerQueue() {
 		return new Queue(registerQueueName, false);
 	}
 
 	@Bean
-	Queue userUpdateQueue() {
+	public Queue userUpdateQueue() {
 		return new Queue(userUpdateQueueName, false);
 	}
 
 	@Bean
-	TopicExchange exchange() {
+	public TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
 	}
 
 	@Bean
-	Binding topicRequestBinding(@Qualifier("topicRequestQueue") Queue queue, TopicExchange exchange) {
+	public Binding topicRequestBinding(@Qualifier("topicRequestQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(topicRequestQueueName);
 	}
 
 	@Bean
-	Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
+	public Binding topicResponseBinding(@Qualifier("topicResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(topicResponseQueueName);
 	}
 
 	@Bean
-	Binding registerBinding(@Qualifier("registerQueue") Queue queue, TopicExchange exchange) {
+	public Binding registerBinding(@Qualifier("registerQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(registerQueueName);
 	}
 
 	@Bean
-	Binding userUpdateBinding(@Qualifier("userUpdateQueue") Queue queue, TopicExchange exchange) {
+	public Binding userUpdateBinding(@Qualifier("userUpdateQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(userUpdateQueueName);
 	}
 

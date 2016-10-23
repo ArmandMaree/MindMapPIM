@@ -1,25 +1,25 @@
 package nlp;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import java.io.FileInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import edu.stanford.nlp.pipeline.*;
-import edu.stanford.nlp.util.*;
-import edu.stanford.nlp.ling.*;
-import edu.stanford.nlp.ling.CoreAnnotations.*;
-import edu.stanford.nlp.dcoref.*;
-import edu.stanford.nlp.trees.*;
-import edu.stanford.nlp.trees.TreeCoreAnnotations.*;
-import edu.stanford.nlp.semgraph.*;
-import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.*;
-import edu.stanford.nlp.dcoref.CorefCoreAnnotations.*;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.util.CoreMap;
 
 /**
 * Implements a NaturalLanguageProcessor for the Stanford CoreNLP API.
@@ -316,5 +316,27 @@ public class StanfordNLP implements NaturalLanguageProcessor {
 		}
 
 		return remainingWords;
+	}
+
+	/**
+	* Takes a list of words and seperates it into names and non-names by using the {@link nlp.NameFinder} class.
+	* @param words The list of words that should be checked.
+	*/
+	public List<List<String>> splitNamesAndTopics(List<String> words) {
+		List<String> topics = new ArrayList<>();
+		List<String> names = new ArrayList<>();
+
+		for (String word : words) {
+			if (word.charAt(0) == word.toUpperCase().charAt(0) && NameFinder.isName(word))
+				names.add(word);
+			else
+				topics.add(word);
+		}
+
+		List<List<String>> topicsAndPeople = new ArrayList<>();
+		topicsAndPeople.add(topics);
+		topicsAndPeople.add(names);
+
+		return topicsAndPeople;
 	}
 }

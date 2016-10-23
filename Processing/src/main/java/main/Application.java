@@ -1,21 +1,9 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import nlp.NaturalLanguageProcessor;
+import nlp.StanfordNLP;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.CommandLineRunner;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
-
-import org.springframework.stereotype.Component;
+import listeners.ProcessingManager;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -26,15 +14,20 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import nlp.*;
-import data.*;
-import listeners.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.context.annotation.Bean;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
 
 /**
 * Main application that starts up the service.
 *
 * @author  Armand Maree
-* @since   2016-07-14
+* @since   1.0.0
 */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -43,9 +36,6 @@ public class Application implements CommandLineRunner {
 
 	@Autowired
 	NaturalLanguageProcessor nlp;
-
-	@Autowired
-	RabbitTemplate rabbitTemplate;
 
 	@Autowired
 	ProcessingManager processingManager;

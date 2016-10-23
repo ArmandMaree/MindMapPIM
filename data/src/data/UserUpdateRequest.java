@@ -60,16 +60,37 @@ public class UserUpdateRequest extends User implements Serializable {
 	@Override
 	public String toString() {
 		String u = "";
+		String t = "";
+		String a = "";
 
-		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+		if (getPimIds() == null)
+			u = "NULL\n";
+		else
+			for (PimId pimId : getPimIds())
+				u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
+
+		if (getTheme() == null)
+			t = "NULL\n";
+		else
+			for (String themeS : getTheme())
+				t += "\t\t" + themeS + "\n";
+
+		if (authCodes != null) {
+			for (AuthCode authCode : getAuthCodes())
+				a += "\t\t" + authCode.getPimSource() + ": " + authCode.getId() + " - " + authCode.getAuthCode() + "\n";
+		}
+		else 
+			a = "NULL\n";
 
 		return "UserUpdateRequest {\n" +
 			"\tid: " + getUserId() + ",\n" +
 			"\tfirstName: " + getFirstName()  + ",\n" +
 			"\tlastName: " + getLastName() + ",\n" +
-			"\tids: {\n" + u + "\n\t}\n" +
-			"\tauthCodes size: " + ((authCodes == null) ? "null" : authCodes.length) + "\n" +
+			"\tids: [\n" + u + "\t]\n" +
+			"\ttheme: [\n" + t + "\t]\n" +
+			"\tauthCodes: [\n" + a + "\t]\n" +
+			"\tisActive:" + getIsActive() + "\n" +
+			"\tpersistMap:" + getPersistMap() + "\n" +
 		"}";
 	}
 }

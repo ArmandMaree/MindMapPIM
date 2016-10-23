@@ -23,6 +23,11 @@ public class MapSettings implements Serializable {
 	*	The default value for the initial depth of the map
 	*/
 	private int initialBranchFactor;
+
+	/**
+	*	Indicates whether or not the graph should reload the state it was last in
+	*/ 
+	private boolean persistMap;
 	/**
 	* Default empty constructor.
 	*/
@@ -35,10 +40,11 @@ public class MapSettings implements Serializable {
 	* 	@param userId Contains the value for the userId
 	*	@param theme The array that is the value for theme
 	*/
-	public MapSettings(String userId,int initialDepth, int initialBranchFactor)
+	public MapSettings(String userId,int initialDepth, int initialBranchFactor,boolean persistMap)
 	{
 		this.userId = userId;
 		this.initialDepth = initialDepth;
+		this.persistMap = persistMap;
 	} 
 	/*
 	*	Returns the userId
@@ -63,6 +69,14 @@ public class MapSettings implements Serializable {
 	public int getInitialBranchFactor()
 	{
 		return this.initialBranchFactor;
+	} 
+	/*
+	*	Returns the persist map
+	*	@return The persistMap
+	*/
+	public boolean getPersistMap()
+	{
+		return this.persistMap;
 	} 
 	/**
 	* String representation of AuthCode used for printing.

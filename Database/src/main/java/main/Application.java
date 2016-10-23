@@ -1,50 +1,59 @@
 package main;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.CommandLineRunner;
+import listeners.ImageListener;
+import listeners.ProcessedDataListener;
+import listeners.TopicListener;
+import listeners.UserListener;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
-
-import org.springframework.beans.factory.annotation.*;
-
-import org.springframework.stereotype.Component;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import repositories.*;
-import listeners.*;
-import data.*;
+import repositories.ImageDetailsRepository;
+import repositories.PimProcessedDataRepository;
+import repositories.TopicRepository;
+import repositories.UserRepository;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
 @EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
 	private final static String processedDataQueueName = "processed-data.database.rabbit";
 	private final static String priorityProcessedDataQueueName = "priority-processed-data.database.rabbit";
 	private final static String topicRequestQueueName = "topic-request.database.rabbit";
-	private final String userRegisterQueueName = "user-register.database.rabbit";
-	private final String userCheckQueueName = "user-check.database.rabbit";
-	private final String userUpdateQueueName = "user-update-request.database.rabbit";
+	private final static String imageRequestQueueName = "image-request.database.rabbit";
+	private final static String imageSaveQueueName = "image-save.database.rabbit";
+	private final static String userRegisterQueueName = "user-register.database.rabbit";
+	private final static String userCheckQueueName = "user-check.database.rabbit";
+	private final static String userUpdateQueueName = "user-update-request.database.rabbit";
+	private final static String topicUpdateQueueName = "topic-update-request.database.rabbit";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -53,10 +62,20 @@ public class Application implements CommandLineRunner {
 	private PimProcessedDataRepository processedDataRepository;
 
 	@Autowired
-	private TopicRepository topicRepository;
+	private ImageDetailsRepository imageRepository;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private TopicRepository topicRepository;
+
+	@Bean
+	Queue imageRequestQueue() {
+		return new Queue(imageRequestQueueName, false);
+	}
+
+	@Bean
+	Queue imageSaveQueue() {
+		return new Queue(imageSaveQueueName, false);
+	}
 
 	@Bean
 	Queue topicRequestQueue() {
@@ -89,8 +108,23 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Queue topicUpdateQueue() {
+		return new Queue(topicUpdateQueueName, false);
+	}
+
+	@Bean
 	TopicExchange exchange() {
 		return new TopicExchange("spring-boot-exchange");
+	}
+
+	@Bean
+	Binding imageRequestBinding(@Qualifier("imageRequestQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(imageRequestQueueName);
+	}
+
+	@Bean
+	Binding imageSaveBinding(@Qualifier("imageSaveQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(imageSaveQueueName);
 	}
 
 	@Bean
@@ -124,6 +158,16 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
+	Binding topicUpdateBinding(@Qualifier("topicUpdateQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(topicUpdateQueueName);
+	}
+
+	@Bean
+	public ImageListener imageListener() {
+		return new ImageListener();
+	}
+
+	@Bean
 	public TopicListener topicListener() {
 		return new TopicListener();
 	}
@@ -134,8 +178,18 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public BusinessListener businessListener() {
-		return new BusinessListener();
+	public UserListener userListener() {
+		return new UserListener();
+	}
+
+	@Bean
+	public MessageListenerAdapter imageRequestAdapter(ImageListener imageListener) {
+		return new MessageListenerAdapter(imageListener, "receiveImageRequest");
+	}
+
+	@Bean
+	public MessageListenerAdapter imageSaveAdapter(ImageListener imageListener) {
+		return new MessageListenerAdapter(imageListener, "receiveImageSave");
 	}
 
 	@Bean
@@ -154,18 +208,41 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Bean
-	public MessageListenerAdapter userRegisterAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveUserRegister");
+	public MessageListenerAdapter userRegisterAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveUserRegister");
 	}
 
 	@Bean
-	public MessageListenerAdapter userCheckAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveCheckIfRegistered");
+	public MessageListenerAdapter userCheckAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveCheckIfRegistered");
 	}
 
 	@Bean
-	public MessageListenerAdapter userUpdateAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveUserUpdate");
+	public MessageListenerAdapter userUpdateAdapter(UserListener userListener) {
+		return new MessageListenerAdapter(userListener, "receiveUserUpdate");
+	}
+
+	@Bean
+	public MessageListenerAdapter topicUpdateAdapter(TopicListener topicListener) {
+		return new MessageListenerAdapter(topicListener, "receiveTopicUpdate");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer imageRequestContainer(ConnectionFactory connectionFactory, @Qualifier("imageRequestAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(imageRequestQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer imageSaveContainer(ConnectionFactory connectionFactory, @Qualifier("imageSaveAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(imageSaveQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
 	}
 
 	@Bean
@@ -222,15 +299,37 @@ public class Application implements CommandLineRunner {
 		return container;
 	}
 
+	@Bean
+	public SimpleMessageListenerContainer topicUpdateContainer(ConnectionFactory connectionFactory, @Qualifier("topicUpdateAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(topicUpdateQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
 	public static void main(String[] args) {
 		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
 		ctx.getEnvironment().setActiveProfiles("production");
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean all the repositories.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
 		for (String arg : args) {
 			switch (arg) {
+				case "cleanimages":
+					System.out.println("Cleaning images...");
+					imageRepository.deleteAll();
+					break;
 				case "cleandb":
 					System.out.println("Cleaning all databases...");
 					userRepository.deleteAll();
@@ -238,7 +337,7 @@ public class Application implements CommandLineRunner {
 					topicRepository.deleteAll();
 					break;
 				default:
-					System.out.println("Invalid argument.");
+					System.out.println("Invalid argument: " + arg);
 					break;
 			}
 		}

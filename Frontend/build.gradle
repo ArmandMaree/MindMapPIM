@@ -28,6 +28,8 @@ targetCompatibility = 1.8
 dependencies {
     // data jar
     compile files('../data/data.jar')
+    // poller api jar
+    compile files('../Poller/poller-api-0.1.0.jar')
 
     // compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")

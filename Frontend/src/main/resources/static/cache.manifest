@@ -8,7 +8,6 @@ CACHE MANIFEST
 /js/fpsmeter.js
 /js/basket.full.min.js
 /bootstrap/css/bootstrap.min.css
-/css/mainpage.css
 /css/vis.css
 /images/bubblelogo.png
 /images/avatar3.png
@@ -18,6 +17,7 @@ CACHE MANIFEST
 /images/wiggle.gif
 /images/avatar.png   
 /images/bubblelogo2.png  
+/images/bubblelogo3.png  
 /images/expand.gif   
 /images/showsidebar.gif
 /images/back8.jpg      

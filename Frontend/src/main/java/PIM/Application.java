@@ -27,6 +27,7 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import listeners.*;
 import data.*;
+import com.unclutter.poller.*;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -43,6 +44,7 @@ public class Application {
 	private final String userResponseQueueName = "user-registration-response.frontend.rabbit";
 	private final String userCheckResponseQueueName = "user-check-response.frontend.rabbit";
 	private final String itemResponseQueueName = "item-response.frontend.rabbit";
+	private final String imageResponseQueueName = "image-response.frontend.rabbit";
 	private final String settingsResponseQueueName = "user-update-response.frontend.rabbit";
 	@Bean
 	LinkedBlockingQueue<TopicResponse> topicResponseLL() {
@@ -51,6 +53,11 @@ public class Application {
 
 	@Bean
 	LinkedBlockingQueue<ItemResponseIdentified> itemResponseLL() {
+		return new LinkedBlockingQueue<>();
+	}
+
+	@Bean
+	LinkedBlockingQueue<ImageResponseIdentified> imageResponseLL() {
 		return new LinkedBlockingQueue<>();
 	}
 
@@ -80,6 +87,10 @@ public class Application {
 		return new Queue(itemResponseQueueName, false);
 	}
 
+	@Bean
+	Queue imageResponseQueue() {
+		return new Queue(imageResponseQueueName, false);
+	}
 
 	@Bean
 	Queue userResponseQueue() {
@@ -109,6 +120,11 @@ public class Application {
 	@Bean
 	Binding itemResponseBinding(@Qualifier("itemResponseQueue") Queue queue, TopicExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(itemResponseQueueName);
+	}
+
+	@Bean
+	Binding imageResponseBinding(@Qualifier("imageResponseQueue") Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(imageResponseQueueName);
 	}
 
 	@Bean
@@ -142,6 +158,11 @@ public class Application {
 	}
 
 	@Bean
+	public MessageListenerAdapter imageResponseAdapter(LoginController loginController) {
+		return new MessageListenerAdapter(loginController, "receiveImageResponse");
+	}
+
+	@Bean
 	public MessageListenerAdapter userResponseAdapter(LoginController loginController) {
 		return new MessageListenerAdapter(loginController, "receiveUserRegistrationResponse");
 	}
@@ -171,6 +192,14 @@ public class Application {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(itemResponseQueueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+	@Bean
+	public SimpleMessageListenerContainer imageResponseContainer(ConnectionFactory connectionFactory, @Qualifier("imageResponseAdapter") MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(imageResponseQueueName);
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}

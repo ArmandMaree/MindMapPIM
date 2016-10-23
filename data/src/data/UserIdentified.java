@@ -105,20 +105,32 @@ public class UserIdentified extends User {
 	@Override
 	public String toString() {
 		String u = "";
+		String t = "";
 
-		for (PimId pimId : getPimIds())
-			u += "\t\t" + pimId.pim + ": " + pimId.uId;
+		if (getPimIds() == null)
+			u = "NULL\n";
+		else
+			for (PimId pimId : getPimIds())
+				u += "\t\t" + pimId.pim + ": " + pimId.uId + "\n";
+
+		if (getTheme() == null)
+			t = "NULL\n";
+		else
+			for (String themeS : getTheme())
+				t += "\t\t" + themeS + "\n";
 
 		return "UserIdentified {\n" +
-		"\treturnId: " + returnId + ",\n" +
-		"\tisRegistered: " + isRegistered + ",\n" +
-		"\tid: " + getUserId() + ",\n" +
-		"\tfirstName: " + getFirstName()  + ",\n" +
-		"\tlastName: " + getLastName() + ",\n" +
-		"\tids: {\n" + u + "\n\t}\n" +
-		"\tinitialDepth:" + getInitialDepth() + "\n" +
-		"\tbranchingFactor:" + getBranchingFactor() + "\n" +
-		"\tisActive:" + getIsActive() + "\n" +
+			"\treturnId: " + returnId + ",\n" +
+			"\tisRegistered: " + isRegistered + ",\n" +
+			"\tid: " + getUserId() + ",\n" +
+			"\tfirstName: " + getFirstName()  + ",\n" +
+			"\tlastName: " + getLastName() + ",\n" +
+				"\tids: [\n" + u + "\t]\n" +
+				"\ttheme: [\n" + t + "\t]\n" +
+			"\tinitialDepth:" + getInitialDepth() + "\n" +
+			"\tbranchingFactor:" + getBranchingFactor() + "\n" +
+			"\tisActive:" + getIsActive() + "\n" +
+			"\tpersistMap:" + getPersistMap() + "\n" +
 		"}";
 	}
 }

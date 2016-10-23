@@ -1,108 +1,111 @@
 package main;
 
+import com.unclutter.poller.PollingConfiguration;
+import com.unclutter.poller.MessageBroker;
+import com.unclutter.poller.MessageBrokerFactory;
+
+import listeners.AuthCodeListener;
+import listeners.ItemListener;
+
+import java.util.List;
+
+import poller.AlreadyPollingForUserException;
+import poller.FacebookPoller;
+import poller.FacebookPollingUser;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
-import poller.*;
-import listeners.*;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import repositories.FacebookRepository;
+
+/**
+* Main Spring Boot application that runs and creates all the bean.
+*
+* @author  Armand Maree
+* @since   1.0.0
+*/
 @SpringBootApplication
+@ComponentScan({"com.unclutter.poller"})
+@EnableMongoRepositories({"repositories"})
 public class Application implements CommandLineRunner {
-	private final String authCodeQueueName = "auth-code.facebook.rabbit";
-	private final String itemRequestQueueName = "item-request.facebook.rabbit";
-
+	@Autowired
+	private MessageBrokerFactory messageBrokerFactory;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private FacebookRepository facebookRepository;
 
 	@Bean
-	Queue authCodeQueue() {
-		return new Queue(authCodeQueueName, false);
+	public AuthCodeListener authCodeReceiver(FacebookRepository facebookRepository) {
+		return new AuthCodeListener(facebookRepository);
 	}
 
 	@Bean
-	Queue itemRequestQueue() {
-		return new Queue(itemRequestQueueName, false);
+	public ItemListener itemRequestReceiver(FacebookRepository facebookRepository) {
+		return new ItemListener(facebookRepository);
 	}
 
 	@Bean
-	TopicExchange exchange() {
-		return new TopicExchange("spring-boot-exchange");
-	}
+	public MessageBrokerFactory messageBrokerFactory(RabbitTemplate rabbitTemplate, AuthCodeListener authCodeListener, ItemListener itemListener) {
+		PollingConfiguration pollingConfig = new PollingConfiguration("facebook", authCodeListener, "receiveAuthCode", itemListener, "receiveItemRequest");
+		MessageBrokerFactory messageBrokerFactory = new MessageBrokerFactory(pollingConfig);
+		messageBrokerFactory.setRabbitTemplate(rabbitTemplate);
 
-	@Bean
-	Binding authCodeBinding(@Qualifier("authCodeQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(authCodeQueueName);
-	}
-
-	@Bean
-	Binding itemRequestBinding(@Qualifier("itemRequestQueue") Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(itemRequestQueueName);
-	}
-
-	@Bean
-	public BusinessListener businessListener() {
-		return new BusinessListener();
-	}
-
-	@Bean
-	public FrontendListener frontendListener() {
-		return new FrontendListener();
-	}
-
-	@Bean
-	public MessageListenerAdapter authCodeAdapter(BusinessListener businessListener) {
-		return new MessageListenerAdapter(businessListener, "receiveAuthCode");
-	}
-
-	@Bean
-	public MessageListenerAdapter itemRequestAdapter(FrontendListener frontendListener) {
-		return new MessageListenerAdapter(frontendListener, "receiveItemRequest");
-	}
-
-	@Bean
-	public SimpleMessageListenerContainer authCodeContainer(ConnectionFactory connectionFactory, @Qualifier("authCodeAdapter") MessageListenerAdapter listenerAdapter) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(authCodeQueueName);
-		container.setMessageListener(listenerAdapter);
-		return container;
-	}
-
-	@Bean
-	public SimpleMessageListenerContainer itemRequestContainer(ConnectionFactory connectionFactory, @Qualifier("itemRequestAdapter") MessageListenerAdapter listenerAdapter) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(itemRequestQueueName);
-		container.setMessageListener(listenerAdapter);
-		return container;
+		try {
+			authCodeListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
+			itemListener.setMessageBroker(messageBrokerFactory.getMessageBroker());
+		}
+		catch (MessageBrokerFactory.BeansNotSetUpException bnsue) {
+			bnsue.printStackTrace();
+			System.exit(1);
+		}
+		return messageBrokerFactory;
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
+	/**
+	* Runs the {@link org.springframework.boot.CommandLineRunner} program.
+	* <p>
+	*	The commandline parameters that are supported are:
+	*	<ul>
+	*		<li>cleandb - This will clean the repository used by this poller.</li>
+	*	</ul>
+	* </p>
+	*/
 	@Override
 	public void run(String... args) throws Exception {
+		for (String arg : args) {
+			switch (arg) {
+				case "cleandb":
+					System.out.println("Cleaning Facebook's database.");
+					facebookRepository.deleteAll();
+					break;
+			}
+		}
 
+		List<FacebookPollingUser> pollingUsers = facebookRepository.findByCurrentlyPolling(true);
+
+		for (FacebookPollingUser pollingUser : pollingUsers) {
+			try {
+				pollingUser.setCurrentlyPolling(false);
+				facebookRepository.save(pollingUser);
+				new Thread(new FacebookPoller(facebookRepository, messageBrokerFactory.getMessageBroker(), pollingUser.getAccessToken(), pollingUser.getExpireTime(), pollingUser.getUserId())).start();
+			}
+			catch (AlreadyPollingForUserException apfue) {
+				apfue.printStackTrace();
+			}
+		}
 	}
 }
